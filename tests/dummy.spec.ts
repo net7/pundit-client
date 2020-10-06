@@ -1,12 +1,9 @@
-import { expect, assert } from 'chai';
+import { expect } from 'chai';
 import 'mocha';
+import dummy from '../dummy';
 
 describe('Dummy test', () => {
   it('should return true', () => {
-    expect(true).to.be.true;
-  });
-  it('should be zero', () => {
-    const zero = 0;
-    assert.equal(zero, 0);
+    expect(dummy()).to.be.true;
   });
 });
