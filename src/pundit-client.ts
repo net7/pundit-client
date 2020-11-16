@@ -12,7 +12,7 @@ export class PunditClient extends LitElement {
   render():any {
     return html`
       <div id="root">
-        <h3 @click="${this.onClick}">Hello World</h3>
+        <h3 @click="${this.onClick}">Hello Mundo</h3>
         <p id="root__value">${this.value || 'Nothing selected...'}</p>
         <slot></slot>
       </div>
