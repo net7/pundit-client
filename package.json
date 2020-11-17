@@ -4,10 +4,10 @@
   "description": "Pundit Client Web Component",
   "private": true,
   "scripts": {
+    "start": "webpack serve",
     "test": "mocha -r ts-node/register tests/**/*.spec.ts",
     "build": "webpack",
-    "build:watch": "tsc --watch",
-    "serve": "webpack serve"
+    "build:watch": "tsc --watch"
   },
   "repository": {
     "type": "git",
