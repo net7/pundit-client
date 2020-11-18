@@ -2,10 +2,11 @@ import {
   LitElement,
   customElement,
   property,
-  css,
-  TemplateResult
+  TemplateResult,
+  CSSResult,
 } from 'lit-element';
 import tpl from './dropdown.html';
+import dropdownStyle from '../../../assets/styles/components/dropdown.css';
 import mock from './dropdown.mock';
 
 type PunditDropdownData = {
@@ -17,7 +18,11 @@ type PunditDropdownData = {
 
 @customElement('pundit-dropdown')
 export class PunditDropdown extends LitElement {
-  static styles = css``;
+  static get styles(): CSSResult[] {
+    return [
+      dropdownStyle,
+    ];
+  }
 
   @property({ type: Object })
   data: PunditDropdownData | null = mock;
@@ -30,9 +35,9 @@ export class PunditDropdown extends LitElement {
     console.log('payload----->', payload);
   }
 
-  createRenderRoot(): PunditDropdown {
-    return this;
-  }
+  // createRenderRoot(): PunditDropdown {
+  //   return this;
+  // }
 
   connectedCallback():void {
     super.connectedCallback();
