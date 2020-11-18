@@ -35,5 +35,11 @@ module.exports = {
     "class-methods-use-this": "off",
     "no-useless-constructor": "off",
     "comma-dangle": "off",
+    "import/no-extraneous-dependencies": [
+      "error", 
+      {
+        "devDependencies": ["e2e/**/*.ts"]
+      }
+    ]
   },
 };

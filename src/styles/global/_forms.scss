@@ -1,0 +1,133 @@
+/**
+ * FORMS
+ *
+ * Style for forms elements
+ */
+
+/* ------------------------------------ *\
+   #GENERAL
+\* ------------------------------------ */
+textarea, input[type="date"], input[type="datetime"],
+input[type="datetime-local"], input[type="email"],
+input[type="month"], input[type="number"], input[type="password"],
+input[type="search"], input[type="tel"], input[type="text"],
+input[type="time"], input[type="url"], input[type="week"] {
+    // padding: 0 $space;
+    // border-width: 1px;
+    // border-style: solid;
+    // border-color: $color-border-normal;
+    border: 1px solid $color-border-normal;
+    border-bottom: 1px solid $color-text;
+    // background-color: $color-background-base;
+    border-radius: 0;
+    // color: $color-text;
+    // font-size: $font-size-s;
+    // font-weight: $font-weight-normal;
+    // outline: none;
+    // box-shadow: inset 0px 0px 6px 0px rgba(0,0,0,0.05);
+    // transition-property: border;
+    // transition-duration: $transition-durations;
+
+    &:hover {
+    }
+
+    &:focus,
+    &:active {
+        // border-color: $color-brand;
+        // box-shadow: inset 0 0 6px 0 rgba(0,0,0,0.05), 0 0 2px fade($color-brand, 20%);
+    }
+
+    &.small {
+        // height: $form-input-small-height;
+        // padding: 0 8px;
+        // font-size: $font-size-s;
+        // line-height: $form-input-small-height;
+    }
+
+    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        // color: $color-text-light !important;
+        // font-weight: $font-weight-normal!important;
+    }
+    &::-moz-placeholder { /* Firefox 19+ */
+        // color: $color-text-light !important;
+        // font-weight: $font-weight-normal !important;
+    }
+    &:-ms-input-placeholder { /* IE 10+ */
+        // color: $color-text-light !important;
+        // font-weight: $font-weight-normal !important;
+    }
+    &:-moz-placeholder { /* Firefox 18- */
+        // color: $color-text-light !important;
+        // font-weight: $font-weight-normal !important;
+    }
+}
+
+/* Set Height */
+textarea, input[type="date"], input[type="datetime"],
+input[type="datetime-local"], input[type="email"],
+input[type="month"], input[type="number"], input[type="password"],
+input[type="search"], input[type="tel"], input[type="text"],
+input[type="time"], input[type="url"], input[type="week"] {
+    // height: $form-input-height;
+    // line-height: $form-input-height;
+}
+
+/* Select */
+select, #new_post select {
+    // height: $form-input-height;
+}
+
+/* Labels */
+label {
+    // margin-bottom: $space;
+    // font-size: $font-size-s;
+    font-weight: $font-weight-bold;
+    // line-height: 1.2;
+    color: $color-text-link;
+}
+
+/* Textarea */
+textarea, .form-control textarea {
+    // line-height: 1.2;
+    // padding: $space;
+}
+
+/* Checkboxes and radios */
+input[type="checkbox"], input[type="radio"] {
+    margin-right: $space/2;
+
+    + label {
+        color: $color-text;
+        font-weight: $font-weight-normal;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #DISABLED
+\* ------------------------------------ */
+select, textarea, input[type="date"], input[type="datetime"],
+input[type="datetime-local"], input[type="email"],
+input[type="month"], input[type="number"], input[type="password"],
+input[type="search"], input[type="tel"], input[type="text"],
+input[type="time"], input[type="url"], input[type="week"] {
+    &:disabled, &.is-disabled {
+        // border-color: $color-border-light;
+        // background-color: $color-background-medium;
+        // color: $color-text-light;
+
+        /* Placeholder text for disableds */
+        &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            // color: rgba($color-text-light, .5);
+        }
+        &::-moz-placeholder { /* Firefox 19+ */
+            // color: rgba($color-text-light, .5);
+        }
+        &:-ms-input-placeholder { /* IE 10+ */
+            // color: rgba($color-text-light, .5);
+        }
+        &:-moz-placeholder { /* Firefox 18- */
+            // color: rgba($color-text-light, .5);
+        }
+    }
+}

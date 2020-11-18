@@ -1,49 +1,68 @@
 {
-  "name": "pundit-client",
-  "version": "1.0.0",
-  "description": "Pundit Client Web Component",
-  "private": true,
+  "name": "pundit",
+  "version": "2.2.0",
   "scripts": {
-    "start": "webpack serve",
-    "test": "mocha -r ts-node/register tests/**/*.spec.ts",
-    "build": "webpack",
-    "build:watch": "tsc --watch"
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "test": "ng test",
+    "lint": "eslint \"src/**/*.ts\"",
+    "e2e": "ng e2e",
+    "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
+    "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
+    "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @n7-frontend/core @n7-frontend/icon-font"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/net7/pundit-3-client.git"
-  },
-  "author": "Net7",
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/net7/pundit-3-client/issues"
-  },
-  "homepage": "https://github.com/net7/pundit-3-client#readme",
+  "private": true,
   "dependencies": {
-    "@pundit-3/common": "git+ssh://github.com/net7/pundit-3-common#master",
-    "lit-element": "~2.4.0"
+    "@angular/animations": "~9.1.11",
+    "@angular/common": "~9.1.11",
+    "@angular/compiler": "~9.1.11",
+    "@angular/core": "~9.1.11",
+    "@angular/elements": "^9.1.12",
+    "@angular/forms": "~9.1.11",
+    "@angular/platform-browser": "~9.1.11",
+    "@angular/platform-browser-dynamic": "~9.1.11",
+    "@angular/router": "~9.1.11",
+    "@n7-frontend/components": "git+ssh://git@github.com/net7/n7-frontend-components-dist.git#master",
+    "@n7-frontend/core": "git+ssh://git@github.com/net7/n7-frontend-core.git#master",
+    "@n7-frontend/icon-font": "git+ssh://git@github.com/net7/n7-icon-font.git#master",
+    "classlist.js": "^1.1.20150312",
+    "document-register-element": "^1.7.2",
+    "lodash": "^4.17.20",
+    "rxjs": "6.5.5",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.13",
-    "@types/mocha": "^8.0.3",
-    "@types/typescript": "^2.0.0",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.3.0",
-    "chai": "^4.2.0",
-    "copy-webpack-plugin": "^6.3.1",
-    "es-dev-server": "~1.57.8",
-    "eslint": "^7.10.0",
-    "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.1",
-    "husky": "^4.3.0",
-    "lint-staged": "^10.4.0",
-    "mocha": "^8.1.3",
-    "ts-loader": "^8.0.11",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.3",
-    "webpack": "^5.4.0",
-    "webpack-cli": "^4.2.0",
-    "webpack-dev-server": "^3.11.0"
+    "@angular-devkit/build-angular": "~0.901.8",
+    "@angular/cli": "~9.1.8",
+    "@angular/compiler-cli": "~9.1.11",
+    "@angular/language-service": "~9.1.11",
+    "@types/jasmine": "~3.3.8",
+    "@types/jasminewd2": "~2.0.3",
+    "@types/node": "^12.11.1",
+    "@typescript-eslint/eslint-plugin": "^2.22.0",
+    "@typescript-eslint/parser": "^2.22.0",
+    "codelyzer": "^5.1.2",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-import": "^2.20.1",
+    "husky": "^4.2.3",
+    "jasmine-core": "~3.4.0",
+    "jasmine-spec-reporter": "~4.2.1",
+    "karma": "~4.1.0",
+    "karma-chrome-launcher": "~2.2.0",
+    "karma-coverage-istanbul-reporter": "~2.0.1",
+    "karma-jasmine": "~2.0.1",
+    "karma-jasmine-html-reporter": "^1.4.0",
+    "lint-staged": "^10.0.8",
+    "onchange": "^6.1.0",
+    "protractor": "~5.4.0",
+    "stylelint": "^11.1.1",
+    "stylelint-config-standard": "^19.0.0",
+    "ts-node": "~7.0.0",
+    "tslint": "~5.15.0",
+    "typescript": "~3.8.3"
   },
   "husky": {
     "hooks": {
@@ -53,6 +72,9 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix"
+    ],
+    "*.scss": [
+      "stylelint --syntax scss --fix"
     ]
   }
 }
