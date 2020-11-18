@@ -1,0 +1,203 @@
+//
+// VARIABLES
+//
+// Definition of all variables used by the components library
+//
+
+// ------------------------------------ //
+// #LAYOUT
+// ------------------------------------ //
+// $page-max-width: 1240px;
+
+
+// ------------------------------------ //
+// #GRIDS
+// ------------------------------------ //
+// $grid-gutter-h: $space*3;
+// $grid-gutter-v: $space*2;
+
+
+// //////////////////////////////////// //
+//            ATTENTION PLEASE          //
+// //////////////////////////////////// //
+// All commented variables are here for reference
+// just to see which ones are available to be
+// overwritten and must be removed if not used
+
+
+// ------------------------------------ //
+// #Z-INDEX
+// ------------------------------------ //
+// $z-index-base: 1000;
+// $z-index-modal:         $z-index-base + 10;
+
+// ------------------------------------ //
+// #SPACING-UNIT
+// ------------------------------------ //
+// $space: 8px;
+
+
+// ------------------------------------ //
+// #FONTS
+// ------------------------------------ //
+// @import url('https://fonts.googleapis.com/css?family=Lato:300,300i,400,400i,700,700i,900');
+// @import url('https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,700i&display=swap');
+
+
+// ------------------------------------ //
+// TYPOGRAPHY
+// ------------------------------------ //
+// $font-family-main: 'Nunito Sans', sans-serif;
+// $font-family-headings: 'Nunito Sans', sans-serif;
+
+// $font-size-xxxl: 38px;
+// $font-size-xxl: 30px;
+// $font-size-xl: 26px;
+// $font-size-l: 18px;
+// $font-size-m: 16px;
+// $font-size-s: 14px;
+// $font-size-xs: 12px;
+
+// Font weight
+// $font-weight-normal: 400;
+// $font-weight-bold: 700;
+
+
+// ------------------------------------ //
+// COLORS
+// ------------------------------------ //
+// Text Colors
+// $color-text: $color-gray-05;
+// $color-text-inverse: $color-gray-00;
+// $color-text-light: $color-gray-04;
+// $color-text-link: $color-main;
+// $color-text-link-hover: $color-text-hover;
+// $color-text-link-visited: $color-text-hover;
+// $color-text-form-placeholder: $color-gray-04;
+
+// Borders
+// $color-border-light: $color-gray-02;
+// $color-border-normal: $color-gray-03;
+
+// Backgrounds
+// $color-background-base: $color-gray-00;
+// $color-background-light: $color-gray-01;
+// $color-background-light-blue: #F5F7FF;
+// $color-background-medium: $color-gray-01;
+// $color-background-dark: $color-gray-03;
+
+
+// ------------------------------------ //
+// #MEDIA-QUERIES-BREAKPOINT
+// ------------------------------------ //
+// $breakpoint-desktop-wide: 1180px;
+// $breakpoint-laptop: 960px;
+// $breakpoint-ipad-portrait: 768px;
+// $breakpoint-smartphone-landscape: 480px;
+// $breakpoint-smartphone-portrait: 400px;
+
+
+// ------------------------------------ //
+// #BORDER-RADIUS
+// ------------------------------------ //
+// $border-radius: 3px;
+// $border-radius-hard: 8px;
+
+
+// ------------------------------------ //
+// #BUTTONS
+// ------------------------------------ //
+// $button-border-width: 0px;
+// $button-border-radius: $border-radius;
+// $button-small-height: 24px;
+// $button-normal-height: 32px;
+// $button-large-height: 50px;
+
+// Normal button
+// $color-button-text: $color-text-link;
+// $color-button-text-hover: $color-text-link-hover;
+// $color-button-text-disabled: rgba($color-text-link, .4);
+
+// $color-button-bg: #E0E7FF;
+// $color-button-bg-hover: #E0E7FF;
+// $color-button-bg-disabled: #E0E7FF;
+
+// $color-button-border: $color-border-normal;
+// $color-button-border-hover: $color-border-normal;
+
+// Call to action button
+// $color-button-cta-text: $color-text-inverse;
+// $color-button-cta-text-hover: $color-text-inverse;
+// $color-button-cta-text-disabled: rgba($color-text-inverse, .4);
+
+// $color-button-cta-bg: $color-main;
+// $color-button-cta-bg-hover: $color-text-hover;
+// $color-button-cta-bg-active: $color-text-hover;
+// $color-button-cta-bg-disabled: rgba($color-main, .4);
+
+// $color-button-cta-border: darken($color-main, 5); // $color-text-hover;
+
+// Light button (no background or border, only text)
+// $color-button-light-text: $color-text-link;
+// $color-button-light-text-hover: $color-text-link-hover;
+// $color-button-light-text-disabled: $color-text-light;
+// $color-button-light-text-active: $color-text-link-hover;
+
+
+// ------------------------------------ //
+// #FORMS
+// ------------------------------------ //
+// $form-input-height: 38px;
+// $form-input-small-height: 26px;
+// $form-border-radius: $border-radius;
+// $form-dropdown-height: 30px;
+
+// ------------------------------------ //
+// #TRANSITIONS
+// ------------------------------------ //
+// $transition-durations: 0.2s;
+
+
+// ------------------------------------ //
+// #HEADER
+// ------------------------------------ //
+// $header-height: 80px;
+// $header-height-mobile: 60px;
+// $header-bg-color: $color-background-base;
+// $header-logo-height: $header-height - ($space*2);
+// $header-logo-height-mobile: $header-height-mobile - ($space*2);
+// $header-user-thumb-size: 40px;
+// $header-user-thumb-size-mobile: 38px;
+// $header-search-input-height: 36px;
+// $header-search-input-height-mobile: 28px;
+// $header-breakpoint-mobile: 1180px;
+// $header-breakpoint-mobile-small: 600px;
+
+
+// ------------------------------------ //
+// #LOADER
+// ------------------------------------ //
+// $loader-size: 70px;
+// $loader-thickness: 5px;
+// $loader-color-front: $color-main;
+// $loader-color-back: rgba($color-main, .3);
+
+
+// ------------------------------------ //
+// #TABLE
+// ------------------------------------ //
+// $table-border-color: $color-border-normal;
+// $table-border-size: 1px;
+/* Header */
+// $table-header-font-size: $font-size-xs;
+// $table-header-text-color: $color-text;
+// $table-header-bg: $color-background-light-blue;
+/* Contents */
+// $table-font-size: $font-size-s;
+// $table-text-color: $color-text;
+// $table-bg-odd: $color-background-base;
+// $table-bg-even: $color-background-medium;
+/* Footer */
+// $table-footer-font-size: $font-size-s;
+// $table-footer-text-color: $color-text-light;
+// $table-footer-bg: $color-background-medium;

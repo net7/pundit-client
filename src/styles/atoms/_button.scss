@@ -1,0 +1,174 @@
+/**
+ * BUTTONS
+ *
+ * Style for all types of buttons
+ */
+
+/* ------------------------------------ *\
+   #STANDARD-BUTTON
+\* ------------------------------------ */
+.n7-btn {
+    // display: inline-block;
+    // width: auto !important;
+    // height: $button-normal-height;
+    padding: 0 $space*2;
+    // margin: 0;
+    // border: $button-border-width solid $color-button-border;
+    // border-radius: $button-border-radius;
+    // background-color: $color-button-bg;
+    // color: $color-button-text;
+    // font-size: $font-size-s;
+    // font-weight: $font-weight-bold;
+    // font-family: $font-family-main;
+    // line-height: $button-normal-height - $button-border-width;
+    // vertical-align: top;
+    // text-align: center;
+    // text-decoration: none;
+    // cursor: pointer;
+    // transition-property: border, background-color, color, width;
+    // transition-duration: $transition-durations;
+
+    /* Hover */
+    &:hover {
+        // background-color: $color-button-bg-hover;
+        // border-color: $color-button-border-hover;
+        // color: $color-button-text-hover;
+        // text-decoration: none;
+    }
+
+    /* Disabled */
+    &.is-disabled, &.is-disabled:hover,
+    &.is-disabled:active, &.is-disabled:active:hover {
+        // color: $color-button-text-disabled;
+        // border-color: $color-button-border;
+        // background-color: $color-button-bg-disabled;
+        // text-shadow: none;
+        // cursor: not-allowed;
+    }
+
+    /* Active */
+    &.is-active, &:active, &.is-active:hover, &:active:hover {
+        // color: $color-button-text-hover;
+        // border-color: $color-button-text-hover;
+        // background-color: $color-button-bg;
+    }
+
+    /* With loader inside */
+    &.is-loading {
+    }
+}
+
+
+/* ------------------------------------ *\
+   #LIGHT-BUTTON
+\* ------------------------------------ */
+/* No background button */
+.n7-btn-light {
+    // padding: 0 4px;
+    // color: $color-button-light-text;
+    // border: 0;
+    // border-radius: 0;
+    // background-color: transparent;
+    // font-weight: $font-weight-normal;
+    // text-decoration: none;
+    // text-shadow: none;
+    // line-height: $button-normal-height;
+
+    /* Hover */
+    &:hover {
+        // color: $color-button-light-text-hover;
+        // background-color: transparent;
+    }
+
+    /* Disabled */
+    &.is-disabled, &.is-disabled:hover,
+    &.is-disabled:active, &.is-disabled:active:hover {
+        // color: $color-button-light-text-disabled;
+        // background-color: transparent;
+        // border: 0;
+        // cursor: not-allowed;
+        // text-shadow: none;
+    }
+
+    /* Active */
+    &.is-active, &:active, &.is-active:hover, &:active:hover {
+        // color: $color-button-light-text-active;
+        // background-color: transparent;
+        // border: 0;
+    }
+
+    /* With loader inside */
+    &.is-loading {
+    }
+}
+
+
+/* ------------------------------------ *\
+   #CALL-TO-ACTION-BUTTON
+\* ------------------------------------ */
+.n7-btn-cta {
+    // background-color: $color-button-cta-bg;
+    // border-color: $color-button-cta-border;
+    // color: $color-button-cta-text;
+
+    &:hover {
+        // background-color: $color-button-cta-bg-hover;
+        // border-color: $color-button-cta-border;
+        // color: $color-button-cta-text-hover;
+    }
+
+    /* Disabled */
+    &.is-disabled, &.is-disabled:hover,
+    &.is-disabled:active, &.is-disabled:active:hover,
+    &:disabled, &:disabled:hover,
+    &:disabled:active, &:disabled:active:hover {
+        background-color: $color-button-cta-bg-disabled;
+        border-color: $color-button-cta-border;
+        color: $color-button-cta-text-disabled;
+        cursor: not-allowed;
+    }
+
+    /* Active */
+    &.is-active, &:active, &.is-active:hover, &:active:hover {
+        // background-color: $color-button-cta-bg-active;
+        // border-color: $color-button-cta-border;
+        // color: $color-button-cta-text;
+    }
+
+    /* With loader inside */
+    &.is-loading {
+    }
+}
+
+
+/* ------------------------------------ *\
+   #SIZES
+\* ------------------------------------ */
+.n7-btn {
+    /* Sizes */
+    &.n7-btn-s {
+        // height: $button-small-height;
+        // padding: 0 $space/2;
+        // line-height: $button-small-height - $button-border-width;
+        // font-size: $font-size-xs;
+    }
+
+    &.n7-btn-l {
+        // height: $button-large-height;
+        // padding: 0 $space*3;
+        // line-height: $button-large-height - $button-border-width;
+        font-size: $font-size-m;
+    }
+
+    &.n7-btn-xl {
+        // height: $button-large-height;
+        // padding: 0 $space*3;
+        font-size: $font-size-l;
+        // line-height: $button-large-height - $button-border-width;
+    }
+
+    /* Full width */
+    &.n7-btn-full {
+        // width: 100%;
+    }
+}
