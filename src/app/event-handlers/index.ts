@@ -1,1 +1,1 @@
-// TODO
+export * from './dummy.eh';

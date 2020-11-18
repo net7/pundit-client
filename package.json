@@ -26,6 +26,7 @@
     "@n7-frontend/core": "git+ssh://git@github.com/net7/n7-frontend-core.git#master",
     "@n7-frontend/icon-font": "git+ssh://git@github.com/net7/n7-icon-font.git#master",
     "classlist.js": "^1.1.20150312",
+    "lodash": "^4.17.20",
     "rxjs": "6.5.5",
     "tslib": "^1.10.0",
     "zone.js": "~0.10.2"
