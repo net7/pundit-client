@@ -1,7 +1,9 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assert } from 'chai';
 import 'mocha';
-import { RangeSelectorWithType, TextPositionSelectorWithType, TextQuoteSelectorWithType } from '../../types';
+import {
+  RangeSelectorWithType, SelectorWithType, TextPositionSelectorWithType, TextQuoteSelectorWithType
+} from '../../types';
 import * as html from '../index';
 
 import htmlFixture from './html-anchoring-fixture';
@@ -450,7 +452,7 @@ describe('HTML anchoring', () => {
 
         const annotationsChecked = annotations.map(async (ann) => {
           const root = frame.contentWindow.document.body;
-          const selectors = ann.target[0].selector;
+          const selectors = ann.target[0].selector as SelectorWithType[];
           const range = await html.anchor(root, selectors);
           const newSelectors = await html.describe(root, range);
           assert.deepEqual(sortByType(selectors), sortByType(newSelectors));
