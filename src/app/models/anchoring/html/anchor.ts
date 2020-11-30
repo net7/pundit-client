@@ -1,16 +1,12 @@
-import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from './anchors';
+import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from '../anchors';
 import {
-  Anchor,
   QuerySelectorOptions,
   SelectorWithType,
   TextPositionSelectorWithType,
   TextQuoteSelectorWithType,
   RangeSelectorWithType
-} from './types';
-
-async function querySelector(handler: Anchor, options: QuerySelectorOptions = {}): Promise<Range> {
-  return handler.toRange(options);
-}
+} from '../types';
+import { querySelector } from './querySelector';
 
 /**
  * Anchor a set of selectors.
@@ -90,22 +86,4 @@ export function anchor(
   }
 
   return promise;
-}
-
-/**
- * @param {Node} root
- * @param {Range} range
- */
-export function describe(root, range) {
-  const types = [RangeAnchor, TextPositionAnchor, TextQuoteAnchor];
-  const result = [];
-  types.forEach((type) => {
-    try {
-      const selectedAnchor = type.fromRange(root, range);
-      result.push(selectedAnchor.toSelector());
-    } catch (error) {
-      // do nothing
-    }
-  });
-  return result;
 }
