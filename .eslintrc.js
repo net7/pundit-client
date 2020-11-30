@@ -38,7 +38,7 @@ module.exports = {
     "import/no-extraneous-dependencies": [
       "error", 
       {
-        "devDependencies": ["e2e/**/*.ts"]
+        "devDependencies": ["e2e/**/*.ts", "src/**/*.spec.ts"]
       }
     ]
   },

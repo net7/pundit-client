@@ -1,7 +1,7 @@
-import htmlMinimal from './html-minimal';
-import jsonMinimal from './minimal.json';
-import htmlWikipedia from './html-wikipedia-regression-testing';
-import jsonWikipedia from './wikipedia-regression-testing.json';
+import htmlMinimal from './minimal-html';
+import jsonMinimal from './minimal-json';
+import htmlWikipedia from './wikipedia-regression-testing-html';
+import jsonWikipedia from './wikipedia-regression-testing-json';
 
 // Fixtures for anchoring baseline tests. The goals of these tests are to:
 //
