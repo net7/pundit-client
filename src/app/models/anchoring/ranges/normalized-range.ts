@@ -67,9 +67,9 @@ export class NormalizedRange {
     this.start = nodes[0];
     this.end = nodes[nodes.length - 1];
 
-    const startParents = helpers.parents(this.start);
+    const startParents = helpers.parents(this.start as HTMLElement);
 
-    helpers.parents(this.end).forEach((parent) => {
+    helpers.parents(this.end as HTMLElement).forEach((parent) => {
       if (startParents.indexOf(parent) !== -1) {
         this.commonAncestor = parent;
       }

@@ -93,7 +93,7 @@ export class SerializedRange {
       }
     });
 
-    helpers.parents(range.startContainer).forEach((parent) => {
+    helpers.parents(range.startContainer as HTMLElement).forEach((parent) => {
       if (parent.contains(range.endContainer)) {
         (range as any).commonAncestorContainer = parent;
       }
