@@ -1,16 +1,18 @@
 import helpers from '../helpers';
 import { RangeSelector } from '../types';
+import { nodeFromXPath } from '../xpath';
+import { getTextNodes } from '../xpath-util';
 import { BrowserRange } from './browser-range';
 
 /**
  * A range suitable for storing in local storage or serializing to JSON.
  */
 export class SerializedRange {
-  public startContainer: string;
+  public startContainer: string | number;
 
   public startOffset: number;
 
-  public endContainer: string;
+  public endContainer: string | number;
 
   public endOffset: number;
 

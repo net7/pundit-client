@@ -1,3 +1,5 @@
+import { BrowserRange, NormalizedRange, SerializedRange } from './ranges';
+
 export default {
   /**
    * Determines the type of Range of the provided object and returns
@@ -24,11 +26,12 @@ export default {
     throw new Error('Could not sniff range type');
   },
 
-  parents(node) {
+  parents(node: HTMLElement) {
     const parents = [];
-    while (node.parentElement) {
-      parents.push(node.parentElement);
-      node = node.parentElement;
+    let selectedNode = node;
+    while (selectedNode.parentElement) {
+      parents.push(selectedNode.parentElement);
+      selectedNode = selectedNode.parentElement;
     }
     return parents;
   }

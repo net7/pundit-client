@@ -1,5 +1,6 @@
 import helpers from '../helpers';
 import { BrowserNormalizedRange } from '../types';
+import { getTextNodes, xpathFromNode } from '../xpath-util';
 import { SerializedRange } from './serialized-range';
 
 /**
@@ -112,11 +113,11 @@ export class NormalizedRange {
     // eslint-disable-next-line no-use-before-define
     return new SerializedRange({
       // XPath strings
-      startContainer: start[0],
-      endContainer: end[0],
+      startContainer: `${start[0]}`,
+      endContainer: `${end[0]}`,
       // Character offsets (integer)
-      startOffset: start[1],
-      endOffset: end[1],
+      startOffset: +start[1],
+      endOffset: +end[1],
     });
   }
 

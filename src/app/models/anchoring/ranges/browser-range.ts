@@ -1,4 +1,5 @@
 import { BrowserNormalizedRange } from '../types';
+import { getFirstTextNodeNotBefore, getLastTextNodeUpTo } from '../xpath-util';
 import { NormalizedRange } from './normalized-range';
 
 /**
