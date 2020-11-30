@@ -1,15 +1,15 @@
-// import { fragment, position, quote } from '@pundit/anchoring';
+import { RangeAnchor, TextPositionAnchor, TextQuoteAnchor } from './anchors';
+import {
+  Anchor,
+  QuerySelectorOptions,
+  SelectorWithType,
+  TextPositionSelectorWithType,
+  TextQuoteSelectorWithType,
+  RangeSelectorWithType
+} from './types';
 
-// type QuerySelectorOptions = {
-//   hint?: number;
-// };
-
-// type Anchor = {
-//   toRange(options: QuerySelectorOptions): Range;
-// };
-
-// async function querySelector(handler: Anchor, options: QuerySelectorOptions = {}): Promise<Range> {
-//   return handler.toRange(options);
+async function querySelector(handler: Anchor, options: QuerySelectorOptions = {}): Promise<Range> {
+  return handler.toRange(options);
 }
 
 /**
@@ -24,84 +24,88 @@
  * @param {Object} [options]
  *   @param {number} [options.hint]
  */
-// export function anchor(root, selectors, options: QuerySelectorOptions = {}) {
-//   let position = null;
-//   let quote = null;
-//   let range = null;
+export function anchor(
+  root: HTMLElement,
+  selectors: SelectorWithType[],
+  options: QuerySelectorOptions = {}
+) {
+  let textPositionSelector: TextPositionSelectorWithType | null = null;
+  let textQuoteSelector: TextQuoteSelectorWithType | null = null;
+  let rangeSelector: RangeSelectorWithType | null = null;
 
-//   // Collect all the selectors
-//   selectors.forEach((selector) => {
-//     switch (selector.type) {
-//       case 'TextPositionSelector':
-//         position = selector;
-//         options.hint = position.start; // TextQuoteAnchor hint
-//         break;
-//       case 'TextQuoteSelector':
-//         quote = selector;
-//         break;
-//       case 'RangeSelector':
-//         range = selector;
-//         break;
-//       default:
-//         break;
-//     }
-//   });
+  // Collect all the selectors
+  selectors.forEach((selector: SelectorWithType) => {
+    switch (selector.type) {
+      case 'TextPositionSelector':
+        textPositionSelector = selector;
+        options.hint = textPositionSelector.start; // TextQuoteAnchor hint
+        break;
+      case 'TextQuoteSelector':
+        textQuoteSelector = selector;
+        break;
+      case 'RangeSelector':
+        rangeSelector = selector;
+        break;
+      default:
+        break;
+    }
+  });
 
   /**
    * Assert the quote matches the stored quote, if applicable
    * @param {Range} range
    */
-//   const maybeAssertQuote = (range) => {
-//     if (quote?.exact && range.toString() !== quote.exact) {
-//       throw new Error('quote mismatch');
-//     } else {
-//       return range;
-//     }
-//   };
+  const maybeAssertQuote = (range: Range) => {
+    if (textQuoteSelector?.exact && range.toString() !== textQuoteSelector.exact) {
+      throw new Error('quote mismatch');
+    } else {
+      return range;
+    }
+  };
 
-//   // From a default of failure, we build up catch clauses to try selectors in
-//   // order, from simple to complex.
-//   /** @type {Promise<Range>} */
-//   let promise = Promise.reject('unable to anchor');
+  // From a default of failure, we build up catch clauses to try selectors in
+  // order, from simple to complex.
+  /** @type {Promise<Range>} */
+  let promise: Promise<Range> | Promise<never> = Promise.reject(Error('unable to anchor'));
 
-//   if (range) {
-//     promise = promise.catch(() => {
-//       const anchor = RangeAnchor.fromSelector(root, range);
-//       return querySelector(anchor, options).then(maybeAssertQuote);
-//     });
-//   }
+  if (rangeSelector) {
+    promise = promise.catch(() => {
+      const selectedAnchor = RangeAnchor.fromSelector(root, rangeSelector);
+      return querySelector(selectedAnchor, options).then(maybeAssertQuote);
+    });
+  }
 
-//   if (position) {
-//     promise = promise.catch(() => {
-//       const anchor = TextPositionAnchor.fromSelector(root, position);
-//       return querySelector(anchor, options).then(maybeAssertQuote);
-//     });
-//   }
+  if (textPositionSelector) {
+    promise = promise.catch(() => {
+      const selectedAnchor = TextPositionAnchor.fromSelector(root, textPositionSelector);
+      return querySelector(selectedAnchor, options).then(maybeAssertQuote);
+    });
+  }
 
-//   if (quote) {
-//     promise = promise.catch(() => {
-//       const anchor = TextQuoteAnchor.fromSelector(root, quote);
-//       return querySelector(anchor, options);
-//     });
-//   }
+  if (textQuoteSelector) {
+    promise = promise.catch(() => {
+      const selectedAnchor = TextQuoteAnchor.fromSelector(root, textQuoteSelector);
+      return querySelector(selectedAnchor, options);
+    });
+  }
 
-//   return promise;
-// }
+  return promise;
+}
 
 /**
  * @param {Node} root
  * @param {Range} range
  */
-// export function describe(root, range) {
-//   const types = [RangeAnchor, TextPositionAnchor, TextQuoteAnchor];
-//   const result = [];
-//   for (const type of types) {
-//     try {
-//       const anchor = type.fromRange(root, range);
-//       result.push(anchor.toSelector());
-//     } catch (error) {
-//       continue;
-//     }
-//   }
-//   return result;
-// }
+export function describe(root, range) {
+  const types = [RangeAnchor, TextPositionAnchor, TextQuoteAnchor];
+  const result = [];
+  types.forEach((type) => {
+    try {
+      const selectedAnchor = type.fromRange(root, range);
+      result.push(selectedAnchor.toSelector());
+    } catch (error) {
+      // do nothing
+    }
+  });
+  return result;
+}
