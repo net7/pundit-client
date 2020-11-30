@@ -34,7 +34,6 @@ export function evaluateSimpleXPath(xpath, root: Element) {
   // has at least two segments, with the first being empty and the others non-empty.
   segments.shift();
 
-  // eslint-disable-next-line consistent-return
   segments.forEach((segment) => {
     let elementName: any;
     let elementIndex: number;
@@ -46,7 +45,7 @@ export function evaluateSimpleXPath(xpath, root: Element) {
       const indexStr = segment.slice(separatorPos + 1, segment.indexOf(']'));
       elementIndex = parseInt(indexStr, 10) - 1;
       if (elementIndex < 0) {
-        return null;
+        element = null;
       }
     } else {
       elementName = segment;
@@ -55,10 +54,10 @@ export function evaluateSimpleXPath(xpath, root: Element) {
 
     const child: Element = nthChildOfType(element, elementName, elementIndex);
     if (!child) {
-      return null;
+      element = null;
+    } else {
+      element = child;
     }
-
-    element = child;
   });
 
   return element;

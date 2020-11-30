@@ -1,5 +1,3 @@
-/* eslint-disable no-restricted-syntax */
-
 /**
  * Return all text node descendants of `parent`.
  *
@@ -8,7 +6,7 @@
  */
 export function getTextNodes(parent: Node) {
   const nodes = [];
-  for (const node of Array.from(parent.childNodes)) {
+  Array.from(parent.childNodes).forEach((node) => {
     // We test `nodeType` here rather than using `instanceof` because we have
     // tests where `node` comes from a different iframe.
     if (node.nodeType === Node.TEXT_NODE) {
@@ -16,6 +14,6 @@ export function getTextNodes(parent: Node) {
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       nodes.push(...getTextNodes(/** @type {Element} */(node)));
     }
-  }
+  });
   return nodes;
 }
