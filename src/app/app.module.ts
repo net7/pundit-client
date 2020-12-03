@@ -8,6 +8,7 @@ import { config } from './models/config';
 import { AppComponent } from './app.component';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
+import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
 
 import appConfig from './config';
@@ -29,6 +30,7 @@ config.init(appConfig);
     AppComponent,
     // LAYOUTS
     MainLayoutComponent,
+    SidebarLayoutComponent,
     // COMPONENTS
   ],
   imports: [

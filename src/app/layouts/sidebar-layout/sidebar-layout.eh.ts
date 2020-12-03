@@ -10,7 +10,7 @@ export class SidebarLayoutEH extends EventHandler {
         case 'sidebar-layout.init':
           this.dataSource.onInit(payload);
           this.route = payload.route;
-          this.listenRoute();
+          // this.listenRoute();
           break;
         case 'sidebar-layout.destroy':
           break;
@@ -27,15 +27,15 @@ export class SidebarLayoutEH extends EventHandler {
     });
   }
 
-  private listenRoute() {
-    this.route.paramMap.subscribe((params) => {
-      const paramId = params.get('id');
-      if (paramId) {
-        if (paramId) {
-          this.dataSource.currentId = paramId;
-          this.emitOuter('routechanged', paramId);
-        }
-      }
-    });
-  }
+  // private listenRoute() {
+  //   this.route.paramMap.subscribe((params) => {
+  //     const paramId = params.get('id');
+  //     if (paramId) {
+  //       if (paramId) {
+  //         this.dataSource.currentId = paramId;
+  //         this.emitOuter('routechanged', paramId);
+  //       }
+  //     }
+  //   });
+  // }
 }
