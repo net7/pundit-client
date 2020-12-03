@@ -6,4 +6,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
   styleUrls: ['./app.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom
 })
-export class AppComponent { }
+export class AppComponent {
+  title = 'angular-test';
+}
