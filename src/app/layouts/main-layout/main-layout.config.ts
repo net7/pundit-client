@@ -4,7 +4,7 @@ import * as DS from '../../data-sources';
 import * as EH from '../../event-handlers';
 
 export const MainLayoutConfig = {
-  layoutId: 'pnd-main-layout',
+  layoutId: 'main-layout',
   widgets: [
     // TODO
   ],

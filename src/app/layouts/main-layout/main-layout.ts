@@ -3,7 +3,7 @@ import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { MainLayoutConfig as config } from './main-layout.config';
 
 @Component({
-  selector: 'pnd-main-layout',
+  selector: 'main-layout',
   templateUrl: './main-layout.html'
 })
 export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
