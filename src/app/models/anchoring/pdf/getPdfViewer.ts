@@ -1,3 +1,5 @@
+declare let PDFViewerApplication;
+
 /**
  * Get the PDF.js viewer application.
  *

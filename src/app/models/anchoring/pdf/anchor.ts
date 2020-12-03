@@ -2,6 +2,7 @@ import { anchorByPosition } from './anchorByPosition';
 import { findInPages } from './findInPages';
 import { findPage } from './findPageOffset';
 import { prioritizePages } from './prioritizePages';
+import { QuotePositionCache } from './quotePositionCache';
 
 /**
  * Anchor a set of selectors to a DOM Range.
@@ -44,16 +45,18 @@ export function anchor(root, selectors) {
     result = result.catch(() => {
       if (
         position
-        && quotePositionCache[quote.exact]
-        && quotePositionCache[quote.exact][position.start]
+        && QuotePositionCache.data[quote.exact]
+        && QuotePositionCache.data[quote.exact][position.start]
       ) {
-        const { pageIndex, anchor } = quotePositionCache[quote.exact][
+        const { pageIndex, anchor: curAnchor } = QuotePositionCache.data[quote.exact][
           position.start
         ];
-        return anchorByPosition(pageIndex, anchor.start, anchor.end);
+        return anchorByPosition(pageIndex, curAnchor.start, curAnchor.end);
       }
 
-      return prioritizePages(position?.start ?? 0).then((pageIndices) => findInPages(pageIndices, quote, position));
+      return prioritizePages(position?.start ?? 0).then(
+        (pageIndices) => findInPages(pageIndices, quote, position)
+      );
     });
   }
 

@@ -1,11 +1,5 @@
 import { getPageView } from './getPageView';
-
-/**
- * Map of page index to page text content.
- *
- * @type {Object<number,Promise<string>>}
- */
-const pageTextCache = {};
+import { PageTextCache } from './pageTextCache';
 
 /**
  * Return the text of a given PDF page.
@@ -14,8 +8,8 @@ const pageTextCache = {};
  * @return {Promise<string>}
  */
 export async function getPageTextContent(pageIndex) {
-  if (pageTextCache[pageIndex]) {
-    return pageTextCache[pageIndex];
+  if (PageTextCache.data[pageIndex]) {
+    return PageTextCache.data[pageIndex];
   }
 
   // Join together PDF.js `TextItem`s representing pieces of text in a PDF page.
@@ -40,7 +34,7 @@ export async function getPageTextContent(pageIndex) {
     return joinItems(textContent.items);
   };
 
-  pageTextCache[pageIndex] = getTextContent(pageIndex);
+  PageTextCache.data[pageIndex] = getTextContent(pageIndex);
 
-  return pageTextCache[pageIndex];
+  return PageTextCache.data[pageIndex];
 }

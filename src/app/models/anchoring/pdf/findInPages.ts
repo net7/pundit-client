@@ -2,18 +2,9 @@ import { TextQuoteAnchor } from '../anchors';
 import { anchorByPosition } from './anchorByPosition';
 import { getPageTextContent } from './getPageContext';
 import { getPageOffset } from './getPageOffset';
+import { QuotePositionCache } from './quotePositionCache';
 
-/**
- * A cache that maps a `(quote, text offset in document)` key to a specific
- * location in the document.
- *
- * The components of the key come from an annotation's selectors. This is used
- * to speed up re-anchoring an annotation that was previously anchored in the
- * current session.
- *
- * @type {Object<string, Object<number, PdfTextRange>>}
- */
-const quotePositionCache = {};
+// const quotePositionCache = {};
 
 /**
  * Search for a quote in the given pages.
@@ -51,10 +42,10 @@ export function findInPages(pageIndexes, quoteSelector, positionHint) {
 
   const cacheAndFinish = (anchor) => {
     if (positionHint) {
-      if (!quotePositionCache[quoteSelector.exact]) {
-        quotePositionCache[quoteSelector.exact] = {};
+      if (!QuotePositionCache.data[quoteSelector.exact]) {
+        QuotePositionCache.data[quoteSelector.exact] = {};
       }
-      quotePositionCache[quoteSelector.exact][positionHint.start] = {
+      QuotePositionCache.data[quoteSelector.exact][positionHint.start] = {
         pageIndex,
         anchor,
       };
