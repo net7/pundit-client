@@ -9,7 +9,7 @@ import { BrowserNormalizedRange } from '../../types';
 
 const { sniff } = helpers;
 
-describe('annotator/anchoring/range', () => {
+fdescribe('annotator/anchoring/range', () => {
   let container;
   const html = `
       <section id="section-1">
@@ -25,7 +25,7 @@ describe('annotator/anchoring/range', () => {
 
   beforeEach(() => {
     container = document.createElement('div');
-    document.body.appendChild(container);
+    document.body.prepend(container);
     // Remove extraneous white space which can affect offsets in tests.
     // 1. Two or more spaces in a row
     // 2. New lines
@@ -106,7 +106,7 @@ describe('annotator/anchoring/range', () => {
 
   describe('BrowserRange', () => {
     describe('#constructor', () => {
-      fit('creates a BrowserRange instance', () => {
+      it('creates a BrowserRange instance', () => {
         const range = createBrowserRange();
         const {
           commonAncestorContainer,
@@ -278,7 +278,7 @@ describe('annotator/anchoring/range', () => {
         const browserRange = createBrowserRange();
         const result = browserRange.serialize(container);
         expect(result instanceof SerializedRange).toBeTruthy();
-        expect(result).toContain({
+        expect(result.toObject()).toEqual({
           startContainer: '/section[1]/p[1]',
           startOffset: 0,
           endContainer: '/section[1]/span[1]/p[1]',
@@ -360,7 +360,7 @@ describe('annotator/anchoring/range', () => {
     describe('#serialize', () => {
       it('serialize the range with relative parent', () => {
         const serializedRange = createNormalizedRange().serialize(container);
-        expect(serializedRange).toContain({
+        expect(serializedRange.toObject()).toEqual({
           startContainer: '/section[1]/p[1]',
           endContainer: '/section[1]/span[1]/p[1]',
           startOffset: 0,
@@ -370,7 +370,7 @@ describe('annotator/anchoring/range', () => {
 
       it('serialize the range with no relative parent', () => {
         const serializedRange = createNormalizedRange().serialize();
-        expect(serializedRange).toContain({
+        expect(serializedRange.toObject()).toEqual({
           startContainer: '/html[1]/body[1]/div[1]/section[1]/p[1]',
           endContainer: '/html[1]/body[1]/div[1]/section[1]/span[1]/p[1]',
           startOffset: 0,
@@ -386,7 +386,8 @@ describe('annotator/anchoring/range', () => {
           startOffset: 7,
           endOffset: 6,
         }).serialize();
-        expect(serializedRange).toContain({
+
+        expect(serializedRange.toObject()).toEqual({
           startContainer: '/html[1]/body[1]/div[1]/section[1]/p[2]',
           endContainer: '/html[1]/body[1]/div[1]/section[1]/span[1]/p[1]',
           startOffset: 7,
@@ -400,7 +401,7 @@ describe('annotator/anchoring/range', () => {
     describe('#constructor', () => {
       it('creates a SerializedRange instance', () => {
         const range = createSerializedRange();
-        expect(range).toContain({
+        expect(range.toObject()).toEqual({
           startContainer: '/section[1]/p[1]',
           startOffset: 0,
           endContainer: '/section[1]/span[1]/p[1]',
@@ -450,7 +451,7 @@ describe('annotator/anchoring/range', () => {
           });
           expect(() => {
             serializedRange.normalize(container);
-          }).toThrow(Error("Couldn't find offset 99 in element /section[1]/p[1]"));
+          }).toThrowError("Couldn't find offset 99 in element /section[1]/p[1]");
         });
 
         it("throws an error if it can't find a valid end offset", () => {
@@ -460,7 +461,7 @@ describe('annotator/anchoring/range', () => {
           });
           expect(() => {
             serializedRange.normalize(container);
-          }).toThrow(Error("Couldn't find offset 99 in element /section[1]/span[1]/p[1]"));
+          }).toThrowError("Couldn't find offset 99 in element /section[1]/span[1]/p[1]");
         });
       });
 

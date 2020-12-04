@@ -18,9 +18,9 @@ export default {
   sniff(range) {
     if (range.commonAncestorContainer !== undefined) {
       return new BrowserRange(range);
-    } if (typeof range.start === 'string') {
+    } if (typeof range.startContainer === 'string') {
       return new SerializedRange(range);
-    } if (range.start && typeof range.start === 'object') {
+    } if (range.startContainer && typeof range.startContainer === 'object') {
       return new NormalizedRange(range);
     }
     throw new Error('Could not sniff range type');
