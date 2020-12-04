@@ -1,7 +1,10 @@
-import htmlMinimal from './minimal-html';
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-webpack-loader-syntax */
 import jsonMinimal from './minimal-json';
-import htmlWikipedia from './wikipedia-regression-testing-html';
-import jsonWikipedia from './wikipedia-regression-testing-json';
+// import jsonWikipedia from './wikipedia-regression-testing-json';
+
+const htmlMinimal = require('html-loader!./minimal.html');
+// const htmlWikipedia = require('html-loader!./wikipedia-regression-testing.html');
 
 // Fixtures for anchoring baseline tests. The goals of these tests are to:
 //
@@ -32,9 +35,9 @@ export default [
     html: htmlMinimal,
     annotations: jsonMinimal,
   },
-  {
-    name: 'Wikipedia - Regression Testing',
-    html: htmlWikipedia,
-    annotations: jsonWikipedia,
-  },
+  // {
+  //   name: 'Wikipedia - Regression Testing',
+  //   html: htmlWikipedia,
+  //   annotations: jsonWikipedia,
+  // },
 ];

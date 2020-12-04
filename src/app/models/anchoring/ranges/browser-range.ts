@@ -59,16 +59,16 @@ export class BrowserRange {
     if (this.startContainer.nodeType === Node.ELEMENT_NODE) {
       // We are dealing with element nodes
       if (this.startOffset < this.startContainer.childNodes.length) {
-        range.start = getFirstTextNodeNotBefore(
+        range.startContainer = getFirstTextNodeNotBefore(
           this.startContainer.childNodes[this.startOffset]
         );
       } else {
-        range.start = getFirstTextNodeNotBefore(this.startContainer);
+        range.startContainer = getFirstTextNodeNotBefore(this.startContainer);
       }
       range.startOffset = 0;
     } else {
       // We are dealing with simple text nodes
-      range.start = this.startContainer;
+      range.startContainer = this.startContainer;
       range.startOffset = this.startOffset;
     }
 
@@ -85,12 +85,12 @@ export class BrowserRange {
         }
         // Did we find a text node at the start of this element?
         if (n) {
-          range.end = n;
+          range.endContainer = n;
           range.endOffset = 0;
         }
       }
 
-      if (!range.end) {
+      if (!range.endContainer) {
         // We need to find a text node in the previous sibling of the node at the
         // given offset, if one exists, or in the previous sibling of its container.
         if (this.endOffset) {
@@ -98,12 +98,12 @@ export class BrowserRange {
         } else {
           node = this.endContainer.previousSibling;
         }
-        range.end = getLastTextNodeUpTo(node);
-        range.endOffset = range.end.nodeValue.length;
+        range.endContainer = getLastTextNodeUpTo(node);
+        range.endOffset = range.endContainer.nodeValue.length;
       }
     } else {
       // We are dealing with simple text nodes
-      range.end = this.endContainer;
+      range.endContainer = this.endContainer;
       range.endOffset = this.endOffset;
     }
 
@@ -114,35 +114,35 @@ export class BrowserRange {
     if (range.startOffset > 0) {
       // Do we really have to cut?
       if (
-        !range.start.nextSibling
-        || range.start.nodeValue.length > range.startOffset
+        !range.startContainer.nextSibling
+        || range.startContainer.nodeValue.length > range.startOffset
       ) {
         // Yes. Cut.
-        normalRange.start = (range.start as Text).splitText(range.startOffset);
+        normalRange.startContainer = (range.startContainer as Text).splitText(range.startOffset);
       } else {
         // Avoid splitting off zero-length pieces.
-        normalRange.start = getFirstTextNodeNotBefore(range.start.nextSibling);
+        normalRange.startContainer = getFirstTextNodeNotBefore(range.startContainer.nextSibling);
       }
     } else {
-      normalRange.start = range.start;
+      normalRange.startContainer = range.startContainer;
     }
 
     // Is the whole selection inside one text element?
-    if (range.start === range.end) {
+    if (range.startContainer === range.endContainer) {
       if (
-        normalRange.start.nodeValue.length
+        normalRange.startContainer.nodeValue.length
         > range.endOffset - range.startOffset
       ) {
-        (normalRange.start as Text).splitText(range.endOffset - range.startOffset);
+        (normalRange.startContainer as Text).splitText(range.endOffset - range.startOffset);
       }
-      normalRange.end = normalRange.start;
+      normalRange.endContainer = normalRange.startContainer;
     } else {
       // No, the end of the selection is in a separate text element
       // does the end need to be cut?
-      if (range.end.nodeValue.length > range.endOffset) {
-        (range.end as Text).splitText(range.endOffset);
+      if (range.endContainer.nodeValue.length > range.endOffset) {
+        (range.endContainer as Text).splitText(range.endOffset);
       }
-      normalRange.end = range.end;
+      normalRange.endContainer = range.endContainer;
     }
 
     // Make sure the common ancestor is an element node.

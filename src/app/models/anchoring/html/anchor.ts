@@ -20,7 +20,7 @@ import { querySelector } from './querySelector';
  * @param {Object} [options]
  *   @param {number} [options.hint]
  */
-export function anchor(
+export async function anchor(
   root: HTMLElement,
   selectors: SelectorWithType[],
   options: QuerySelectorOptions = {}

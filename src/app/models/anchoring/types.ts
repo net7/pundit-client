@@ -40,10 +40,8 @@ export type Anchor = {
 };
 
 export type BrowserNormalizedRange = {
-  start: Node | Text;
   startContainer: Node;
   startOffset: number;
-  end: Node | Text;
   endContainer: Node;
   endOffset: number;
   commonAncestor?: Node;

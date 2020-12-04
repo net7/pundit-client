@@ -48,9 +48,9 @@ export class RangeAnchor {
     const range = this.range.serialize(this.root);
     return {
       type: 'RangeSelector',
-      startContainer: range.start,
+      startContainer: range.startContainer,
       startOffset: range.startOffset,
-      endContainer: range.end,
+      endContainer: range.endContainer,
       endOffset: range.endOffset,
     };
   }

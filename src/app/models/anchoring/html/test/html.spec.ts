@@ -1,13 +1,18 @@
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { assert } from 'chai';
-import 'mocha';
+/* eslint-disable max-len */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable import/no-webpack-loader-syntax */
+
 import {
-  RangeSelectorWithType, SelectorWithType, TextPositionSelectorWithType, TextQuoteSelectorWithType
+  RangeSelectorWithType,
+  SelectorWithType,
+  TextPositionSelectorWithType,
+  TextQuoteSelectorWithType
 } from '../../types';
 import * as html from '../index';
 
-import htmlFixture from './html-anchoring-fixture';
 import htmlBaselines from './html-baselines';
+
+const htmlFixture = require('html-loader!./html-anchoring-fixture.html');
 
 /** Return all text node children of `container`. */
 function textNodes(container) {
@@ -332,11 +337,13 @@ describe('HTML anchoring', () => {
   }));
 
   testCases.forEach((testCase) => {
-    it(`describes and anchors ${testCase.description}`, () => {
+    it(`describes and anchors ${testCase.description}`, async () => {
       // Resolve the range descriptor to a DOM Range, verify that the expected
       // text was selected.
+
       const range = toRange(container, testCase.range);
-      assert.strictEqual(range.toString(), testCase.quote);
+      // assert.strictEqual(range.toString(), testCase.quote);
+      expect(range.toString()).toEqual((testCase.quote as string));
 
       // Capture a set of selectors describing the range and perform basic sanity
       // checks on them.
@@ -356,23 +363,27 @@ describe('HTML anchoring', () => {
         [failTypes] = failInfo;
       }
 
-      const assertRange = failTypes.range ? assert.notOk : assert.ok;
-      const assertQuote = failTypes.quote ? assert.notOk : assert.ok;
-      const assertPosition = failTypes.position ? assert.notOk : assert.ok;
+      // const assertRange = failTypes.range ? assert.notOk : assert.ok;
+      // const assertQuote = failTypes.quote ? assert.notOk : assert.ok;
+      // const assertPosition = failTypes.position ? assert.notOk : assert.ok;
 
-      assertRange(rangeSel, 'range selector');
-      assertPosition(positionSel, 'position selector');
-      assertQuote(quoteSel, 'quote selector');
+      expect(rangeSel)[failTypes.range ? 'toBeFalsy' : 'toBeTruthy']();
+      expect(quoteSel)[failTypes.quote ? 'toBeFalsy' : 'toBeTruthy']();
+      expect(positionSel)[failTypes.position ? 'toBeFalsy' : 'toBeTruthy']();
 
       // Map each selector back to a Range and check that it refers to the same
       // text. We test each selector in turn to make sure they are all valid.
-      const anchored = selectors.map(
-        (sel) => html.anchor(container, [sel])
-          .then((anchoredRange) => {
-            assert.equal(range.toString(), anchoredRange.toString());
-          })
-      );
-      return Promise.all(anchored);
+      // const anchored = selectors.map(function (sel) {
+      //   return html.anchor(container, [sel]).then(function (anchoredRange) {
+      //     assert.equal(range.toString(), anchoredRange.toString());
+      //   });
+      // });
+      // return Promise.all(anchored);
+
+      selectors.forEach(async (sel) => {
+        const anchoredRange = await html.anchor(container, [sel]);
+        expect(anchoredRange.toString()).toEqual(range.toString());
+      });
     });
   });
 
@@ -387,10 +398,11 @@ describe('HTML anchoring', () => {
         type: 'TextQuoteSelector',
         exact: 'This text does not appear in the web page',
       };
-      await assert.rejects(
-        html.anchor(container, [quoteSelector]),
-        'Quote not found'
-      );
+      // await assert.rejects(
+      //   html.anchor(container, [quoteSelector]),
+      //   'Quote not found'
+      // );
+      await expectAsync(html.anchor(container, [quoteSelector])).toBeRejectedWith(Error('Quote not found'));
     });
 
     it('does not throw an error if anchoring using a position fails', () => {
@@ -451,11 +463,12 @@ describe('HTML anchoring', () => {
         frame.contentWindow.document.documentElement.innerHTML = fixtureHtml;
 
         const annotationsChecked = annotations.map(async (ann) => {
-          const root = frame.contentWindow.document.body;
+          const root: HTMLElement = frame.contentWindow.document.body;
           const selectors = ann.target[0].selector as SelectorWithType[];
           const range = await html.anchor(root, selectors);
           const newSelectors = await html.describe(root, range);
-          assert.deepEqual(sortByType(selectors), sortByType(newSelectors));
+          // assert.deepEqual(sortByType(selectors), sortByType(newSelectors));
+          expect(sortByType(selectors)).toEqual(sortByType(newSelectors));
         });
 
         return Promise.all(annotationsChecked);

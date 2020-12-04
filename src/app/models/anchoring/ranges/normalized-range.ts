@@ -11,9 +11,9 @@ import { SerializedRange } from './serialized-range';
 export class NormalizedRange {
   public commonAncestor: Node;
 
-  public start: Node;
+  public startContainer: Node;
 
-  public end: Node;
+  public endContainer: Node;
 
   /**
    * Creates an instance of a NormalizedRange.
@@ -22,20 +22,20 @@ export class NormalizedRange {
    * other Range classes rather than manually.
    *
    * obj - An Object literal. Should have the following properties.
-   *       commonAncestor: A Element that encompasses both the start and end nodes
-   *       start:          The first TextNode in the range.
-   *       end             The last TextNode in the range.
+   *       commonAncestor: A Element that encompasses both the startContainer and endContainer nodes
+   *       startContainer:          The first TextNode in the range.
+   *       endContainer             The last TextNode in the range.
    *
    * Returns an instance of NormalizedRange.
    */
   constructor({
     commonAncestor,
-    start,
-    end
+    startContainer,
+    endContainer
   }: BrowserNormalizedRange) {
     this.commonAncestor = commonAncestor;
-    this.start = start;
-    this.end = end;
+    this.startContainer = startContainer;
+    this.endContainer = endContainer;
   }
 
   /**
@@ -64,12 +64,12 @@ export class NormalizedRange {
     }
 
     // eslint-disable-next-line prefer-destructuring
-    this.start = nodes[0];
-    this.end = nodes[nodes.length - 1];
+    this.startContainer = nodes[0];
+    this.endContainer = nodes[nodes.length - 1];
 
-    const startParents = helpers.parents(this.start as HTMLElement);
+    const startParents = helpers.parents(this.startContainer as HTMLElement);
 
-    helpers.parents(this.end as HTMLElement).forEach((parent) => {
+    helpers.parents(this.endContainer as HTMLElement).forEach((parent) => {
       if (startParents.indexOf(parent) !== -1) {
         this.commonAncestor = parent;
       }
@@ -86,7 +86,7 @@ export class NormalizedRange {
    *
    * Returns an instance of SerializedRange.
    */
-  serialize(root: HTMLElement) {
+  serialize(root?: HTMLElement) {
     const serialization = (node: Node, isEnd?: boolean) => {
       const origParent = node.parentElement;
       const xpath = xpathFromNode(origParent, root ?? document);
@@ -106,8 +106,8 @@ export class NormalizedRange {
       return [xpath, offset];
     };
 
-    const start = serialization(this.start);
-    const end = serialization(this.end, true);
+    const start = serialization(this.startContainer);
+    const end = serialization(this.endContainer, true);
 
     // Circular dependency. Remove this once *Range classes are refactored
     // eslint-disable-next-line no-use-before-define
@@ -140,8 +140,8 @@ export class NormalizedRange {
    */
   textNodes() {
     const textNodes = getTextNodes(this.commonAncestor);
-    const start = textNodes.indexOf(this.start);
-    const end = textNodes.indexOf(this.end);
+    const start = textNodes.indexOf(this.startContainer);
+    const end = textNodes.indexOf(this.endContainer);
     // Return the textNodes that fall between the start and end indexes.
     return textNodes.slice(start, +end + 1 || undefined);
   }
@@ -161,8 +161,8 @@ export class NormalizedRange {
    */
   toRange(): Range {
     const range = document.createRange();
-    range.setStartBefore(this.start);
-    range.setEndAfter(this.end);
+    range.setStartBefore(this.startContainer);
+    range.setEndAfter(this.endContainer);
     return range;
   }
 }
