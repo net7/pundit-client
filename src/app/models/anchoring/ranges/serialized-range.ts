@@ -1,3 +1,5 @@
+/* eslint-disable no-plusplus */
+/* eslint-disable no-restricted-syntax */
 import helpers from '../helpers';
 import { RangeSelector } from '../types';
 import { nodeFromXPath } from '../xpath';
@@ -51,15 +53,15 @@ export class SerializedRange {
   normalize(root) {
     const range = {} as Range;
 
-    ['start', 'end'].forEach((p) => {
+    for (const p of ['start', 'end']) {
       let node;
       try {
-        node = nodeFromXPath(this[p], root);
+        node = nodeFromXPath(this[`${p}Container`], root);
         if (!node) {
           throw new Error('Node not found');
         }
       } catch (e) {
-        throw new RangeError(`Error while finding ${p} node: ${this[p]}: ${e}`);
+        throw new RangeError(`Error while finding ${p} node: ${this[`${p}Container`]}: ${e}`);
       }
       // Unfortunately, we *can't* guarantee only one textNode per
       // elementNode, so we have to walk along the element's textNodes until
@@ -71,33 +73,35 @@ export class SerializedRange {
       // Range excludes its endpoint because it describes the boundary position.
       // Target the string index of the last character inside the range.
       if (p === 'end') {
-        targetOffset -= targetOffset;
+        targetOffset--;
       }
 
-      getTextNodes(node).forEach((tn) => {
+      for (const tn of getTextNodes(node)) {
         if (length + tn.data.length > targetOffset) {
           range[`${p}Container`] = tn;
           range[`${p}Offset`] = this[`${p}Offset`] - length;
+          break;
         } else {
           length += tn.data.length;
         }
-      });
+      }
 
       // If we fall off the end of the for loop without having set
       // 'startOffset'/'endOffset', the element has shorter content than when
       // we annotated, so throw an error:
       if (range[`${p}Offset`] === undefined) {
         throw new RangeError(
-          `Couldn't find offset ${this[`${p}Offset`]} in element ${this[p]}`
+          `Couldn't find offset ${this[`${p}Offset`]} in element ${this[`${p}Container`]}`
         );
       }
-    });
+    }
 
-    helpers.parents(range.startContainer as HTMLElement).forEach((parent) => {
+    for (const parent of helpers.parents((range as any).startContainer)) {
       if (parent.contains(range.endContainer)) {
         (range as any).commonAncestorContainer = parent;
+        break;
       }
-    });
+    }
 
     return new BrowserRange(range).normalize();
   }
