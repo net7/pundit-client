@@ -9,7 +9,7 @@ import { BrowserNormalizedRange } from '../../types';
 
 const { sniff } = helpers;
 
-fdescribe('annotator/anchoring/range', () => {
+describe('annotator/anchoring/range', () => {
   let container;
   const html = `
       <section id="section-1">
@@ -98,9 +98,11 @@ fdescribe('annotator/anchoring/range', () => {
     });
 
     it("throws an error if it can't detect a range type", () => {
-      expect(sniff({
-        fake: true,
-      })).toThrow(Error('Could not sniff range type'));
+      expect(() => {
+        sniff({
+          fake: true,
+        });
+      }).toThrow(Error('Could not sniff range type'));
     });
   });
 
