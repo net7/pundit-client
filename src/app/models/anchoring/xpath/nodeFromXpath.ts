@@ -14,7 +14,7 @@ export function nodeFromXPath(xpath, root = document.body) {
   try {
     return evaluateSimpleXPath(xpath, root);
   } catch (err) {
-    return document.evaluate(
+    return (document.evaluate(
       `.${xpath}`,
       root,
 
@@ -23,6 +23,6 @@ export function nodeFromXPath(xpath, root = document.body) {
       null /* namespaceResolver */,
       XPathResult.FIRST_ORDERED_NODE_TYPE,
       null /* result */
-    ).singleNodeValue;
+    ) || {}).singleNodeValue || null;
   }
 }

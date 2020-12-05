@@ -34,31 +34,33 @@ export function evaluateSimpleXPath(xpath, root: Element) {
   // has at least two segments, with the first being empty and the others non-empty.
   segments.shift();
 
-  segments.forEach((segment) => {
-    let elementName: any;
-    let elementIndex: number;
+  // eslint-disable-next-line no-restricted-syntax
+  for (const segment of segments) {
+    let elementName;
+    let elementIndex;
 
     const separatorPos = segment.indexOf('[');
     if (separatorPos !== -1) {
       elementName = segment.slice(0, separatorPos);
 
       const indexStr = segment.slice(separatorPos + 1, segment.indexOf(']'));
-      elementIndex = parseInt(indexStr, 10) - 1;
+      // eslint-disable-next-line radix
+      elementIndex = parseInt(indexStr) - 1;
       if (elementIndex < 0) {
-        element = null;
+        return null;
       }
     } else {
       elementName = segment;
       elementIndex = 0;
     }
 
-    const child: Element = nthChildOfType(element, elementName, elementIndex);
+    const child = nthChildOfType(element, elementName, elementIndex);
     if (!child) {
-      element = null;
-    } else {
-      element = child;
+      return null;
     }
-  });
+
+    element = child;
+  }
 
   return element;
 }
