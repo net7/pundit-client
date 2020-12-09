@@ -323,33 +323,27 @@ describe('annotator/anchoring/range', () => {
       });
     });
 
-    // FIXME: no sinonjs
-    // describe('#toRange', () => {
-    //   let fakeSetStartBefore;
-    //   let fakeSetEndAfter;
+    describe('#toRange', () => {
+      let fakeSetStartBefore;
+      let fakeSetEndAfter;
 
-    //   beforeEach(() => {
-    //     sinon.stub(document, 'createRange');
-    //     fakeSetStartBefore = sinon.stub();
-    //     fakeSetEndAfter = sinon.stub();
-    //     document.createRange.returns({
-    //       setStartBefore: fakeSetStartBefore,
-    //       setEndAfter: fakeSetEndAfter,
-    //     });
-    //   });
+      beforeEach(() => {
+        fakeSetStartBefore = jasmine.createSpy().and.stub();
+        fakeSetEndAfter = jasmine.createSpy().and.stub();
+        spyOn(document, 'createRange').and.returnValue({
+          setStartBefore: fakeSetStartBefore,
+          setEndAfter: fakeSetEndAfter,
+        } as any);
+      });
 
-    //   afterEach(() => {
-    //     document.createRange.restore();
-    //   });
-
-    //   it('converts normalized range to native range', () => {
-    //     const range = createNormalizedRange();
-    //     const nativeRange = range.toRange();
-    //     expect().toEqual(nativeRange, document.createRange());
-    //     expect().calledWith(fakeSetStartBefore, range.start);
-    //     expect().calledWith(fakeSetEndAfter, range.end);
-    //   });
-    // });
+      it('converts normalized range to native range', () => {
+        const range = createNormalizedRange();
+        const nativeRange = range.toRange();
+        expect(nativeRange).toEqual(document.createRange());
+        expect(fakeSetStartBefore).toHaveBeenCalledWith(range.startContainer);
+        expect(fakeSetEndAfter).toHaveBeenCalledWith(range.endContainer);
+      });
+    });
 
     describe('#normalize', () => {
       it('returns itself', () => {
@@ -467,31 +461,14 @@ describe('annotator/anchoring/range', () => {
         });
       });
 
-      // FIXME: no sinonjs
-      // context('nodeFromXPath() does not return a valid node', () => {
-      //   let fakeNodeFromXPath;
-
-      //   beforeEach(() => {
-      //     fakeNodeFromXPath = sinon.stub();
-      //     $imports.$mock({
-      //       './xpath': {
-      //         nodeFromXPath: fakeNodeFromXPath,
-      //       },
-      //     });
-      //   });
-
-      //   afterEach(() => {
-      //     $imports.$restore();
-      //   });
-
-      //   it('throws a range error if nodeFromXPath() throws an error', () => {
-      //     fakeNodeFromXPath.throws(new Error('error message'));
-      //     const serializedRange = createSerializedRange();
-      //     expect().throws(() => {
-      //       serializedRange.normalize(container);
-      //     }, 'Error while finding start node: /section[1]/p[1]: Error: error message');
-      //   });
-      // });
+      describe('nodeFromXPath() does not return a valid node', () => {
+        it('throws a range error if nodeFromXPath() throws an error', () => {
+          const serializedRange = createSerializedRange();
+          expect(() => {
+            serializedRange.normalize('fakecontainer');
+          }).toThrowError();
+        });
+      });
     });
 
     describe('#serialize', () => {
