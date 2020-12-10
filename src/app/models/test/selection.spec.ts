@@ -1,13 +1,13 @@
 import { first } from 'rxjs/operators';
-import { selectionHandler } from '../selection-handler';
+import { selectionHandler as handler } from '../selection-handler';
 
 fdescribe('Selection', () => {
   describe('document.selectionchange event', () => {
     it('update changed$ stream', (done) => {
-      selectionHandler.changed$.pipe(
+      handler.changed$.pipe(
         first()
-      ).subscribe((payload) => {
-        expect(payload).toBeNull();
+      ).subscribe(() => {
+        expect(handler.getCurrentSelection()).toBeNull();
         done();
       });
       // trigger selection change
@@ -46,10 +46,10 @@ fdescribe('Selection', () => {
         getRangeAt: fakeGetRangeAtCollapsedFalse
       } as Selection);
 
-      selectionHandler.changed$.pipe(
+      handler.changed$.pipe(
         first()
-      ).subscribe((payload) => {
-        expect(payload instanceof Range).toBeTruthy();
+      ).subscribe(() => {
+        expect(handler.getCurrentSelection() instanceof Range).toBeTruthy();
         done();
       });
       document.dispatchEvent(fakeEvent);
@@ -58,10 +58,10 @@ fdescribe('Selection', () => {
     it('returns null when no selection', (done) => {
       spyOn(document, 'getSelection').and.returnValue(null);
 
-      selectionHandler.changed$.pipe(
+      handler.changed$.pipe(
         first()
-      ).subscribe((payload) => {
-        expect(payload).toBeNull();
+      ).subscribe(() => {
+        expect(handler.getCurrentSelection()).toBeNull();
         done();
       });
       document.dispatchEvent(fakeEvent);
@@ -72,10 +72,10 @@ fdescribe('Selection', () => {
         rangeCount: 0
       } as Selection);
 
-      selectionHandler.changed$.pipe(
+      handler.changed$.pipe(
         first()
-      ).subscribe((payload) => {
-        expect(payload).toBeNull();
+      ).subscribe(() => {
+        expect(handler.getCurrentSelection()).toBeNull();
         done();
       });
       document.dispatchEvent(fakeEvent);
@@ -86,10 +86,10 @@ fdescribe('Selection', () => {
         getRangeAt: fakeGetRangeAtCollapsedTrue
       } as Selection);
 
-      selectionHandler.changed$.pipe(
+      handler.changed$.pipe(
         first()
-      ).subscribe((payload) => {
-        expect(payload).toBeNull();
+      ).subscribe(() => {
+        expect(handler.getCurrentSelection()).toBeNull();
         done();
       });
       document.dispatchEvent(fakeEvent);
