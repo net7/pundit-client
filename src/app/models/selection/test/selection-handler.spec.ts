@@ -1,7 +1,7 @@
 import { first } from 'rxjs/operators';
 import { selectionHandler as handler } from '../selection-handler';
 
-fdescribe('Selection', () => {
+describe('Selection', () => {
   describe('document.selectionchange event', () => {
     it('update changed$ stream', (done) => {
       handler.changed$.pipe(
