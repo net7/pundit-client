@@ -1,5 +1,10 @@
 import { fromEvent, Subject } from 'rxjs';
 
+/**
+ * Handles document selectionchange event
+ * keeping the last selection (currentSelection) and
+ * sends a signal (changed$) when the event occurs
+ */
 class SelectionHandler {
   public changed$: Subject<any> = new Subject();
 
