@@ -1,3 +1,23 @@
-<div *ngIf="lb.dataSource as ds" class="pundit-sidebar">
-    Hello from sidebar layout!
+<div *ngIf="lb.dataSource as ds"
+     class="pundit-sidebar">
+    <div class="pundit-sidebar__user-row">
+        <!-- pundit icon inside a circle -->
+        <span class="n7-icon-pundit pundit-sidebar__logo">
+            <img src="/assets/mocks/sidebar-logo.png"
+                 alt="pundit mock logo">
+        </span>
+        <!-- user name -->
+        <span class="pundit-sidebar__user-name">
+            <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
+        </span>
+        <span class="pundit-sidebar__close-button">
+            <n7-anchor-wrapper>Close Sidebar ></n7-anchor-wrapper>
+        </span>
+
+        <!-- list of annotations -->
+        <div *ngFor="let annotation of ds.annotations">
+            <n7-annotation [data]="annotation"></n7-annotation>
+        </div>
+
+    </div>
 </div>
