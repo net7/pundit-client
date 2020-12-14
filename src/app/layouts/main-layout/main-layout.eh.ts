@@ -4,7 +4,7 @@ export class MainLayoutEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'pnd-main-layout.init':
+        case 'main-layout.init':
           this.dataSource.onInit(payload);
           break;
         default:

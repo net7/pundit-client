@@ -15,7 +15,7 @@ export class MainLayoutDS extends LayoutDataSource {
     },
   }
 
-  // onInit(payload) {
-  //   // TODO
-  // }
+  // eslint-disable-next-line max-len
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+  onInit(payload) {}
 }
