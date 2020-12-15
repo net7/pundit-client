@@ -1,0 +1,34 @@
+.pundit-sidebar {
+    border: #178dc8 1px solid;
+    &__user-row {
+        background-color: #178dc8;
+        padding: 2px;
+        color: #ffffff;
+        display: flex;
+        justify-content: space-around;
+
+        a {
+            text-decoration: none;
+            color: #ffffff;
+
+            &:link, :visited {
+                color: #ffffff;
+            }
+        }
+    }
+
+    &__logo {
+        img {
+            height: 20px;
+            width: auto;
+        }
+    }
+}
+
+.n7-icon-angle-down {
+    background: #ff7f50;
+    border-radius: 50%;
+    min-height: 10px;
+    min-width: 10px;
+    cursor: pointer;
+}
