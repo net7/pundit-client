@@ -60,6 +60,14 @@
                   "maximumError": "10kb"
                 }
               ]
+            },
+            "shake": {
+              "fileReplacements": [
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/shakespeare.html"
+                }
+              ]
             }
           }
         },
@@ -71,6 +79,9 @@
           "configurations": {
             "production": {
               "browserTarget": "pnd:build:production"
+            },
+            "shake": {
+              "browserTarget": "pnd:build:shake"
             }
           }
         },
