@@ -30,7 +30,7 @@ describe('Selection', () => {
       handler.changed$.pipe(
         first()
       ).subscribe(() => {
-        expect(handler.getCurrentSelection() instanceof Range).toBeTruthy();
+        expect(handler.getCurrentRange() instanceof Range).toBeTruthy();
         done();
       });
       document.dispatchEvent(fakeEvent);
