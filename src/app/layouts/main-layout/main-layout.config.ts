@@ -6,7 +6,10 @@ import * as EH from '../../event-handlers';
 export const MainLayoutConfig = {
   layoutId: 'main-layout',
   widgets: [
-    // TODO
+    {
+      id: 'tooltip',
+      hasStaticData: true
+    }
   ],
   layoutDS: MainLayoutDS,
   layoutEH: MainLayoutEH,

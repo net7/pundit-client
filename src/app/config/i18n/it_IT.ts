@@ -1,3 +1,4 @@
 export default {
-  hello: 'Ciao'
+  'tooltip#highlight': 'Highlight',
+  'tooltip#comment': 'Comment'
 };

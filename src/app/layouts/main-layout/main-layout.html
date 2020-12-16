@@ -1,4 +1,11 @@
 <div>
-    <!-- <n7-inner-title [data]="lb.dataSource.titleData"></n7-inner-title> -->
     <sidebar-layout></sidebar-layout>
+
+    <div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" style="display: none;">
+        <div class="pnd-tooltip__wrapper">
+            <n7-nav 
+            [data]="lb.widgets['tooltip'].ds.out$ | async"
+            [emit]="lb.widgets['tooltip'].emit"></n7-nav>
+        </div>
+    </div>
 </div>

@@ -1,21 +1,13 @@
-import { LayoutDataSource, _t } from '@n7-frontend/core';
-import { _c } from 'src/app/models/config';
+import { LayoutDataSource } from '@n7-frontend/core';
+import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import tooltip from 'src/app/models/tooltip';
 
 export class MainLayoutDS extends LayoutDataSource {
-  public titleData = {
-    title: {
-      main: {
-        text: _t('hello'),
-        classes: 'bold',
-      },
-      secondary: {
-        text: _c('name'),
-        classes: 'italic',
-      }
-    },
+  onInit() {
+    // do nothing
   }
 
-  // eslint-disable-next-line max-len
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  onInit(payload) {}
+  onSelectionChange() {
+    tooltip.show(selectionHandler.getCurrentSelection());
+  }
 }
