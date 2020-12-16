@@ -32,9 +32,9 @@ class SelectionHandler {
       const range = selection.getRangeAt(0);
       if (!range.collapsed) {
         this.currentSelection = range;
+        this.changed$.next();
       }
     }
-    this.changed$.next();
   }
 }
 
