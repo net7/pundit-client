@@ -4,10 +4,10 @@ import {
   SerializedRange,
 } from '../index';
 
-import helpers from '../../helpers';
 import { BrowserNormalizedRange } from '../../types';
+import { RangeAnchor } from '../../anchors';
 
-const { sniff } = helpers;
+const { sniff } = RangeAnchor;
 
 describe('annotator/anchoring/range', () => {
   let container;

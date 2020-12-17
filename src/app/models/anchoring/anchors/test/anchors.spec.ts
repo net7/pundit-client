@@ -1,4 +1,3 @@
-import helpers from '../../helpers';
 import {
   RangeAnchor,
   TextPositionAnchor,
@@ -26,13 +25,11 @@ describe('annotator/anchoring/types', () => {
   });
 
   describe('RangeAnchor', () => {
-    let fakeHelpers;
     let fakeNormalize;
     let fakeSerialize;
     let fakeToRange;
 
     beforeEach(() => {
-      fakeHelpers = helpers;
       fakeSerialize = () => ({
         startContainer: '/div[1]',
         startOffset: 0,
@@ -44,13 +41,12 @@ describe('annotator/anchoring/types', () => {
         serialize: fakeSerialize,
         toRange: fakeToRange,
       });
-      spyOn(fakeHelpers, 'sniff').and.returnValue({
+      spyOn(RangeAnchor, 'sniff').and.returnValue({
         normalize: fakeNormalize
-      });
+      } as any);
     });
 
     afterEach(() => {
-      fakeHelpers = null;
       fakeNormalize = null;
       fakeSerialize = null;
       fakeToRange = null;
@@ -59,7 +55,7 @@ describe('annotator/anchoring/types', () => {
     describe('#fromRange', () => {
       it('returns a RangeAnchor instance', () => {
         const anchor = RangeAnchor.fromRange(container, new Range());
-        expect(helpers.sniff).toHaveBeenCalled();
+        expect(RangeAnchor.sniff).toHaveBeenCalled();
         expect(anchor instanceof RangeAnchor).toBeTruthy();
         expect(anchor.range).toEqual(fakeNormalize());
       });
