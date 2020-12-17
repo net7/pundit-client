@@ -8,7 +8,9 @@ import { fromEvent, Subject } from 'rxjs';
 class SelectionHandler {
   public changed$: Subject<any> = new Subject();
 
-  private currentSelection: Range | null = null;
+  private currentSelection: Selection | null;
+
+  private currentRange: Range | null;
 
   constructor() {
     this.listen();
@@ -16,6 +18,10 @@ class SelectionHandler {
 
   public getCurrentSelection() {
     return this.currentSelection;
+  }
+
+  public getCurrentRange() {
+    return this.currentRange;
   }
 
   private listen() {
@@ -27,11 +33,13 @@ class SelectionHandler {
 
   private onSelectionChange() {
     this.currentSelection = null;
+    this.currentRange = null;
     const selection = document.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       if (!range.collapsed) {
-        this.currentSelection = range;
+        this.currentSelection = selection;
+        this.currentRange = range;
       }
     }
     this.changed$.next();

@@ -1,3 +1,4 @@
 export default {
-  name: 'Pundit'
+  name: 'Pundit',
+  tooltipDelay: 500
 };

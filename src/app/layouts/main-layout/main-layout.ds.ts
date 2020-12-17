@@ -1,21 +1,27 @@
-import { LayoutDataSource, _t } from '@n7-frontend/core';
-import { _c } from 'src/app/models/config';
+import { LayoutDataSource } from '@n7-frontend/core';
+import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import { create as createAnnotation } from 'src/app/models/annotation/create';
+import tooltipHandler from 'src/app/models/tooltip-handler';
 
 export class MainLayoutDS extends LayoutDataSource {
-  public titleData = {
-    title: {
-      main: {
-        text: _t('hello'),
-        classes: 'bold',
-      },
-      secondary: {
-        text: _c('name'),
-        classes: 'italic',
-      }
-    },
+  onInit() {
+    // do nothing
   }
 
-  // eslint-disable-next-line max-len
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  onInit(payload) {}
+  onSelectionChange(): boolean {
+    const selection = selectionHandler.getCurrentSelection();
+    if (selection) {
+      tooltipHandler.show(selectionHandler.getCurrentSelection());
+    } else {
+      tooltipHandler.hide();
+    }
+    return !!selection;
+  }
+
+  onHighlight() {
+    const range = selectionHandler.getCurrentRange();
+    const annotation = createAnnotation(range);
+
+    console.warn('TODO: gestire salvataggio highlight', annotation);
+  }
 }

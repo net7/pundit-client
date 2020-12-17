@@ -1,0 +1,78 @@
+/**
+ * MAIN
+ *
+ * Main Layout
+ */
+
+/* ------------------------------------ *\
+    TOOLTIP
+\* ------------------------------------ */
+.pnd-tooltip {
+    display: none;
+    background: $color-gray-02;
+    padding: 4px 8px;
+    font-size: 13px;
+    border-radius: 4px;
+
+    #arrow, #arrow::before {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        z-index: -1;
+    }
+
+    #arrow::before {
+        content: '';
+        transform: rotate(45deg);
+        background: $color-gray-02;
+    }
+
+    &[data-popper-placement^='top'] > #arrow {
+        bottom: -4px;
+    }
+      
+    &[data-popper-placement^='bottom'] > #arrow {
+        top: -4px;
+    }
+      
+    &[data-popper-placement^='left'] > #arrow {
+        right: -4px;
+    }
+      
+    &[data-popper-placement^='right'] > #arrow {
+        left: -4px;
+    }
+
+    &[data-show] {
+        display: block;
+    }
+}
+
+.pnd-tooltip-overlay {
+    position: fixed;
+    z-index: 999;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba($color-gray-02, .8);
+}
+
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}

@@ -1,14 +1,7 @@
 import { set as _set, get as _get } from 'lodash';
 
-type ConfigurationDataItem = string
-  | number
-  | boolean
-  | object
-  | null
-  | ConfigurationDataItem[];
-
 type ConfigurationData = {
-  [key: string]: ConfigurationDataItem;
+  [key: string]: any;
 };
 
 class Config {
@@ -18,11 +11,11 @@ class Config {
     this.data = data;
   }
 
-  set(key: string, value: ConfigurationDataItem): void {
+  set(key: string, value: any): void {
     _set(this.data, key, value);
   }
 
-  get(key: string): ConfigurationDataItem {
+  get(key: string): any {
     return _get(this.data, key);
   }
 }
@@ -30,4 +23,4 @@ class Config {
 // exports
 export const config = new Config();
 // shortcut
-export const _c: (key: string) => ConfigurationDataItem = config.get.bind(config);
+export const _c: (key: string) => any = config.get.bind(config);
