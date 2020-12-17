@@ -3,7 +3,8 @@
 }">
 </div>
 
-<div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip">
+<div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip" 
+    (mousedown)="onMouseDown($event)">
     <div class="pnd-tooltip__wrapper">
         <n7-nav 
         [data]="data.navData"

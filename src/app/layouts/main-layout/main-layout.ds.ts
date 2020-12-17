@@ -8,15 +8,15 @@ export class MainLayoutDS extends LayoutDataSource {
     // do nothing
   }
 
-  onSelectionChange(): boolean {
-    const selection = selectionHandler.getCurrentSelection();
-    if (selection) {
+  onSelectionChange() {
+    if (this.hasSelection()) {
       tooltipHandler.show(selectionHandler.getCurrentSelection());
     } else {
       tooltipHandler.hide();
     }
-    return !!selection;
   }
+
+  hasSelection = () => !!selectionHandler.getCurrentSelection();
 
   onHighlight() {
     const range = selectionHandler.getCurrentRange();

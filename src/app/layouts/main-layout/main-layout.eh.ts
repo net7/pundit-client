@@ -45,8 +45,8 @@ export class MainLayoutEH extends EventHandler {
       debounceTime(_c('tooltipDelay')),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      const hasSelection = this.dataSource.onSelectionChange();
-      this.emitOuter('selectionchange', hasSelection);
+      this.dataSource.onSelectionChange();
+      this.emitOuter('selectionchange', this.dataSource.hasSelection());
     });
   }
 }
