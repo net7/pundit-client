@@ -4,10 +4,10 @@ import { AnnotationData } from '@n7-frontend/components';
 export class SidebarLayoutDS extends LayoutDataSource {
   private communication;
 
-  private iconStyle: 'height: 10px; width: 10px; background: tomato;'
-
   public annotations: AnnotationData[] = [
     {
+      _meta: 'annotation-01',
+      payload: { type: 'collapse', uid: 'annotation-01' },
       user: {
         image: 'https://placeimg.com/400/600/people',
         name: 'John Doe',
@@ -21,13 +21,11 @@ export class SidebarLayoutDS extends LayoutDataSource {
         name: 'notebook-2019',
         anchor: { href: '/notebook-2019', target: '_blank' }
       },
-      // icon: {
-      //   id: 'n7-icon-angle-down',
-      //   payload: 'expand-arrow'
-      // },
       body: 'This is a mock annotation',
       comment: 'pretty useful stuff.'
     }, {
+      _meta: 'annotation-02',
+      payload: { type: 'collapse', uid: 'annotation-02' },
       user: {
         image: 'https://placeimg.com/400/600/people',
         name: 'John Doe',
@@ -41,18 +39,11 @@ export class SidebarLayoutDS extends LayoutDataSource {
         name: 'notebook-2019',
         anchor: { href: '/notebook-2019', target: '_blank' }
       },
-      // icon: {
-      //   id: 'n7-icon-cross',
-      //   payload: 'expand-arrow',
-      //   style: {
-      //     width: '10px',
-      //     height: '10px',
-      //     background: 'tomato'
-      //   }
-      // },
       body: 'To annotate or not to annotate, that is the question',
       comment: 'A quote by W.Shakespeare'
     }, {
+      _meta: 'annotation-03',
+      payload: { type: 'collapse', uid: 'annotation-03' },
       user: {
         image: 'https://placeimg.com/400/600/people',
         name: 'John Doe',
@@ -66,15 +57,6 @@ export class SidebarLayoutDS extends LayoutDataSource {
         name: 'notebook-2019',
         anchor: { href: '/notebook-2019', target: '_blank' }
       },
-      // icon: {
-      //   id: 'n7-icon-cross',
-      //   payload: 'expand-arrow',
-      //   style: {
-      //     width: '10px',
-      //     height: '10px',
-      //     background: 'tomato'
-      //   }
-      // },
       body: 'Hello, I am a collapsed annotation!',
       comment: 'And this is a collapsed annotation comment'
     }

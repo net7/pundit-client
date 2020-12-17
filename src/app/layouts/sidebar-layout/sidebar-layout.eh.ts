@@ -19,8 +19,16 @@ export class SidebarLayoutEH extends EventHandler {
           break;
       }
     });
-    this.outerEvents$.subscribe(({ type }) => {
+    this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
+        case 'annotation.collapse':
+          if (payload.uid) {
+            const a = this.dataSource.annotations.find((d) => d._meta === payload.uid);
+            if (a) {
+              a.isCollapsed = !a.isCollapsed;
+            }
+          }
+          break;
         default:
           break;
       }

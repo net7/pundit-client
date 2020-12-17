@@ -16,8 +16,11 @@
     </div>
 
     <div class="pundit-sidebar__annotation-column">
+        <n7-header [data]="ds.headerMock"></n7-header>
         <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
-            <n7-annotation [data]="annotation"></n7-annotation>
+            <n7-annotation [data]="annotation"
+                           [emit]="lb.widgets['annotation'].emit">
+            </n7-annotation>
         </ng-container>
     </div>
 </div>
