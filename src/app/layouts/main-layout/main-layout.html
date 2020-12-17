@@ -1,11 +1,12 @@
-<div>
+<div class="pnd-main">
     <sidebar-layout></sidebar-layout>
 
-    <div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" style="display: none;">
+    <div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip">
         <div class="pnd-tooltip__wrapper">
             <n7-nav 
             [data]="lb.widgets['tooltip'].ds.out$ | async"
             [emit]="lb.widgets['tooltip'].emit"></n7-nav>
         </div>
+        <div id="arrow" data-popper-arrow></div>
     </div>
 </div>
