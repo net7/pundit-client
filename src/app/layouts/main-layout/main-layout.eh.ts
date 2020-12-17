@@ -26,12 +26,18 @@ export class MainLayoutEH extends EventHandler {
       }
     });
 
-    /* this.outerEvents$.subscribe(({ type, payload }) => {
+    this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
+        case 'tooltip.highlight':
+          this.dataSource.onHighlight();
+          break;
+        case 'tooltip.comment':
+          console.warn('TODO: gestire comment event');
+          break;
         default:
           break;
       }
-    }); */
+    });
   }
 
   listenSelection() {
@@ -39,7 +45,8 @@ export class MainLayoutEH extends EventHandler {
       debounceTime(_c('tooltipDelay')),
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      this.dataSource.onSelectionChange();
+      const hasSelection = this.dataSource.onSelectionChange();
+      this.emitOuter('selectionchange', hasSelection);
     });
   }
 }

@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
+import { TooltipComponent } from './components/tooltip/tooltip';
 
 import appConfig from './config';
 import i18n from './config/i18n';
@@ -32,6 +33,7 @@ config.init(appConfig);
     MainLayoutComponent,
     SidebarLayoutComponent,
     // COMPONENTS
+    TooltipComponent
   ],
   imports: [
     BrowserModule,

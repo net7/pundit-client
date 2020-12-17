@@ -1,0 +1,13 @@
+<div *ngIf="data" class="pnd-tooltip-overlay" [ngStyle]="{
+    display: data.visible ? 'block' : 'none'
+}">
+</div>
+
+<div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip">
+    <div class="pnd-tooltip__wrapper">
+        <n7-nav 
+        [data]="data.navData"
+        [emit]="navEmit"></n7-nav>
+    </div>
+    <div id="arrow" data-popper-arrow></div>
+</div>

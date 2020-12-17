@@ -1,20 +1,27 @@
-import { NavData } from '@n7-frontend/components';
 import { DataSource, _t } from '@n7-frontend/core';
+import { TooltipData } from '../components/tooltip/tooltip';
 
 export class TooltipDS extends DataSource {
-  transform(): NavData {
+  transform(): TooltipData {
     return {
-      items: [{
-        text: _t('tooltip#highlight'),
-        anchor: {
-          payload: 'highlight'
-        }
-      }, {
-        text: _t('tooltip#comment'),
-        anchor: {
-          payload: 'comment'
-        }
-      }]
+      visible: false,
+      navData: {
+        items: [{
+          text: _t('tooltip#highlight'),
+          anchor: {
+            payload: 'highlight'
+          }
+        }, {
+          text: _t('tooltip#comment'),
+          anchor: {
+            payload: 'comment'
+          }
+        }]
+      }
     };
+  }
+
+  setVisible(visible: boolean) {
+    this.output.visible = visible;
   }
 }
