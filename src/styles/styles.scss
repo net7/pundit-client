@@ -1,4 +1,3 @@
-
 // ------------------------------------ //
 // #N7 COLOR SCHEME
 // ------------------------------------ //
@@ -15,3 +14,15 @@
 // #N7 COMPONENTS STYLES
 // ------------------------------------ //
 @import '../../node_modules/@n7-frontend/components/src/lib/styles/imports';
+
+
+// ------------------------------------ //
+// #N7-ICON-FONT
+// ------------------------------------ //
+@import "../../node_modules/@n7-frontend/icon-font/Font/n7-icon/style.css";
+
+
+// ------------------------------------ //
+// #PUNDIT-STYLES
+// ------------------------------------ //
+@import "./sidebar.scss";

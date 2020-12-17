@@ -6,7 +6,7 @@ import * as EH from '../../event-handlers';
 export const SidebarLayoutConfig = {
   layoutId: 'sidebar-layout',
   widgets: [
-    { id: 'annotation', hasStaticData: true }
+    { id: 'annotation' }
   ],
   layoutDS: SidebarLayoutDS,
   layoutEH: SidebarLayoutEH,
