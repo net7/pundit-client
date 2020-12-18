@@ -14,6 +14,14 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case 'sidebar-layout.destroy':
           break;
+        case 'sidebar-layout.clicklogo':
+          // open the sidebar
+          this.dataSource.isCollapsed.next(false);
+          break;
+        case 'sidebar-layout.sidebarclose':
+          // Close the sidebar
+          this.dataSource.isCollapsed.next(true);
+          break;
         default:
           console.warn('unhandled inner event of type', type);
           break;

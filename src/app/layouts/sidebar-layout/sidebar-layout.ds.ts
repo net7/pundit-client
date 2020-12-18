@@ -1,8 +1,11 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { AnnotationData } from '@n7-frontend/components';
+import { BehaviorSubject } from 'rxjs';
 
 export class SidebarLayoutDS extends LayoutDataSource {
   private communication;
+
+  private isCollapsed = new BehaviorSubject(false)
 
   public annotations: AnnotationData[] = [
     {

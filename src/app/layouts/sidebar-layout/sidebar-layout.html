@@ -1,16 +1,17 @@
 <div *ngIf="lb.dataSource as ds"
-     class="pundit-sidebar">
+     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
         <span class="n7-icon-pundit pundit-sidebar__logo">
             <img src="/assets/mocks/pundit-icon-48-light.png"
-                 alt="pundit mock logo">
+                 alt="pundit mock logo"
+                 (click)="lb.eventHandler.emitInner('clicklogo')">
         </span>
         <!-- user name -->
         <span class="pundit-sidebar__user-name">
             <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
         </span>
-        <span class="pundit-sidebar__close-button">
+        <span class="pundit-sidebar__close-button" (click)="lb.eventHandler.emitInner('sidebarclose')">
             <n7-anchor-wrapper>Close Sidebar ></n7-anchor-wrapper>
         </span>
     </div>
