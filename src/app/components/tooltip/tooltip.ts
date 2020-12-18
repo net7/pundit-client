@@ -1,8 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { NavData } from '@n7-frontend/components';
-import { debounceTime } from 'rxjs/operators';
-import { _c } from 'src/app/models/config';
-import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import { delay } from 'rxjs/operators';
+import tooltipHandler from 'src/app/models/tooltip-handler';
 
 /**
  * Interface for TooltipComponent's "data"
@@ -25,12 +24,11 @@ export class TooltipComponent {
       private ref: ChangeDetectorRef
     ) {
       // fix update out of pnd-root context
-      selectionHandler.changed$
-        .pipe(
-          debounceTime(_c('tooltipDelay') + 1)
-        ).subscribe(() => {
-          this.ref.detectChanges();
-        });
+      tooltipHandler.changed$.pipe(
+        delay(1)
+      ).subscribe(() => {
+        this.ref.detectChanges();
+      });
     }
 
     onMouseDown(ev: MouseEvent) {

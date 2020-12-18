@@ -1,6 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
-import { Subject } from 'rxjs';
-import { debounceTime, takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, switchMapTo, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { MainLayoutDS } from './main-layout.ds';
@@ -41,7 +41,13 @@ export class MainLayoutEH extends EventHandler {
   }
 
   listenSelection() {
-    selectionHandler.changed$.pipe(
+    const mouseDown$ = fromEvent(document, 'mousedown');
+    const mouseUp$ = fromEvent(document, 'mouseup');
+    const selectionChanged$ = selectionHandler.changed$;
+
+    mouseDown$.pipe(
+      switchMapTo(selectionChanged$),
+      switchMapTo(mouseUp$),
       debounceTime(_c('tooltipDelay')),
       takeUntil(this.destroy$)
     ).subscribe(() => {

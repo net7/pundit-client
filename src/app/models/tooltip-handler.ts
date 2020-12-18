@@ -1,7 +1,10 @@
 import { createPopper } from '@popperjs/core';
+import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from './range-util';
 
 class TooltipHandler {
+  public changed$: Subject<any> = new Subject();
+
   private instance;
 
   private tooltipWrapper: HTMLElement;
@@ -28,6 +31,9 @@ class TooltipHandler {
     this.updateTargetPosition(selection);
     this.updateTooltipPlacement(selection);
     this.tooltipWrapper.setAttribute('data-show', '');
+
+    // emit signal
+    this.changed$.next();
   }
 
   hide() {
@@ -35,6 +41,9 @@ class TooltipHandler {
       return;
     }
     this.tooltipWrapper.removeAttribute('data-show');
+
+    // emit signal
+    this.changed$.next();
   }
 
   private load() {

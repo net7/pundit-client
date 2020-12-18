@@ -1,8 +1,3 @@
-<div *ngIf="data" class="pnd-tooltip-overlay" [ngStyle]="{
-    display: data.visible ? 'block' : 'none'
-}">
-</div>
-
 <div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip" 
     (mousedown)="onMouseDown($event)">
     <div class="pnd-tooltip__wrapper">
