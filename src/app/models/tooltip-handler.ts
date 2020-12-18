@@ -50,7 +50,16 @@ class TooltipHandler {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     this.tooltipWrapper = shadowRoot.getElementById('pnd-tooltip');
 
-    this.instance = createPopper(this.virtualTarget, this.tooltipWrapper);
+    this.instance = createPopper(this.virtualTarget, this.tooltipWrapper, {
+      modifiers: [
+        {
+          name: 'eventListeners',
+          options: {
+            scroll: false
+          }
+        }
+      ]
+    });
   }
 
   private updateTooltipPlacement(selection: Selection) {
