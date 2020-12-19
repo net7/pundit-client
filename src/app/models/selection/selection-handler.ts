@@ -24,6 +24,18 @@ class SelectionHandler {
     return this.currentRange;
   }
 
+  public clearSelection() {
+    if (window.getSelection) {
+      if (window.getSelection().empty) { // Chrome
+        window.getSelection().empty();
+      } else if (window.getSelection().removeAllRanges) { // Firefox
+        window.getSelection().removeAllRanges();
+      }
+    } else if ((document as any).selection) { // IE?
+      (document as any).selection.empty();
+    }
+  }
+
   private listen() {
     const source$ = fromEvent(document, 'selectionchange');
     source$.subscribe(() => {
