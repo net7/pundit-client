@@ -1,5 +1,6 @@
 /* eslint-disable no-restricted-syntax */
 
+import { HighlightElement } from '.';
 import { replaceWith } from './replaceWith';
 
 /**
@@ -11,7 +12,7 @@ export function removeHighlights(highlights: HighlightElement[]) {
   for (const h of highlights) {
     if (h.parentNode) {
       const children = Array.from(h.childNodes);
-      replaceWith(h, children);
+      replaceWith(h, (children as HTMLElement[]));
     }
 
     if (h.svgHighlight) {
