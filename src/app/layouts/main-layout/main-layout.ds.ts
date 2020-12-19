@@ -23,6 +23,8 @@ export class MainLayoutDS extends LayoutDataSource {
     const range = selectionHandler.getCurrentRange();
     const annotation = createAnnotation(range);
     highlightRange(range);
+    selectionHandler.clearSelection();
+    tooltipHandler.hide();
     console.warn('TODO: gestire salvataggio highlight', annotation);
   }
 }
