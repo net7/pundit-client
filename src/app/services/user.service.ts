@@ -12,10 +12,10 @@ export class UserService {
 
   private users: User[] = [];
 
-  public getMe = () => this.me;
+  public whoami = () => this.me;
 
   // FIXME: mettere type definitivi
-  setMe({ id, username, thumb }: any) {
+  iam({ id, username, thumb }: any) {
     this.me = { id, username, thumb };
   }
 
