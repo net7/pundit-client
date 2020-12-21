@@ -11,6 +11,8 @@ export class AnnotationEH extends EventHandler {
           const { source, id } = payload;
           if (source === 'box') {
             this.dataSource.toggleCollapse(id);
+          } else if (source === 'icon') {
+            this.emitOuter('delete', id);
           }
           break;
         }

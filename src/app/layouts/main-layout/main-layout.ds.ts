@@ -31,4 +31,8 @@ export class MainLayoutDS extends LayoutDataSource {
     tooltipHandler.hide();
     console.warn('TODO: gestire salvataggio highlight', annotation);
   }
+
+  onAnnotationDelete(id: string) {
+    console.warn('TODO: gestire annotation delete', id);
+  }
 }

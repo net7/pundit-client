@@ -12,12 +12,12 @@ export class UserService {
 
   private users: User[] = [];
 
-  public whoami = () => this.me;
-
   // FIXME: mettere type definitivi
-  iam({ id, username, thumb }: any) {
+  public iam({ id, username, thumb }: any) {
     this.me = { id, username, thumb };
   }
+
+  public whoami = () => this.me;
 
   load(rawUsers: any[]) {
     this.users = rawUsers.map(({ id, username, thumb }) => ({ id, username, thumb }));

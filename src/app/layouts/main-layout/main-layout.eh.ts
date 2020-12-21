@@ -41,6 +41,7 @@ export class MainLayoutEH extends EventHandler {
             this.layoutEvent$.next({ type: 'searchresponse' });
           });
           this.listenSelection();
+          this.listenLayoutEvents();
           break;
 
         case 'main-layout.destroy':
@@ -78,6 +79,20 @@ export class MainLayoutEH extends EventHandler {
     ).subscribe(() => {
       this.dataSource.onSelectionChange();
       this.emitOuter('selectionchange', this.dataSource.hasSelection());
+    });
+  }
+
+  private listenLayoutEvents() {
+    this.layoutEvent$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(({ type, payload }) => {
+      switch (type) {
+        case 'annotationdelete':
+          this.dataSource.onAnnotationDelete(payload);
+          break;
+        default:
+          break;
+      }
     });
   }
 }

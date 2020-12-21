@@ -39,12 +39,16 @@ export class SidebarLayoutEH extends EventHandler {
           break;
       }
     });
-    // this.outerEvents$.subscribe(({ type, payload }) => {
-    //   switch (type) {
-    //     default:
-    //       break;
-    //   }
-    // });
+
+    this.outerEvents$.subscribe(({ type, payload }) => {
+      switch (type) {
+        case 'annotation.delete':
+          this.layoutEvent$.next({ type: 'annotationdelete', payload });
+          break;
+        default:
+          break;
+      }
+    });
   }
 
   private listenLayoutEvents() {
