@@ -1,5 +1,5 @@
 <div class="pnd-main">
-    <sidebar-layout></sidebar-layout>
+    <sidebar-layout [layoutEvent$]="layoutEvent$"></sidebar-layout>
     <pnd-tooltip
     [data]="lb.widgets['tooltip'].ds.out$ | async"
     [emit]="lb.widgets['tooltip'].emit"></pnd-tooltip>
