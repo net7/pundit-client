@@ -8,6 +8,10 @@ import { Routes, RouterModule } from '@angular/router';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
+// SERVICES
+import { UserService } from './services/user.service';
+import { AnnotationService } from './services/annotation.service';
+import { NotebookService } from './services/notebook.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -47,7 +51,11 @@ const appRoutes: Routes = [];
       { enableTracing: false }, // <-- debugging purposes only
     ),
   ],
-  providers: [],
+  providers: [
+    UserService,
+    AnnotationService,
+    NotebookService
+  ],
   bootstrap: [AppComponent],
   entryComponents: [AppComponent]
 })

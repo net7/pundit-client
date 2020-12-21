@@ -1,20 +1,45 @@
 import { EventHandler } from '@n7-frontend/core';
-import { fromEvent, Subject } from 'rxjs';
+import { fromEvent, Subject, ReplaySubject } from 'rxjs';
 import { debounceTime, switchMapTo, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import { AnnotationService } from 'src/app/services/annotation.service';
+import { NotebookService } from 'src/app/services/notebook.service';
+import { UserService } from 'src/app/services/user.service';
+import { LayoutEvent } from './main-layout';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
+  private layoutEvent$: ReplaySubject<LayoutEvent>;
+
+  private userService: UserService;
+
+  private notebookService: NotebookService;
+
+  private annotationService: AnnotationService;
+
   public dataSource: MainLayoutDS;
 
   public listen() {
-    this.innerEvents$.subscribe(({ type }) => {
+    this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'main-layout.init':
-          this.dataSource.onInit();
+          this.layoutEvent$ = payload.layoutEvent$;
+          this.userService = payload.userService;
+          this.notebookService = payload.notebookService;
+          this.annotationService = payload.annotationService;
+
+          // FIXME: mettere type definitivi
+          this.dataSource.onInit().subscribe(({ users, notebooks, annotations }: any) => {
+            // load order matters
+            this.userService.load(users);
+            this.notebookService.load(notebooks);
+            this.annotationService.load(annotations);
+
+            this.layoutEvent$.next({ type: 'searchresponse' });
+          });
           this.listenSelection();
           break;
 

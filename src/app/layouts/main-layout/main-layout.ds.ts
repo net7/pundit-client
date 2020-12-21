@@ -3,10 +3,14 @@ import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { create as createAnnotation } from 'src/app/models/annotation/create';
 import tooltipHandler from 'src/app/models/tooltip-handler';
 import { highlightRange } from 'src/app/models/highlighter';
+import { Observable, of } from 'rxjs';
+import searchMock from 'src/app/mocks/search.mock';
 
 export class MainLayoutDS extends LayoutDataSource {
-  onInit() {
-    // do nothing
+  // FIXME: mettere type definitivi
+  onInit(): Observable<any> {
+    // FIXME: collegare a communication
+    return of(searchMock);
   }
 
   onSelectionChange() {
