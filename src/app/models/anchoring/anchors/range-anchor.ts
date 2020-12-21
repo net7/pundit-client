@@ -1,6 +1,4 @@
-import { BrowserRange } from '../ranges/browser-range';
-import { NormalizedRange } from '../ranges/normalized-range';
-import { SerializedRange } from '../ranges/serialized-range';
+import { BrowserRange, NormalizedRange, SerializedRange } from '../ranges';
 import { RangeSelector, RangeSelectorWithType } from '../types';
 
 /**
