@@ -9,6 +9,7 @@
     width: 370px;
     transition-property: transform;
     transition-duration: .5s;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     &__annotation-column {
         height: 100%;
@@ -46,11 +47,16 @@
         border-radius: 50%;
         position: absolute;
         left: 3px;
+        cursor: pointer;
         
         img {
             height: 20px;
             width: auto;
         }
+    }
+
+    &__close-button {
+        cursor: pointer;
     }
 }
 
