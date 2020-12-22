@@ -62,7 +62,6 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   onAnnotationDelete(id: string) {
-    console.warn('TODO: test annotation delete', id);
     const deleteResponse = deleteAnnotation(id);
     return from(deleteResponse);
   }

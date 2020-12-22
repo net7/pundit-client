@@ -54,9 +54,13 @@ export class SidebarLayoutEH extends EventHandler {
   private listenLayoutEvents() {
     this.layoutEvent$.pipe(
       takeUntil(this.destroy$)
-    ).subscribe(({ type }) => {
+    ).subscribe(({ type, payload }) => {
       switch (type) {
         case 'searchresponse':
+          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          break;
+        case 'annotationdeletesuccess':
+          this.annotationService.remove(payload);
           this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
           break;
         default:

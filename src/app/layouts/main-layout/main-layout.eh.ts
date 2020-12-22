@@ -124,7 +124,10 @@ export class MainLayoutEH extends EventHandler {
               this.handleError(e);
               return EMPTY;
             })
-          );
+          ).subscribe(() => {
+            // signal
+            this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
+          });
           break;
         default:
           break;
