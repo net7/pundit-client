@@ -1,6 +1,6 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
-import { create as createAnnotation } from 'src/app/models/annotation/create';
+import { create as createAnnotation, remove as deleteAnnotation } from 'src/app/models/annotation';
 import tooltipHandler from 'src/app/models/tooltip-handler';
 import { highlightRange } from 'src/app/models/highlighter';
 import { Observable, of } from 'rxjs';
@@ -25,7 +25,11 @@ export class MainLayoutDS extends LayoutDataSource {
 
   onHighlight() {
     const range = selectionHandler.getCurrentRange();
-    const annotation = createAnnotation('test', 'test', range);
+    // handle response
+    // get current notebook and id
+    const userId = '12345';
+    const currentNotebookId = '123456';
+    const annotation = createAnnotation(userId, currentNotebookId, range);
     highlightRange(range);
     selectionHandler.clearSelection();
     tooltipHandler.hide();
@@ -35,5 +39,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   onAnnotationDelete(id: string) {
     console.warn('TODO: gestire annotation delete', id);
+    const deleteResponse = deleteAnnotation(id);
+    return deleteResponse;
   }
 }

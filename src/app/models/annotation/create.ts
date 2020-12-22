@@ -62,7 +62,6 @@ const createWebPageFragment = (selection: Range, root: HTMLElement = document.bo
   const page = pageBuilder.build();
   return page;
 };
-
 const highlightAnnotationPayload = (userId: string, notebookId:
   string, selection: Range, root: HTMLElement = document.body): HighlightAnnotation => {
   const annotationBuilder = new HighlightAnnotationBuilder();
@@ -84,5 +83,5 @@ export function create(
   root: HTMLElement = document.body
 ) {
   const payload = highlightAnnotationPayload(userId, notebookId, selection, root);
-  return annotation.create({ baseUrl: '', data: payload, method: 'post' });
+  return annotation.create({ baseUrl: '', data: payload });
 }
