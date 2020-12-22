@@ -26,6 +26,16 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private annotationService: AnnotationService,
   ) {
     super(config);
+
+    // FIXME: prendere utente defintivo
+    this.userService.iam({
+      id: '12345',
+      username: 'johndoe',
+      thumb: 'https://placeimg.com/400/600/people'
+    });
+
+    // FIXME: prendere default notebook
+    this.notebookService.setSelected('123456');
   }
 
   protected initPayload() {

@@ -1,6 +1,11 @@
 import { EventHandler } from '@n7-frontend/core';
-import { fromEvent, Subject, ReplaySubject } from 'rxjs';
-import { debounceTime, switchMapTo, takeUntil } from 'rxjs/operators';
+import {
+  fromEvent, Subject, ReplaySubject, EMPTY
+} from 'rxjs';
+import {
+  catchError, debounceTime, switchMapTo, takeUntil
+} from 'rxjs/operators';
+import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -30,9 +35,15 @@ export class MainLayoutEH extends EventHandler {
           this.userService = payload.userService;
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
+          this.dataSource.onInit(payload);
 
-          // FIXME: mettere type definitivi
-          this.dataSource.onInit().subscribe(({ users, notebooks, annotations }: any) => {
+          this.dataSource.getUserAnnotations().pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          ).subscribe(({ data }) => {
+            const { users, notebooks, annotations } = data;
             // load order matters
             this.userService.load(users);
             this.notebookService.load(notebooks);
@@ -55,11 +66,20 @@ export class MainLayoutEH extends EventHandler {
     this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
         case 'tooltip.highlight':
-          this.dataSource.onHighlight();
+        case 'tooltip.comment': {
+          // FIXME: togliere faker
+          let comment;
+          if (type === 'tooltip.comment') {
+            comment = faker.lorem.sentence();
+          }
+          this.dataSource.onHighlightOrComment(comment).pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          );
           break;
-        case 'tooltip.comment':
-          console.warn('TODO: gestire comment event');
-          break;
+        }
         default:
           break;
       }
@@ -88,11 +108,20 @@ export class MainLayoutEH extends EventHandler {
     ).subscribe(({ type, payload }) => {
       switch (type) {
         case 'annotationdelete':
-          this.dataSource.onAnnotationDelete(payload);
+          this.dataSource.onAnnotationDelete(payload).pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          );
           break;
         default:
           break;
       }
     });
+  }
+
+  private handleError(error) {
+    console.warn('TODO: error handler', error);
   }
 }

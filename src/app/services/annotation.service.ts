@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AnnotationData } from '@n7-frontend/components';
+import { Annotation } from '@pundit/communication';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -12,21 +13,24 @@ export class AnnotationService {
     private notebookService: NotebookService
   ) {}
 
-  // FIXME: mettere type definitivi
-  load(rawAnnotations: any[]) {
-    this.annotations = rawAnnotations.map(({
-      id,
-      notebookId,
-      userId,
-      subject,
-      content,
-      created
-    }) => {
+  load(rawAnnotations: Annotation[]) {
+    this.annotations = rawAnnotations.map((annotation) => {
+      const {
+        id,
+        notebookId,
+        userId,
+        subject,
+        created
+      } = annotation;
       // FIXME: togliere controllo user
       const user = this.userService.getUserById(userId) || {} as any;
       const notebook = this.notebookService.getNotebookById(notebookId);
       const { text } = subject.selected;
-      const { comment } = content || {};
+      let comment;
+      if (annotation.type === 'Commenting') {
+        const { content } = annotation;
+        comment = content.comment;
+      }
 
       return {
         _meta: id,
@@ -45,7 +49,7 @@ export class AnnotationService {
           }
         },
         isCollapsed: false,
-        date: created,
+        date: created.toLocaleDateString(),
         notebook: {
           name: notebook.label,
           anchor: {
