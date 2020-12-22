@@ -11,6 +11,7 @@ import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from './main-layout';
 import { MainLayoutDS } from './main-layout.ds';
 
@@ -25,6 +26,8 @@ export class MainLayoutEH extends EventHandler {
 
   private annotationService: AnnotationService;
 
+  private anchorService: AnchorService;
+
   public dataSource: MainLayoutDS;
 
   public listen() {
@@ -35,6 +38,7 @@ export class MainLayoutEH extends EventHandler {
           this.userService = payload.userService;
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
+          this.anchorService = payload.anchorService;
           this.dataSource.onInit(payload);
 
           this.dataSource.getUserAnnotations().pipe(
@@ -48,7 +52,8 @@ export class MainLayoutEH extends EventHandler {
             this.userService.load(users);
             this.notebookService.load(notebooks);
             this.annotationService.load(annotations);
-
+            this.anchorService.load(annotations);
+            this.anchorService.load(annotations).then(() => console.warn('Highlights loaded'));
             this.layoutEvent$.next({ type: 'searchresponse' });
           });
           this.listenSelection();
