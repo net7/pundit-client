@@ -25,6 +25,7 @@ export class MainLayoutDS extends LayoutDataSource {
     highlightRange(range);
     selectionHandler.clearSelection();
     tooltipHandler.hide();
+    console.log(JSON.stringify(annotation));
     console.warn('TODO: gestire salvataggio highlight', annotation);
   }
 }
