@@ -23,6 +23,7 @@ import {
 } from './html-util';
 
 const baseUrl = _c('baseUrl');
+const serializer = _c('serializer');
 
 type AnnotationPayload = {
   userId: string;
@@ -90,7 +91,7 @@ const highlightAnnotationPayload = ({
 }: AnnotationPayload): HighlightAnnotation => {
   const annotationBuilder = new HighlightAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
-  annotationBuilder.serializedBy('pundit-client')
+  annotationBuilder.serializedBy(serializer)
     .userId(userId)
     .notebookId(notebookId)
     .subject(pageFragment);
@@ -105,9 +106,16 @@ const commentAnnotationPayload = ({
 }: AnnotationPayload): CommentAnnotation => {
   const annotationBuilder = new CommentAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
-  annotationBuilder.serializedBy('pundit-client')
+  let comment = '';
+  if (options.content) {
+    comment = (options.content as {
+      comment: string;
+    }).comment;
+  }
+  annotationBuilder.serializedBy(serializer)
     .userId(userId)
     .notebookId(notebookId)
+    .comment(comment)
     .subject(pageFragment);
 
   console.warn('TODO: aggiungere comment a payload', options);
