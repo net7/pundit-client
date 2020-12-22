@@ -3,7 +3,7 @@ import {
   fromEvent, Subject, ReplaySubject, EMPTY
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMapTo, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
@@ -38,18 +38,29 @@ export class MainLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
 
           this.dataSource.getUserAnnotations().pipe(
+            switchMap(({ data: searchData }) => {
+              const { users, notebooks, annotations } = searchData;
+              // load order matters
+              this.userService.load(users);
+              this.notebookService.load(notebooks);
+              this.annotationService.load(annotations);
+              // signal
+              this.layoutEvent$.next({ type: 'searchresponse' });
+
+              return this.dataSource.getUserNotebooks();
+            }),
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             })
-          ).subscribe(({ data }) => {
-            const { users, notebooks, annotations } = data;
-            // load order matters
-            this.userService.load(users);
+          ).subscribe(({ data: notebooksData }) => {
+            const { notebooks } = notebooksData;
+            // first notebook as default
+            const { id } = notebooks[0];
             this.notebookService.load(notebooks);
-            this.annotationService.load(annotations);
-
-            this.layoutEvent$.next({ type: 'searchresponse' });
+            this.notebookService.setSelected(id);
+            // signal
+            this.layoutEvent$.next({ type: 'notebooksresponse' });
           });
           this.listenSelection();
           this.listenLayoutEvents();
