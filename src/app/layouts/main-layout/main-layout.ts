@@ -29,13 +29,13 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
 
     // FIXME: prendere utente defintivo
     this.userService.iam({
-      id: '12345',
+      id: 'rwpfgj6gsp',
       username: 'johndoe',
       thumb: 'https://placeimg.com/400/600/people'
     });
 
     // FIXME: prendere default notebook
-    this.notebookService.setSelected('123456');
+    this.notebookService.setSelected('Zf7ainYBdfMM6Jh6-EXr');
   }
 
   protected initPayload() {

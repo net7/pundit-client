@@ -22,9 +22,6 @@ import {
   getDocumentTitle
 } from './html-util';
 
-const baseUrl = _c('baseUrl');
-const serializer = _c('serializer');
-
 type AnnotationPayload = {
   userId: string;
   notebookId: string;
@@ -89,6 +86,7 @@ const highlightAnnotationPayload = ({
   selection,
   root = document.body
 }: AnnotationPayload): HighlightAnnotation => {
+  const serializer = _c('serializer');
   const annotationBuilder = new HighlightAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
   annotationBuilder.serializedBy(serializer)
@@ -104,6 +102,7 @@ const commentAnnotationPayload = ({
   options,
   root = document.body
 }: AnnotationPayload): CommentAnnotation => {
+  const serializer = _c('serializer');
   const annotationBuilder = new CommentAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
   let comment = '';
@@ -131,6 +130,7 @@ const annotationPayload = (
  * the current document.
  */
 export function create(payload: AnnotationPayload) {
+  const baseURL = _c('baseURL');
   const requestPayload = annotationPayload(payload);
-  return annotation.create({ baseUrl, data: requestPayload });
+  return annotation.create({ baseURL, data: requestPayload });
 }

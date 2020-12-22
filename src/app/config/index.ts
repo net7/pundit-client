@@ -2,7 +2,7 @@ import { environment as env } from '../../environments/environment';
 
 export default {
   // env
-  baseUrl: env.baseUrl,
+  baseURL: env.baseURL,
   serializer: env.serializer,
   // static config
   name: 'Pundit',

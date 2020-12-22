@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   serializer: 'pundit-client',
-  baseUrl: 'https://omaqn3375i.execute-api.eu-south-1.amazonaws.com/stage/'
+  baseURL: 'https://omaqn3375i.execute-api.eu-south-1.amazonaws.com/stage/'
 };
 
 /*
