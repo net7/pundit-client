@@ -13,14 +13,23 @@ export class NotebookService {
 
   private selectedId: string;
 
-  public getSelected = () => this.selectedId;
+  public getSelected = () => this.getNotebookById(this.selectedId);
 
   public setSelected(id: string) {
     this.selectedId = id;
   }
 
   load(rawNotebooks: Notebook[]) {
-    this.notebooks = rawNotebooks.map(({ id, label, sharingMode }) => ({ id, label, sharingMode }));
+    rawNotebooks.forEach((rawNotebook) => {
+      this.add(rawNotebook);
+    });
+  }
+
+  add(rawNotebook: Notebook) {
+    if (!this.getNotebookById(rawNotebook.id)) {
+      const { id, label, sharingMode } = rawNotebook;
+      this.notebooks.push({ id, label, sharingMode });
+    }
   }
 
   getNotebookById(notebookId: string): NotebookData | null {
