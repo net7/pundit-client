@@ -10,6 +10,14 @@ type Notebook = {
 export class NotebookService {
   private notebooks: Notebook[] = [];
 
+  private selectedId: string;
+
+  public getSelected = () => this.getNotebookById(this.selectedId);
+
+  public setSelected(id: string) {
+    this.selectedId = id;
+  }
+
   // FIXME: mettere type definitivi
   load(rawNotebooks: any[]) {
     this.notebooks = rawNotebooks.map(({ id, label, sharingMode }) => ({ id, label, sharingMode }));

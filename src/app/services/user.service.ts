@@ -13,7 +13,7 @@ export class UserService {
   private users: User[] = [];
 
   // FIXME: mettere type definitivi
-  public iam({ id, username, thumb }: any) {
+  public iam({ id, username, thumb }: User) {
     this.me = { id, username, thumb };
   }
 
