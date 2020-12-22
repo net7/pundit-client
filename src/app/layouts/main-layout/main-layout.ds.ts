@@ -21,7 +21,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   onHighlight() {
     const range = selectionHandler.getCurrentRange();
-    const annotation = createAnnotation(range);
+    const annotation = createAnnotation('test', 'test', range);
     highlightRange(range);
     selectionHandler.clearSelection();
     tooltipHandler.hide();
