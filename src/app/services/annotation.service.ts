@@ -49,7 +49,7 @@ export class AnnotationService {
           }
         },
         isCollapsed: false,
-        date: created.toLocaleDateString(),
+        date: new Date(created).toLocaleDateString(),
         notebook: {
           name: notebook.label,
           anchor: {

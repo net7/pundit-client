@@ -13,7 +13,7 @@ export class NotebookService {
 
   private selectedId: string;
 
-  public getSelected = () => this.getNotebookById(this.selectedId);
+  public getSelected = () => this.selectedId;
 
   public setSelected(id: string) {
     this.selectedId = id;

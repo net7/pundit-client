@@ -38,7 +38,7 @@ export class MainLayoutDS extends LayoutDataSource {
   onHighlightOrComment(comment?: string) {
     const range = selectionHandler.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const notebookId = this.notebookService.getSelected().id;
+    const notebookId = this.notebookService.getSelected();
     const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
     const options = comment ? {
       content: {
