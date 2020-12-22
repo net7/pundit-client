@@ -2,7 +2,7 @@ import { EventHandler } from '@n7-frontend/core';
 import { Subject, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnnotationService } from 'src/app/services/annotation.service';
-import { LayoutEvent } from '../main-layout/main-layout';
+import { LayoutEvent } from 'src/app/types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {

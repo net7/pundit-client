@@ -11,7 +11,7 @@ import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { LayoutEvent } from './main-layout';
+import { LayoutEvent } from 'src/app/types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -59,8 +59,6 @@ export class MainLayoutEH extends EventHandler {
             const { id } = notebooks[0];
             this.notebookService.load(notebooks);
             this.notebookService.setSelected(id);
-            // signal
-            this.layoutEvent$.next({ type: 'notebooksresponse' });
           });
           this.listenSelection();
           this.listenLayoutEvents();

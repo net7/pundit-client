@@ -6,12 +6,8 @@ import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+import { LayoutEvent } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
-
-export type LayoutEvent = {
-  type: string;
-  payload?: any;
-}
 
 @Component({
   selector: 'main-layout',
