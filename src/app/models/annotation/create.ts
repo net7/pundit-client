@@ -12,10 +12,13 @@ import {
   WebPageBuilder
 } from '@pundit/communication';
 import { describe } from '../anchoring/html';
+import { _c } from '../config';
 import {
   getDocumentHref,
   getDocumentTitle
 } from './html-util';
+
+const baseUrl = _c('baseUrl');
 
 const createRangeSelector = (selectors: any): RangeSelector => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
@@ -83,5 +86,5 @@ export function create(
   root: HTMLElement = document.body
 ) {
   const payload = highlightAnnotationPayload(userId, notebookId, selection, root);
-  return annotation.create({ baseUrl: '', data: payload });
+  return annotation.create({ baseUrl, data: payload });
 }
