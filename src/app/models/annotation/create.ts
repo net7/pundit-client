@@ -9,7 +9,11 @@ import {
   TextQuoteSelector,
   TextQuoteSelectorBuilder,
   WebPage,
-  WebPageBuilder
+  WebPageBuilder,
+  AnnotationType,
+  SemanticTripleType,
+  CommentAnnotation,
+  CommentAnnotationBuilder
 } from '@pundit/communication';
 import { describe } from '../anchoring/html';
 import { _c } from '../config';
@@ -19,6 +23,19 @@ import {
 } from './html-util';
 
 const baseUrl = _c('baseUrl');
+
+type AnnotationPayload = {
+  userId: string;
+  notebookId: string;
+  selection: Range;
+  type: AnnotationType;
+  root?: HTMLElement;
+  options: {
+    content?: {
+      comment: string;
+    } | SemanticTripleType[];
+  };
+};
 
 const createRangeSelector = (selectors: any): RangeSelector => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
@@ -65,8 +82,12 @@ const createWebPageFragment = (selection: Range, root: HTMLElement = document.bo
   const page = pageBuilder.build();
   return page;
 };
-const highlightAnnotationPayload = (userId: string, notebookId:
-  string, selection: Range, root: HTMLElement = document.body): HighlightAnnotation => {
+const highlightAnnotationPayload = ({
+  userId,
+  notebookId,
+  selection,
+  root = document.body
+}: AnnotationPayload): HighlightAnnotation => {
   const annotationBuilder = new HighlightAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
   annotationBuilder.serializedBy('pundit-client')
@@ -75,16 +96,33 @@ const highlightAnnotationPayload = (userId: string, notebookId:
     .subject(pageFragment);
   return annotationBuilder.build();
 };
+const commentAnnotationPayload = ({
+  userId,
+  notebookId,
+  selection,
+  options,
+  root = document.body
+}: AnnotationPayload): CommentAnnotation => {
+  const annotationBuilder = new CommentAnnotationBuilder();
+  const pageFragment = createWebPageFragment(selection, root);
+  annotationBuilder.serializedBy('pundit-client')
+    .userId(userId)
+    .notebookId(notebookId)
+    .subject(pageFragment);
+
+  console.warn('FIXME: aggiungere comment a payload', options);
+  return annotationBuilder.build();
+};
+const annotationPayload = (
+  payload: AnnotationPayload
+): HighlightAnnotation | CommentAnnotation => (payload.type === 'Commenting'
+  ? commentAnnotationPayload(payload)
+  : highlightAnnotationPayload(payload));
 /**
  * Creates a new annotation that is associated with the selected region of
  * the current document.
  */
-export function create(
-  userId: string,
-  notebookId: string,
-  selection: Range,
-  root: HTMLElement = document.body
-) {
-  const payload = highlightAnnotationPayload(userId, notebookId, selection, root);
-  return annotation.create({ baseUrl, data: payload });
+export function create(payload: AnnotationPayload) {
+  const requestPayload = annotationPayload(payload);
+  return annotation.create({ baseUrl, data: requestPayload });
 }

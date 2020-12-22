@@ -5,6 +5,7 @@ import {
 import {
   catchError, debounceTime, switchMapTo, takeUntil
 } from 'rxjs/operators';
+import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -65,16 +66,20 @@ export class MainLayoutEH extends EventHandler {
     this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
         case 'tooltip.highlight':
-          this.dataSource.onHighlight().pipe(
+        case 'tooltip.comment': {
+          // FIXME: togliere faker
+          let comment;
+          if (type === 'tooltip.comment') {
+            comment = faker.lorem.sentence();
+          }
+          this.dataSource.onHighlightOrComment(comment).pipe(
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             })
           );
           break;
-        case 'tooltip.comment':
-          console.warn('TODO: gestire comment event');
-          break;
+        }
         default:
           break;
       }

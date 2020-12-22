@@ -7,6 +7,7 @@ import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { from } from 'rxjs';
+import { AnnotationType } from '@pundit/communication';
 
 export class MainLayoutDS extends LayoutDataSource {
   private userService: UserService;
@@ -34,10 +35,16 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onHighlight() {
+  onHighlightOrComment(comment?: string) {
     const range = selectionHandler.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const currentNotebookId = this.notebookService.getSelected().id;
+    const notebookId = this.notebookService.getSelected().id;
+    const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
+    const options = comment ? {
+      content: {
+        comment
+      }
+    } : {};
     // update host html
     highlightRange(range);
     // clear
@@ -45,7 +52,9 @@ export class MainLayoutDS extends LayoutDataSource {
     tooltipHandler.hide();
     // annotate
     console.warn('TODO: test salvataggio highlight');
-    return from(createAnnotation(userId, currentNotebookId, range));
+    return from(createAnnotation({
+      userId, notebookId, selection: range, type, options
+    }));
   }
 
   onAnnotationDelete(id: string) {
