@@ -1,18 +1,30 @@
-import { ActivatedRoute } from '@angular/router';
 import { EventHandler } from '@n7-frontend/core';
+import { Subject, ReplaySubject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { AnnotationService } from 'src/app/services/annotation.service';
+import { LayoutEvent } from '../main-layout/main-layout';
+import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
-  private route: ActivatedRoute;
+  private destroy$: Subject<void> = new Subject();
+
+  private layoutEvent$: ReplaySubject<LayoutEvent>;
+
+  private annotationService: AnnotationService;
+
+  public dataSource: SidebarLayoutDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'sidebar-layout.init':
-          this.dataSource.onInit(payload);
-          this.route = payload.route;
-          // this.listenRoute();
+          this.annotationService = payload.annotationService;
+          this.dataSource.onInit();
+          this.layoutEvent$ = payload.layoutEvent$;
+          this.listenLayoutEvents();
           break;
         case 'sidebar-layout.destroy':
+          this.destroy$.next();
           break;
         case 'sidebar-layout.clicklogo':
           // open the sidebar
@@ -27,15 +39,11 @@ export class SidebarLayoutEH extends EventHandler {
           break;
       }
     });
+
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'annotation.collapse':
-          if (payload.uid) {
-            const a = this.dataSource.annotations.find((d) => d._meta === payload.uid);
-            if (a) {
-              a.isCollapsed = !a.isCollapsed;
-            }
-          }
+        case 'annotation.delete':
+          this.layoutEvent$.next({ type: 'annotationdelete', payload });
           break;
         default:
           break;
@@ -43,15 +51,17 @@ export class SidebarLayoutEH extends EventHandler {
     });
   }
 
-  // private listenRoute() {
-  //   this.route.paramMap.subscribe((params) => {
-  //     const paramId = params.get('id');
-  //     if (paramId) {
-  //       if (paramId) {
-  //         this.dataSource.currentId = paramId;
-  //         this.emitOuter('routechanged', paramId);
-  //       }
-  //     }
-  //   });
-  // }
+  private listenLayoutEvents() {
+    this.layoutEvent$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(({ type }) => {
+      switch (type) {
+        case 'searchresponse':
+          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          break;
+        default:
+          break;
+      }
+    });
+  }
 }

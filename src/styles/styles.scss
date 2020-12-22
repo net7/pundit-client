@@ -34,3 +34,14 @@
 // ------------------------------------ //
 @import "./sidebar.scss";
 @import './layouts/main-layout';
+
+// FIXME: togliere questo test n7-icon 
+.n7-icon-cross {
+    background-color: greenyellow;
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+}
+.n7-icon-cross:hover {
+    background-color: red;
+}
