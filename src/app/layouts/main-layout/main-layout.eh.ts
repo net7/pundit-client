@@ -37,13 +37,13 @@ export class MainLayoutEH extends EventHandler {
           this.annotationService = payload.annotationService;
           this.dataSource.onInit(payload);
 
-          // FIXME: mettere type definitivi
           this.dataSource.getUserAnnotations().pipe(
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             })
-          ).subscribe(({ users, notebooks, annotations }: any) => {
+          ).subscribe(({ data }) => {
+            const { users, notebooks, annotations } = data;
             // load order matters
             this.userService.load(users);
             this.notebookService.load(notebooks);

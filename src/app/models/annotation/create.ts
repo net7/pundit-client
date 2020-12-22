@@ -110,7 +110,7 @@ const commentAnnotationPayload = ({
     .notebookId(notebookId)
     .subject(pageFragment);
 
-  console.warn('FIXME: aggiungere comment a payload', options);
+  console.warn('TODO: aggiungere comment a payload', options);
   return annotationBuilder.build();
 };
 const annotationPayload = (

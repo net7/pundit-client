@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AnnotationData } from '@n7-frontend/components';
+import { Annotation } from '@pundit/communication';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -12,8 +13,8 @@ export class AnnotationService {
     private notebookService: NotebookService
   ) {}
 
-  // FIXME: mettere type definitivi
-  load(rawAnnotations: any[]) {
+  load(rawAnnotations: Annotation[]) {
+    // FIXME: controllare con @marco
     this.annotations = rawAnnotations.map(({
       id,
       notebookId,
