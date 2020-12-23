@@ -32,14 +32,36 @@ console.log('content script loaded!')
 // https://www.red-gate.com/simple-talk/dotnet/software-tools/developing-google-chrome-extension-using-angular-4/
 // https://www.angulararchitects.io/aktuelles/your-options-for-building-angular-elements/
 
-let s = document.createElement('script');
-s.type = 'text/javascript';
-s.src = chrome.runtime.getURL('main.js');
-s.onload = function() {
-    this.parentNode.removeChild(this);
+// let s = document.createElement('script');
+// s.type = 'text/javascript';
+// s.src = chrome.runtime.getURL('main.js');
+// s.onload = function() {
+//     this.parentNode.removeChild(this);
+// };
+// try {
+//     (document.head || document.documentElement).appendChild(s);
+// } catch (e) {
+//     console.log(e);
+// }
+
+
+var injectedContent = document.createElement("pnd-root");
+document.body.appendChild(injectedContent);
+// injectedContent.setAttribute("ng-include", "");
+//ng-include src value must be wrapped in single quotes
+// injectedContent.setAttribute("src", "'" + chrome.extension.getURL("src/index.html") + "'");
+// pundit.appendChild(injectedContent);
+
+var main = document.createElement('script');
+main.src = chrome.extension.getURL('main.js');
+(document.head||document.documentElement).appendChild(main);
+main.onload = function() {
+    main.remove();
 };
-try {
-    (document.head || document.documentElement).appendChild(s);
-} catch (e) {
-    console.log(e);
-}
+
+var styles = document.createElement('script');
+styles.src = chrome.extension.getURL('styles.js');
+(document.head||document.documentElement).appendChild(styles);
+styles.onload = function() {
+    styles.remove();
+};

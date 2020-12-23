@@ -11,15 +11,15 @@
   "content_scripts": [
     {
       "matches": ["*://*/*"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "run_at": "document_end"
     }
   ],
   "browser_action": {
-    "default_icon": "assets/icons/pundit-icon-red-38.png",
-    "default_popup": "index.html"
+    "default_icon": "assets/icons/pundit-icon-red-38.png"
   },
   "web_accessible_resources": [
-    "src/index.html",
-    "main.js"
+    "main.js",
+    "styles.js"
   ]
 }
