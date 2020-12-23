@@ -16,7 +16,15 @@ export class AnnotationService {
   ) {}
 
   load(rawAnnotations: Annotation[]) {
-    this.annotations = rawAnnotations.map((annotation) => this.transform(annotation));
+    rawAnnotations.forEach((rawAnnotation) => {
+      this.add(rawAnnotation);
+    });
+  }
+
+  add(rawAnnotation: Annotation) {
+    if (!this.getAnnotationById(rawAnnotation.id)) {
+      this.annotations.push(this.transform(rawAnnotation));
+    }
   }
 
   remove(annotationId: string) {
@@ -39,7 +47,7 @@ export class AnnotationService {
     });
   }
 
-  addAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
+  getAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
     const {
       notebookId,
       subject,
@@ -56,7 +64,7 @@ export class AnnotationService {
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
     }
-    this.annotations.push(this.transform(newAnnotation));
+    return newAnnotation;
   }
 
   private transform(annotation: Annotation) {

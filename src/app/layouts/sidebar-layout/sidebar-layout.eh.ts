@@ -64,8 +64,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
           break;
         case 'annotationcreatesuccess': {
-          const { id, requestPayload } = payload;
-          this.annotationService.addAnnotationFromPayload(id, requestPayload);
+          this.annotationService.add(payload);
           this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
           break;
         }

@@ -92,8 +92,12 @@ export class MainLayoutEH extends EventHandler {
               return EMPTY;
             })
           ).subscribe(({ id, requestPayload }) => {
+            const newAnnotation = this.annotationService.getAnnotationFromPayload(
+              id, requestPayload
+            );
+            this.anchorService.add(newAnnotation);
             // signal
-            this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: { id, requestPayload } });
+            this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
           });
           break;
         }
