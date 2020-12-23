@@ -63,6 +63,12 @@ export class SidebarLayoutEH extends EventHandler {
           this.annotationService.remove(payload);
           this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
           break;
+        case 'annotationcreatesuccess': {
+          const { id, requestPayload } = payload;
+          this.annotationService.addAnnotationFromPayload(id, requestPayload);
+          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          break;
+        }
         default:
           break;
       }

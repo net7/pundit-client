@@ -13,7 +13,8 @@ import {
   AnnotationType,
   SemanticTripleType,
   CommentAnnotation,
-  CommentAnnotationBuilder
+  CommentAnnotationBuilder,
+  AnnotationAttributes
 } from '@pundit/communication';
 import { describe } from '../anchoring/html';
 import { _c } from '../config';
@@ -125,12 +126,15 @@ const annotationPayload = (
 ): HighlightAnnotation | CommentAnnotation => (payload.type === 'Commenting'
   ? commentAnnotationPayload(payload)
   : highlightAnnotationPayload(payload));
+
+export function createRequestPayload(payload: AnnotationPayload) {
+  return annotationPayload(payload);
+}
 /**
  * Creates a new annotation that is associated with the selected region of
  * the current document.
  */
-export function create(payload: AnnotationPayload) {
+export function create(requestPayload: AnnotationAttributes) {
   const baseURL = _c('baseURL');
-  const requestPayload = annotationPayload(payload);
   return annotation.create({ baseURL, data: requestPayload });
 }
