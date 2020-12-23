@@ -3,15 +3,12 @@ import {
 } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
+import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+import { LayoutEvent } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
-
-export type LayoutEvent = {
-  type: string;
-  payload?: any;
-}
 
 @Component({
   selector: 'main-layout',
@@ -24,8 +21,16 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private userService: UserService,
     private notebookService: NotebookService,
     private annotationService: AnnotationService,
+    private anchorService: AnchorService
   ) {
     super(config);
+
+    // FIXME: prendere utente defintivo
+    this.userService.iam({
+      id: 'rwpfgj6gsp',
+      username: 'johndoe',
+      thumb: 'https://placeimg.com/400/600/people'
+    });
   }
 
   protected initPayload() {
@@ -34,6 +39,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       userService: this.userService,
       notebookService: this.notebookService,
       annotationService: this.annotationService,
+      anchorService: this.anchorService
     };
   }
 

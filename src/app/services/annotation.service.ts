@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AnnotationData } from '@n7-frontend/components';
+import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -7,70 +8,120 @@ import { UserService } from './user.service';
 export class AnnotationService {
   private annotations: AnnotationData[] = [];
 
+  private lastRemoved: AnnotationData;
+
   constructor(
     private userService: UserService,
     private notebookService: NotebookService
   ) {}
 
-  // FIXME: mettere type definitivi
-  load(rawAnnotations: any[]) {
-    this.annotations = rawAnnotations.map(({
+  load(rawAnnotations: Annotation[]) {
+    rawAnnotations.forEach((rawAnnotation) => {
+      this.add(rawAnnotation);
+    });
+  }
+
+  add(rawAnnotation: Annotation) {
+    if (!this.getAnnotationById(rawAnnotation.id)) {
+      this.annotations.push(this.transform(rawAnnotation));
+    }
+  }
+
+  remove(annotationId: string) {
+    const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
+    [this.lastRemoved] = this.annotations.splice(index, index + 1);
+  }
+
+  getAnnotationById(annotationId: string): AnnotationData | null {
+    return this.annotations.find(({ _meta }) => _meta.id === annotationId) || null;
+  }
+
+  getAnnotations() {
+    return this.annotations.sort((a, b) => {
+      const { created: aCreated, startPosition: aStartPosition } = a._meta;
+      const { created: bCreated, startPosition: bStartPosition } = b._meta;
+      if (aStartPosition === bStartPosition) {
+        return aCreated - bCreated;
+      }
+      return aStartPosition - bStartPosition;
+    });
+  }
+
+  getAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
+    const {
+      notebookId,
+      subject,
+    } = payload;
+    const userId = this.userService.whoami().id;
+    const created = new Date();
+    const newAnnotation = {
       id,
       notebookId,
       userId,
       subject,
-      content,
+      created,
+    } as Annotation;
+    if (payload.type === 'Commenting') {
+      (newAnnotation as CommentAnnotation).content = payload.content;
+    }
+    return newAnnotation;
+  }
+
+  private transform(annotation: Annotation) {
+    const {
+      id,
+      notebookId,
+      userId,
+      subject,
       created
-    }) => {
-      // FIXME: togliere controllo user
-      const user = this.userService.getUserById(userId) || {} as any;
-      const notebook = this.notebookService.getNotebookById(notebookId);
-      const { text } = subject.selected;
-      const { comment } = content || {};
+    } = annotation;
+    // FIXME: togliere controllo user
+    const user = this.userService.getUserById(userId) || {} as any;
+    const notebook = this.notebookService.getNotebookById(notebookId);
+    const { text } = subject.selected;
+    const startPosition = subject.selected.textPositionSelector.start;
+    let comment;
+    if (annotation.type === 'Commenting') {
+      const { content } = annotation;
+      comment = content.comment;
+    }
 
-      return {
-        _meta: id,
-        payload: {
-          source: 'box',
-          id
-        },
-        user: {
-          image: user.thumb,
-          name: user.username,
-          anchor: {
-            payload: {
-              source: 'user',
-              id: user.id
-            }
-          }
-        },
-        isCollapsed: false,
-        date: created,
-        notebook: {
-          name: notebook.label,
-          anchor: {
-            payload: {
-              source: 'notebook',
-              id: notebook.id
-            }
-          }
-        },
-        body: text,
-        comment,
-        icon: {
-          id: 'n7-icon-cross',
+    return {
+      _meta: { id, created, startPosition },
+      payload: {
+        source: 'box',
+        id
+      },
+      user: {
+        image: user.thumb,
+        name: user.username,
+        anchor: {
           payload: {
-            source: 'icon',
-            id
+            source: 'user',
+            id: user.id
           }
-        },
-      };
-    });
+        }
+      },
+      isCollapsed: false,
+      date: new Date(created).toLocaleDateString(),
+      notebook: {
+        name: notebook.label,
+        anchor: {
+          payload: {
+            source: 'notebook',
+            id: notebook.id
+          }
+        }
+      },
+      body: text,
+      comment,
+      icon: {
+        id: 'n7-icon-cross',
+        payload: {
+          source: 'icon',
+          id
+        }
+      },
+    };
   }
-
-  getAnnotationById(annotationId: string): AnnotationData | null {
-    return this.annotations.find(({ _meta }) => _meta === annotationId) || null;
-  }
-
-  getAnnotations = () => this.annotations;
 }

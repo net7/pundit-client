@@ -1,12 +1,18 @@
 import { EventHandler } from '@n7-frontend/core';
-import { fromEvent, Subject, ReplaySubject } from 'rxjs';
-import { debounceTime, switchMapTo, takeUntil } from 'rxjs/operators';
+import {
+  fromEvent, Subject, ReplaySubject, EMPTY
+} from 'rxjs';
+import {
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil
+} from 'rxjs/operators';
+import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { LayoutEvent } from './main-layout';
+import { AnchorService } from 'src/app/services/anchor.service';
+import { LayoutEvent } from 'src/app/types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -20,6 +26,8 @@ export class MainLayoutEH extends EventHandler {
 
   private annotationService: AnnotationService;
 
+  private anchorService: AnchorService;
+
   public dataSource: MainLayoutDS;
 
   public listen() {
@@ -30,15 +38,32 @@ export class MainLayoutEH extends EventHandler {
           this.userService = payload.userService;
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
+          this.anchorService = payload.anchorService;
+          this.dataSource.onInit(payload);
 
-          // FIXME: mettere type definitivi
-          this.dataSource.onInit().subscribe(({ users, notebooks, annotations }: any) => {
-            // load order matters
-            this.userService.load(users);
+          this.dataSource.getUserAnnotations().pipe(
+            switchMap(({ data: searchData }) => {
+              const { users, notebooks, annotations } = searchData;
+              // load order matters
+              this.userService.load(users);
+              this.notebookService.load(notebooks);
+              this.annotationService.load(annotations);
+              this.anchorService.load(annotations).then(() => console.warn('Highlights loaded'));
+              // signal
+              this.layoutEvent$.next({ type: 'searchresponse' });
+
+              return this.dataSource.getUserNotebooks();
+            }),
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          ).subscribe(({ data: notebooksData }) => {
+            const { notebooks } = notebooksData;
+            // first notebook as default
+            const { id } = notebooks[0];
             this.notebookService.load(notebooks);
-            this.annotationService.load(annotations);
-
-            this.layoutEvent$.next({ type: 'searchresponse' });
+            this.notebookService.setSelected(id);
           });
           this.listenSelection();
           this.listenLayoutEvents();
@@ -55,11 +80,27 @@ export class MainLayoutEH extends EventHandler {
     this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
         case 'tooltip.highlight':
-          this.dataSource.onHighlight();
+        case 'tooltip.comment': {
+          // FIXME: togliere faker
+          let comment;
+          if (type === 'tooltip.comment') {
+            comment = faker.lorem.sentence();
+          }
+          this.dataSource.onHighlightOrComment(comment).pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          ).subscribe(({ id, requestPayload }) => {
+            const newAnnotation = this.annotationService.getAnnotationFromPayload(
+              id, requestPayload
+            );
+            this.anchorService.add(newAnnotation);
+            // signal
+            this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
+          });
           break;
-        case 'tooltip.comment':
-          console.warn('TODO: gestire comment event');
-          break;
+        }
         default:
           break;
       }
@@ -88,11 +129,24 @@ export class MainLayoutEH extends EventHandler {
     ).subscribe(({ type, payload }) => {
       switch (type) {
         case 'annotationdelete':
-          this.dataSource.onAnnotationDelete(payload);
+          this.dataSource.onAnnotationDelete(payload).pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          ).subscribe(() => {
+            this.anchorService.remove(payload);
+            // signal
+            this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
+          });
           break;
         default:
           break;
       }
     });
+  }
+
+  private handleError(error) {
+    console.warn('TODO: error handler', error);
   }
 }

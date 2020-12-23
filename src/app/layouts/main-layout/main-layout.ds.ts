@@ -1,16 +1,34 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
-import { create as createAnnotation, remove as deleteAnnotation } from 'src/app/models/annotation';
+import {
+  create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
+} from 'src/app/models/annotation';
+import { search as searchNotebooks } from 'src/app/models/notebook';
 import tooltipHandler from 'src/app/models/tooltip-handler';
-import { highlightRange } from 'src/app/models/highlighter';
-import { Observable, of } from 'rxjs';
-import searchMock from 'src/app/mocks/search.mock';
+import { getDocumentHref } from 'src/app/models/annotation/html-util';
+import { NotebookService } from 'src/app/services/notebook.service';
+import { UserService } from 'src/app/services/user.service';
+import { from, of } from 'rxjs';
+import { AnnotationType } from '@pundit/communication';
+import { switchMap } from 'rxjs/operators';
 
 export class MainLayoutDS extends LayoutDataSource {
-  // FIXME: mettere type definitivi
-  onInit(): Observable<any> {
-    // FIXME: collegare a communication
-    return of(searchMock);
+  private userService: UserService;
+
+  private notebookService: NotebookService;
+
+  onInit(payload) {
+    this.userService = payload.userService;
+    this.notebookService = payload.notebookService;
+  }
+
+  getUserAnnotations() {
+    const uri = getDocumentHref();
+    return from(search(uri));
+  }
+
+  getUserNotebooks() {
+    return from(searchNotebooks());
   }
 
   onSelectionChange() {
@@ -23,23 +41,31 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onHighlight() {
+  onHighlightOrComment(comment?: string) {
     const range = selectionHandler.getCurrentRange();
-    // handle response
-    // get current notebook and id
-    const userId = '12345';
-    const currentNotebookId = '123456';
-    const annotation = createAnnotation(userId, currentNotebookId, range);
-    highlightRange(range);
+    const userId = this.userService.whoami().id;
+    const notebookId = this.notebookService.getSelected().id;
+    const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
+    const options = comment ? {
+      content: {
+        comment
+      }
+    } : {};
+    // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
-    console.log(JSON.stringify(annotation));
-    console.warn('TODO: gestire salvataggio highlight', annotation);
+    // annotate
+    const requestPayload = createRequestPayload({
+      userId, notebookId, selection: range, type, options
+    });
+    // request
+    return from(createAnnotation(requestPayload)).pipe(
+      switchMap(({ data }) => of({ id: data.id, requestPayload }))
+    );
   }
 
   onAnnotationDelete(id: string) {
-    console.warn('TODO: gestire annotation delete', id);
     const deleteResponse = deleteAnnotation(id);
-    return deleteResponse;
+    return from(deleteResponse);
   }
 }

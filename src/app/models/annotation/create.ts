@@ -9,13 +9,32 @@ import {
   TextQuoteSelector,
   TextQuoteSelectorBuilder,
   WebPage,
-  WebPageBuilder
+  WebPageBuilder,
+  AnnotationType,
+  SemanticTripleType,
+  CommentAnnotation,
+  CommentAnnotationBuilder,
+  AnnotationAttributes
 } from '@pundit/communication';
 import { describe } from '../anchoring/html';
+import { _c } from '../config';
 import {
   getDocumentHref,
   getDocumentTitle
 } from './html-util';
+
+type AnnotationPayload = {
+  userId: string;
+  notebookId: string;
+  selection: Range;
+  type: AnnotationType;
+  root?: HTMLElement;
+  options: {
+    content?: {
+      comment: string;
+    } | SemanticTripleType[];
+  };
+};
 
 const createRangeSelector = (selectors: any): RangeSelector => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
@@ -62,26 +81,60 @@ const createWebPageFragment = (selection: Range, root: HTMLElement = document.bo
   const page = pageBuilder.build();
   return page;
 };
-const highlightAnnotationPayload = (userId: string, notebookId:
-  string, selection: Range, root: HTMLElement = document.body): HighlightAnnotation => {
+const highlightAnnotationPayload = ({
+  userId,
+  notebookId,
+  selection,
+  root = document.body
+}: AnnotationPayload): HighlightAnnotation => {
+  const serializer = _c('serializer');
   const annotationBuilder = new HighlightAnnotationBuilder();
   const pageFragment = createWebPageFragment(selection, root);
-  annotationBuilder.serializedBy('pundit-client')
+  annotationBuilder.serializedBy(serializer)
     .userId(userId)
     .notebookId(notebookId)
     .subject(pageFragment);
   return annotationBuilder.build();
 };
+const commentAnnotationPayload = ({
+  userId,
+  notebookId,
+  selection,
+  options,
+  root = document.body
+}: AnnotationPayload): CommentAnnotation => {
+  const serializer = _c('serializer');
+  const annotationBuilder = new CommentAnnotationBuilder();
+  const pageFragment = createWebPageFragment(selection, root);
+  let comment = '';
+  if (options.content) {
+    comment = (options.content as {
+      comment: string;
+    }).comment;
+  }
+  annotationBuilder.serializedBy(serializer)
+    .userId(userId)
+    .notebookId(notebookId)
+    .comment(comment)
+    .subject(pageFragment);
+
+  console.warn('TODO: aggiungere comment a payload', options);
+  return annotationBuilder.build();
+};
+const annotationPayload = (
+  payload: AnnotationPayload
+): HighlightAnnotation | CommentAnnotation => (payload.type === 'Commenting'
+  ? commentAnnotationPayload(payload)
+  : highlightAnnotationPayload(payload));
+
+export function createRequestPayload(payload: AnnotationPayload) {
+  return annotationPayload(payload);
+}
 /**
  * Creates a new annotation that is associated with the selected region of
  * the current document.
  */
-export function create(
-  userId: string,
-  notebookId: string,
-  selection: Range,
-  root: HTMLElement = document.body
-) {
-  const payload = highlightAnnotationPayload(userId, notebookId, selection, root);
-  return annotation.create({ baseUrl: '', data: payload });
+export function create(requestPayload: AnnotationAttributes) {
+  const baseURL = _c('baseURL');
+  return annotation.create({ baseURL, data: requestPayload });
 }

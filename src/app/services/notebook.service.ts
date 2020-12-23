@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Notebook } from '@pundit/communication';
 
-type Notebook = {
+type NotebookData = {
   id: string;
   label: string;
   sharingMode: string;
@@ -8,14 +9,30 @@ type Notebook = {
 
 @Injectable()
 export class NotebookService {
-  private notebooks: Notebook[] = [];
+  private notebooks: NotebookData[] = [];
 
-  // FIXME: mettere type definitivi
-  load(rawNotebooks: any[]) {
-    this.notebooks = rawNotebooks.map(({ id, label, sharingMode }) => ({ id, label, sharingMode }));
+  private selectedId: string;
+
+  public getSelected = () => this.getNotebookById(this.selectedId);
+
+  public setSelected(id: string) {
+    this.selectedId = id;
   }
 
-  getNotebookById(notebookId: string): Notebook | null {
+  load(rawNotebooks: Notebook[]) {
+    rawNotebooks.forEach((rawNotebook) => {
+      this.add(rawNotebook);
+    });
+  }
+
+  add(rawNotebook: Notebook) {
+    if (!this.getNotebookById(rawNotebook.id)) {
+      const { id, label, sharingMode } = rawNotebook;
+      this.notebooks.push({ id, label, sharingMode });
+    }
+  }
+
+  getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
   }
 }
