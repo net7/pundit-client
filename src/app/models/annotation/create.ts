@@ -92,7 +92,6 @@ const highlightAnnotationPayload = ({
   annotationBuilder.serializedBy(serializer)
     .userId(userId)
     .notebookId(notebookId)
-    .uri('pundit.it/test')
     .subject(pageFragment);
   return annotationBuilder.build();
 };
@@ -116,7 +115,6 @@ const commentAnnotationPayload = ({
     .userId(userId)
     .notebookId(notebookId)
     .comment(comment)
-    .uri('pundit.it/test')
     .subject(pageFragment);
 
   console.warn('TODO: aggiungere comment a payload', options);
