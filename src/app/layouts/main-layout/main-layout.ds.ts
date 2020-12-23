@@ -5,7 +5,6 @@ import {
 } from 'src/app/models/annotation';
 import { search as searchNotebooks } from 'src/app/models/notebook';
 import tooltipHandler from 'src/app/models/tooltip-handler';
-import { highlightRange } from 'src/app/models/highlighter';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
@@ -52,8 +51,6 @@ export class MainLayoutDS extends LayoutDataSource {
         comment
       }
     } : {};
-    // update host html
-    highlightRange(range);
     // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
