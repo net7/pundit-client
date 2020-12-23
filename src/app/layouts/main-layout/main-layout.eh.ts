@@ -3,7 +3,7 @@ import {
   fromEvent, Subject, ReplaySubject, EMPTY
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMapTo, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
@@ -12,7 +12,7 @@ import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
-import { LayoutEvent } from './main-layout';
+import { LayoutEvent } from 'src/app/types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -42,19 +42,28 @@ export class MainLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
 
           this.dataSource.getUserAnnotations().pipe(
+            switchMap(({ data: searchData }) => {
+              const { users, notebooks, annotations } = searchData;
+              // load order matters
+              this.userService.load(users);
+              this.notebookService.load(notebooks);
+              this.annotationService.load(annotations);
+              this.anchorService.load(annotations).then(() => console.warn('Highlights loaded'));
+              // signal
+              this.layoutEvent$.next({ type: 'searchresponse' });
+
+              return this.dataSource.getUserNotebooks();
+            }),
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             })
-          ).subscribe(({ data }) => {
-            const { users, notebooks, annotations } = data;
-            // load order matters
-            this.userService.load(users);
+          ).subscribe(({ data: notebooksData }) => {
+            const { notebooks } = notebooksData;
+            // first notebook as default
+            const { id } = notebooks[0];
             this.notebookService.load(notebooks);
-            this.annotationService.load(annotations);
-            this.anchorService.load(annotations);
-            this.anchorService.load(annotations).then(() => console.warn('Highlights loaded'));
-            this.layoutEvent$.next({ type: 'searchresponse' });
+            this.notebookService.setSelected(id);
           });
           this.listenSelection();
           this.listenLayoutEvents();
@@ -118,7 +127,10 @@ export class MainLayoutEH extends EventHandler {
               this.handleError(e);
               return EMPTY;
             })
-          );
+          ).subscribe(() => {
+            // signal
+            this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
+          });
           break;
         default:
           break;

@@ -4,8 +4,8 @@ import {
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { LayoutEvent } from 'src/app/types';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
-import { LayoutEvent } from '../main-layout/main-layout';
 
 @Component({
   selector: 'sidebar-layout',
