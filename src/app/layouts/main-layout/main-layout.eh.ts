@@ -135,6 +135,7 @@ export class MainLayoutEH extends EventHandler {
               return EMPTY;
             })
           ).subscribe(() => {
+            this.anchorService.remove(payload);
             // signal
             this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
           });

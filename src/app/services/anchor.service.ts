@@ -20,15 +20,12 @@ export class AnchorService {
       const range: Range = await anchor(document.body, selectors);
       const highlights = highlightRange(range);
       this.annotationHighlights.push({ highlights, targetId: annotation.id });
-      console.warn(this.annotationHighlights);
     }
   }
 
   remove(annotationId: string) {
-    console.warn(`remove ${annotationId}`);
     if (this.getHighlightById(annotationId)) {
       const { highlights } = this.getHighlightById(annotationId);
-      console.warn(`highlights ${highlights}`);
       removeHighlights(highlights);
       const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
       this.annotationHighlights.splice(index, index + 1);
