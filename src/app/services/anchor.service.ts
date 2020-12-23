@@ -2,30 +2,45 @@ import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
-import { HighlightElement, highlightRange } from '../models/highlighter';
+import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
 
 @Injectable()
 export class AnchorService {
-  async load(rawAnnotations: Annotation[]): Promise<HighlightElement[][]> {
-    const highlightPromises: Promise<HighlightElement[]>[] = [];
+  private annotationHighlights: AnnotationHighlight[] = [];
+
+  async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
-      const highlighPromise = this.add(annotation);
-      highlightPromises.push(highlighPromise);
+      this.add(annotation);
     });
-    const highlights = await Promise.all(highlightPromises);
-    return highlights;
   }
 
-  async add(annotation: Annotation): Promise<HighlightElement[]> {
-    const selectors = this.createSelectors(annotation);
-    const range: Range = await anchor(document.body, selectors);
-    return highlightRange(range);
+  async add(annotation: Annotation): Promise<void> {
+    if (!this.getHighlightById(annotation.id)) {
+      const selectors = this.createSelectors(annotation);
+      const range: Range = await anchor(document.body, selectors);
+      const highlights = highlightRange(range);
+      this.annotationHighlights.push({ highlights, targetId: annotation.id });
+      console.warn(this.annotationHighlights);
+    }
   }
 
-  async remove(annotation: Annotation): Promise<HighlightElement[]> {
-    const selectors = this.createSelectors(annotation);
-    const range: Range = await anchor(document.body, selectors);
-    return highlightRange(range);
+  remove(annotationId: string) {
+    console.warn(`remove ${annotationId}`);
+    if (this.getHighlightById(annotationId)) {
+      const { highlights } = this.getHighlightById(annotationId);
+      console.warn(`highlights ${highlights}`);
+      removeHighlights(highlights);
+      const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
+      this.annotationHighlights.splice(index, index + 1);
+    }
+  }
+
+  removeAll() {
+    this.annotationHighlights.map((hl) => hl.targetId).forEach(this.remove);
+  }
+
+  getHighlightById(annotationId: string): AnnotationHighlight | null {
+    return this.annotationHighlights.find(({ targetId }) => targetId === annotationId) || null;
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {
@@ -43,4 +58,9 @@ export class AnchorService {
     }
     return selectors;
   }
+}
+
+export interface AnnotationHighlight {
+  targetId: string;
+  highlights: HighlightElement[];
 }
