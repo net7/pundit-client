@@ -20,6 +20,7 @@
   },
   "web_accessible_resources": [
     "main.js",
-    "styles.js"
+    "styles.js",
+    "assets/mocks/pundit-icon-48-light.png"
   ]
 }

@@ -3,7 +3,7 @@
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
         <span class="n7-icon-pundit pundit-sidebar__logo">
-            <img src="/assets/mocks/pundit-icon-48-light.png"
+            <img [src]="logo"
                  alt="pundit mock logo"
                  (click)="lb.eventHandler.emitInner('clicklogo')">
         </span>

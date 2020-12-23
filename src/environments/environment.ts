@@ -5,6 +5,7 @@
 export const environment = {
   production: false,
   serializer: 'pundit-client',
+  chromeExtUrl: 'chrome-extension://njehdkkcoifaeodlcohmeocdiihecbdd',
   baseURL: 'https://omaqn3375i.execute-api.eu-south-1.amazonaws.com/stage/'
 };
 
