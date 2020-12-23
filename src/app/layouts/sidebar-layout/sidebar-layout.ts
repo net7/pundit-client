@@ -23,8 +23,6 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private sanitizer: DomSanitizer
   ) {
     super(config);
-
-    this.logo = this.sanitizer.bypassSecurityTrustResourceUrl(`${_c('chromeExtUrl')}/assets/mocks/pundit-icon-48-light.png`);
   }
 
   protected initPayload() {
@@ -32,6 +30,13 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       annotationService: this.annotationService
     };
+  }
+
+  getLogo() {
+    if (_c('chromeExtUrl')) {
+      return this.sanitizer.bypassSecurityTrustResourceUrl(`${_c('chromeExtUrl')}/assets/mocks/pundit-icon-48-light.png`);
+    }
+    return null;
   }
 
   ngOnInit() {

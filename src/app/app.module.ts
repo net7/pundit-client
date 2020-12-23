@@ -34,6 +34,13 @@ translate.init({
 // load configuration
 config.init(appConfig);
 
+// update config with extension info
+window.addEventListener('punditloaded', (ev: CustomEvent) => {
+  const { id } = ev.detail;
+  config.set('chromeExtId', id);
+  config.set('chromeExtUrl', `chrome-extension://${id}`);
+}, false);
+
 // const appRoutes: Routes = [];
 
 @NgModule({

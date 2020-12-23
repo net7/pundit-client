@@ -67,7 +67,10 @@ function load() {
   main.src = chrome.extension.getURL('main.js');
   (document.head||document.documentElement).appendChild(main);
   main.onload = function() {
-      main.remove();
+    // emit signal
+    const signal = new CustomEvent("punditloaded", { detail: { id: chrome.runtime.id } });
+    window.dispatchEvent(signal);
+    main.remove();
   };
   
   const styles = document.createElement('script');
