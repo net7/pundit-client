@@ -91,7 +91,10 @@ export class MainLayoutEH extends EventHandler {
               this.handleError(e);
               return EMPTY;
             })
-          );
+          ).subscribe(({ id, requestPayload }) => {
+            // signal
+            this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: { id, requestPayload } });
+          });
           break;
         }
         default:

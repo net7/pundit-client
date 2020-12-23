@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AnnotationData } from '@n7-frontend/components';
-import { Annotation } from '@pundit/communication';
+import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -29,6 +29,26 @@ export class AnnotationService {
   }
 
   getAnnotations = () => this.annotations;
+
+  addAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
+    const {
+      notebookId,
+      subject,
+    } = payload;
+    const userId = this.userService.whoami().id;
+    const created = new Date();
+    const newAnnotation = {
+      id,
+      notebookId,
+      userId,
+      subject,
+      created,
+    } as Annotation;
+    if (payload.type === 'Commenting') {
+      (newAnnotation as CommentAnnotation).content = payload.content;
+    }
+    this.annotations.push(this.transform(newAnnotation));
+  }
 
   private transform(annotation: Annotation) {
     const {

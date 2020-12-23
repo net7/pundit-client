@@ -1,14 +1,17 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
-import { create as createAnnotation, remove as deleteAnnotation, search } from 'src/app/models/annotation';
+import {
+  create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
+} from 'src/app/models/annotation';
 import { search as searchNotebooks } from 'src/app/models/notebook';
 import tooltipHandler from 'src/app/models/tooltip-handler';
 import { highlightRange } from 'src/app/models/highlighter';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { from } from 'rxjs';
+import { from, of } from 'rxjs';
 import { AnnotationType } from '@pundit/communication';
+import { switchMap } from 'rxjs/operators';
 
 export class MainLayoutDS extends LayoutDataSource {
   private userService: UserService;
@@ -55,10 +58,13 @@ export class MainLayoutDS extends LayoutDataSource {
     selectionHandler.clearSelection();
     tooltipHandler.hide();
     // annotate
-    console.warn('TODO: test salvataggio highlight');
-    return from(createAnnotation({
+    const requestPayload = createRequestPayload({
       userId, notebookId, selection: range, type, options
-    }));
+    });
+    // request
+    return from(createAnnotation(requestPayload)).pipe(
+      switchMap(({ data }) => of({ id: data.id, requestPayload }))
+    );
   }
 
   onAnnotationDelete(id: string) {
