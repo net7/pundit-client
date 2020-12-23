@@ -20,15 +20,24 @@ export class AnnotationService {
   }
 
   remove(annotationId: string) {
-    const index = this.annotations.map(({ _meta }) => _meta).indexOf(annotationId);
+    const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
     [this.lastRemoved] = this.annotations.splice(index, index + 1);
   }
 
   getAnnotationById(annotationId: string): AnnotationData | null {
-    return this.annotations.find(({ _meta }) => _meta === annotationId) || null;
+    return this.annotations.find(({ _meta }) => _meta.id === annotationId) || null;
   }
 
-  getAnnotations = () => this.annotations;
+  getAnnotations() {
+    return this.annotations.sort((a, b) => {
+      const { created: aCreated, startPosition: aStartPosition } = a._meta;
+      const { created: bCreated, startPosition: bStartPosition } = b._meta;
+      if (aStartPosition === bStartPosition) {
+        return aCreated - bCreated;
+      }
+      return aStartPosition - bStartPosition;
+    });
+  }
 
   addAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
     const {
@@ -62,6 +71,7 @@ export class AnnotationService {
     const user = this.userService.getUserById(userId) || {} as any;
     const notebook = this.notebookService.getNotebookById(notebookId);
     const { text } = subject.selected;
+    const startPosition = subject.selected.textPositionSelector.start;
     let comment;
     if (annotation.type === 'Commenting') {
       const { content } = annotation;
@@ -69,7 +79,7 @@ export class AnnotationService {
     }
 
     return {
-      _meta: id,
+      _meta: { id, created, startPosition },
       payload: {
         source: 'box',
         id

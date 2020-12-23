@@ -7,7 +7,7 @@ export class AnnotationDS extends DataSource {
   }
 
   toggleCollapse(id: string) {
-    const annotation: AnnotationData = this.output.find(({ _meta }) => _meta === id);
+    const annotation: AnnotationData = this.output.find(({ _meta }) => _meta.id === id);
     if (annotation) {
       annotation.isCollapsed = !annotation.isCollapsed;
     }
