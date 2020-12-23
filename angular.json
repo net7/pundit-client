@@ -28,7 +28,8 @@
               "src/favicon.ico",
               "src/assets",
               "src/manifest.json",
-              "src/content.js"
+              "src/content.js",
+              "src/background.js"
             ],
             "styles": [
               "src/styles/host.scss"

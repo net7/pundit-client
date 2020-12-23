@@ -43,25 +43,37 @@ console.log('content script loaded!')
 // } catch (e) {
 //     console.log(e);
 // }
+let loaded = false;
+let appRoot;
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.text === 'get_dom') {
+    if(!loaded) {
+      loaded = true;
+      load()
+    } else {
+      loaded = false;
+      appRoot.remove();
+    }
+  }
+});
 
 
-var injectedContent = document.createElement("pnd-root");
-document.body.appendChild(injectedContent);
-// injectedContent.setAttribute("ng-include", "");
-//ng-include src value must be wrapped in single quotes
-// injectedContent.setAttribute("src", "'" + chrome.extension.getURL("src/index.html") + "'");
-// pundit.appendChild(injectedContent);
-
-var main = document.createElement('script');
-main.src = chrome.extension.getURL('main.js');
-(document.head||document.documentElement).appendChild(main);
-main.onload = function() {
-    main.remove();
-};
-
-var styles = document.createElement('script');
-styles.src = chrome.extension.getURL('styles.js');
-(document.head||document.documentElement).appendChild(styles);
-styles.onload = function() {
-    styles.remove();
-};
+function load() {
+  appRoot = document.createElement("pnd-root");
+  document.body.appendChild(appRoot);
+  
+  const main = document.createElement('script');
+  main.src = chrome.extension.getURL('main.js');
+  (document.head||document.documentElement).appendChild(main);
+  main.onload = function() {
+      main.remove();
+  };
+  
+  const styles = document.createElement('script');
+  styles.src = chrome.extension.getURL('styles.js');
+  (document.head||document.documentElement).appendChild(styles);
+  styles.onload = function() {
+      styles.remove();
+  };
+}
