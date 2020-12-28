@@ -4,7 +4,8 @@ import { NgModule } from '@angular/core';
 // import { createCustomElement } from '@angular/elements';
 import { DvComponentsLibModule } from '@n7-frontend/components';
 import { translate } from '@n7-frontend/core';
-import { Routes, RouterModule } from '@angular/router';
+// import { Routes, RouterModule } from '@angular/router';
+import { APP_BASE_HREF } from '@angular/common';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
@@ -33,7 +34,14 @@ translate.init({
 // load configuration
 config.init(appConfig);
 
-const appRoutes: Routes = [];
+// update config with extension info
+window.addEventListener('punditloaded', (ev: CustomEvent) => {
+  const { id } = ev.detail;
+  config.set('chromeExtId', id);
+  config.set('chromeExtUrl', `chrome-extension://${id}`);
+}, false);
+
+// const appRoutes: Routes = [];
 
 @NgModule({
   declarations: [
@@ -47,16 +55,17 @@ const appRoutes: Routes = [];
   imports: [
     BrowserModule,
     DvComponentsLibModule,
-    RouterModule.forRoot(
-      appRoutes,
-      { enableTracing: false }, // <-- debugging purposes only
-    ),
+    // RouterModule.forRoot(
+    //   appRoutes,
+    //   { enableTracing: false }, // <-- debugging purposes only
+    // ),
   ],
   providers: [
     UserService,
     AnnotationService,
     NotebookService,
-    AnchorService
+    AnchorService,
+    { provide: APP_BASE_HREF, useValue: '/' }
   ],
   bootstrap: [AppComponent],
   entryComponents: [AppComponent]
