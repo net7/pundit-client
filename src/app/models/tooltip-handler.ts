@@ -51,11 +51,17 @@ class TooltipHandler {
     this.tooltipWrapper = shadowRoot.getElementById('pnd-tooltip');
 
     this.instance = createPopper(this.virtualTarget, this.tooltipWrapper, {
+      placement: 'top',
       modifiers: [
         {
           name: 'eventListeners',
           options: {
-            scroll: false
+            scroll: false,
+          }
+        }, {
+          name: 'offset',
+          options: {
+            offset: [0, 25]
           }
         }
       ]

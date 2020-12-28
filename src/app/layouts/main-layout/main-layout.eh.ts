@@ -48,7 +48,7 @@ export class MainLayoutEH extends EventHandler {
               this.userService.load(users);
               this.notebookService.load(notebooks);
               this.annotationService.load(annotations);
-              this.anchorService.load(annotations).then(() => console.warn('Highlights loaded'));
+              this.anchorService.load(annotations);
               // signal
               this.layoutEvent$.next({ type: 'searchresponse' });
 
