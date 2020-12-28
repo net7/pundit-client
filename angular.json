@@ -27,9 +27,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.json",
-              "src/content.js",
-              "src/background.js"
+              { 
+                "glob": "**/*", 
+                "input": "src/chrome-ext/", 
+                "output": "/" 
+              }
             ],
             "styles": [
               "src/styles/host.scss"
