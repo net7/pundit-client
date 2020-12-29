@@ -27,9 +27,11 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              "src/manifest.json",
-              "src/content.js",
-              "src/background.js"
+              { 
+                "glob": "**/*", 
+                "input": "src/chrome-ext/", 
+                "output": "/" 
+              }
             ],
             "styles": [
               "src/styles/host.scss"
@@ -73,6 +75,18 @@
                   "with": "src/html-examples/shakespeare.html"
                 }
               ]
+            },
+            "chrome-ext": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.chrome-ext.ts"
+                },
+                {
+                  "replace": "src/app/app.module.ts",
+                  "with": "src/app/app.module.chrome-ext.ts"
+                }
+              ]
             }
           }
         },
@@ -87,6 +101,9 @@
             },
             "shake": {
               "browserTarget": "pnd:build:shake"
+            },
+            "chrome-ext": {
+              "browserTarget": "pnd:build:chrome-ext"
             }
           }
         },

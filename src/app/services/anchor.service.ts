@@ -33,7 +33,7 @@ export class AnchorService {
   }
 
   removeAll() {
-    this.annotationHighlights.map((hl) => hl.targetId).forEach(this.remove);
+    this.annotationHighlights.map((hl) => hl.targetId).forEach(this.remove.bind(this));
   }
 
   getHighlightById(annotationId: string): AnnotationHighlight | null {

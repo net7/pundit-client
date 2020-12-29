@@ -11,8 +11,8 @@
     "e2e": "ng e2e",
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
     "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
-    "build:ext": "ng build --single-bundle",
-    "watch:ext": "ng build --single-bundle --watch",
+    "build:ext": "ng build -c chrome-ext --single-bundle",
+    "watch:ext": "ng build -c chrome-ext --single-bundle --watch",
     "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @n7-frontend/core @n7-frontend/icon-font"
   },
   "private": true,
