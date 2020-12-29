@@ -5,7 +5,15 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     if(!appRoot) {
       load()
     } else {
-      appRoot.remove();
+      // emit signal
+      const signal = new CustomEvent(
+        "punditdestroy", 
+        { 
+          detail: () => {
+            appRoot.remove();
+          }
+      });
+      window.dispatchEvent(signal);
     }
   }
 });
