@@ -1,41 +1,37 @@
 // ------------------------------------ //
 // #TIPPY
 // ------------------------------------ //
-@import '../../node_modules/tippy.js/dist/tippy.css';
-@import '../../node_modules/tippy.js/themes/light-border.css';
-
+@import "../../node_modules/tippy.js/dist/tippy.css";
+@import "../../node_modules/tippy.js/themes/light-border.css";
 
 // ------------------------------------ //
 // #N7 COLOR SCHEME
 // ------------------------------------ //
 @import "../../node_modules/@n7-frontend/components/src/lib/styles/generic/color_scheme";
 
-
 // ------------------------------------ //
 // #N7 COMPONENTS VARIABLES
 // ------------------------------------ //
 @import "../../node_modules/@n7-frontend/components/src/lib/styles/generic/variables";
 
-
 // ------------------------------------ //
 // #N7 COMPONENTS STYLES
 // ------------------------------------ //
-@import '../../node_modules/@n7-frontend/components/src/lib/styles/imports';
-
+@import "../../node_modules/@n7-frontend/components/src/lib/styles/imports";
 
 // ------------------------------------ //
 // #N7-ICON-FONT
 // ------------------------------------ //
 @import "../../node_modules/@n7-frontend/icon-font/Font/n7-icon/style.css";
 
-
 // ------------------------------------ //
 // #PUNDIT-STYLES
 // ------------------------------------ //
 @import "./sidebar.scss";
-@import './layouts/main-layout';
+@import "./layouts/main-layout";
+@import "./tooltip.scss";
 
-// FIXME: togliere questo test n7-icon 
+// FIXME: togliere questo test n7-icon
 .n7-icon-cross {
     background-color: greenyellow;
     width: 10px;

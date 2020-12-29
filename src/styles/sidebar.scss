@@ -40,7 +40,8 @@
     }
 
     &__logo {
-        background: #b5babd;
+        background: rgb(57,143,255);
+        background: linear-gradient(32deg, rgba(57,143,255,1) 0%, rgba(133,90,245,1) 100%);
         padding: 9px;
         display: flex;
         align-self: center;
