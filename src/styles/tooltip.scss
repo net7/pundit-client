@@ -1,0 +1,33 @@
+div.pnd-tooltip {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffffff;
+    border: 1px solid #dbdfe3;
+    padding: 7px;
+
+    a {
+        color: #262216;
+    }
+
+    span.n7-nav__label {
+        width: 100%;
+
+        &:hover {
+            background-color: #e8ebed;
+        }
+    }
+
+    &[data-popper-placement^="top"] {
+        #arrow::before {
+            background-color: #ffffff;
+            border-bottom: 1px solid #dbdfe3;
+            border-right: 1px solid #dbdfe3;
+        }
+    }
+    &[data-popper-placement^="bottom"] {
+        #arrow::before {
+            background-color: #ffffff;
+            border-top: 1px solid #dbdfe3;
+            border-left: 1px solid #dbdfe3;
+        }
+    }
+}
