@@ -51,6 +51,7 @@ export class AnnotationService {
     const {
       notebookId,
       subject,
+      type
     } = payload;
     const userId = this.userService.whoami().id;
     const created = new Date();
@@ -60,6 +61,7 @@ export class AnnotationService {
       userId,
       subject,
       created,
+      type
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
