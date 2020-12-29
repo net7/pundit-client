@@ -6,14 +6,11 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       load()
     } else {
       // emit signal
-      const signal = new CustomEvent(
-        "punditdestroy", 
-        { 
-          detail: () => {
-            appRoot.remove();
-          }
-      });
+      const signal = new CustomEvent("punditdestroy");
       window.dispatchEvent(signal);
+      // clear
+      appRoot.remove();
+      appRoot = null;
     }
   }
 });

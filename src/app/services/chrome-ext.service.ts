@@ -22,10 +22,8 @@ export class ChromeExtService {
 
   private listenExtensionEvents() {
     // destroy
-    window.addEventListener('punditdestroy', async (ev: CustomEvent) => {
+    window.addEventListener('punditdestroy', async () => {
       this.anchorService.removeAll();
-      // signal callback
-      ev.detail();
     }, false);
   }
 }
