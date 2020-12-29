@@ -28,7 +28,7 @@ export class AnchorService {
       const { highlights } = this.getHighlightById(annotationId);
       removeHighlights(highlights);
       const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
-      this.annotationHighlights.splice(index, index + 1);
+      this.annotationHighlights.splice(index, 1);
     }
   }
 

@@ -29,7 +29,7 @@ export class AnnotationService {
 
   remove(annotationId: string) {
     const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
-    [this.lastRemoved] = this.annotations.splice(index, index + 1);
+    [this.lastRemoved] = this.annotations.splice(index, 1);
   }
 
   getAnnotationById(annotationId: string): AnnotationData | null {
