@@ -1,7 +1,7 @@
 .pundit-sidebar {
     border-left: #dbdfe3 1px solid;
     background: #f7f7f7;
-    position: fixed;
+    position: absolute;
     right: 0px;
     top: 0px;
     z-index: 10000;
@@ -12,8 +12,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     &__annotation-column {
-        height: 100%;
-        overflow-y: scroll;
+        overflow: hidden;
     }
 
     &__user-row {
@@ -80,4 +79,11 @@
     border-radius: $space/2;
     border: 1px solid #dbdfe3;
     border-bottom-width: 4px;
+}
+
+n7-annotation {
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    visibility: hidden;
 }

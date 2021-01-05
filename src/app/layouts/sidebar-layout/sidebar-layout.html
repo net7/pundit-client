@@ -1,5 +1,6 @@
 <div *ngIf="lb.dataSource as ds"
-     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
+    [style.height]="ds.height$ | async"
+    class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
         <span class="n7-icon-pundit pundit-sidebar__logo">

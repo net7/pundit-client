@@ -76,6 +76,14 @@
                 }
               ]
             },
+            "scroll": {
+              "fileReplacements": [
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/shakespeare-scroll.html"
+                }
+              ]
+            },
             "chrome-ext": {
               "fileReplacements": [
                 {
@@ -101,6 +109,9 @@
             },
             "shake": {
               "browserTarget": "pnd:build:shake"
+            },
+            "scroll": {
+              "browserTarget": "pnd:build:scroll"
             },
             "chrome-ext": {
               "browserTarget": "pnd:build:chrome-ext"

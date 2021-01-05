@@ -11,6 +11,7 @@ import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnchorService } from './services/anchor.service';
+import { AnnotationPositionService } from './services/annotation-position.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -49,6 +50,7 @@ config.init(appConfig);
     AnnotationService,
     NotebookService,
     AnchorService,
+    AnnotationPositionService,
     { provide: APP_BASE_HREF, useValue: '/' }
   ],
   bootstrap: [AppComponent],

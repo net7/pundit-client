@@ -8,6 +8,8 @@ import { HighlightElement, highlightRange, removeHighlights } from '../models/hi
 export class AnchorService {
   private annotationHighlights: AnnotationHighlight[] = [];
 
+  private orphans: Annotation[] = [];
+
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
       this.add(annotation);
@@ -16,10 +18,14 @@ export class AnchorService {
 
   async add(annotation: Annotation): Promise<void> {
     if (!this.getHighlightById(annotation.id)) {
-      const selectors = this.createSelectors(annotation);
-      const range: Range = await anchor(document.body, selectors);
-      const highlights = highlightRange(range);
-      this.annotationHighlights.push({ highlights, targetId: annotation.id });
+      try {
+        const selectors = this.createSelectors(annotation);
+        const range: Range = await anchor(document.body, selectors);
+        const highlights = highlightRange(range);
+        this.annotationHighlights.push({ highlights, targetId: annotation.id });
+      } catch (_e) {
+        this.orphans.push(annotation);
+      }
     }
   }
 
@@ -38,6 +44,16 @@ export class AnchorService {
 
   getHighlightById(annotationId: string): AnnotationHighlight | null {
     return this.annotationHighlights.find(({ targetId }) => targetId === annotationId) || null;
+  }
+
+  checkOrphans() {
+    const orphans = [...this.orphans];
+    // clear
+    this.orphans = [];
+    // retry
+    orphans.forEach((annotation) => {
+      this.add(annotation);
+    });
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {

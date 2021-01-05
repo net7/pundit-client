@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
+import { AnnotationPositionService } from './services/annotation-position.service';
 import { AnchorService } from './services/anchor.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
@@ -51,6 +52,7 @@ config.init(appConfig);
     AnnotationService,
     NotebookService,
     AnchorService,
+    AnnotationPositionService,
     ChromeExtService,
     {
       provide: APP_INITIALIZER,
