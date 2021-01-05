@@ -152,6 +152,9 @@ export class MainLayoutEH extends EventHandler {
     const bodyEl = document.body;
     const resizeObserver = new ResizeObserver((entries) => {
       const { height } = entries[0].contentRect;
+      // check orphans
+      this.anchorService.checkOrphans();
+      // emit signal
       this.layoutEvent$.next({ type: 'documentresize', payload: height });
     });
     resizeObserver.observe(bodyEl);
