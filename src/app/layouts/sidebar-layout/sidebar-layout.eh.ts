@@ -1,3 +1,4 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import { Subject, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -12,6 +13,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   private annotationService: AnnotationService;
 
+  private detectorRef: ChangeDetectorRef;
+
   public dataSource: SidebarLayoutDS;
 
   public listen() {
@@ -19,8 +22,10 @@ export class SidebarLayoutEH extends EventHandler {
       switch (type) {
         case 'sidebar-layout.init':
           this.annotationService = payload.annotationService;
-          this.dataSource.onInit();
           this.layoutEvent$ = payload.layoutEvent$;
+          this.detectorRef = payload.detectorRef;
+
+          this.dataSource.onInit();
           this.listenLayoutEvents();
           break;
         case 'sidebar-layout.destroy':
@@ -68,6 +73,13 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
           break;
         }
+        case 'documentresize':
+          this.dataSource.height$.next(`${payload}px`);
+          // fix update sidebar height
+          setTimeout(() => {
+            this.detectorRef.detectChanges();
+          });
+          break;
         default:
           break;
       }

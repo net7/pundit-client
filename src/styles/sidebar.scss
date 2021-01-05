@@ -12,8 +12,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
     &__annotation-column {
-        height: 100%;
-        overflow-y: scroll;
+        overflow: hidden;
     }
 
     &__user-row {

@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, OnDestroy, Input
+  Component, OnInit, OnDestroy, Input, ChangeDetectorRef
 } from '@angular/core';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
@@ -20,7 +20,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   constructor(
     private annotationService: AnnotationService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private detectorRef: ChangeDetectorRef
   ) {
     super(config);
 
@@ -33,7 +34,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
   protected initPayload() {
     return {
       layoutEvent$: this.layoutEvent$,
-      annotationService: this.annotationService
+      annotationService: this.annotationService,
+      detectorRef: this.detectorRef
     };
   }
 
