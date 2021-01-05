@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 
-const ELEMENT_MARGIN = 0;
+const TOP_MARGIN = 50;
 
 @Injectable()
 export class AnnotationPositionService {
@@ -13,24 +13,44 @@ export class AnnotationPositionService {
 
   update() {
     const bodyTop = document.body.getBoundingClientRect().top;
-    const highlights = this.annotationService.getAnnotations().map(
-      ({ _meta }) => this.anchorService.getHighlightById(_meta.id)
+    const annotations = this.annotationService.getAnnotations().map(
+      ({ _meta }) => ({
+        created: _meta.created,
+        anchor: this.anchorService.getHighlightById(_meta.id)
+      })
     );
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     const rawElements: NodeListOf<HTMLElement> = shadowRoot.querySelectorAll('n7-annotation');
-    const positions = [];
+    const positionMap = [];
     rawElements.forEach((el, index) => {
-      const currentHighlights = highlights[index];
-      let startPosition = 0;
-      if (currentHighlights) {
-        const tops = currentHighlights.highlights.map(
+      const { anchor, created } = annotations[index];
+      let anchorPosition = -1;
+      if (anchor) {
+        const tops = anchor.highlights.map(
           (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
         );
-        startPosition = Math.min(...tops);
+        anchorPosition = Math.min(...tops);
       }
+      positionMap.push({
+        el, anchorPosition, created
+      });
+    });
+
+    const positions = [];
+    positionMap.sort((a, b) => {
+      const { created: aCreated, anchorPosition: aAnchorPosition } = a;
+      const { created: bCreated, anchorPosition: bAnchorPosition } = b;
+      if (aAnchorPosition === bAnchorPosition) {
+        return aCreated - bCreated;
+      }
+      return aAnchorPosition - bAnchorPosition;
+    }).forEach((positionData, index) => {
+      const { el, anchorPosition } = positionData;
       const { offsetHeight } = el;
-      const lastEnd = index ? positions[index - 1].end : 0;
-      const start = startPosition < lastEnd ? lastEnd + ELEMENT_MARGIN : startPosition;
+      const lastEnd = index ? positions[index - 1].end : TOP_MARGIN;
+      const start = anchorPosition < lastEnd
+        ? lastEnd
+        : anchorPosition;
       const end = start + offsetHeight;
       positions.push({ start, end });
 
