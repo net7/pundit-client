@@ -4,6 +4,7 @@ import {
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { LayoutEvent } from 'src/app/types';
 import { _c } from 'src/app/models/config';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
@@ -20,6 +21,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   constructor(
     private annotationService: AnnotationService,
+    private annotationPositionService: AnnotationPositionService,
     private sanitizer: DomSanitizer,
     private detectorRef: ChangeDetectorRef
   ) {
@@ -35,6 +37,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     return {
       layoutEvent$: this.layoutEvent$,
       annotationService: this.annotationService,
+      annotationPositionService: this.annotationPositionService,
       detectorRef: this.detectorRef
     };
   }

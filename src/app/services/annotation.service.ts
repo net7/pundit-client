@@ -104,7 +104,7 @@ export class AnnotationService {
           }
         }
       },
-      isCollapsed: false,
+      isCollapsed: true,
       date: new Date(created).toLocaleDateString(),
       notebook: {
         name: notebook.label,

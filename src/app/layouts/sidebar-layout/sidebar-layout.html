@@ -1,5 +1,6 @@
 <div *ngIf="lb.dataSource as ds"
-     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
+    [style.height]="ds.height$ | async"
+    class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
         <span class="n7-icon-pundit pundit-sidebar__logo">
@@ -16,7 +17,7 @@
         </span>
     </div>
 
-    <div class="pundit-sidebar__annotation-column" [style.height]="ds.height$ | async">
+    <div class="pundit-sidebar__annotation-column">
         <n7-header [data]="ds.headerMock"></n7-header>
         <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
             <n7-annotation [data]="annotation"

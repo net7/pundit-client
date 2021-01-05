@@ -25,7 +25,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$ = payload.layoutEvent$;
           this.detectorRef = payload.detectorRef;
 
-          this.dataSource.onInit();
+          this.dataSource.onInit(payload);
           this.listenLayoutEvents();
           break;
         case 'sidebar-layout.destroy':
@@ -50,6 +50,9 @@ export class SidebarLayoutEH extends EventHandler {
         case 'annotation.delete':
           this.layoutEvent$.next({ type: 'annotationdelete', payload });
           break;
+        case 'annotation.togglecollapse':
+          this.dataSource.updateAnnotations();
+          break;
         default:
           break;
       }
@@ -62,15 +65,15 @@ export class SidebarLayoutEH extends EventHandler {
     ).subscribe(({ type, payload }) => {
       switch (type) {
         case 'searchresponse':
-          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          this.dataSource.updateAnnotations(true);
           break;
         case 'annotationdeletesuccess':
           this.annotationService.remove(payload);
-          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          this.dataSource.updateAnnotations(true);
           break;
         case 'annotationcreatesuccess': {
           this.annotationService.add(payload);
-          this.dataSource.loadAnnotations(this.annotationService.getAnnotations());
+          this.dataSource.updateAnnotations(true);
           break;
         }
         case 'documentresize':
@@ -78,6 +81,7 @@ export class SidebarLayoutEH extends EventHandler {
           // fix update sidebar height
           setTimeout(() => {
             this.detectorRef.detectChanges();
+            this.dataSource.updateAnnotations();
           });
           break;
         default:
