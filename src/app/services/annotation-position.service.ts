@@ -28,7 +28,7 @@ export class AnnotationPositionService {
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>
       const { anchor, created } = annotations[index];
-      // index of this annotation in the sidebar's view
+      // default annotation position (as orphan)
       let anchorPosition = -1;
       if (anchor) {
         const tops = anchor.highlights.map(
@@ -54,7 +54,8 @@ export class AnnotationPositionService {
       }
       return aAnchorPosition - bAnchorPosition;
     }).forEach((positionData, index) => {
-      // calculate the correct offset of the annotation based on the previous annotation (lastEnd)
+      // calculate the correct offset of the annotation based on the mapped highlight position
+      // or the previous annotation offset (lastEnd)
       const { el, anchorPosition } = positionData;
       const { offsetHeight } = el;
       const lastEnd = index ? positions[index - 1].end : TOP_MARGIN;
