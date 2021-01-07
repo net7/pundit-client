@@ -26,17 +26,3 @@
 @import "./sidebar.scss";
 @import "./layouts/main-layout";
 @import "./tooltip.scss";
-
-// FIXME: togliere questo test n7-icon
-.n7-icon-cross {
-    background-color: #33a853;
-    width: 10px;
-    height: 10px;
-    display: inline-block;
-    border-radius: 50%;
-    margin-left: 10px;
-
-    &:hover {
-        background-color: #ea4234;
-    }
-}
