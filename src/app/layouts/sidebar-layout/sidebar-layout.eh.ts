@@ -31,10 +31,11 @@ export class SidebarLayoutEH extends EventHandler {
         case 'sidebar-layout.destroy':
           this.destroy$.next();
           break;
-        case 'sidebar-layout.clicklogo':
-          // open the sidebar
-          this.dataSource.isCollapsed.next(false);
-          break;
+        case 'sidebar-layout.clicklogo': {
+          // invert the state of the sidebar
+          const state = this.dataSource.isCollapsed.value;
+          this.dataSource.isCollapsed.next(!state);
+        } break;
         case 'sidebar-layout.sidebarclose':
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);
