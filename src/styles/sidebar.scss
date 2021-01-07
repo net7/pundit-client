@@ -7,9 +7,9 @@
     z-index: 10000;
     height: 100vh;
     width: 370px;
+    font-family: $font-family-main;
     transition-property: transform;
-    transition-duration: .5s;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    transition-duration: 0.5s;
 
     &__annotation-column {
         overflow: hidden;
@@ -30,17 +30,27 @@
 
         a {
             text-decoration: none;
-            color: #3484e6;
+            // color: #3484e6;
+            color: #000000;
 
-            &:link, :visited {
-                color: #3484e6;
+            &:link,
+            :visited {
+                // color: #3484e6;
+                color: #000000;
             }
         }
     }
 
+    &__actions {
+        span,
+        img {
+            cursor: pointer;
+        }
+    }
+
     &__logo {
-        background: rgb(57,143,255);
-        background: linear-gradient(32deg, rgba(57,143,255,1) 0%, rgba(133,90,245,1) 100%);
+        background: rgb(57, 143, 255);
+        background: linear-gradient(32deg, rgba(57, 143, 255, 1) 0%, rgba(133, 90, 245, 1) 100%);
         padding: 9px;
         display: flex;
         align-self: center;
@@ -48,7 +58,7 @@
         position: absolute;
         left: 3px;
         cursor: pointer;
-        
+
         img {
             height: 20px;
             width: auto;

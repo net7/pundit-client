@@ -12,9 +12,19 @@
         <span class="pundit-sidebar__user-name">
             <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
         </span>
-        <span class="pundit-sidebar__close-button" (click)="lb.eventHandler.emitInner('sidebarclose')">
-            <n7-anchor-wrapper>Close Sidebar ></n7-anchor-wrapper>
-        </span>
+        <div class="pundit-sidebar__actions">
+            <span class="pundit-sidebar__notebook-panel" (click)="lb.eventHandler.emitInner('notebookpanel')">
+                <n7-anchor-wrapper>
+                    <span class="n7-icon-book"></span>
+                    <img src="/assets/mocks/book.png" alt="book">
+                </n7-anchor-wrapper>
+            </span>
+            <span class="pundit-sidebar__close-button" (click)="lb.eventHandler.emitInner('sidebarclose')">
+                <n7-anchor-wrapper>
+                    <img src="/assets/mocks/cross.png" alt="cross">
+                </n7-anchor-wrapper>
+            </span>
+        </div>
     </div>
 
     <div class="pundit-sidebar__annotation-column">
