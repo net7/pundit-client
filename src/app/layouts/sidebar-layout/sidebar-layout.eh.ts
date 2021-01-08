@@ -36,6 +36,10 @@ export class SidebarLayoutEH extends EventHandler {
           const state = this.dataSource.isCollapsed.value;
           this.dataSource.isCollapsed.next(!state);
         } break;
+        case 'sidebar-layout.notebookpanel': {
+          const state = this.dataSource.notebookEditor.getValue();
+          this.dataSource.notebookEditor.next(!state);
+        } break;
         case 'sidebar-layout.sidebarclose':
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);

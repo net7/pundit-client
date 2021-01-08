@@ -26,6 +26,12 @@
         </div>
     </div>
 
+    <!-- notebook selection / creation panel -->
+    <ng-container *ngIf="lb.dataSource.notebookEditor.getValue()">
+        <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
+    </ng-container>
+    
+    
     <div class="pundit-sidebar__annotation-column">
         <n7-header [data]="ds.headerMock"></n7-header>
         <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
@@ -35,3 +41,8 @@
         </ng-container>
     </div>
 </div>
+
+
+<ng-template #notebookpanel>
+    Notebook panel is open.
+</ng-template>
