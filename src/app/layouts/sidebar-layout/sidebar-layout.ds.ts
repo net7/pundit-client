@@ -8,7 +8,11 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   private annotationPositionService: AnnotationPositionService;
 
+  /** open/close the sidebar */
   public isCollapsed = new BehaviorSubject(false);
+
+  /** open/close the notebook editor panel */
+  public notebookEditor = new BehaviorSubject(false);
 
   public height$: Subject<string> = new Subject();
 
