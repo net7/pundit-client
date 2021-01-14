@@ -1,0 +1,31 @@
+<div class="notebook-panel" *ngIf="data">
+    <div class="notebook-panel__row n7-grid-1">
+        <div class="notebook-panel__label">Current notebook:</div>
+        <div class="notebook-panel__name">MyNotebook with a very very long name</div>
+    </div>
+    <div class="notebook-panel__row n7-grid-2">
+        <div class="notebook-panel__status">
+            <div class="notebook-panel__label">Notebook status:</div>
+            <div class="notebook-panel__current-status">PUBLIC</div>
+            <div class="notebook-panel__status-description">
+                All annotations in the notebook can be seen by all Pundit's users
+            </div>
+        </div>
+        <div class="notebook-panel__change-status">
+            <div class="notebook-panel__label">Change status:</div>
+            <div class="notebook-panel__buttons">
+                <div class="n7-btn">Private</div>
+                <div class="n7-btn">Share</div>
+            </div>
+        </div>
+    </div>
+    <hr class="notebook-panel__separator">
+    <div class="notebook-panel__row n7-grid-1">
+        <div class="notebook-panel__label">Change current notebook</div>
+        <select class="notebook-panel__select" name="current-notebook" id="current-notebook">
+            <option default value="MyNotebook with a very very long name">
+                MyNotebook with a very very long name
+            </option>
+        </select>
+    </div>
+</div>
