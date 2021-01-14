@@ -35,4 +35,6 @@ export class NotebookService {
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
   }
+
+  getAll = (): NotebookData[] => this.notebooks;
 }

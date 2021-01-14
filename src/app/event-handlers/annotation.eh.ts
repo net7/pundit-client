@@ -9,11 +9,24 @@ export class AnnotationEH extends EventHandler {
       switch (type) {
         case 'annotation.click': {
           const { source, id } = payload;
+
+          // collapse
           if (source === 'box') {
             this.dataSource.toggleCollapse(id);
             this.emitOuter('togglecollapse');
-          } else if (source === 'icon') {
+
+          // annotation delete
+          } else if (source === 'action-delete') {
             this.emitOuter('delete', id);
+
+          // annotation update notebook
+          } else if (source === 'notebook-item') {
+            this.emitOuter('updatenotebook', id);
+            this.dataSource.closeMenu(id);
+
+          // annotation update menu state
+          } else {
+            this.dataSource.updateMenuState(id, source);
           }
           break;
         }

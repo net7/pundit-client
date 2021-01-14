@@ -55,6 +55,9 @@ export class SidebarLayoutEH extends EventHandler {
         case 'annotation.delete':
           this.layoutEvent$.next({ type: 'annotationdelete', payload });
           break;
+        case 'annotation.updatenotebook':
+          this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
+          break;
         case 'annotation.togglecollapse':
           this.dataSource.updateAnnotations();
           break;

@@ -80,6 +80,7 @@ export class AnnotationService {
     // FIXME: togliere controllo user
     const user = this.userService.getUserById(userId) || {} as any;
     const notebook = this.notebookService.getNotebookById(notebookId);
+    const notebooks = this.notebookService.getAll();
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
     let comment;
@@ -117,11 +118,48 @@ export class AnnotationService {
       },
       body: text,
       comment,
-      icon: {
-        id: 'n7-icon-cross',
-        payload: {
-          source: 'icon',
-          id
+      menu: {
+        icon: {
+          id: 'n7-icon-angle-down',
+          payload: {
+            id,
+            source: 'menu-header',
+          }
+        },
+        actions: [{
+          label: 'Change notebook',
+          payload: {
+            id,
+            source: 'action-notebooks'
+          }
+        }, {
+          label: 'Delete',
+          payload: {
+            id,
+            source: 'action-delete'
+          }
+        }],
+        notebooks: {
+          header: {
+            label: notebook.label,
+            icon: {
+              id: 'n7-icon-caret-down',
+            },
+            payload: {
+              id,
+              source: 'notebooks-header'
+            }
+          },
+          items: notebooks
+            .filter(({ id: itemId }) => itemId !== notebook.id)
+            .map(({ id: itemId, label }) => ({
+              label,
+              payload: {
+                id,
+                notebookId: itemId,
+                source: 'notebook-item'
+              }
+            }))
         }
       },
     };

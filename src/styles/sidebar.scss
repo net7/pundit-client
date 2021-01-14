@@ -97,3 +97,30 @@ n7-annotation {
     box-sizing: border-box;
     visibility: hidden;
 }
+
+// annotation menu
+.n7-annotation__container {
+    .n7-annotation__menu-dropdown,
+    .n7-annotation__menu-notebooks,
+    .n7-annotation__menu-notebooks-items {
+        display: none;
+    }
+    &.is-open {
+        .n7-annotation__menu-dropdown {
+            display: block;
+        }
+    }
+    &.is-notebooks-open {
+        .n7-annotation__menu-actions {
+            display: none;
+        }
+        .n7-annotation__menu-notebooks {
+            display: block;
+        }
+    }
+    &.is-notebooks-select-open {
+        .n7-annotation__menu-notebooks-items {
+            display: block;
+        }
+    }
+}
