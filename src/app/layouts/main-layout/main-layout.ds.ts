@@ -41,31 +41,43 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onHighlightOrComment(comment?: string) {
+  onComment() {
+    const currentNotebook = this.notebookService.getSelected();
+    const notebooks = this.notebookService.getAll();
+    this.one('comment-modal').update({ currentNotebook, notebooks });
+  }
+
+  onAnnotationDelete(id: string) {
+    const deleteResponse = deleteAnnotation(id);
+    return from(deleteResponse);
+  }
+
+  getAnnotationRequestPayload(comment?: string, notebookId?: string) {
     const range = selectionHandler.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const notebookId = this.notebookService.getSelected().id;
+    const selectedNotebookId = notebookId || this.notebookService.getSelected().id;
     const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
     const options = comment ? {
       content: {
         comment
       }
     } : {};
+    return createRequestPayload({
+      userId,
+      type,
+      options,
+      notebookId: selectedNotebookId,
+      selection: range,
+    });
+  }
+
+  create$(requestPayload) {
     // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
-    // annotate
-    const requestPayload = createRequestPayload({
-      userId, notebookId, selection: range, type, options
-    });
     // request
     return from(createAnnotation(requestPayload)).pipe(
       switchMap(({ data }) => of({ id: data.id, requestPayload }))
     );
-  }
-
-  onAnnotationDelete(id: string) {
-    const deleteResponse = deleteAnnotation(id);
-    return from(deleteResponse);
   }
 }

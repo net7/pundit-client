@@ -5,7 +5,6 @@ import {
 import {
   catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
-import * as faker from 'faker';
 import ResizeObserver from 'resize-observer-polyfill';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
@@ -30,6 +29,11 @@ export class MainLayoutEH extends EventHandler {
   private anchorService: AnchorService;
 
   public dataSource: MainLayoutDS;
+
+  private commentState: {
+    comment: string | null;
+    notebookId: string | null;
+  };
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -79,28 +83,30 @@ export class MainLayoutEH extends EventHandler {
       }
     });
 
-    this.outerEvents$.subscribe(({ type }) => {
+    this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'tooltip.highlight':
-        case 'tooltip.comment': {
-          // FIXME: togliere faker
-          let comment;
-          if (type === 'tooltip.comment') {
-            comment = faker.lorem.sentence();
+        case 'tooltip.highlight': {
+          const requestPayload = this.dataSource.getAnnotationRequestPayload();
+          this.saveAnnotation(requestPayload);
+          break;
+        }
+        case 'tooltip.comment':
+          // reset
+          this.commentState = { comment: null, notebookId: null };
+          this.dataSource.onComment();
+          break;
+        case 'comment-modal.change':
+          this.commentState.comment = payload;
+          break;
+        case 'comment-modal.notebook':
+          this.commentState.notebookId = payload;
+          break;
+        case 'comment-modal.save': {
+          const { comment, notebookId } = this.commentState;
+          if (typeof comment === 'string' && comment.trim().length) {
+            const requestPayload = this.dataSource.getAnnotationRequestPayload(comment, notebookId);
+            this.saveAnnotation(requestPayload);
           }
-          this.dataSource.onHighlightOrComment(comment).pipe(
-            catchError((e) => {
-              this.handleError(e);
-              return EMPTY;
-            })
-          ).subscribe(({ id, requestPayload }) => {
-            const newAnnotation = this.annotationService.getAnnotationFromPayload(
-              id, requestPayload
-            );
-            this.anchorService.add(newAnnotation);
-            // signal
-            this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
-          });
           break;
         }
         default:
@@ -167,5 +173,21 @@ export class MainLayoutEH extends EventHandler {
 
   private handleError(error) {
     console.warn('TODO: error handler', error);
+  }
+
+  private saveAnnotation(payload) {
+    this.dataSource.create$(payload).pipe(
+      catchError((e) => {
+        this.handleError(e);
+        return EMPTY;
+      })
+    ).subscribe(({ id, requestPayload }) => {
+      const newAnnotation = this.annotationService.getAnnotationFromPayload(
+        id, requestPayload
+      );
+      this.anchorService.add(newAnnotation);
+      // signal
+      this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
+    });
   }
 }

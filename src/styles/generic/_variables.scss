@@ -20,7 +20,7 @@ $font-family-headings: $font-family-main;
 // #LAYOUT
 // ------------------------------------ //
 // $page-max-width: 1240px;
-
+$page-readable-width: 800px;
 
 // ------------------------------------ //
 // #GRIDS
@@ -213,3 +213,9 @@ $font-family-headings: $font-family-main;
 // $table-footer-font-size: $font-size-s;
 // $table-footer-text-color: $color-text-light;
 // $table-footer-bg: $color-background-medium;
+
+
+// ------------------------------------ //
+// #MODAL
+// ------------------------------------ //
+$modal-width: $page-readable-width;
