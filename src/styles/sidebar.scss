@@ -17,46 +17,54 @@
 
     &__user-row {
         background-color: #ffffff;
-        color: #000000;
-        border: 1px solid #dbdfe3;
-        padding: 2px;
+        color: $color-text;
+        border: 1px solid $color-gray-03;
+        margin: 2px;
         display: flex;
         justify-content: space-around;
         align-items: center;
         position: relative;
         right: 45px;
-        height: 38px;
-        border-radius: 38px;
+        height: $space * 5;
+        border-radius: $space * 5;
 
         a {
             text-decoration: none;
             // color: #3484e6;
-            color: #000000;
+            color: $color-text;
 
             &:link,
             :visited {
-                // color: #3484e6;
-                color: #000000;
+                color: $color-text;
             }
         }
     }
 
-    &__actions {
-        span,
-        img {
-            cursor: pointer;
-        }
+    &__notebook-panel {
+        border-left: 1px solid $color-gray-03;
+    }
+
+    &__notebook-panel,
+    &__close-button {
+        cursor: pointer;
+        font-size: $font-size-m;
+        padding: 10px;
+        border-right: 1px solid $color-gray-03;
+        border-bottom: 1px solid $color-gray-03;
+    }
+    
+    &__header-icon {
+        color: $color-text-light;
     }
 
     &__logo {
-        background: rgb(57, 143, 255);
-        background: linear-gradient(32deg, rgba(57, 143, 255, 1) 0%, rgba(133, 90, 245, 1) 100%);
-        padding: 9px;
+        background: $gradient;
+        padding: 10px;
         display: flex;
         align-self: center;
         border-radius: 50%;
         position: absolute;
-        left: 3px;
+        left: 0px;
         cursor: pointer;
 
         img {
