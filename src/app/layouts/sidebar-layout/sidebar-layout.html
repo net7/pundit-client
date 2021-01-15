@@ -1,19 +1,27 @@
 <div *ngIf="lb.dataSource as ds"
     [style.height]="ds.height$ | async"
     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : '' }}">
+
+    <div class="n7-icon-pundit pundit-sidebar__logo">
+        <img [src]="logo"
+             alt="pundit mock logo"
+             (click)="lb.eventHandler.emitInner('clicklogo')">
+    </div>
+
+    <div class="pundit-sidebar__cont">
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
-        <span class="n7-icon-pundit pundit-sidebar__logo">
+        <div class="n7-icon-pundit pundit-sidebar__logo">
             <img [src]="logo"
                  alt="pundit mock logo"
                  (click)="lb.eventHandler.emitInner('clicklogo')">
-        </span>
+        </div>
         <!-- user name -->
-        <span class="pundit-sidebar__user-name">
+        <div class="pundit-sidebar__user-name">
             <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
-        </span>
+        </div>
         <div class="pundit-sidebar__actions">
-            <a href="#" class="pundit-sidebar__notebook-panel" (click)="lb.eventHandler.emitInner('notebookpanel')">
+            <a href="#" class="pundit-sidebar__notebook-panel active" (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <n7-anchor-wrapper>
                     <span class="n7-icon-book pundit-sidebar__header-icon"></span>
                 </n7-anchor-wrapper>
@@ -39,6 +47,7 @@
                            [emit]="lb.widgets['annotation'].emit">
             </n7-annotation>
         </ng-container>
+    </div>
     </div>
 </div>
 

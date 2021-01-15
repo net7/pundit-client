@@ -1,15 +1,18 @@
 .pundit-sidebar {
-    border-left: #dbdfe3 1px solid;
-    background: #f7f7f7;
-    position: absolute;
-    right: 0px;
-    top: 0px;
-    z-index: 10000;
-    height: 100vh;
-    width: 370px;
     font-family: $font-family-main;
-    transition-property: transform;
-    transition-duration: 0.5s;
+
+    &__cont {
+        border-left: #dbdfe3 1px solid;
+        background: #f7f7f7;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        z-index: 10000;
+        height: 100vh;
+        width: 370px;
+        transition-property: transform;
+        transition-duration: 0.5s;
+    }
 
     &__annotation-column {
         overflow: hidden;
@@ -18,15 +21,16 @@
     &__user-row {
         background-color: #ffffff;
         color: $color-text;
-        border: 1px solid $color-gray-03;
-        margin: 2px;
         display: flex;
-        justify-content: space-around;
+        justify-content: space-between;
         align-items: center;
         position: relative;
-        right: 45px;
+        width: 100%;
         height: $space * 5;
-        border-radius: $space * 5;
+        margin-top: $space * 2;
+        border-top: 1px solid $color-gray-03;
+        border-bottom: 1px solid $color-gray-03;
+        box-shadow: 0px 3px 11px 0px $color-gray-03;
 
         a {
             text-decoration: none;
@@ -40,31 +44,53 @@
         }
     }
 
-    &__notebook-panel {
-        border-left: 1px solid $color-gray-03;
+    &__user-name {
+        width: 100%;
+        margin-left: $space;
+        font-size: $font-size-xs;
     }
 
-    &__notebook-panel,
-    &__close-button {
-        cursor: pointer;
-        font-size: $font-size-m;
-        padding: 10px;
-        border-right: 1px solid $color-gray-03;
-        border-bottom: 1px solid $color-gray-03;
+    &__actions {
+        & > a {
+            border-left: 1px solid $color-gray-02;
+            cursor: pointer;
+            font-size: $font-size-m;
+            padding: 10px;
+
+            &.active {
+                color: #3e8ce9;
+                box-shadow: inset 0px -4px #3e8ce9;
+                border-bottom: 1px solid #3e8ce9;
+
+                .pundit-sidebar__header-icon {
+                    color: #3e8ce9;
+                }
+            }
+        }
     }
     
     &__header-icon {
         color: $color-text-light;
     }
 
+    &.is-collapsed {
+
+        .pundit-sidebar__cont {
+            transform: translateX(372px);
+        }
+
+        .pundit-sidebar__logo {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+        }
+    }
+
     &__logo {
         background: $gradient;
         padding: 10px;
-        display: flex;
-        align-self: center;
         border-radius: 50%;
-        position: absolute;
-        left: 0px;
+        margin-left: -20px;
         cursor: pointer;
 
         img {
@@ -76,10 +102,6 @@
     &__close-button {
         cursor: pointer;
     }
-}
-
-.is-collapsed {
-    transform: translateX(372px);
 }
 
 .n7-icon-arrow-right {
