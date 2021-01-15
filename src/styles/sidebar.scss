@@ -10,8 +10,7 @@
         z-index: 10000;
         height: 100vh;
         width: 370px;
-        transition-property: transform;
-        transition-duration: 0.5s;
+        // animation: collapsing .5s reverse both;
     }
 
     &__annotation-column {
@@ -68,15 +67,20 @@
             }
         }
     }
-    
+
     &__header-icon {
         color: $color-text-light;
     }
 
-    &.is-collapsed {
-
+    &.is-expanded {
         .pundit-sidebar__cont {
-            transform: translateX(372px);
+            animation: expanding 0.5s both;
+        }
+    }
+
+    &.is-collapsed {
+        .pundit-sidebar__cont {
+            animation: collapsing 0.5s both;
         }
 
         .pundit-sidebar__logo {
@@ -152,5 +156,33 @@ n7-annotation {
         .n7-annotation__menu-notebooks-items {
             display: block;
         }
+    }
+}
+
+/* ------------------------------------ *\
+    ANIMATIONS
+\* ------------------------------------ */
+
+@keyframes collapsing {
+    0% {
+        transform: translateX(0px);
+        opacity: 1;
+    }
+    99% {
+        transform: translateX(372px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(0px);
+        opacity: 0;
+    }
+}
+
+@keyframes expanding {
+    from {
+        transform: translate(372px);
+    }
+    to {
+        transform: translate(0px);
     }
 }
