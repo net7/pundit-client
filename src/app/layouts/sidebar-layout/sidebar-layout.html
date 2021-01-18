@@ -1,5 +1,4 @@
 <div *ngIf="lb.dataSource as ds"
-    [style.height]="ds.height$ | async"
     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : 'is-expanded' }}">
 
     <div class="n7-icon-pundit pundit-sidebar__logo">
@@ -8,7 +7,7 @@
              (click)="lb.eventHandler.emitInner('clicklogo')">
     </div>
 
-    <div class="pundit-sidebar__cont">
+    <div class="pundit-sidebar__cont" [style.height]="ds.height$ | async">
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
         <div class="n7-icon-pundit pundit-sidebar__logo">
