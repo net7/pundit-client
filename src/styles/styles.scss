@@ -8,6 +8,7 @@
 // #N7 COLOR SCHEME
 // ------------------------------------ //
 @import "../../node_modules/@n7-frontend/components/src/lib/styles/generic/color_scheme";
+@import "./generic/color-scheme";
 
 // ------------------------------------ //
 // #N7 COMPONENTS VARIABLES
@@ -24,5 +25,6 @@
 // ------------------------------------ //
 @import "./generic/variables";
 @import "./sidebar.scss";
+@import "./notebook-panel.scss";
 @import "./layouts/main-layout";
 @import "./tooltip.scss";

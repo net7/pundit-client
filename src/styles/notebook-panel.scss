@@ -1,0 +1,40 @@
+.notebook-panel {
+    background-color: $color-background-base;
+    padding: 2 * $space;
+    color: $color-text;
+    position: absolute;
+    z-index: 1;
+
+    &__label {
+        font-size: $font-size-s;
+    }
+
+    &__name {
+        background-color: $color-background-medium;
+        padding: $space;
+        font-weight: $font-weight-bold;
+        border-radius: $border-radius;
+    }
+
+    &__current-status {
+        font-weight: $font-weight-bold;
+        margin: $space auto;
+    }
+
+    &__status-description {
+        color: $color-text-light;
+        font-size: $font-size-s;
+    }
+
+    &__separator {
+        margin-bottom: $space;
+    }
+
+    &__select {
+        background-color: $color-background-light;
+    }
+
+    .n7-btn {
+        margin: $space $space auto auto;
+    }
+}
