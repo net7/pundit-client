@@ -39,7 +39,6 @@
     "lodash": "^4.17.20",
     "ngx-build-plus": "~10.1.1",
     "pdfjs-dist": "~2.5.207",
-    "resize-observer-polyfill": "^1.5.1",
     "rxjs": "6.5.5",
     "tippy.js": "^6.2.7",
     "tslib": "^1.10.0",

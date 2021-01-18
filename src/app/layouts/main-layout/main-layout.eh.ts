@@ -6,7 +6,6 @@ import {
   catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import * as faker from 'faker';
-import ResizeObserver from 'resize-observer-polyfill';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -149,19 +148,19 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private listenDocumentResize() {
-    const bodyEl = document.body;
-    const resizeObserver = new ResizeObserver((entries) => {
-      const { height } = entries[0].contentRect;
-      // check orphans
-      this.anchorService.checkOrphans();
-      // emit signal
-      this.layoutEvent$.next({ type: 'documentresize', payload: height });
-    });
-    resizeObserver.observe(bodyEl);
-
-    // on destroy clear
-    this.destroy$.subscribe(() => {
-      resizeObserver.disconnect();
+    const scroll$ = fromEvent(document, 'scroll');
+    let lastHeight;
+    scroll$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      const { scrollHeight } = document.body;
+      if (lastHeight !== scrollHeight) {
+        lastHeight = scrollHeight;
+        // check orphans
+        this.anchorService.checkOrphans();
+        // emit signal
+        this.layoutEvent$.next({ type: 'documentresize', payload: scrollHeight });
+      }
     });
   }
 

@@ -14,10 +14,20 @@ export class ChromeExtService {
         const { id } = ev.detail;
         config.set('chromeExtId', id);
         config.set('chromeExtUrl', `chrome-extension://${id}`);
+        this.addFontStyles();
         this.listenExtensionEvents();
         res();
       }, false);
     });
+  }
+
+  private addFontStyles() {
+    const chromeExtUrl = config.get('chromeExtUrl');
+
+    // add style to document
+    const style = document.createElement('style');
+    style.innerHTML = `@import "${chromeExtUrl}/n7-icon/style.css";`;
+    document.head.appendChild(style);
   }
 
   private listenExtensionEvents() {

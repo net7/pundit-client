@@ -24,7 +24,8 @@
   "web_accessible_resources": [
     "main.js",
     "styles.js",
-    "assets/mocks/pundit-icon-48-light.png"
+    "assets/mocks/pundit-icon-48-light.png",
+    "n7-icon/*"
   ],
   "permissions": ["activeTab"]
 }
