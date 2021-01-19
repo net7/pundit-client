@@ -6,6 +6,7 @@ import {
   catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';
+import { CommentAnnotation } from '@pundit/communication';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -14,6 +15,8 @@ import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
 import { MainLayoutDS } from './main-layout.ds';
+
+const PENDING_ANNOTATION_ID = 'pending-id';
 
 export class MainLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
@@ -33,7 +36,10 @@ export class MainLayoutEH extends EventHandler {
   private commentState: {
     comment: string | null;
     notebookId: string | null;
+    range: Range;
   };
+
+  private pendingAnnotationPayload: CommentAnnotation;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -86,15 +92,24 @@ export class MainLayoutEH extends EventHandler {
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'tooltip.highlight': {
-          const requestPayload = this.dataSource.getAnnotationRequestPayload();
+          const requestPayload = this.dataSource.getHighlightRequestPayload();
           this.saveAnnotation(requestPayload);
           break;
         }
-        case 'tooltip.comment':
+        case 'tooltip.comment': {
           // reset
-          this.commentState = { comment: null, notebookId: null };
+          this.commentState = {
+            comment: null,
+            notebookId: null,
+            range: this.dataSource.getCurrentRange()
+          };
+          this.pendingAnnotationPayload = (
+            this.dataSource.getHighlightRequestPayload() as CommentAnnotation
+          );
+          this.addPendingAnnotation();
           this.dataSource.onComment();
           break;
+        }
         case 'comment-modal.change':
           this.commentState.comment = payload;
           break;
@@ -102,13 +117,19 @@ export class MainLayoutEH extends EventHandler {
           this.commentState.notebookId = payload;
           break;
         case 'comment-modal.save': {
-          const { comment, notebookId } = this.commentState;
-          if (typeof comment === 'string' && comment.trim().length) {
-            const requestPayload = this.dataSource.getAnnotationRequestPayload(comment, notebookId);
+          const requestPayload = this.dataSource.getCommentRequestPayload(this.commentState);
+          if (requestPayload) {
+            // clear pending
+            this.removePendingAnnotation();
+            // save
             this.saveAnnotation(requestPayload);
           }
           break;
         }
+        case 'comment-modal.close':
+          // clear pending
+          this.removePendingAnnotation();
+          break;
         default:
           break;
       }
@@ -189,5 +210,16 @@ export class MainLayoutEH extends EventHandler {
       // signal
       this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
     });
+  }
+
+  private addPendingAnnotation() {
+    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+      PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
+    );
+    this.anchorService.add(pendingAnnotation);
+  }
+
+  private removePendingAnnotation() {
+    this.anchorService.remove(PENDING_ANNOTATION_ID);
   }
 }

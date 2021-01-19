@@ -20,7 +20,6 @@ $font-family-headings: $font-family-main;
 // #LAYOUT
 // ------------------------------------ //
 // $page-max-width: 1240px;
-$page-readable-width: 800px;
 
 // ------------------------------------ //
 // #GRIDS
@@ -218,4 +217,4 @@ $page-readable-width: 800px;
 // ------------------------------------ //
 // #MODAL
 // ------------------------------------ //
-$modal-width: $page-readable-width;
+$modal-width: $breakpoint-smartphone-landscape;

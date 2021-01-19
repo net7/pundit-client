@@ -1,4 +1,5 @@
 import { LayoutDataSource } from '@n7-frontend/core';
+import { from, of } from 'rxjs';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import {
   create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
@@ -8,7 +9,6 @@ import tooltipHandler from 'src/app/models/tooltip-handler';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { from, of } from 'rxjs';
 import { AnnotationType } from '@pundit/communication';
 import { switchMap } from 'rxjs/operators';
 
@@ -41,7 +41,13 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
+  getCurrentRange = () => selectionHandler.getCurrentRange().cloneRange();
+
   onComment() {
+    // clear
+    selectionHandler.clearSelection();
+    tooltipHandler.hide();
+
     const currentNotebook = this.notebookService.getSelected();
     const notebooks = this.notebookService.getAll();
     this.one('comment-modal').update({ currentNotebook, notebooks });
@@ -52,16 +58,12 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(deleteResponse);
   }
 
-  getAnnotationRequestPayload(comment?: string, notebookId?: string) {
-    const range = selectionHandler.getCurrentRange();
+  getHighlightRequestPayload() {
+    const range = this.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const selectedNotebookId = notebookId || this.notebookService.getSelected().id;
-    const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
-    const options = comment ? {
-      content: {
-        comment
-      }
-    } : {};
+    const selectedNotebookId = this.notebookService.getSelected().id;
+    const type: AnnotationType = 'Highlighting';
+    const options = {};
     return createRequestPayload({
       userId,
       type,
@@ -69,6 +71,28 @@ export class MainLayoutDS extends LayoutDataSource {
       notebookId: selectedNotebookId,
       selection: range,
     });
+  }
+
+  getCommentRequestPayload({ range, comment, notebookId }) {
+    // comment check
+    if (typeof comment === 'string' && comment.trim()) {
+      const userId = this.userService.whoami().id;
+      const selectedNotebookId = notebookId || this.notebookService.getSelected().id;
+      const type: AnnotationType = 'Commenting';
+      const options = {
+        content: {
+          comment: comment.trim()
+        }
+      };
+      return createRequestPayload({
+        userId,
+        type,
+        options,
+        notebookId: selectedNotebookId,
+        selection: range,
+      });
+    }
+    return null;
   }
 
   create$(requestPayload) {

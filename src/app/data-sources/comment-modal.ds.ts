@@ -43,6 +43,7 @@ export class CommentModalDS extends DataSource {
           }
         }, {
           label: _t('commentmodal#save'),
+          classes: 'primary',
           payload: {
             source: 'action-save'
           }
@@ -56,7 +57,8 @@ export class CommentModalDS extends DataSource {
   }
 
   public notebooksToggle() {
-    const { classes } = this.output.notebooks;
-    this.output.notebooks.classes = classes ? null : 'is-open';
+    const { select } = this.output.form.notebooks;
+    const { classes } = select;
+    select.classes = classes ? null : 'is-open';
   }
 }

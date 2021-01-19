@@ -4,5 +4,5 @@ export default {
   'commentmodal#label': 'Your comment',
   'commentmodal#notebook': 'Save comment in notebook',
   'commentmodal#cancel': 'Cancel',
-  'commentmodal#save': 'Save',
+  'commentmodal#save': 'Save comment',
 };

@@ -1,4 +1,6 @@
-import { Component, Input } from '@angular/core';
+import {
+  Component, Input
+} from '@angular/core';
 import { Icon } from '@n7-frontend/components';
 
 /**
@@ -41,29 +43,29 @@ export interface CommentModalData {
   templateUrl: './comment-modal.html'
 })
 export class CommentModalComponent {
-    @Input() public data: CommentModalData;
+  @Input() public data: CommentModalData;
 
-    @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit: (type: string, payload?: any) => void;
 
-    onClick(ev: Event, payload: any) {
-      if (!this.emit) {
-        return;
-      }
-      ev.stopImmediatePropagation();
-      this.emit('click', payload);
+  onClick(ev: Event, payload: any) {
+    if (!this.emit) {
+      return;
     }
+    ev.stopImmediatePropagation();
+    this.emit('click', payload);
+  }
 
-    onChange(payload) {
-      if (!this.emit) {
-        return;
-      }
-      this.emit('change', payload);
+  onChange(payload) {
+    if (!this.emit) {
+      return;
     }
+    this.emit('change', payload);
+  }
 
-    onClose(target?: { className: string }) {
-      if (target && target.className !== 'pnd-comment-modal__overlay') {
-        return;
-      }
-      this.emit('close');
+  onClose(target?: { className: string }) {
+    if (target && target.className !== 'pnd-comment-modal__overlay') {
+      return;
     }
+    this.emit('close');
+  }
 }

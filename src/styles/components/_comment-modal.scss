@@ -36,8 +36,43 @@
     &__content {
         padding: $space*5;
     }
+
+    textarea {
+        margin: $space 0;
+        width: 100%;
+        height: 100px;
+    }
+
+    &__actions {
+        text-align: right;
+        a {
+            margin-left: $space;
+    
+            &.primary {
+                color: $color-main;
+            }
+        }
+    }
 }
 
+
+
+/* ------------------------------------ *\
+   #SELECT
+\* ------------------------------------ */
+.pnd-comment-modal {
+    &__notebooks-select {
+        .pnd-comment-modal__notebooks-items {
+            display: none;
+        }
+        
+        &.is-open {
+            .pnd-comment-modal__notebooks-items {
+                display: block;
+            }
+        }
+    }
+}
 
 /* ------------------------------------ *\
    #OVERLAY
