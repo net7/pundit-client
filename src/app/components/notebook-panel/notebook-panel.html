@@ -1,12 +1,16 @@
-<div class="notebook-panel" *ngIf="data">
+<div class="notebook-panel"
+     *ngIf="data">
     <div class="notebook-panel__row n7-grid-1">
         <div class="notebook-panel__label">Current notebook:</div>
-        <div class="notebook-panel__name">{{data.active}}</div>
+        <div class="notebook-panel__name">
+            <span class="notebook-panel__sharingMode {{data.icon}}"></span>
+            {{data.selected.label}}
+        </div>
     </div>
     <div class="notebook-panel__row n7-grid-2">
         <div class="notebook-panel__status">
             <div class="notebook-panel__label">Notebook status:</div>
-            <div class="notebook-panel__current-status">{{data.status.toUpperCase()}}</div>
+            <div class="notebook-panel__current-status">{{data.selected.sharingMode.toUpperCase()}}</div>
             <div class="notebook-panel__status-description">
                 {{ data.description }}
             </div>
@@ -14,8 +18,15 @@
         <div class="notebook-panel__change-status">
             <div class="notebook-panel__label">Change status:</div>
             <div class="notebook-panel__buttons">
-                <button class="n7-btn">Private</button>
-                <button class="n7-btn">Share</button>
+                <button (click)="onClick(data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'public'">Public</button>
+                <button (click)="onClick(data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'private'">Private</button>
+                <button (click)="onClick(data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'shared'">Share</button>
             </div>
         </div>
     </div>
@@ -23,9 +34,12 @@
     <div class="notebook-panel__row n7-grid-1">
         <div class="notebook-panel__label">Change current notebook</div>
         <div class="notebook-panel__select-cont">
-            <select class="notebook-panel__select" name="current-notebook" id="current-notebook">
+            <select class="notebook-panel__select"
+                    name="current-notebook"
+                    id="current-notebook">
                 <ng-container *ngFor="let option of data.list">
-                    <option [value]="option" [selected]="option === data.active">{{option}}</option>
+                    <option [value]="option.id"
+                            [selected]="option.id === data.selected.id">{{option.label}}</option>
                 </ng-container>
             </select>
         </div>

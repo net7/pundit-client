@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { NotebookData } from '../../services/notebook.service';
 
 export interface NotebookPanelData {
-  active: string;
-  status: 'public' | 'private' | 'shared';
-  list: string[];
+  selected: NotebookData;
+  list: NotebookData[];
   description: string;
+  icon: string;
 }
 
 @Component({
@@ -25,6 +26,11 @@ export class NotebookPanelComponent {
     // ).subscribe(() => {
     //   this.ref.detectChanges();
     // });
+  }
+
+  onClick(payload) {
+    if (!this.emit) return;
+    this.emit('click', payload);
   }
 
   // onMouseDown(ev: MouseEvent) {

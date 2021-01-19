@@ -8,6 +8,7 @@ import { AnnotationPositionService } from 'src/app/services/annotation-position.
 import { LayoutEvent } from 'src/app/types';
 import { _c } from 'src/app/models/config';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { NotebookService } from 'src/app/services/notebook.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
 @Component({
@@ -23,7 +24,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private annotationService: AnnotationService,
     private annotationPositionService: AnnotationPositionService,
     private sanitizer: DomSanitizer,
-    private detectorRef: ChangeDetectorRef
+    private detectorRef: ChangeDetectorRef,
+    private notebookService: NotebookService,
   ) {
     super(config);
 
@@ -38,7 +40,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       annotationService: this.annotationService,
       annotationPositionService: this.annotationPositionService,
-      detectorRef: this.detectorRef
+      detectorRef: this.detectorRef,
+      notebookService: this.notebookService,
     };
   }
 

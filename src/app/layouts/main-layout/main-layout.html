@@ -1,9 +1,13 @@
-<div class="pnd-main">
+<div class="pnd-main"
+     *ngIf="lb.dataSource.hasLoaded.getValue()">
+    <!-- Sidebar -->
     <sidebar-layout [layoutEvent$]="layoutEvent$"></sidebar-layout>
-    <pnd-tooltip
-    [data]="lb.widgets['tooltip'].ds.out$ | async"
-    [emit]="lb.widgets['tooltip'].emit"></pnd-tooltip>
-    <pnd-comment-modal
-    [data]="lb.widgets['comment-modal'].ds.out$ | async"
-    [emit]="lb.widgets['comment-modal'].emit"></pnd-comment-modal>
+    <!-- Tooltip template -->
+    <pnd-tooltip [data]="lb.widgets['tooltip'].ds.out$ | async"
+                 [emit]="lb.widgets['tooltip'].emit">
+    </pnd-tooltip>
+    <!-- Comment editor template -->
+    <pnd-comment-modal [data]="lb.widgets['comment-modal'].ds.out$ | async"
+                       [emit]="lb.widgets['comment-modal'].emit">
+    </pnd-comment-modal>
 </div>
