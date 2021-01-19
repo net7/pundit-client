@@ -1,9 +1,9 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY
+  fromEvent, Subject, ReplaySubject, EMPTY, interval, merge
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, take, takeUntil
 } from 'rxjs/operators';
 import * as faker from 'faker';
 import { _c } from 'src/app/models/config';
@@ -29,6 +29,8 @@ export class MainLayoutEH extends EventHandler {
   private anchorService: AnchorService;
 
   public dataSource: MainLayoutDS;
+
+  private lastDocumentHeight: number;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -149,19 +151,25 @@ export class MainLayoutEH extends EventHandler {
 
   private listenDocumentResize() {
     const scroll$ = fromEvent(document, 'scroll');
-    let lastHeight;
-    scroll$.pipe(
+    const heightManualCheck$ = interval(250).pipe(
+      take(5)
+    );
+    merge(scroll$, heightManualCheck$).pipe(
       takeUntil(this.destroy$)
     ).subscribe(() => {
-      const { scrollHeight } = document.body;
-      if (lastHeight !== scrollHeight) {
-        lastHeight = scrollHeight;
-        // check orphans
-        this.anchorService.checkOrphans();
-        // emit signal
-        this.layoutEvent$.next({ type: 'documentresize', payload: scrollHeight });
-      }
+      this.onScroll();
     });
+  }
+
+  private onScroll() {
+    const { scrollHeight } = document.body;
+    if (this.lastDocumentHeight !== scrollHeight) {
+      this.lastDocumentHeight = scrollHeight;
+      // check orphans
+      this.anchorService.checkOrphans();
+      // emit signal
+      this.layoutEvent$.next({ type: 'documentresize', payload: scrollHeight });
+    }
   }
 
   private handleError(error) {
