@@ -14,11 +14,22 @@ export class SidebarLayoutDS extends LayoutDataSource {
   /** open/close the notebook editor panel */
   public notebookEditor = new BehaviorSubject(false);
 
+  /** dynamically update the document height on scroll */
   public height$: Subject<string> = new Subject();
 
   onInit(payload) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
+    this.one('notebook-panel').update({
+      active: 'my active notebook',
+      status: 'public',
+      list: [
+        'i am a notebook',
+        'wow, me too',
+        'my active notebook',
+        'just another notebook'
+      ]
+    });
   }
 
   updateAnnotations(load = false) {

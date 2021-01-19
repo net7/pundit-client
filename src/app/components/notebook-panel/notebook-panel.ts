@@ -1,7 +1,10 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 
 export interface NotebookPanelData {
-  x?: any;
+  active: string;
+  status: 'public' | 'private' | 'shared';
+  list: string[];
+  description: string;
 }
 
 @Component({
