@@ -28,17 +28,13 @@ export class NotebookPanelComponent {
     // });
   }
 
-  onClick(payload) {
+  onClick(type, payload) {
     if (!this.emit) return;
-    this.emit('click', payload);
+    this.emit('click', { ...payload, type });
   }
 
-  // onMouseDown(ev: MouseEvent) {
-  //   ev.preventDefault();
-  // }
-
-  // navEmit = (type, payload) => {
-  //   if (!this.emit) return;
-  //   this.emit(type, payload);
-  // }
+  onChange(payload) {
+    if (!this.emit) return;
+    this.emit('change', payload);
+  }
 }

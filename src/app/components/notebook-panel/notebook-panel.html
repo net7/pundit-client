@@ -18,13 +18,13 @@
         <div class="notebook-panel__change-status">
             <div class="notebook-panel__label">Change status:</div>
             <div class="notebook-panel__buttons">
-                <button (click)="onClick(data.selected)"
+                <button (click)="onClick('public', data.selected)"
                         class="n7-btn"
                         *ngIf="data.selected.sharingMode !== 'public'">Public</button>
-                <button (click)="onClick(data.selected)"
+                <button (click)="onClick('private', data.selected)"
                         class="n7-btn"
                         *ngIf="data.selected.sharingMode !== 'private'">Private</button>
-                <button (click)="onClick(data.selected)"
+                <button (click)="onClick('shared', data.selected)"
                         class="n7-btn"
                         *ngIf="data.selected.sharingMode !== 'shared'">Share</button>
             </div>
@@ -36,7 +36,8 @@
         <div class="notebook-panel__select-cont">
             <select class="notebook-panel__select"
                     name="current-notebook"
-                    id="current-notebook">
+                    id="current-notebook"
+                    (change)="onChange($event.target.value)">
                 <ng-container *ngFor="let option of data.list">
                     <option [value]="option.id"
                             [selected]="option.id === data.selected.id">{{option.label}}</option>
