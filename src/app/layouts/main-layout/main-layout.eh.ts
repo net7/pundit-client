@@ -36,7 +36,6 @@ export class MainLayoutEH extends EventHandler {
   private commentState: {
     comment: string | null;
     notebookId: string | null;
-    range: Range;
   };
 
   private pendingAnnotationPayload: CommentAnnotation;
@@ -92,7 +91,7 @@ export class MainLayoutEH extends EventHandler {
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'tooltip.highlight': {
-          const requestPayload = this.dataSource.getHighlightRequestPayload();
+          const requestPayload = this.dataSource.getAnnotationRequestPayload();
           this.saveAnnotation(requestPayload);
           break;
         }
@@ -100,11 +99,10 @@ export class MainLayoutEH extends EventHandler {
           // reset
           this.commentState = {
             comment: null,
-            notebookId: null,
-            range: this.dataSource.getCurrentRange()
+            notebookId: null
           };
           this.pendingAnnotationPayload = (
-            this.dataSource.getHighlightRequestPayload() as CommentAnnotation
+            this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
           );
           this.addPendingAnnotation();
           this.dataSource.onComment();
@@ -117,10 +115,11 @@ export class MainLayoutEH extends EventHandler {
           this.commentState.notebookId = payload;
           break;
         case 'comment-modal.save': {
-          const requestPayload = this.dataSource.getCommentRequestPayload(this.commentState);
+          const requestPayload = this.dataSource.getCommentRequestPayload(
+            this.pendingAnnotationPayload,
+            this.commentState
+          );
           if (requestPayload) {
-            // clear pending
-            this.removePendingAnnotation();
             // save
             this.saveAnnotation(requestPayload);
           }
@@ -209,6 +208,8 @@ export class MainLayoutEH extends EventHandler {
       this.anchorService.add(newAnnotation);
       // signal
       this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
+      // clear pending
+      this.removePendingAnnotation();
     });
   }
 

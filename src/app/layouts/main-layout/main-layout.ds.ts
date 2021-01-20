@@ -41,8 +41,6 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  getCurrentRange = () => selectionHandler.getCurrentRange().cloneRange();
-
   onComment() {
     // clear
     selectionHandler.clearSelection();
@@ -58,8 +56,8 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(deleteResponse);
   }
 
-  getHighlightRequestPayload() {
-    const range = this.getCurrentRange();
+  getAnnotationRequestPayload() {
+    const range = selectionHandler.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;
     const type: AnnotationType = 'Highlighting';
@@ -73,24 +71,17 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  getCommentRequestPayload({ range, comment, notebookId }) {
+  getCommentRequestPayload(payload, { comment, notebookId }) {
     // comment check
     if (typeof comment === 'string' && comment.trim()) {
-      const userId = this.userService.whoami().id;
-      const selectedNotebookId = notebookId || this.notebookService.getSelected().id;
-      const type: AnnotationType = 'Commenting';
-      const options = {
-        content: {
-          comment: comment.trim()
-        }
+      payload.type = 'Commenting';
+      payload.content = {
+        comment: comment.trim()
       };
-      return createRequestPayload({
-        userId,
-        type,
-        options,
-        notebookId: selectedNotebookId,
-        selection: range,
-      });
+      if (notebookId) {
+        payload.notebookId = notebookId;
+      }
+      return payload;
     }
     return null;
   }
