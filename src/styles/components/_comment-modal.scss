@@ -55,7 +55,37 @@
     }
 }
 
+/* ------------------------------------ *\
+   #MOVE ICON
+\* ------------------------------------ */
+.pnd-comment-modal {
+    &__move {
+        text-align: center;
+        span {
+            display: inline-block;
+            width: 16px;
+            height: 8px;
 
+            &:hover {
+                cursor: move;
+            }
+        }
+        
+        span, span::before {
+            background-image: radial-gradient($color-gray-03 40%, transparent 40%);
+            background-size: 4px 4px;
+            background-position: 0 100%;
+            background-repeat: repeat-x;
+        }
+        
+        span::before {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 33%;
+        }
+    }
+}
 
 /* ------------------------------------ *\
    #SELECT
