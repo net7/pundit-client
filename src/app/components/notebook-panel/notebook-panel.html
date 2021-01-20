@@ -1,21 +1,32 @@
-<div class="notebook-panel" *ngIf="data">
+<div class="notebook-panel"
+     *ngIf="data">
     <div class="notebook-panel__row n7-grid-1">
         <div class="notebook-panel__label">Current notebook:</div>
-        <div class="notebook-panel__name">MyNotebook with a very very long name</div>
+        <div class="notebook-panel__name">
+            <span class="notebook-panel__sharingMode {{data.icon}}"></span>
+            {{data.selected.label}}
+        </div>
     </div>
     <div class="notebook-panel__row n7-grid-2">
         <div class="notebook-panel__status">
             <div class="notebook-panel__label">Notebook status:</div>
-            <div class="notebook-panel__current-status">PUBLIC</div>
+            <div class="notebook-panel__current-status">{{data.selected.sharingMode.toUpperCase()}}</div>
             <div class="notebook-panel__status-description">
-                All annotations in the notebook can be seen by all Pundit's users
+                {{ data.description }}
             </div>
         </div>
         <div class="notebook-panel__change-status">
             <div class="notebook-panel__label">Change status:</div>
             <div class="notebook-panel__buttons">
-                <div class="n7-btn">Private</div>
-                <div class="n7-btn">Share</div>
+                <button (click)="onClick('public', data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'public'">Public</button>
+                <button (click)="onClick('private', data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'private'">Private</button>
+                <button (click)="onClick('shared', data.selected)"
+                        class="n7-btn"
+                        *ngIf="data.selected.sharingMode !== 'shared'">Share</button>
             </div>
         </div>
     </div>
@@ -23,10 +34,14 @@
     <div class="notebook-panel__row n7-grid-1">
         <div class="notebook-panel__label">Change current notebook</div>
         <div class="notebook-panel__select-cont">
-            <select class="notebook-panel__select" name="current-notebook" id="current-notebook">
-                <option default value="MyNotebook with a very very long name">
-                    MyNotebook with a very very extra super mega long name
-                </option>
+            <select class="notebook-panel__select"
+                    name="current-notebook"
+                    id="current-notebook"
+                    (change)="onChange($event.target.value)">
+                <ng-container *ngFor="let option of data.list">
+                    <option [value]="option.id"
+                            [selected]="option.id === data.selected.id">{{option.label}}</option>
+                </ng-container>
             </select>
         </div>
     </div>

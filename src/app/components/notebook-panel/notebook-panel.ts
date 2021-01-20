@@ -1,7 +1,11 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { NotebookData } from '../../services/notebook.service';
 
 export interface NotebookPanelData {
-  x?: any;
+  selected: NotebookData;
+  list: NotebookData[];
+  description: string;
+  icon: string;
 }
 
 @Component({
@@ -24,12 +28,13 @@ export class NotebookPanelComponent {
     // });
   }
 
-  // onMouseDown(ev: MouseEvent) {
-  //   ev.preventDefault();
-  // }
+  onClick(type, payload) {
+    if (!this.emit) return;
+    this.emit('click', { ...payload, type });
+  }
 
-  // navEmit = (type, payload) => {
-  //   if (!this.emit) return;
-  //   this.emit(type, payload);
-  // }
+  onChange(payload) {
+    if (!this.emit) return;
+    this.emit('change', payload);
+  }
 }

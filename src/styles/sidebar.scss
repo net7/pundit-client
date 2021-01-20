@@ -10,7 +10,6 @@
         z-index: 10000;
         height: 100vh;
         width: 370px;
-        // animation: collapsing .5s reverse both;
     }
 
     &__annotation-column {
@@ -109,6 +108,8 @@
 }
 
 .notebook-panel {
+    border-bottom: 1px solid $color-gray-03;
+    box-shadow: 0px 8px 11px 0px $color-gray-03;
     &__select-cont {
         select {
             appearance: none;
@@ -165,7 +166,7 @@ n7-annotation {
     position: absolute;
     width: 100%;
     box-sizing: border-box;
-    visibility: hidden;
+    // visibility: hidden;
 }
 
 // annotation menu
@@ -201,24 +202,29 @@ n7-annotation {
 
 @keyframes collapsing {
     0% {
+        // sidebar is open and visible
         transform: translateX(0px);
-        opacity: 1;
+        visibility: visible;
     }
     99% {
+        // sidebar is closed and still visible (document is wider)
         transform: translateX(372px);
-        opacity: 1;
+        visibility: visible;
     }
     100% {
+        // sidebar is open but invisible (original document width)
         transform: translateX(0px);
-        opacity: 0;
+        visibility: hidden;
     }
 }
 
 @keyframes expanding {
     from {
-        transform: translate(372px);
+        transform: translateX(372px);
+        visibility: visible;
     }
     to {
-        transform: translate(0px);
+        transform: translateX(0px);
+        visibility: visible;
     }
 }

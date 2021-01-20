@@ -1,5 +1,7 @@
 import { LayoutDataSource } from '@n7-frontend/core';
-import { from, of } from 'rxjs';
+import {
+  from, of, BehaviorSubject
+} from 'rxjs';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import {
   create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
@@ -9,6 +11,7 @@ import tooltipHandler from 'src/app/models/tooltip-handler';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+
 import { AnnotationType } from '@pundit/communication';
 import { switchMap } from 'rxjs/operators';
 
@@ -16,6 +19,9 @@ export class MainLayoutDS extends LayoutDataSource {
   private userService: UserService;
 
   private notebookService: NotebookService;
+
+  /** Let other layouts know that all services are ready */
+  public hasLoaded = new BehaviorSubject(false);
 
   onInit(payload) {
     this.userService = payload.userService;

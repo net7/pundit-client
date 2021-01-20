@@ -65,9 +65,8 @@ export class AnnotationPositionService {
       const end = start + offsetHeight;
       positions.push({ start, end });
 
-      // update new element position & visibility
+      // update the annotations vertial offset
       el.style.top = `${start}px`;
-      el.style.visibility = 'visible';
     });
   }
 }

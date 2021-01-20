@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Notebook } from '@pundit/communication';
 
-type NotebookData = {
+export type NotebookData = {
   id: string;
   label: string;
   sharingMode: string;

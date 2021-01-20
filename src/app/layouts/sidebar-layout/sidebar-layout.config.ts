@@ -6,7 +6,8 @@ import * as EH from '../../event-handlers';
 export const SidebarLayoutConfig = {
   layoutId: 'sidebar-layout',
   widgets: [
-    { id: 'annotation' }
+    { id: 'annotation' },
+    { id: 'notebook-panel' },
   ],
   layoutDS: SidebarLayoutDS,
   layoutEH: SidebarLayoutEH,

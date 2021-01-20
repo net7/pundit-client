@@ -75,6 +75,7 @@ export class MainLayoutEH extends EventHandler {
             const { id } = notebooks[0];
             this.notebookService.load(notebooks);
             this.notebookService.setSelected(id);
+            this.dataSource.hasLoaded.next(true);
           });
           this.listenSelection();
           this.listenLayoutEvents();
