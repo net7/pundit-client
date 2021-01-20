@@ -6,6 +6,7 @@ export class NotebookPanelEH extends EventHandler {
       switch (type) {
         case 'notebook-panel.click':
           // todo: handle change of sharing mode
+
           break;
         default:
           break;

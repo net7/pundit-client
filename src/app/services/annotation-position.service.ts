@@ -66,8 +66,9 @@ export class AnnotationPositionService {
       positions.push({ start, end });
 
       // update new element position & visibility
+      // fixme: use a class instead of inline style
       el.style.top = `${start}px`;
-      el.style.visibility = 'visible';
+      // el.style.visibility = 'visible';
     });
   }
 }
