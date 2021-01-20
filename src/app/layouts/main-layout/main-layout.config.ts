@@ -6,10 +6,11 @@ import * as EH from '../../event-handlers';
 export const MainLayoutConfig = {
   layoutId: 'main-layout',
   widgets: [
+    { id: 'comment-modal' },
     {
       id: 'tooltip',
       hasStaticData: true
-    }
+    },
   ],
   layoutDS: MainLayoutDS,
   layoutEH: MainLayoutEH,

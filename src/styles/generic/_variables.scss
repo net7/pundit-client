@@ -21,7 +21,6 @@ $font-family-headings: $font-family-main;
 // ------------------------------------ //
 // $page-max-width: 1240px;
 
-
 // ------------------------------------ //
 // #GRIDS
 // ------------------------------------ //
@@ -213,3 +212,9 @@ $font-family-headings: $font-family-main;
 // $table-footer-font-size: $font-size-s;
 // $table-footer-text-color: $color-text-light;
 // $table-footer-bg: $color-background-medium;
+
+
+// ------------------------------------ //
+// #MODAL
+// ------------------------------------ //
+$modal-width: $breakpoint-smartphone-landscape;

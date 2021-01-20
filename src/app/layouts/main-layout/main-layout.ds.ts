@@ -1,4 +1,5 @@
 import { LayoutDataSource } from '@n7-frontend/core';
+import { from, of } from 'rxjs';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import {
   create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
@@ -8,7 +9,6 @@ import tooltipHandler from 'src/app/models/tooltip-handler';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { from, of } from 'rxjs';
 import { AnnotationType } from '@pundit/communication';
 import { switchMap } from 'rxjs/operators';
 
@@ -41,31 +41,58 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onHighlightOrComment(comment?: string) {
-    const range = selectionHandler.getCurrentRange();
-    const userId = this.userService.whoami().id;
-    const notebookId = this.notebookService.getSelected().id;
-    const type: AnnotationType = comment ? 'Commenting' : 'Highlighting';
-    const options = comment ? {
-      content: {
-        comment
-      }
-    } : {};
+  onComment() {
     // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
-    // annotate
-    const requestPayload = createRequestPayload({
-      userId, notebookId, selection: range, type, options
-    });
-    // request
-    return from(createAnnotation(requestPayload)).pipe(
-      switchMap(({ data }) => of({ id: data.id, requestPayload }))
-    );
+
+    const currentNotebook = this.notebookService.getSelected();
+    const notebooks = this.notebookService.getAll();
+    this.one('comment-modal').update({ currentNotebook, notebooks });
   }
 
   onAnnotationDelete(id: string) {
     const deleteResponse = deleteAnnotation(id);
     return from(deleteResponse);
+  }
+
+  getAnnotationRequestPayload() {
+    const range = selectionHandler.getCurrentRange();
+    const userId = this.userService.whoami().id;
+    const selectedNotebookId = this.notebookService.getSelected().id;
+    const type: AnnotationType = 'Highlighting';
+    const options = {};
+    return createRequestPayload({
+      userId,
+      type,
+      options,
+      notebookId: selectedNotebookId,
+      selection: range,
+    });
+  }
+
+  getCommentRequestPayload(payload, { comment, notebookId }) {
+    // comment check
+    if (typeof comment === 'string' && comment.trim()) {
+      payload.type = 'Commenting';
+      payload.content = {
+        comment: comment.trim()
+      };
+      if (notebookId) {
+        payload.notebookId = notebookId;
+      }
+      return payload;
+    }
+    return null;
+  }
+
+  create$(requestPayload) {
+    // clear
+    selectionHandler.clearSelection();
+    tooltipHandler.hide();
+    // request
+    return from(createAnnotation(requestPayload)).pipe(
+      switchMap(({ data }) => of({ id: data.id, requestPayload }))
+    );
   }
 }
