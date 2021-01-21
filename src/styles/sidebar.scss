@@ -76,9 +76,9 @@
             animation: expanding 0.5s both;
         }
 
-        // .pundit-sidebar__logo {
-        //     display: none;
-        // }
+        & > .pundit-sidebar__logo {
+            display: none;
+        }
     }
 
     &.is-collapsed {
@@ -86,6 +86,7 @@
             animation: collapsing 0.5s both;
         }
 
+        // Hide the extra logo while the sidebar is collapsed
         .pundit-sidebar__logo {
             position: fixed;
             top: 20px;
