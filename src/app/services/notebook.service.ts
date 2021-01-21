@@ -19,6 +19,19 @@ export class NotebookService {
     this.selectedId = id;
   }
 
+  /**
+   * Update the cached notebook data.
+   *
+   * Use src\app\models\notebook\update
+   * to update the online version instead.
+  */
+  update(notebookID, { label, sharingMode }) {
+    if (!this.getNotebookById(notebookID)) return;
+    const notebook = this.getNotebookById(notebookID);
+    if (label) notebook.label = label;
+    if (sharingMode) notebook.sharingMode = sharingMode;
+  }
+
   load(rawNotebooks: Notebook[]) {
     rawNotebooks.forEach((rawNotebook) => {
       this.add(rawNotebook);
