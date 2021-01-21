@@ -1,9 +1,9 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY, interval, merge
+  fromEvent, Subject, ReplaySubject, EMPTY
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, take, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import { CommentAnnotation } from '@pundit/communication';
 import { _c } from 'src/app/models/config';
@@ -31,8 +31,6 @@ export class MainLayoutEH extends EventHandler {
   private anchorService: AnchorService;
 
   public dataSource: MainLayoutDS;
-
-  private lastDocumentHeight: number;
 
   private commentState: {
     comment: string | null;
@@ -79,7 +77,6 @@ export class MainLayoutEH extends EventHandler {
           });
           this.listenSelection();
           this.listenLayoutEvents();
-          this.listenDocumentResize();
           break;
 
         case 'main-layout.destroy':
@@ -174,29 +171,6 @@ export class MainLayoutEH extends EventHandler {
           break;
       }
     });
-  }
-
-  private listenDocumentResize() {
-    const scroll$ = fromEvent(document, 'scroll');
-    const heightManualCheck$ = interval(250).pipe(
-      take(5)
-    );
-    merge(scroll$, heightManualCheck$).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.onScroll();
-    });
-  }
-
-  private onScroll() {
-    const { scrollHeight } = document.body;
-    if (this.lastDocumentHeight !== scrollHeight) {
-      this.lastDocumentHeight = scrollHeight;
-      // check orphans
-      this.anchorService.checkOrphans();
-      // emit signal
-      this.layoutEvent$.next({ type: 'documentresize', payload: scrollHeight });
-    }
   }
 
   private handleError(error) {

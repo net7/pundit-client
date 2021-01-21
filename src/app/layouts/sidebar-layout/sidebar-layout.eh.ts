@@ -2,7 +2,9 @@ import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import { Subject, ReplaySubject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
@@ -13,6 +15,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   private annotationService: AnnotationService;
 
+  private anchorService: AnchorService;
+
   private detectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -22,11 +26,13 @@ export class SidebarLayoutEH extends EventHandler {
       switch (type) {
         case 'sidebar-layout.init':
           this.annotationService = payload.annotationService;
+          this.anchorService = payload.anchorService;
           this.layoutEvent$ = payload.layoutEvent$;
           this.detectorRef = payload.detectorRef;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
+          this.listenDocumentResize();
           break;
         case 'sidebar-layout.destroy':
           this.destroy$.next();
@@ -84,17 +90,38 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.updateAnnotations(true);
           break;
         }
-        case 'documentresize':
-          this.dataSource.height$.next(`${payload}px`);
-          // fix update sidebar height
-          setTimeout(() => {
-            this.detectorRef.detectChanges();
-            this.dataSource.updateAnnotations();
-          });
-          break;
         default:
           break;
       }
+    });
+  }
+
+  private listenDocumentResize() {
+    const bodyEl = document.body;
+    const resizeObserver = new ResizeObserver(() => {
+      this.onResize();
+    });
+    resizeObserver.observe(bodyEl);
+
+    // on destroy clear
+    this.destroy$.subscribe(() => {
+      resizeObserver.disconnect();
+    });
+
+    // init
+    this.onResize();
+  }
+
+  private onResize() {
+    const { scrollHeight } = document.body;
+    // check orphans
+    this.anchorService.checkOrphans();
+
+    this.dataSource.height$.next(`${scrollHeight}px`);
+    // fix update sidebar height
+    setTimeout(() => {
+      this.detectorRef.detectChanges();
+      this.dataSource.updateAnnotations();
     });
   }
 }
