@@ -26,7 +26,6 @@ export class CommentModalDS extends DataSource {
               }
             },
             items: notebooks
-              .filter(({ id: itemId }) => itemId !== currentNotebook.id)
               .map(({ id: itemId, label }) => ({
                 label,
                 payload: {

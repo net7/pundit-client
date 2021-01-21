@@ -80,11 +80,11 @@ export class CommentModalComponent implements AfterContentChecked {
     this.emit('click', payload);
   }
 
-  onChange(payload) {
+  onChange(type, payload) {
     if (!this.emit) {
       return;
     }
-    this.emit('change', payload);
+    this.emit(type, payload);
   }
 
   onClose(target?: { className: string }) {
