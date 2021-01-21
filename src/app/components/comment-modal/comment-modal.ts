@@ -27,7 +27,7 @@ export interface CommentModalData {
         };
         items: {
           label: string;
-          payload: any;
+          id: string;
         }[];
         classes?: string;
       };

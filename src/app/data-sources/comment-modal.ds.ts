@@ -28,10 +28,7 @@ export class CommentModalDS extends DataSource {
             items: notebooks
               .map(({ id: itemId, label }) => ({
                 label,
-                payload: {
-                  notebookId: itemId,
-                  source: 'notebook-item'
-                }
+                id: itemId
               })),
           },
         },
