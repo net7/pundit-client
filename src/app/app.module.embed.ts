@@ -12,7 +12,7 @@ import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
 import { AnchorService } from './services/anchor.service';
-import { ChromeExtService } from './services/chrome-ext.service';
+import { EmbedService } from './services/embed.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -57,13 +57,13 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
-    ChromeExtService,
+    EmbedService,
     {
       provide: APP_INITIALIZER,
       useFactory: (
-        chromeExtService: ChromeExtService
-      ) => () => chromeExtService.load(),
-      deps: [ChromeExtService],
+        embedService: EmbedService
+      ) => () => embedService.load(),
+      deps: [EmbedService],
       multi: true
     }
   ],
