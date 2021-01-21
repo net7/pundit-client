@@ -2,14 +2,16 @@
     <div class="pnd-comment-modal__overlay" (click)="onClose($event.target)">
         <div class="pnd-comment-modal__window" [attr.id]="draggableTarget">
             <div class="pnd-comment-modal__move">
-                <span [attr.id]="draggableHandle"></span>
-            </div>
-            <div class="pnd-comment-modal__close">
-                <a class="pnd-comment-modal__close-link" (click)="onClose()"><span class="n7-icon-close"></span></a>
+                <span class="pnd-comment-modal__handle" [attr.id]="draggableHandle"></span>
             </div>
             <div class="pnd-comment-modal__content">
-                <div class="pnd-comment-modal__header-label">
-                    {{ data.header.label }}
+                <div class="pnd-comment-modal__row n7-grid-2">
+                    <div class="pnd-comment-modal__header-label">
+                        {{ data.header.label }}
+                    </div>
+                    <div class="pnd-comment-modal__close">
+                        <a class="pnd-comment-modal__close-link n7-icon-close" (click)="onClose()"></a>
+                    </div>
                 </div>
                 <div class="pnd-comment-modal__comment">
                     <textarea *ngIf="data.visible" name="pnd-comment" 
