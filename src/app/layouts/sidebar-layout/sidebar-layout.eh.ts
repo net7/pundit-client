@@ -6,7 +6,11 @@ import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
+import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
+import { UserService } from 'src/app/services/user.service';
+import { SharingModeType } from '@pundit/communication';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
+import * as notebook from '../../models/notebook/update';
 
 export class SidebarLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
@@ -15,7 +19,11 @@ export class SidebarLayoutEH extends EventHandler {
 
   private annotationService: AnnotationService;
 
+  private notebookService: NotebookService;
+
   private anchorService: AnchorService;
+
+  private userService: UserService;
 
   private detectorRef: ChangeDetectorRef;
 
@@ -26,9 +34,11 @@ export class SidebarLayoutEH extends EventHandler {
       switch (type) {
         case 'sidebar-layout.init':
           this.annotationService = payload.annotationService;
+          this.notebookService = payload.notebookService;
           this.anchorService = payload.anchorService;
           this.layoutEvent$ = payload.layoutEvent$;
           this.detectorRef = payload.detectorRef;
+          this.userService = payload.userService;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
@@ -67,6 +77,12 @@ export class SidebarLayoutEH extends EventHandler {
         case 'annotation.togglecollapse':
           this.dataSource.updateAnnotations();
           break;
+        case 'notebook-panel.editsharingmode': {
+          const {
+            id, label, sharingMode, type: newSharingMode
+          } = payload;
+          this.handleNotebookUpdate({ id, label, sharingMode }, { sharingMode: newSharingMode });
+        } break;
         default:
           break;
       }
@@ -122,6 +138,23 @@ export class SidebarLayoutEH extends EventHandler {
     setTimeout(() => {
       this.detectorRef.detectChanges();
       this.dataSource.updateAnnotations();
+    });
+  }
+
+  private handleNotebookUpdate(nb: NotebookData, update: NotebookUpdate) {
+    // update the backend version of the notebook
+    const userId = this.userService.whoami().id;
+    notebook.update(nb.id, {
+      data: {
+        userId,
+        label: update.label ? update.label : nb.label,
+        sharingMode: update.sharingMode ? update.sharingMode : (nb.sharingMode as SharingModeType),
+        userWithReadAccess: [],
+        userWithWriteAccess: [],
+      }
+    }).then(() => {
+      // update the cached version of the notebook
+      this.notebookService.update(nb.id, update);
     });
   }
 }

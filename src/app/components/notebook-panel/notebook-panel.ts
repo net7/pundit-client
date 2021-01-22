@@ -4,8 +4,8 @@ import { NotebookData } from '../../services/notebook.service';
 export interface NotebookPanelData {
   selected: NotebookData;
   list: NotebookData[];
-  description: string;
-  icon: string;
+  descriptions: string;
+  icons: string;
 }
 
 @Component({

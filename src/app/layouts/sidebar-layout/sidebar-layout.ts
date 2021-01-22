@@ -9,6 +9,7 @@ import { LayoutEvent } from 'src/app/types';
 import { _c } from 'src/app/models/config';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { NotebookService } from 'src/app/services/notebook.service';
+import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
@@ -22,12 +23,13 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
   public logo: SafeResourceUrl;
 
   constructor(
-    private annotationService: AnnotationService,
     private annotationPositionService: AnnotationPositionService,
-    private anchorService: AnchorService,
-    private sanitizer: DomSanitizer,
-    private detectorRef: ChangeDetectorRef,
+    private annotationService: AnnotationService,
     private notebookService: NotebookService,
+    private detectorRef: ChangeDetectorRef,
+    private anchorService: AnchorService,
+    private userService: UserService,
+    private sanitizer: DomSanitizer,
   ) {
     super(config);
 
@@ -39,12 +41,13 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   protected initPayload() {
     return {
-      layoutEvent$: this.layoutEvent$,
-      annotationService: this.annotationService,
       annotationPositionService: this.annotationPositionService,
-      anchorService: this.anchorService,
-      detectorRef: this.detectorRef,
+      annotationService: this.annotationService,
       notebookService: this.notebookService,
+      anchorService: this.anchorService,
+      layoutEvent$: this.layoutEvent$,
+      detectorRef: this.detectorRef,
+      userService: this.userService,
     };
   }
 
