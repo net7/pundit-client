@@ -1,22 +1,25 @@
 /* eslint-disable */
 let appRoot;
-chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-  if (msg.type === 'iconclick') {
-    if(!appRoot) {
-      load()
-    } else {
-      // emit signal
-      const signal = new CustomEvent("punditdestroy");
-      window.dispatchEvent(signal);
-      // clear
-      appRoot.remove();
-      appRoot = null;
+chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
+  console.log('msg', type, payload);
+  switch(type) {
+    case 'iconclick': 
+    case 'tabactivated': {
+      if (payload) {
+        load();
+      } else {
+        destroy();
+      }
+      break;
     }
+    default:
+      break;
   }
 });
 
-
 function load() {
+  if (appRoot) return;
+
   appRoot = document.createElement("pnd-root");
   document.body.appendChild(appRoot);
   
@@ -29,4 +32,15 @@ function load() {
     window.dispatchEvent(signal);
     main.remove();
   };
+}
+
+function destroy() {
+  if (!appRoot) return;
+
+  // emit signal
+  const signal = new CustomEvent("punditdestroy");
+  window.dispatchEvent(signal);
+  // clear
+  appRoot.remove();
+  appRoot = null;
 }

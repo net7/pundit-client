@@ -26,5 +26,5 @@
     "assets/mocks/pundit-icon-48-light.png",
     "n7-icon/*"
   ],
-  "permissions": ["activeTab"]
+  "permissions": ["activeTab", "storage"]
 }
