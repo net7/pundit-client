@@ -4,10 +4,11 @@
 
 const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs-extra');
+const path = require('path');
 const concat = require('concat');
 
 const context = argv.c;
-const distPath = `${__dirname}/../dist`;
+const distPath = path.join(path.dirname(fs.realpathSync(__filename)), '../dist');
 const basePath = `${distPath}/${context}`;
 const filesToMerge = ['main.js', 'styles.js'];
 const outputFile = `pundit.${context}.js`;
@@ -28,7 +29,7 @@ if (argv.c === 'chrome-ext') {
 // merge in one file
 concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath)
   .then(() => {
-    console.log(`Dist updated with ${outputFile}`);
+    console.log(`Dist updated with merged file ${outputFile}`);
     return fs.readdir(basePath);
   })
   .then((files) => {
