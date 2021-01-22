@@ -1,7 +1,6 @@
 /* eslint-disable */
 let appRoot;
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
-  console.log('msg', type, payload);
   switch(type) {
     case 'iconclick': 
     case 'tabactivated': {
