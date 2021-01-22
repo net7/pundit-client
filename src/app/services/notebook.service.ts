@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Notebook } from '@pundit/communication';
+import { Notebook, SharingModeType } from '@pundit/communication';
 
 export type NotebookData = {
   id: string;
   label: string;
   sharingMode: string;
+}
+
+export type NotebookUpdate = {
+  label?: string;
+  sharingMode?: SharingModeType;
 }
 
 @Injectable()
@@ -25,7 +30,8 @@ export class NotebookService {
    * Use src\app\models\notebook\update
    * to update the online version instead.
   */
-  update(notebookID, { label, sharingMode }) {
+  update(notebookID, data: NotebookUpdate) {
+    const { label, sharingMode } = data;
     if (!this.getNotebookById(notebookID)) return;
     const notebook = this.getNotebookById(notebookID);
     if (label) notebook.label = label;

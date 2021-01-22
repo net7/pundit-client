@@ -16,8 +16,8 @@ export class NotebookPanelDS extends DataSource {
   transform(data) {
     return {
       ...data,
-      description: this.labelMap[data.selected.sharingMode],
-      icon: this.iconMap[data.selected.sharingMode]
+      descriptions: this.labelMap,
+      icons: this.iconMap,
     };
   }
 }

@@ -1,18 +1,18 @@
 <div class="notebook-panel"
-     *ngIf="data">
+     *ngIf="data && data.selected.sharingMode as currentSharingMode">
     <div class="notebook-panel__row n7-grid-1">
         <div class="notebook-panel__label">Current notebook:</div>
         <div class="notebook-panel__name">
-            <span class="notebook-panel__sharingMode {{data.icon}}"></span>
+            <span class="notebook-panel__sharingMode {{ data.icons[currentSharingMode] }}"></span>
             {{data.selected.label}}
         </div>
     </div>
     <div class="notebook-panel__row n7-grid-2">
         <div class="notebook-panel__status">
             <div class="notebook-panel__label">Notebook status:</div>
-            <div class="notebook-panel__current-status">{{data.selected.sharingMode.toUpperCase()}}</div>
+            <div class="notebook-panel__current-status">{{currentSharingMode.toUpperCase()}}</div>
             <div class="notebook-panel__status-description">
-                {{ data.description }}
+                {{ data.descriptions[currentSharingMode] }}
             </div>
         </div>
         <div class="notebook-panel__change-status">
