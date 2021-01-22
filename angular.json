@@ -19,7 +19,7 @@
           "options": {
             "preserveSymlinks": true,
             "aot": true,
-            "outputPath": "dist/",
+            "outputPath": "dist/default",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -27,11 +27,6 @@
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              { 
-                "glob": "**/*", 
-                "input": "src/chrome-ext/", 
-                "output": "/" 
-              },
               { 
                 "glob": "**/*", 
                 "input": "node_modules/@n7-frontend/icon-font/Font/", 
@@ -45,12 +40,7 @@
           },
           "configurations": {
             "production": {
-              "fileReplacements": [
-                {
-                  "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.prod.ts"
-                }
-              ],
+              "outputPath": "dist/prod",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -71,9 +61,16 @@
                   "maximumWarning": "6kb",
                   "maximumError": "10kb"
                 }
+              ],
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
               ]
             },
             "shake": {
+              "outputPath": "dist/shake",
               "fileReplacements": [
                 {
                   "replace": "src/index.html",
@@ -82,6 +79,7 @@
               ]
             },
             "scroll": {
+              "outputPath": "dist/scroll",
               "fileReplacements": [
                 {
                   "replace": "src/index.html",
@@ -90,6 +88,14 @@
               ]
             },
             "chrome-ext": {
+              "outputPath": "dist/chrome-ext",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -98,6 +104,44 @@
                 {
                   "replace": "src/app/app.module.ts",
                   "with": "src/app/app.module.chrome-ext.ts"
+                }
+              ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                { 
+                  "glob": "**/*", 
+                  "input": "src/chrome-ext/", 
+                  "output": "/" 
+                },
+                { 
+                  "glob": "**/*", 
+                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
+                  "output": "/" 
+                }
+              ]
+            },
+            "embed": {
+              "outputPath": "dist/embed",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.ts"
+                },
+                {
+                  "replace": "src/app/app.module.ts",
+                  "with": "src/app/app.module.embed.ts"
+                },
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/embed.html"
                 }
               ]
             }
@@ -120,6 +164,9 @@
             },
             "chrome-ext": {
               "browserTarget": "pnd:build:chrome-ext"
+            },
+            "embed": {
+              "browserTarget": "pnd:build:embed"
             }
           }
         },
