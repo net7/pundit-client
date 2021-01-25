@@ -30,39 +30,38 @@ function updateExtensionIcon(active) {
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  Storage.get(ACTIVE_KEY)
+  const key = `${ACTIVE_KEY}.${tab.id}`;
+  Storage.get(key)
     .then((value) => {
-      return Storage.set(ACTIVE_KEY, !value)
+      return Storage.set(key, !value)
     })
     .then((newValue) => {
       // change icon
       chrome.tabs.sendMessage(tab.id, { type: 'iconclick', payload: newValue });
+      updateExtensionIcon(newValue);
     })
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  Storage.get(ACTIVE_KEY)
+  lastActiveTab = tabId;
+  const key = `${ACTIVE_KEY}.${tabId}`;
+  Storage.get(key)
     .then((value) => {
       chrome.tabs.sendMessage(tabId, { type: 'tabactivated', payload: value });
+      updateExtensionIcon(value);
     })
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  Storage.get(ACTIVE_KEY)
+  const key = `${ACTIVE_KEY}.${tabId}`;
+  Storage.get(key)
     .then((value) => {
       chrome.tabs.sendMessage(tabId, { type: 'tabactivated', payload: value });
+      updateExtensionIcon(value);
     })
 });
 
-chrome.storage.onChanged.addListener((changes) => {
-  if (changes[ACTIVE_KEY]) {
-    const { newValue } = changes[ACTIVE_KEY];
-    updateExtensionIcon(newValue);
-  }
+chrome.tabs.onRemoved.addListener((tabId) => {
+  const key = `${ACTIVE_KEY}.${tabId}`;
+  Storage.remove(key)
 });
-
-// init
-Storage.get(ACTIVE_KEY)
-  .then((value) => {
-    updateExtensionIcon(value);
-  })
