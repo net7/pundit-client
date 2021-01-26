@@ -1,3 +1,6 @@
+$sidebar-width: 326px;
+$sidebar-z-index: 99999998;
+
 .pundit-sidebar {
     font-family: $font-family-main;
 
@@ -7,9 +10,9 @@
         position: absolute;
         right: 0px;
         top: 0px;
-        z-index: 100;
+        z-index: $sidebar-z-index;
         height: 100vh;
-        width: 370px;
+        width: $sidebar-width;
     }
 
     &__annotation-column {
@@ -17,18 +20,23 @@
     }
 
     &__user-row {
+        position: fixed;
+        top: 0;
+        right: 0;
         background-color: #ffffff;
         color: $color-text;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        position: relative;
-        width: 100%;
+        // position: relative;
+        // width: 100%;
+        width: $sidebar-width;
         height: $space * 5;
         margin-top: $space * 2;
         border-top: 1px solid $color-gray-03;
         border-bottom: 1px solid $color-gray-03;
         box-shadow: 0px 3px 11px 0px $color-gray-03;
+        z-index: $sidebar-z-index + 1;
 
         a {
             text-decoration: none;
@@ -72,7 +80,8 @@
     }
 
     &.is-expanded {
-        .pundit-sidebar__cont {
+        .pundit-sidebar__cont, 
+        .pundit-sidebar__user-row {
             animation: expanding 0.5s both;
         }
 
@@ -82,7 +91,8 @@
     }
 
     &.is-collapsed {
-        .pundit-sidebar__cont {
+        .pundit-sidebar__cont, 
+        .pundit-sidebar__user-row {
             animation: collapsing 0.5s both;
         }
 
@@ -100,6 +110,7 @@
         border-radius: 50%;
         margin-left: -20px;
         cursor: pointer;
+        z-index: $sidebar-z-index + 2;
 
         img {
             height: 20px;
@@ -113,6 +124,13 @@
 }
 
 .notebook-panel {
+    // position
+    position: fixed;
+    top: 56px;
+    right: 0;
+    z-index: $sidebar-z-index + 1 !important;
+    width: $sidebar-width - $space * 4;
+
     border-bottom: 1px solid $color-gray-03;
     box-shadow: 0px 8px 11px 0px $color-gray-03;
     &__select-cont {

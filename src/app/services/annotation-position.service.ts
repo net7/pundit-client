@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 
-const TOP_MARGIN = 50;
+const TOP_MARGIN = 60;
 
 @Injectable()
 export class AnnotationPositionService {
