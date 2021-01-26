@@ -134,6 +134,7 @@ $sidebar-z-index: 99999998;
         border-radius: 50%;
         margin-left: -20px;
         cursor: pointer;
+        z-index: $sidebar-z-index;
 
         img {
             height: 20px;
