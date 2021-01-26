@@ -128,7 +128,7 @@ $sidebar-z-index: 99999998;
     position: fixed;
     top: 56px;
     right: 0;
-    z-index: $sidebar-z-index + 1 !important;
+    z-index: $sidebar-z-index + 1;
     width: $sidebar-width - $space * 4;
 
     border-bottom: 1px solid $color-gray-03;

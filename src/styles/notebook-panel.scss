@@ -2,8 +2,6 @@
     background-color: $color-background-base;
     padding: 2 * $space;
     color: $color-text;
-    position: absolute;
-    z-index: 1;
 
     &__label {
         font-size: $font-size-s;
