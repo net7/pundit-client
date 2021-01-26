@@ -1,7 +1,7 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import { Subject, ReplaySubject } from 'rxjs';
-import { filter, takeUntil, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -132,12 +132,13 @@ export class SidebarLayoutEH extends EventHandler {
   private listenIsCollapse() {
     this.dataSource.isCollapsed
       .pipe(
-        filter((isCollapsed) => !!isCollapsed),
         withLatestFrom(this.dataSource.notebookEditor)
       )
-      .subscribe(([, notebookOpen]) => {
-        if (notebookOpen) {
+      .subscribe(([isCollapsed, notebookOpen]) => {
+        if (isCollapsed && notebookOpen) {
           this.dataSource.notebookEditor.next(false);
+        } else if (!isCollapsed) {
+          this.dataSource.updateAnnotations();
         }
       });
   }

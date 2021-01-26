@@ -36,7 +36,7 @@ $sidebar-z-index: 99999998;
         border-top: 1px solid $color-gray-03;
         border-bottom: 1px solid $color-gray-03;
         box-shadow: 0px 3px 11px 0px $color-gray-03;
-        z-index: $sidebar-z-index + 1;
+        z-index: $sidebar-z-index + 2;
 
         a {
             text-decoration: none;
@@ -91,16 +91,40 @@ $sidebar-z-index: 99999998;
     }
 
     &.is-collapsed {
-        .pundit-sidebar__cont, 
+        .pundit-sidebar__cont {
+            // animation: collapsing 0.5s both;
+            width: $space * 2 ;
+            overflow: hidden;
+        }
+
         .pundit-sidebar__user-row {
-            animation: collapsing 0.5s both;
+            display: none;
         }
 
         // Hide the extra logo while the sidebar is collapsed
         .pundit-sidebar__logo {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: $space * 2;
+            right: $space * 4;
+        }
+
+        .n7-annotation__container {
+            padding: 0;
+            margin: $space / 2;
+            background: #ffffb8;
+            height: $space * 3;
+            width: $space;
+
+            & > div {
+                display: none;
+            }
+        }
+    }
+
+    &.notebook-panel-open {
+        .pundit-sidebar__user-row {
+            box-shadow: none;
+            border-bottom-color: transparent;
         }
     }
 
@@ -110,7 +134,6 @@ $sidebar-z-index: 99999998;
         border-radius: 50%;
         margin-left: -20px;
         cursor: pointer;
-        z-index: $sidebar-z-index + 2;
 
         img {
             height: 20px;
@@ -189,7 +212,7 @@ n7-annotation {
     position: absolute;
     width: 100%;
     box-sizing: border-box;
-    // visibility: hidden;
+    visibility: hidden;
 }
 
 // annotation menu

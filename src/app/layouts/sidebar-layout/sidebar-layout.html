@@ -1,5 +1,9 @@
-<div *ngIf="lb.dataSource as ds"
-     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : 'is-expanded' }}">
+<div *ngIf="lb.dataSource as ds" class="pundit-sidebar"
+     [ngClass]="{
+        'is-collapsed': (ds.isCollapsed | async),
+        'is-expanded': !(ds.isCollapsed | async),
+        'notebook-panel-open': (lb.dataSource.notebookEditor | async)
+     }">
 
     <div class="n7-icon-pundit pundit-sidebar__logo">
         <img [src]="logo"
@@ -20,7 +24,7 @@
         </div>
         <div class="pundit-sidebar__actions">
             <a href="#"
-               class="pundit-sidebar__notebook-panel {{ lb.dataSource.notebookEditor.getValue() ? 'active' : ''}}"
+               class="pundit-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <n7-anchor-wrapper>
                     <span class="n7-icon-book pundit-sidebar__header-icon"></span>
