@@ -12,7 +12,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
   private notebookService: NotebookService;
 
   /** open/close the sidebar */
-  public isCollapsed = new BehaviorSubject(false);
+  public isCollapsed = new BehaviorSubject(true);
 
   /** open/close the notebook editor panel */
   public notebookEditor = new BehaviorSubject(false);

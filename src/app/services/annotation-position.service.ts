@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 
-const TOP_MARGIN = 50;
+const TOP_MARGIN = 60;
 
 @Injectable()
 export class AnnotationPositionService {
@@ -65,8 +65,11 @@ export class AnnotationPositionService {
       const end = start + offsetHeight;
       positions.push({ start, end });
 
-      // update the annotations vertial offset
-      el.style.top = `${start}px`;
+      // update the annotations vertical offset & visibility
+      setTimeout(() => {
+        el.style.top = `${start}px`;
+        el.style.visibility = 'visible';
+      });
     });
   }
 }

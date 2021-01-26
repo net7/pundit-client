@@ -1,49 +1,48 @@
-<div *ngIf="lb.dataSource as ds"
-     class="pundit-sidebar {{ ds.isCollapsed.getValue() ? 'is-collapsed' : 'is-expanded' }}">
+<div *ngIf="lb.dataSource as ds" class="pundit-sidebar"
+     [ngClass]="{
+        'is-collapsed': (ds.isCollapsed | async),
+        'is-expanded': !(ds.isCollapsed | async),
+        'notebook-panel-open': (lb.dataSource.notebookEditor | async)
+     }">
 
-    <div class="n7-icon-pundit pundit-sidebar__logo">
-        <img [src]="logo"
-             alt="pundit mock logo"
-             (click)="lb.eventHandler.emitInner('clicklogo')">
+    <div class="n7-icon-pundit pundit-sidebar__logo" (click)="lb.eventHandler.emitInner('clicklogo')">
+        <img [src]="logo" alt="pundit mock logo">
     </div>
+
+    <div class="pundit-sidebar__user-row">
+        <!-- pundit icon inside a circle -->
+        <div class="n7-icon-pundit pundit-sidebar__logo" (click)="lb.eventHandler.emitInner('clicklogo')">
+            <img [src]="logo" alt="pundit mock logo">
+        </div>
+        <!-- user name -->
+        <div class="pundit-sidebar__user-name">
+            <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
+        </div>
+        <div class="pundit-sidebar__actions">
+            <a class="pundit-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
+               (click)="lb.eventHandler.emitInner('notebookpanel')">
+                <n7-anchor-wrapper>
+                    <span class="n7-icon-book pundit-sidebar__header-icon"></span>
+                </n7-anchor-wrapper>
+            </a>
+            <a class="pundit-sidebar__close-button"
+               (click)="lb.eventHandler.emitInner('sidebarclose')">
+                <n7-anchor-wrapper>
+                    <span class="n7-icon-close pundit-sidebar__header-icon"></span>
+                </n7-anchor-wrapper>
+            </a>
+        </div>
+
+    </div>
+    
+    <!-- notebook selection / creation panel -->
+    <ng-container *ngIf="lb.dataSource.notebookEditor.getValue()">
+        <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
+    </ng-container>
+    
 
     <div class="pundit-sidebar__cont"
          [style.height]="ds.height$ | async">
-        <div class="pundit-sidebar__user-row">
-            <!-- pundit icon inside a circle -->
-            <div class="n7-icon-pundit pundit-sidebar__logo">
-                <img [src]="logo"
-                     alt="pundit mock logo"
-                     (click)="lb.eventHandler.emitInner('clicklogo')">
-            </div>
-            <!-- user name -->
-            <div class="pundit-sidebar__user-name">
-                <n7-anchor-wrapper>John Doe</n7-anchor-wrapper>
-            </div>
-            <div class="pundit-sidebar__actions">
-                <a href="#"
-                   class="pundit-sidebar__notebook-panel {{ lb.dataSource.notebookEditor.getValue() ? 'active' : ''}}"
-                   (click)="lb.eventHandler.emitInner('notebookpanel')">
-                    <n7-anchor-wrapper>
-                        <span class="n7-icon-book pundit-sidebar__header-icon"></span>
-                    </n7-anchor-wrapper>
-                </a>
-                <a href="#"
-                   class="pundit-sidebar__close-button"
-                   (click)="lb.eventHandler.emitInner('sidebarclose')">
-                    <n7-anchor-wrapper>
-                        <span class="n7-icon-close pundit-sidebar__header-icon"></span>
-                    </n7-anchor-wrapper>
-                </a>
-            </div>
-        </div>
-
-        <!-- notebook selection / creation panel -->
-        <ng-container *ngIf="lb.dataSource.notebookEditor.getValue()">
-            <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
-        </ng-container>
-
-
         <div class="pundit-sidebar__annotation-column">
             <n7-header [data]="ds.headerMock"></n7-header>
             <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
