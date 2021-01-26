@@ -7,8 +7,7 @@ class Storage {
   static get(key) {
     return new Promise((res) => {
       chrome.storage.local.get([key], (result) => {
-        console.log('get', key, result[key]);
-        res(result[key]);
+        res(!!result[key]);
       })
     });
   }
@@ -16,8 +15,15 @@ class Storage {
   static set(key, value) {
     return new Promise((res) => {
       chrome.storage.local.set({ [key]: value }, () => {
-        console.log('set', key, value);
         res(value);
+      })
+    })
+  }
+
+  static remove(key) {
+    return new Promise((res) => {
+      chrome.storage.local.remove(key, () => {
+        res(key);
       })
     })
   }
@@ -43,7 +49,6 @@ chrome.browserAction.onClicked.addListener((tab) => {
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  lastActiveTab = tabId;
   const key = `${ACTIVE_KEY}.${tabId}`;
   Storage.get(key)
     .then((value) => {
