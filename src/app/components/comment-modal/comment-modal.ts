@@ -38,6 +38,7 @@ export interface CommentModalData {
       classes?: string;
     }[];
   };
+  _setInstance: (instance: any) => void;
 }
 
 @Component({
@@ -68,6 +69,8 @@ export class CommentModalComponent implements AfterContentChecked {
         const handle = shadowRoot.getElementById(this.draggableHandle);
 
         this.draggableInstance = new Draggable(target, { handle });
+
+        this.data._setInstance(this.draggableInstance);
       });
     }
   }

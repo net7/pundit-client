@@ -2,6 +2,10 @@ import { DataSource, _t } from '@n7-frontend/core';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 
 export class CommentModalDS extends DataSource {
+  private instance;
+
+  private defaultPosition: { x: number; y: number };
+
   transform(data): CommentModalData {
     const { currentNotebook, notebooks } = data;
     return {
@@ -45,11 +49,18 @@ export class CommentModalDS extends DataSource {
           }
         }],
       },
+      _setInstance: (instance) => {
+        this.instance = instance;
+        const { x, y } = this.instance.get();
+        this.defaultPosition = { x, y };
+      }
     };
   }
 
   public close() {
     this.output.visible = false;
+    const { x, y } = this.defaultPosition;
+    this.instance.set(x, y);
   }
 
   public notebooksToggle() {
