@@ -36,5 +36,22 @@ export class AnnotationEH extends EventHandler {
           break;
       }
     });
+
+    this.outerEvents$.subscribe(({ type, payload }) => {
+      switch (type) {
+        case 'sidebar-layout.anchormouseover':
+          this.dataSource.onAnchorMouseOver(payload);
+          break;
+        case 'sidebar-layout.anchormouseleave':
+          this.dataSource.onAnchorMouseLeave(payload);
+          break;
+        case 'sidebar-layout.anchorclick':
+          this.dataSource.onAnchorClick(payload);
+          break;
+        default:
+          console.warn('unhandled inner event of type', type);
+          break;
+      }
+    });
   }
 }

@@ -80,6 +80,7 @@ export class AnchorService {
   private attachEvents(highlights: HighlightElement[], annotationId: string) {
     highlights.forEach((el) => {
       el.addEventListener('mouseover', this.onMouseOver.bind(this, annotationId));
+      el.addEventListener('mouseleave', this.onMouseLeave.bind(this, annotationId));
       el.addEventListener('click', this.onClick.bind(this, annotationId));
     });
   }
@@ -87,6 +88,7 @@ export class AnchorService {
   private detachEvents(highlights: HighlightElement[]) {
     highlights.forEach((el) => {
       el.removeEventListener('mouseover', this.onMouseOver);
+      el.removeEventListener('mouseleave', this.onMouseLeave);
       el.removeEventListener('click', this.onClick);
     });
   }
@@ -95,6 +97,13 @@ export class AnchorService {
     this.events$.next({
       payload,
       type: 'mouseover',
+    });
+  }
+
+  private onMouseLeave(payload) {
+    this.events$.next({
+      payload,
+      type: 'mouseleave',
     });
   }
 

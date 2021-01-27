@@ -88,6 +88,12 @@ $sidebar-z-index: 99999998;
         & > .pundit-sidebar__logo {
             display: none;
         }
+
+        .n7-annotation__container.is-hovered {
+            .n7-annotation__body {
+                background: rgba(46, 230, 230, 0.4);
+            }
+        }
     }
 
     &.is-collapsed {
@@ -118,7 +124,13 @@ $sidebar-z-index: 99999998;
             & > div {
                 display: none;
             }
+
+            &.is-hovered {
+                background: rgba(46, 230, 230, 0.4);
+            }
         }
+
+        
     }
 
     &.notebook-panel-open {

@@ -181,6 +181,9 @@ export class MainLayoutEH extends EventHandler {
         case 'mouseover':
           this.layoutEvent$.next({ type: 'anchormouseover', payload });
           break;
+        case 'mouseleave':
+          this.layoutEvent$.next({ type: 'anchormouseleave', payload });
+          break;
         case 'click':
           this.layoutEvent$.next({ type: 'anchorclick', payload });
           break;

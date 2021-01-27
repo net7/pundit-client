@@ -21,6 +21,23 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  onAnchorMouseOver(id: string) {
+    const annotation = this.getAnnotation(id);
+    annotation.classes = 'is-hovered';
+  }
+
+  onAnchorMouseLeave(id: string) {
+    const annotation = this.getAnnotation(id);
+    annotation.classes = '';
+  }
+
+  onAnchorClick(id: string) {
+    const annotation = this.getAnnotation(id);
+    if (annotation.isCollapsed) {
+      annotation.isCollapsed = false;
+    }
+  }
+
   private getAnnotation(id: string) {
     return this.output.find(({ _meta }) => _meta.id === id);
   }

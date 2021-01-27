@@ -109,11 +109,14 @@ export class SidebarLayoutEH extends EventHandler {
         }
         case 'anchormouseover':
           this.emitOuter('anchormouseover', payload);
-          console.warn('FIXME: gestire anchormouseover su annotation.eh', payload);
+          break;
+        case 'anchormouseleave':
+          this.emitOuter('anchormouseleave', payload);
           break;
         case 'anchorclick':
           this.emitOuter('anchorclick', payload);
-          console.warn('FIXME: gestire anchorclick su annotation.eh', payload);
+          this.dataSource.isCollapsed.next(false);
+          this.dataSource.updateAnnotations();
           break;
         default:
           break;
