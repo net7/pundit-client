@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
+import { Subject } from 'rxjs';
 import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
@@ -9,6 +10,8 @@ export class AnnotationService {
   private annotations: AnnotationData[] = [];
 
   private lastRemoved: AnnotationData;
+
+  public totalChanged$: Subject<number> = new Subject();
 
   constructor(
     private userService: UserService,
@@ -24,12 +27,18 @@ export class AnnotationService {
   add(rawAnnotation: Annotation) {
     if (!this.getAnnotationById(rawAnnotation.id)) {
       this.annotations.push(this.transform(rawAnnotation));
+
+      // emit signal
+      this.totalChanged$.next(this.annotations.length);
     }
   }
 
   remove(annotationId: string) {
     const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
     [this.lastRemoved] = this.annotations.splice(index, 1);
+
+    // emit signal
+    this.totalChanged$.next(this.annotations.length);
   }
 
   getAnnotationById(annotationId: string): AnnotationData | null {

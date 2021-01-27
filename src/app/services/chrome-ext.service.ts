@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
+import { AnnotationService } from './annotation.service';
 
 @Injectable()
 export class ChromeExtService {
   constructor(
-    private anchorService: AnchorService
+    private anchorService: AnchorService,
+    private annotationService: AnnotationService
   ) {}
 
   load(): Promise<void> {
@@ -16,6 +18,7 @@ export class ChromeExtService {
         config.set('chromeExtUrl', `chrome-extension://${id}`);
         this.addFontStyles();
         this.listenExtensionEvents();
+        this.listenAnnotationUpdates();
         res();
       }, false);
     });
@@ -35,5 +38,13 @@ export class ChromeExtService {
     window.addEventListener('punditdestroy', async () => {
       this.anchorService.removeAll();
     }, false);
+  }
+
+  private listenAnnotationUpdates() {
+    this.annotationService.totalChanged$.subscribe((number) => {
+      // emit signal
+      const signal = new CustomEvent('annotationsupdate', { detail: { total: number } });
+      window.dispatchEvent(signal);
+    });
   }
 }

@@ -1,5 +1,8 @@
 /* eslint-disable */
 let appRoot;
+let badgeInterval;
+let badgeIntervalCount = 0;
+
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   switch(type) {
     case 'iconclick': 
@@ -29,17 +32,54 @@ function load() {
     // emit signal
     const signal = new CustomEvent("punditloaded", { detail: { id: chrome.runtime.id } });
     window.dispatchEvent(signal);
+
+    // loader interval
+    badgeInterval = setInterval(badgeLoader, 500);
+    // init loader
+    badgeLoader();
+
+    // listen to annotation updates
+    window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
     main.remove();
   };
 }
 
 function destroy() {
   if (!appRoot) return;
+  
+  // remove annotation listener
+  window.removeEventListener('annotationsupdate', onAnnotationUpdate);
 
   // emit signal
   const signal = new CustomEvent("punditdestroy");
   window.dispatchEvent(signal);
   // clear
+  clearInterval(badgeInterval);
+  badgeIntervalCount = 0;
   appRoot.remove();
   appRoot = null;
+}
+
+function badgeLoader() {
+  badgeIntervalCount++;
+  chrome.runtime.sendMessage({
+    type: 'annotationsupdate',
+    payload: new Array(badgeIntervalCount).fill('·').join('')
+  });
+
+  // reset
+  if (badgeIntervalCount === 3) {
+    badgeIntervalCount = 0;
+  }
+}
+
+function onAnnotationUpdate(ev) {
+  const { total } = ev.detail;
+  chrome.runtime.sendMessage({
+    type: 'annotationsupdate',
+    payload: total
+  });
+
+  // clear loader
+  clearInterval(badgeInterval);
 }

@@ -2,6 +2,8 @@
 const ACTIVE_KEY = 'active';
 const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
+const BADGE_COLOR_ON = [13, 133, 236, 255];
+const BADGE_COLOR_OFF = [128, 128, 128, 255];
 
 class Storage {
   static get(key) {
@@ -32,6 +34,9 @@ class Storage {
 function updateExtensionIcon(active) {
   chrome.browserAction.setIcon({
     path: active ? ICON_ON : ICON_OFF
+  });
+  chrome.browserAction.setBadgeBackgroundColor({
+    color: active ? BADGE_COLOR_ON : BADGE_COLOR_OFF
   });
 }
 
@@ -69,4 +74,19 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
   const key = `${ACTIVE_KEY}.${tabId}`;
   Storage.remove(key)
+});
+
+// content listener
+chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
+  switch(type) {
+    case 'annotationsupdate':
+      const { tab } = _sender; 
+      chrome.browserAction.setBadgeText({
+        tabId: tab.id,
+        text: '' + payload
+      });
+      break;
+    default:
+      break;
+  }
 });

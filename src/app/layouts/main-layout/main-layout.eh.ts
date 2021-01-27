@@ -71,6 +71,9 @@ export class MainLayoutEH extends EventHandler {
             this.annotationService.load(annotations);
             this.anchorService.load(annotations);
             // signal
+            if (!this.annotationService.getAnnotations().length) {
+              this.annotationService.totalChanged$.next(0);
+            }
             this.layoutEvent$.next({ type: 'searchresponse' });
             this.dataSource.hasLoaded.next(true);
           });
