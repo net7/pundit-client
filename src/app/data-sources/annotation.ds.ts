@@ -32,10 +32,7 @@ export class AnnotationDS extends DataSource {
   }
 
   onAnchorClick(id: string) {
-    const annotation = this.getAnnotation(id);
-    if (annotation.isCollapsed) {
-      annotation.isCollapsed = false;
-    }
+    this.toggleCollapse(id);
   }
 
   private getAnnotation(id: string) {
