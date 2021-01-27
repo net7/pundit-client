@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
+import { Subject } from 'rxjs';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
@@ -9,6 +10,8 @@ export class AnchorService {
   private annotationHighlights: AnnotationHighlight[] = [];
 
   private orphans: Annotation[] = [];
+
+  public events$: Subject<{type: string; payload: any}> = new Subject();
 
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
@@ -22,6 +25,7 @@ export class AnchorService {
         const selectors = this.createSelectors(annotation);
         const range: Range = await anchor(document.body, selectors);
         const highlights = highlightRange(range);
+        this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
       } catch (_e) {
         this.orphans.push(annotation);
@@ -33,6 +37,7 @@ export class AnchorService {
     if (this.getHighlightById(annotationId)) {
       const { highlights } = this.getHighlightById(annotationId);
       removeHighlights(highlights);
+      this.detachEvents(highlights);
       const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
       this.annotationHighlights.splice(index, 1);
     }
@@ -70,6 +75,34 @@ export class AnchorService {
       selectors.push({ type: 'TextQuoteSelector', ...target.textQuoteSelector });
     }
     return selectors;
+  }
+
+  private attachEvents(highlights: HighlightElement[], annotationId: string) {
+    highlights.forEach((el) => {
+      el.addEventListener('mouseover', this.onMouseOver.bind(this, annotationId));
+      el.addEventListener('click', this.onClick.bind(this, annotationId));
+    });
+  }
+
+  private detachEvents(highlights: HighlightElement[]) {
+    highlights.forEach((el) => {
+      el.removeEventListener('mouseover', this.onMouseOver);
+      el.removeEventListener('click', this.onClick);
+    });
+  }
+
+  private onMouseOver(payload) {
+    this.events$.next({
+      payload,
+      type: 'mouseover',
+    });
+  }
+
+  private onClick(payload) {
+    this.events$.next({
+      payload,
+      type: 'click',
+    });
   }
 }
 

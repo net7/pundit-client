@@ -76,6 +76,7 @@ export class MainLayoutEH extends EventHandler {
           });
           this.listenSelection();
           this.listenLayoutEvents();
+          this.listenAnchorEvents();
           break;
 
         case 'main-layout.destroy':
@@ -165,6 +166,23 @@ export class MainLayoutEH extends EventHandler {
             // signal
             this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
           });
+          break;
+        default:
+          break;
+      }
+    });
+  }
+
+  private listenAnchorEvents() {
+    this.anchorService.events$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(({ type, payload }) => {
+      switch (type) {
+        case 'mouseover':
+          this.layoutEvent$.next({ type: 'anchormouseover', payload });
+          break;
+        case 'click':
+          this.layoutEvent$.next({ type: 'anchorclick', payload });
           break;
         default:
           break;
