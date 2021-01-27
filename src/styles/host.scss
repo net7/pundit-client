@@ -18,3 +18,8 @@ pnd-mark.pnd-mark {
     background-color: #ffffb8;
     transition: none;
 }
+
+pnd-mark.pnd-mark:hover {
+    cursor: pointer;
+    background-color: rgba(46, 230, 230, 0.4);
+}
