@@ -50,29 +50,28 @@ export class MainLayoutEH extends EventHandler {
           this.anchorService = payload.anchorService;
           this.dataSource.onInit(payload);
 
-          this.dataSource.getUserAnnotations().pipe(
-            switchMap(({ data: searchData }) => {
-              const { users, notebooks, annotations } = searchData;
-              // load order matters
-              this.userService.load(users);
+          this.dataSource.getUserNotebooks().pipe(
+            switchMap(({ data: notebooksData }) => {
+              const { notebooks } = notebooksData;
+              // first notebook as default
+              const { id } = notebooks[0];
               this.notebookService.load(notebooks);
-              this.annotationService.load(annotations);
-              this.anchorService.load(annotations);
-              // signal
-              this.layoutEvent$.next({ type: 'searchresponse' });
+              this.notebookService.setSelected(id);
 
-              return this.dataSource.getUserNotebooks();
+              return this.dataSource.getUserAnnotations();
             }),
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             })
-          ).subscribe(({ data: notebooksData }) => {
-            const { notebooks } = notebooksData;
-            // first notebook as default
-            const { id } = notebooks[0];
-            this.notebookService.load(notebooks);
-            this.notebookService.setSelected(id);
+          ).subscribe(({ data: searchData }) => {
+            const { users, annotations } = searchData;
+            // load order matters
+            this.userService.load(users);
+            this.annotationService.load(annotations);
+            this.anchorService.load(annotations);
+            // signal
+            this.layoutEvent$.next({ type: 'searchresponse' });
             this.dataSource.hasLoaded.next(true);
           });
           this.listenSelection();
