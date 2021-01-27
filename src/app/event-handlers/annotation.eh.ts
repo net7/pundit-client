@@ -20,9 +20,10 @@ export class AnnotationEH extends EventHandler {
             this.emitOuter('delete', id);
 
           // annotation update notebook
-          } else if (source === 'notebook-item') {
-            this.emitOuter('updatenotebook', id);
-            this.dataSource.closeMenu(id);
+          } else if (source === 'action-notebooks') {
+            this.dataSource.updateMenuState(id, source);
+            // this.emitOuter('updatenotebook', id);
+            // this.dataSource.closeMenu(id);
 
           // annotation update menu state
           } else {

@@ -1,34 +1,73 @@
 div.pnd-tooltip {
     font-family: $font-family-main;
-    font-weight: 700;
-    background: #ffffff;
-    border: 1px solid #dbdfe3;
-    padding: 7px;
+    font-weight: $font-weight-normal;
+    font-size: $font-size-s;
+    background: $color-gray-00;
+    border: 1px solid $color-gray-03;
+    border-radius: $border-radius;
+    padding: $space;
 
-    a {
-        color: #262216;
+    .n7-nav__link {
+        color: $color-text;
     }
 
-    span.n7-nav__label {
+    .n7-nav__label {
         width: 100%;
 
         &:hover {
-            background-color: #e8ebed;
+            background-color: $color-gray-04;
+            color: $color-text-inverse;
         }
     }
 
     &[data-popper-placement^="top"] {
         #arrow::before {
-            background-color: #ffffff;
-            border-bottom: 1px solid #dbdfe3;
-            border-right: 1px solid #dbdfe3;
+            background-color: $color-gray-00;
+            border-bottom: 1px solid $color-gray-03;
+            border-right: 1px solid $color-gray-03;
         }
     }
     &[data-popper-placement^="bottom"] {
         #arrow::before {
-            background-color: #ffffff;
-            border-top: 1px solid #dbdfe3;
-            border-left: 1px solid #dbdfe3;
+            background-color: $color-gray-00;
+            border-top: 1px solid $color-gray-03;
+            border-left: 1px solid $color-gray-03;
         }
+    }
+
+    // ARROW SCSS
+
+    #arrow,
+    #arrow::before {
+        position: absolute;
+        width: 8px;
+        height: 8px;
+        z-index: -1;
+    }
+
+    #arrow::before {
+        content: "";
+        transform: rotate(45deg);
+        background: $color-gray-02;
+    }
+
+    &[data-popper-placement^="top"] > #arrow {
+        bottom: -4px;
+    }
+
+    &[data-popper-placement^="bottom"] > #arrow {
+        top: -4px;
+    }
+
+    &[data-popper-placement^="left"] > #arrow {
+        right: -4px;
+    }
+
+    &[data-popper-placement^="right"] > #arrow {
+        left: -4px;
+    }
+
+    &[data-show] {
+        display: block;
     }
 }

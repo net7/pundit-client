@@ -1,9 +1,11 @@
-<div [attr.id]="'pnd-tooltip'" class="pnd-tooltip" role="tooltip" 
-    (mousedown)="onMouseDown($event)">
+<div [attr.id]="'pnd-tooltip'"
+     class="pnd-tooltip"
+     role="tooltip"
+     (mousedown)="onMouseDown($event)">
     <div class="pnd-tooltip__wrapper">
-        <n7-nav 
-        [data]="data.navData"
-        [emit]="navEmit"></n7-nav>
+        <n7-nav [data]="data.navData"
+                [emit]="navEmit"></n7-nav>
     </div>
-    <div id="arrow" data-popper-arrow></div>
+    <div id="arrow"
+         data-popper-arrow></div>
 </div>

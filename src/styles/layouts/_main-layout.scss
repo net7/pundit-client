@@ -7,47 +7,47 @@
 /* ------------------------------------ *\
     TOOLTIP
 \* ------------------------------------ */
-.pnd-tooltip {
-    display: none;
-    z-index: 999;
-    background: $color-gray-02;
-    padding: 4px 8px;
-    font-size: 13px;
-    border-radius: 4px;
+// .pnd-tooltip {
+//     display: none;
+//     z-index: 999;
+//     background: $color-gray-02;
+//     padding: 4px 8px;
+//     font-size: 13px;
+//     border-radius: 4px;
 
-    #arrow, #arrow::before {
-        position: absolute;
-        width: 8px;
-        height: 8px;
-        z-index: -1;
-    }
+// #arrow, #arrow::before {
+//     position: absolute;
+//     width: 8px;
+//     height: 8px;
+//     z-index: -1;
+// }
 
-    #arrow::before {
-        content: '';
-        transform: rotate(45deg);
-        background: $color-gray-02;
-    }
+// #arrow::before {
+//     content: '';
+//     transform: rotate(45deg);
+//     background: $color-gray-02;
+// }
 
-    &[data-popper-placement^='top'] > #arrow {
-        bottom: -4px;
-    }
+// &[data-popper-placement^='top'] > #arrow {
+//     bottom: -4px;
+// }
       
-    &[data-popper-placement^='bottom'] > #arrow {
-        top: -4px;
-    }
+// &[data-popper-placement^='bottom'] > #arrow {
+//     top: -4px;
+// }
       
-    &[data-popper-placement^='left'] > #arrow {
-        right: -4px;
-    }
+// &[data-popper-placement^='left'] > #arrow {
+//     right: -4px;
+// }
       
-    &[data-popper-placement^='right'] > #arrow {
-        left: -4px;
-    }
+// &[data-popper-placement^='right'] > #arrow {
+//     left: -4px;
+// }
 
-    &[data-show] {
-        display: block;
-    }
-}
+// &[data-show] {
+//     display: block;
+// }
+// }
 
 
 /* ------------------------------------ *\

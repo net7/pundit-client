@@ -141,7 +141,7 @@ export class AnnotationService {
         }],
         notebooks: {
           header: {
-            label: notebook.label,
+            label: 'Change notebook',
             icon: {
               id: 'n7-icon-caret-down',
             },
