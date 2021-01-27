@@ -17,9 +17,10 @@ import { EmbedService } from './services/embed.service';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
-import { TooltipComponent } from './components/tooltip/tooltip';
-import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
+import { AnnotationComponent } from './components/annotation/annotation';
 import { CommentModalComponent } from './components/comment-modal/comment-modal';
+import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
+import { TooltipComponent } from './components/tooltip/tooltip';
 
 import appConfig from './config';
 import i18n from './config/i18n';
@@ -42,9 +43,10 @@ config.init(appConfig);
     MainLayoutComponent,
     SidebarLayoutComponent,
     // COMPONENTS
-    TooltipComponent,
+    AnnotationComponent,
+    CommentModalComponent,
     NotebookPanelComponent,
-    CommentModalComponent
+    TooltipComponent,
   ],
   imports: [
     BrowserModule,

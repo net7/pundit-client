@@ -23,7 +23,7 @@ export class AnnotationPositionService {
     );
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     // get all <n7-annotation> nodes present in the sidebar
-    const rawElements: NodeListOf<HTMLElement> = shadowRoot.querySelectorAll('n7-annotation');
+    const rawElements: NodeListOf<HTMLElement> = shadowRoot.querySelectorAll('annotation');
     const positionMap = [];
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>

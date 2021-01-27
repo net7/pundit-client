@@ -1,5 +1,5 @@
-import { AnnotationData } from '@n7-frontend/components';
 import { DataSource } from '@n7-frontend/core';
+import { AnnotationData } from '../components/annotation/annotation';
 
 export class AnnotationDS extends DataSource {
   transform(data: AnnotationData[]): AnnotationData[] {

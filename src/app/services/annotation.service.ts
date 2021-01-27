@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AnnotationData } from '@n7-frontend/components';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
+import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -151,7 +151,7 @@ export class AnnotationService {
             }
           },
           items: notebooks
-            .filter(({ id: itemId }) => itemId !== notebook.id)
+            // .filter(({ id: itemId }) => itemId !== notebook.id)
             .map(({ id: itemId, label }) => ({
               label,
               payload: {

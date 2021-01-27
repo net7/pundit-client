@@ -7,30 +7,36 @@ export class AnnotationEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
+        /**
+         * Handle all click events on an annotation with different "source" values
+         */
         case 'annotation.click': {
           const { source, id } = payload;
-
           // collapse
-          if (source === 'box') {
-            this.dataSource.toggleCollapse(id);
-            this.emitOuter('togglecollapse');
-
-          // annotation delete
-          } else if (source === 'action-delete') {
-            this.emitOuter('delete', id);
-
-          // annotation update notebook
-          } else if (source === 'action-notebooks') {
-            this.dataSource.updateMenuState(id, source);
-            // this.emitOuter('updatenotebook', id);
-            // this.dataSource.closeMenu(id);
-
-          // annotation update menu state
-          } else {
-            this.dataSource.updateMenuState(id, source);
+          switch (source) {
+            case 'box': // click on the annotation container
+              this.dataSource.toggleCollapse(id);
+              this.emitOuter('togglecollapse');
+              break;
+            case 'action-delete': // click on the "delete" button
+              this.emitOuter('delete', id);
+              break;
+            default:
+              // annotation update menu state
+              this.dataSource.updateMenuState(id, source);
+              break;
           }
+        } break;
+
+        case 'annotation.change':
+          // change the assigned notebook
           break;
-        }
+        case 'annotation.mouseenter':
+          // highlight the corresponding annotation
+          break;
+        case 'annotation.mouseleave':
+          // remove highlight from the corresponding annotation
+          break;
         default:
           console.warn('unhandled inner event of type', type);
           break;
