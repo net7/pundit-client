@@ -66,10 +66,8 @@ export class AnnotationPositionService {
       positions.push({ start, end });
 
       // update the annotations vertical offset & visibility
-      setTimeout(() => {
-        el.style.top = `${start}px`;
-        el.style.visibility = 'visible';
-      });
+      el.style.top = `${start}px`;
+      el.style.visibility = 'visible';
     });
   }
 }
