@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { DvComponentsLibModule } from '@n7-frontend/components';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
+import { PunditLoginModule } from '@pundit/login';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
@@ -49,7 +50,8 @@ config.init(appConfig);
   ],
   imports: [
     BrowserModule,
-    DvComponentsLibModule
+    DvComponentsLibModule,
+    PunditLoginModule
   ],
   providers: [
     UserService,
