@@ -1,42 +1,35 @@
-div.pnd-tooltip {
-    font-family: $font-family-main;
-    font-weight: $font-weight-normal;
-    font-size: $font-size-s;
-    background: $color-gray-00;
-    border: 1px solid $color-gray-03;
-    border-radius: $border-radius;
-    padding: $space;
+/**
+ * TOOLTIP
+ *
+ * Style for the tooltip.
+ */
+
+/* ------------------------------------ *\
+   #TOOLTIP
+\* ------------------------------------ */
+.pnd-tooltip {
     display: none;
-
-    .n7-nav__link {
-        color: $color-text;
-    }
-
-    .n7-nav__label {
-        width: 100%;
-
-        &:hover {
-            background-color: $color-gray-04;
-            color: $color-text-inverse;
-        }
-    }
-
+    padding: $space*1.5;
+    background: $tooltip-background-color;
+    border: 1px solid $tooltip-border-color;
+    border-radius: $border-radius;
+    @include cardShadow;
+    
+    /* Arrow css */
     &[data-popper-placement^="top"] {
         #arrow::before {
-            background-color: $color-gray-00;
-            border-bottom: 1px solid $color-gray-03;
-            border-right: 1px solid $color-gray-03;
+            background-color: $tooltip-background-color;
+            border-bottom: 1px solid $tooltip-border-color;
+            border-right: 1px solid $tooltip-border-color;
         }
     }
     &[data-popper-placement^="bottom"] {
         #arrow::before {
-            background-color: $color-gray-00;
-            border-top: 1px solid $color-gray-03;
-            border-left: 1px solid $color-gray-03;
+            background-color: $tooltip-background-color;
+            border-top: 1px solid $tooltip-border-color;
+            border-left: 1px solid $tooltip-border-color;
         }
     }
-
-    // ARROW SCSS
 
     #arrow,
     #arrow::before {
@@ -49,7 +42,7 @@ div.pnd-tooltip {
     #arrow::before {
         content: "";
         transform: rotate(45deg);
-        background: $color-gray-02;
+        background: $tooltip-background-color;
     }
 
     &[data-popper-placement^="top"] > #arrow {
@@ -70,5 +63,29 @@ div.pnd-tooltip {
 
     &[data-show] {
         display: block;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #NAV-INSIDE-TOOLTIP
+\* ------------------------------------ */
+.pnd-tooltip {
+    .n7-nav__item {
+        &:not(:last-child) {
+            margin-bottom: $space;
+        }
+    }
+    
+    .n7-nav__label {
+        display: block;
+        color: $color-text;
+        font-family: $font-family-main;
+        font-size: $font-size-s;
+        transition: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
     }
 }
