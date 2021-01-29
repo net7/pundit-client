@@ -4,29 +4,39 @@
 @import "../../node_modules/tippy.js/dist/tippy.css";
 @import "../../node_modules/tippy.js/themes/light-border.css";
 
+
 // ------------------------------------ //
-// #N7 COLOR SCHEME
+// #PUNDIT-COLOR-SCHEME
 // ------------------------------------ //
-@import "../../node_modules/@n7-frontend/components/src/lib/styles/generic/color_scheme";
 @import "./generic/color-scheme";
 
-// ------------------------------------ //
-// #N7 COMPONENTS VARIABLES
-// ------------------------------------ //
-@import "../../node_modules/@n7-frontend/components/src/lib/styles/generic/variables";
 
 // ------------------------------------ //
-// #N7 COMPONENTS STYLES
-// ------------------------------------ //
-@import "../../node_modules/@n7-frontend/components/src/lib/styles/imports";
-
-// ------------------------------------ //
-// #PUNDIT-STYLES
+// #PUNDIT-GENERIC
 // ------------------------------------ //
 @import "./generic/variables";
-@import "./generic/mixings";
-@import "./sidebar.scss";
-@import "./notebook-panel.scss";
-@import "./layouts/main-layout";
-@import "./components/tooltip";
+@import "./generic/mixins";
+
+
+// ------------------------------------ //
+// #PUNDIT-GLOBAL
+// ------------------------------------ //
+@import "./global/forms";
+
+
+// ------------------------------------ //
+// #PUNDIT-COMPONENTS
+// ------------------------------------ //
+@import "./components/annotation";
+@import "./components/annotation-form";
 @import "./components/comment-modal";
+@import "./components/nav";
+@import "./components/notebook-panel";
+@import "./components/tooltip";
+
+
+// ------------------------------------ //
+// #PUNDIT-LAYOUTS
+// ------------------------------------ //
+@import "./layouts/main";
+@import "./layouts/sidebar";

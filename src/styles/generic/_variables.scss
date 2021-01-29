@@ -1,13 +1,100 @@
+//
+// VARIABLES
+//
+// Definition of all variables used by the Pundit annotator.
+//
+
+// ------------------------------------ //
+// #SPACING-UNIT
+// ------------------------------------ //
+$space: 8px;
+
+
 // ------------------------------------ //
 // FONTS
 // ------------------------------------ //
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
 
 // ------------------------------------ //
 // TYPOGRAPHY
 // ------------------------------------ //
 $font-family-main: 'Source Sans Pro', sans-serif;
 $font-family-headings: $font-family-main;
+
+$font-size-xxxl: 38px; // 2.875rem; // 46px
+$font-size-xxl: 30px; // 1.85rem; // 40px
+$font-size-xl: 26px; // 1.425rem; // 26px
+$font-size-l: 20px; // 1.25rem; // 20px
+$font-size-m: 16px; // 1rem; // 16px
+$font-size-s: 14px; // 0.875rem; // 14px
+$font-size-xs: 12px; // 0.75rem; // 12px
+
+// Font weight
+$font-weight-normal: 400;
+$font-weight-bold: 700;
+
+
+// ------------------------------------ //
+// COLORS
+// ------------------------------------ //
+// Text Colors
+$color-text: $color-gray-05;
+$color-text-inverse: $color-gray-00;
+$color-text-light: $color-gray-04;
+$color-text-link: $color-main;
+$color-text-link-hover: $color-text-hover;
+$color-text-link-visited: $color-text-hover;
+$color-text-form-placeholder: $color-gray-04;
+
+// Borders
+$color-border-light: $color-gray-02;
+$color-border-normal: $color-gray-03;
+
+// Backgrounds
+$color-background-base: $color-gray-00;
+$color-background-light: $color-gray-01;
+$color-background-medium: $color-gray-02;
+$color-background-dark: $color-gray-03;
+
+
+// ------------------------------------ //
+// #BORDER-RADIUS
+// ------------------------------------ //
+$border-radius: 3px;
+$border-radius-hard: 8px;
+
+
+// ------------------------------------ //
+// #TRANSITIONS
+// ------------------------------------ //
+$transition-durations: 0.2s;
+
+
+// ------------------------------------ //
+// TOOLTIP
+// ------------------------------------ //
+$tooltip-background-color: $color-background-base;
+$tooltip-border-color: $color-border-normal;
+
+// ------------------------------------ //
+// #MODAL
+// ------------------------------------ //
+$modal-width: 480px;
+
+
+// ------------------------------------ //
+// #MEDIA-QUERIES-BREAKPOINT
+// ------------------------------------ //
+$breakpoint-desktop-wide: 1180px;
+$breakpoint-laptop: 960px;
+$breakpoint-ipad-portrait: 768px;
+$breakpoint-mobile: 650px;
+$breakpoint-smartphone-landscape: 480px;
+$breakpoint-smartphone-portrait: 400px;
+
+
+
 
 
 //
@@ -214,7 +301,4 @@ $font-family-headings: $font-family-main;
 // $table-footer-bg: $color-background-medium;
 
 
-// ------------------------------------ //
-// #MODAL
-// ------------------------------------ //
-$modal-width: $breakpoint-smartphone-landscape;
+

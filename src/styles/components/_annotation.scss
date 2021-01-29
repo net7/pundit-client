@@ -1,0 +1,48 @@
+.n7-annotation {
+    border: 1px solid #dddddd;
+    max-height: 200px;
+
+    &__metadata-row {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    &__metadata-row, &__body-row, &__comment-row {
+        padding: $space*2;
+    }
+
+    &__comment-row {
+        border-top: 1px solid $color-border-normal;
+        background: $color-background-light;
+    }
+
+    &__user-name {
+        color: $color-text;
+        font-weight: bold;
+
+        &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    }
+
+    &__image-wrapper {
+        margin-right: $space*2;
+        max-height: 100px;
+        height: auto;
+        width: auto;
+    }
+
+    &__image {
+        height: 50px;
+        width: 50px;
+        object-fit: cover;
+        box-sizing: border-box;
+        border-radius: 4px;
+    }
+
+    &__body {
+        background-color: #ffffb8;
+        font-style: italic;
+    }
+}
