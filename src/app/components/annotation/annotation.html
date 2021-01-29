@@ -1,16 +1,19 @@
 <div *ngIf="data"
-     class="n7-annotation__container {{ data.classes || ''}}"
+     class="n7-annotation {{ data.classes || ''}}"
      (click)="data.payload && onContainerClick(data.payload)"
      (mouseenter)="data.payload && onEnter(data.payload)"
      (mouseleave)="data.payload && onLeave(data.payload)">
+    
     <ng-container *ngIf="!data.isCollapsed">
         <!-- view the full annotation -->
         <ng-container *ngTemplateOutlet="expanded"></ng-container>
     </ng-container>
+    
     <ng-container *ngIf="data.isCollapsed">
         <!-- minimal view of the annotation -->
         <ng-container *ngTemplateOutlet="collapsed"></ng-container>
     </ng-container>
+
 </div>
 
 <ng-template #expanded>
@@ -101,14 +104,14 @@
 
 <ng-template #collapsed>
     <div class="n7-annotation__collapsed">
-        <span class="n7-annotation__body">
+        <div class="n7-annotation__collapsed-body">
             {{data.body}}
-        </span>
-        <span>
+        </div>
+        <div class="n7-annotation__collapsed-notebook">
             <n7-anchor-wrapper [data]="data.notebook.anchor"
                                class="n7-annotation__notebook">
                 {{data.notebook.name}}
             </n7-anchor-wrapper>
-        </span>
+        </div>
     </div>
 </ng-template>

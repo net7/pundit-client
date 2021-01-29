@@ -1,5 +1,15 @@
+/**
+ * ANNOTATION
+ *
+ * Style for single annotation displayed in the sidebar.
+ */
+
+/* ------------------------------------ *\
+   #ANNOTATION
+\* ------------------------------------ */
 .n7-annotation {
-    border: 1px solid #dddddd;
+    background-color: $annotation-background-color;
+    border: 1px solid $annotation-border-color;
     max-height: 200px;
 
     &__metadata-row {
@@ -7,8 +17,10 @@
         align-items: flex-start;
     }
 
-    &__metadata-row, &__body-row, &__comment-row {
-        padding: $space*2;
+    &__metadata-row,
+    &__body-row,
+    &__comment-row {
+        padding: $space * 2;
     }
 
     &__comment-row {
@@ -27,7 +39,7 @@
     }
 
     &__image-wrapper {
-        margin-right: $space*2;
+        margin-right: $space * 2;
         max-height: 100px;
         height: auto;
         width: auto;
@@ -46,3 +58,27 @@
         font-style: italic;
     }
 }
+
+
+/* ------------------------------------ *\
+   #COLLAPSED-ANNOTATION
+\* ------------------------------------ */
+.n7-annotation {
+    &__collapsed {
+        height: 20px;
+        background-color: #ffffb8;
+    }
+
+    &__collapsed-body {
+        display: none;
+    }
+    
+    &__collapsed-notebook {
+        display: none;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #EXPANDED-ANNOTATION
+\* ------------------------------------ */
