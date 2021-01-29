@@ -22,9 +22,13 @@ $color-third: #f5a623;
 $color-text-hover: rgb(26, 64, 204); /* Used for text link in hover state */
 
 // Status colors
-$color-error: #d12c47;
-$color-warning: #f5a623;
-$color-success: #3f7600;
+$color-error: #FF643F;
+$color-warning: #febe53;
+$color-success: #39B54A;
+
+// Annotations colors
+$color-highlight: #FFFFB8;
+$color-highlight-hover: rgba(#2ee6e6, .4);
 
 $gradient: linear-gradient(55deg, #0d85ec 0%, #516eee 50%, #7c53ea 100%);
 

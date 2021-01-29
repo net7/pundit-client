@@ -7,10 +7,15 @@
 /* ------------------------------------ *\
    #ANNOTATION
 \* ------------------------------------ */
-.n7-annotation {
+.pnd-annotation {
+    position: relative;
+    max-height: 200px;
+    margin: 0 $space/4 $space/4 $space/4;
+    border-radius: $border-radius;
     background-color: $annotation-background-color;
     border: 1px solid $annotation-border-color;
-    max-height: 200px;
+    @include cardShadow-1;
+    transition: box-shadow $transition-durations;
 
     &__metadata-row {
         display: flex;
@@ -20,7 +25,7 @@
     &__metadata-row,
     &__body-row,
     &__comment-row {
-        padding: $space * 2;
+        padding: $space*2;
     }
 
     &__comment-row {
@@ -61,24 +66,137 @@
 
 
 /* ------------------------------------ *\
+   #EXPANDED-ANNOTATION
+\* ------------------------------------ */
+
+
+/* ------------------------------------ *\
    #COLLAPSED-ANNOTATION
 \* ------------------------------------ */
-.n7-annotation {
-    &__collapsed {
-        height: 20px;
-        background-color: #ffffb8;
+.pnd-annotation.is-collapsed {
+    height: $annotation-collapsed-height;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+
+    .pnd-annotation__highlight {
+        max-width: calc( 100% - #{$space} );
+        padding-left: $space/2;
+        padding-right: $space/2;
     }
 
-    &__collapsed-body {
-        display: none;
+    .pnd-annotation__highlight-text {
+        display: block;
+        max-width: 100%;
+        box-sizing: border-box;
+        background-color: $color-highlight;
+        font-size: $font-size-s;
+        font-style: italic;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
-    
-    &__collapsed-notebook {
-        display: none;
+
+    /* Hover */
+    &.is-hovered, &:hover {
+        @include cardShadow-2;
+
+        .pnd-annotation__highlight-text {
+            background-color: $color-highlight-hover;
+        }
+    }
+}
+
+/* Collapsed with comment */
+.pnd-annotation.is-collapsed.has-comment {
+    justify-content: space-between;
+
+    .pnd-annotation__highlight {
+        max-width: calc( 50% - 9px );
+    }
+
+    .pnd-annotation__comment {
+        position: relative;
+        display: flex;
+        align-items: center;
+        z-index: 2;
+        width: calc( 50% - 12px );
+        height: $annotation-collapsed-height;
+        background-color:$annotation-comment-background-color;
+    }
+
+    .pnd-annotation__comment-text {
+        display: block;
+        max-width: 100%;
+        box-sizing: border-box;
+        font-size: $font-size-s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .pnd-annotation__caret {
+        position: absolute;
+        z-index: 1;
+        display: block;
+        width: 0;
+        height: 0;
+        top: 1px;
+        left: 146px;
+        margin-top: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-right-color: $annotation-border-color;
+        border-left-width: 0;
+        border-width: $annotation-collapsed-height/2;
+
+        &:after {
+            content: " ";
+            position: absolute;
+            display: block;
+            width: 0;
+            height: 0;
+            right: - $annotation-collapsed-height/2;
+            bottom: -($annotation-collapsed-height/2)+1;
+
+            border-color: transparent;
+            border-style: solid;
+            border-width: $annotation-collapsed-height/2 - 1;
+            border-right-color: $annotation-comment-background-color;
+            border-left-width: 0;    
+        }
     }
 }
 
 
 /* ------------------------------------ *\
-   #EXPANDED-ANNOTATION
+   #ANNOTATION-IN-COLLAPSED-SIDEBAR
 \* ------------------------------------ */
+.pundit-sidebar.is-collapsed {
+    .pnd-annotation {
+        height: $annotation-collapsed-height;
+        cursor: pointer;
+
+        &__highlight {
+            display: block;
+            position: absolute;
+            top: 1px;
+            bottom: 1px;
+            left: 1px;
+            right: 1px;
+            background-color: $color-highlight;
+        }
+
+        &__highlight-text,
+        &__comment,
+        &__notebook {
+            display: none;
+        }
+
+        &.is-hovered, &:hover {
+            .pnd-annotation__highlight {
+                background-color: $color-highlight-hover;
+            }
+        }
+    }
+}

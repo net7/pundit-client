@@ -9,11 +9,10 @@
 \* ------------------------------------ */
 .pnd-tooltip {
     display: none;
-    padding: $space*1.5;
     background: $tooltip-background-color;
     border: 1px solid $tooltip-border-color;
     border-radius: $border-radius;
-    @include cardShadow;
+    @include cardShadow-1;
     
     /* Arrow css */
     &[data-popper-placement^="top"] {
@@ -73,15 +72,17 @@
 .pnd-tooltip {
     .n7-nav__item {
         &:not(:last-child) {
-            margin-bottom: $space;
+            border-bottom: 1px solid $color-border-normal;
         }
     }
     
     .n7-nav__label {
         display: block;
+        padding: $space $space*1.5;        
         color: $color-text;
         font-family: $font-family-main;
         font-size: $font-size-s;
+        font-weight: $font-weight-bold;
         transition: color $transition-durations;
 
         &:hover {
