@@ -16,51 +16,119 @@
     border: 1px solid $annotation-border-color;
     @include cardShadow-1;
     transition: box-shadow $transition-durations;
+}
 
-    &__metadata-row {
+
+/* ------------------------------------ *\
+   #ANNOTATION-HEADER
+\* ------------------------------------ */
+.pnd-annotation {
+    &__header {
         display: flex;
-        align-items: flex-start;
+        justify-content: space-between;
+        align-items: center;
+        // margin: $space;
+        padding: $space;
+        border-bottom: 1px solid $annotation-border-color;
     }
 
-    &__metadata-row,
-    &__body-row,
-    &__comment-row {
-        padding: $space*2;
+    /* Image */
+    &__header-thumb-image {
+        height: 30px;
+        width: auto;
+        margin-right: $space;
+        border-radius: $border-radius;
     }
 
-    &__comment-row {
-        border-top: 1px solid $color-border-normal;
-        background: $color-background-light;
+    /* Info */
+    &__header-info {
+        margin-right: auto;
     }
-
-    &__user-name {
+    
+    &__header-name {
+        margin-bottom: 3px;
+        font-size: $font-size-s;
+        line-height: 1;
+        font-weight: $font-weight-bold;
         color: $color-text;
-        font-weight: bold;
+        cursor: pointer;
+        transition: color $transition-durations;
 
         &:hover {
-            cursor: pointer;
-            text-decoration: underline;
+            color: $color-text-link;
+        }
+    }
+    
+    &__header-additional-info {
+        display: flex;
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    &__header-date {
+    }
+
+    &__header-notebook {
+        &:before {
+            content: "·";
+            margin-right: $space/2;
+            margin-left: $space/2;
         }
     }
 
-    &__image-wrapper {
-        margin-right: $space * 2;
-        max-height: 100px;
-        height: auto;
-        width: auto;
+    &__header-notebook-link {
+        text-decoration: none;
+        color:$color-text;
+        
+        &:hover {
+            color: $color-text-link;
+        }
     }
 
-    &__image {
-        height: 50px;
-        width: 50px;
-        object-fit: cover;
+    /* Dropdown */
+    &__header-menu {
+
+    }
+
+    &__header-menu-button {
+        border: 0;
+        background-color: transparent;
+        cursor: pointer;
+        color: $color-text-light;
+        font-size: $font-size-l;
+        transparent: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
+   #HIGHLIGHT-COMMENT
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__highlight-text {
+        display: block;
         box-sizing: border-box;
-        border-radius: 4px;
+        background-color: $color-highlight;
+        font-size: $font-size-s;
+        font-style: italic;
     }
 
-    &__body {
-        background-color: #ffffb8;
-        font-style: italic;
+    .pnd-annotation__comment {
+        position: relative;
+        display: flex;
+        align-items: center;
+        z-index: 2;
+        background-color:$annotation-comment-background-color;
+    }
+
+    .pnd-annotation__comment-text {
+        display: block;
+        box-sizing: border-box;
+        font-size: $font-size-s;
     }
 }
 
@@ -68,6 +136,21 @@
 /* ------------------------------------ *\
    #EXPANDED-ANNOTATION
 \* ------------------------------------ */
+.pnd-annotation.is-expanded {
+    .pnd-annotation__highlight {
+        padding: 0 $space $space $space;
+    }
+
+    .pnd-annotation__highlight-text {
+        display: inline;
+    }
+
+    .pnd-annotation__comment {
+        border-top: 1px solid $annotation-border-color;
+        margin-top: $space;
+        padding: $space $space $space $space;
+    }
+}
 
 
 /* ------------------------------------ *\
@@ -81,17 +164,11 @@
 
     .pnd-annotation__highlight {
         max-width: calc( 100% - #{$space} );
-        padding-left: $space/2;
-        padding-right: $space/2;
+        padding: 0 $space/2 0 $space;
     }
 
     .pnd-annotation__highlight-text {
-        display: block;
         max-width: 100%;
-        box-sizing: border-box;
-        background-color: $color-highlight;
-        font-size: $font-size-s;
-        font-style: italic;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -116,20 +193,12 @@
     }
 
     .pnd-annotation__comment {
-        position: relative;
-        display: flex;
-        align-items: center;
-        z-index: 2;
         width: calc( 50% - 12px );
         height: $annotation-collapsed-height;
-        background-color:$annotation-comment-background-color;
     }
 
     .pnd-annotation__comment-text {
-        display: block;
         max-width: 100%;
-        box-sizing: border-box;
-        font-size: $font-size-s;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

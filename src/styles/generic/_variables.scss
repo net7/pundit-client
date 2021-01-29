@@ -22,13 +22,13 @@ $space: 8px;
 $font-family-main: 'Source Sans Pro', sans-serif;
 $font-family-headings: $font-family-main;
 
-$font-size-xxxl: 38px; // 2.875rem; // 46px
-$font-size-xxl: 30px; // 1.85rem; // 40px
-$font-size-xl: 26px; // 1.425rem; // 26px
-$font-size-l: 20px; // 1.25rem; // 20px
-$font-size-m: 16px; // 1rem; // 16px
-$font-size-s: 14px; // 0.875rem; // 14px
-$font-size-xs: 12px; // 0.75rem; // 12px
+$font-size-xxxl: 38px;
+$font-size-xxl: 30px;
+$font-size-xl: 26px;
+$font-size-l: 20px;
+$font-size-m: 16px;
+$font-size-s: 14px;
+$font-size-xs: 13px;
 
 // Font weight
 $font-weight-normal: 300;
@@ -41,7 +41,7 @@ $font-weight-bold: 500;
 // Text Colors
 $color-text: $color-gray-05;
 $color-text-inverse: $color-gray-00;
-$color-text-light: $color-gray-04;
+$color-text-light: rgb(127, 133, 140); // $color-gray-04;
 $color-text-link: $color-main;
 $color-text-link-hover: $color-text-hover;
 $color-text-link-visited: $color-text-hover;

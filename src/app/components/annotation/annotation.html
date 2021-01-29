@@ -1,6 +1,6 @@
 <div *ngIf="data"
      class="pnd-annotation {{ data.classes || ''}}"
-     [ngClass]="{'is-collapsed': data.isCollapsed, 'has-comment': data.comment}"
+     [ngClass]="{'is-collapsed': data.isCollapsed, 'is-expanded': !data.isCollapsed, 'has-comment': data.comment}"
      (click)="data.payload && onContainerClick(data.payload)"
      (mouseenter)="data.payload && onEnter(data.payload)"
      (mouseleave)="data.payload && onLeave(data.payload)">
@@ -18,38 +18,43 @@
 </div>
 
 <ng-template #expanded>
-    <!-- Metadata row -->
-    <div class="pnd-annotation__metadata-row">
-        <!-- avatar -->
-        <div class="pnd-annotation__image-wrapper">
+    <!-- Header -->
+    <div class="pnd-annotation__header">
+        
+        <div class="pnd-annotation__header-thumb-wrapper">
             <img [src]="data.user.image"
-                 alt="User profile picture"
-                 class="pnd-annotation__image">
+                 alt="{{data.user.name}}"
+                 class="pnd-annotation__header-thumb-image">
         </div>
-        <!-- name -->
-        <div class="pnd-annotation__info-cont">
+        
+        <div class="pnd-annotation__header-info">
             <n7-anchor-wrapper [data]="data.user.anchor">
-                <div class="pnd-annotation__user-name">{{data.user.name}}</div>
+                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
             </n7-anchor-wrapper>
-            <!-- time ago - parent notebook -->
-            <div class="pnd-annotation__info">
-                <span class="pnd-annotation__date">{{data.date}}</span>
-                <span *ngIf="data.notebook?.anchor?.href"> in
+            
+            <div class="pnd-annotation__header-additional-info">
+                <span class="pnd-annotation__header-date">{{data.date}}</span>
+                <span 
+                      class="pnd-annotation__header-notebook">in
                     <!-- rendering error appeared with n7-anchor-wrapper -->
                     <a [href]="data.notebook.anchor.href"
-                       [target]="data.notebook.anchor.target || '_self'">
-                        <span>{{data.notebook.name}}</span>
+                       [target]="data.notebook.anchor.target || '_self'"
+                       class="pnd-annotation__header-notebook-link">
+                        <!-- <span>{{data.notebook.name}}</span> -->
+                        <span>I pray you, have in mind where we must meet.</span>
                     </a>
                 </span>
             </div>
         </div>
+        
         <div *ngIf="data.menu"
-             class="pnd-annotation__menu {{ data.menu.classes || '' }}">
+             class="pnd-annotation__header-menu {{ data.menu.classes || '' }}">
             <!-- arrow icon -->
-            <button class="pnd-annotation__menu-icon"
+            <button class="pnd-annotation__header-menu-button"
                   [ngClass]="data.menu.icon['id']"
                   (click)="onClick($event, data.menu.icon['payload'])">
             </button>
+
             <div class="pnd-annotation__menu-dropdown">
                 <!-- menu actions -->
                 <div class="pnd-annotation__menu-actions"
@@ -83,9 +88,7 @@
             </div>
         </div>
     </div>
-    <!-- END // Metadata row -->
-
-    <hr class="pnd-annotation__divider">
+    <!-- END // Header -->
 
     <!-- Highlight -->
     <div class="pnd-annotation__highlight"
@@ -96,14 +99,17 @@
     </div>
     <!-- END // Highlight -->
 
-    <!-- Comment -->
+    <!-- Caret and comment -->
+    <div class="pnd-annotation__caret"
+        *ngIf="data.comment"></div>
+
     <div class="pnd-annotation__comment"
-         *ngIf="data.comment">
+        *ngIf="data.comment">
         <span class="pnd-annotation__comment-text">
             {{data.comment}}
         </span>
     </div>
-    <!-- Comment -->
+    <!-- END // Caret and comment -->
 </ng-template>
 
 <ng-template #collapsed>
@@ -116,15 +122,15 @@
     </div>
     <!-- END // Highlight -->
 
-    <!-- Comment -->
+    <!-- Caret and comment -->
     <div class="pnd-annotation__caret"
          *ngIf="data.comment"></div>
+
     <div class="pnd-annotation__comment"
          *ngIf="data.comment">
         <span class="pnd-annotation__comment-text">
             {{data.comment}}
         </span>
     </div>
-    <!-- Comment -->
-
+    <!-- END // Caret and comment -->
 </ng-template>
