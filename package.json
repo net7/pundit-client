@@ -37,7 +37,7 @@
     "@pundit/anchoring": "git+ssh://git@github.com/net7/pundit-anchoring.git#develop",
     "@pundit/common": "git+ssh://git@github.com/net7/pundit-common.git#develop",
     "@pundit/communication": "git+ssh://git@github.com/net7/pundit-communication.git#develop",
-    "@pundit/login": "file://../pundit-login-dist.tar.gz",
+    "@pundit/login": "git+ssh://git@github.com/net7/pundit-login-dist.git#master",
     "classlist.js": "^1.1.20150312",
     "document-register-element": "^1.7.2",
     "draggable": "^4.2.0",

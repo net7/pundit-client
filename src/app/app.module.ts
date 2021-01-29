@@ -4,6 +4,7 @@ import { DvComponentsLibModule } from '@n7-frontend/components';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { PunditLoginModule } from '@pundit/login';
+import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
@@ -51,7 +52,8 @@ config.init(appConfig);
   imports: [
     BrowserModule,
     DvComponentsLibModule,
-    PunditLoginModule
+    PunditLoginModule,
+    PunditLoginModule.forRoot(env.auth)
   ],
   providers: [
     UserService,
