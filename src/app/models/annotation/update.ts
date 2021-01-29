@@ -7,6 +7,6 @@ import { _c } from '../config';
  * @param data object to assing to the annotation
  */
 export function update(id: string, data: AnnotationAttributes) {
-  const baseURL = _c('baseurl');
-  annotation.update(id, { baseURL, data });
+  const baseURL = _c('baseURL');
+  return annotation.update(id, { baseURL, data });
 }
