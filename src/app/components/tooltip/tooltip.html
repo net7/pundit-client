@@ -3,9 +3,24 @@
      role="tooltip"
      (mousedown)="onMouseDown($event)">
     <div class="pnd-tooltip__content">
-        <!-- <n7-nav [data]="data.navData"
-                [emit]="navEmit"></n7-nav> -->
+        <ng-container *ngTemplateOutlet="nav"></ng-container>
     </div>
     <div id="arrow"
          data-popper-arrow></div>
 </div>
+
+<!-- replaces <n7-nav> -->
+<ng-template #nav>
+    <nav class="pnd-nav {{data.navData.classes || ''}}"
+         *ngIf="data.navData">
+        <ul class="pnd-nav__list">
+            <li class="pnd-nav__item {{ item.classes || '' }}"
+                *ngFor="let item of data.navData.items">
+                <a class="pnd-nav__link"
+                   (click)="navEmit('click', item.anchor.payload)">
+                    <span class="pnd-nav__label">{{ item.text }}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</ng-template>
