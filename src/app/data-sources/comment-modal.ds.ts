@@ -7,8 +7,9 @@ export class CommentModalDS extends DataSource {
   private defaultPosition: { x: number; y: number };
 
   transform(data): CommentModalData {
-    const { currentNotebook, notebooks } = data;
+    const { currentNotebook, notebooks, selected } = data;
     return {
+      selectedText: selected,
       visible: true,
       header: {
         label: _t('commentmodal#label'),

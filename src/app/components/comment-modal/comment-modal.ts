@@ -9,6 +9,7 @@ import * as Draggable from 'draggable';
  * Interface for CommentModal's "data"
  */
 export interface CommentModalData {
+  selectedText: string;
   visible: boolean;
   header: {
     label: string;
