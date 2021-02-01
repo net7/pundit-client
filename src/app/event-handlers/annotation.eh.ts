@@ -33,10 +33,10 @@ export class AnnotationEH extends EventHandler {
           this.emitOuter('updatenotebook', payload);
           break;
         case 'annotation.mouseenter':
-          // highlight the corresponding annotation
+          this.emitOuter('mouseenter', payload);
           break;
         case 'annotation.mouseleave':
-          // remove highlight from the corresponding annotation
+          this.emitOuter('mouseleave', payload);
           break;
         default:
           console.warn('unhandled inner event of type', type);

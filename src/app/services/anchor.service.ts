@@ -5,6 +5,8 @@ import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
 
+const HOVER_CLASS = 'is-hovered';
+
 @Injectable()
 export class AnchorService {
   private annotationHighlights: AnnotationHighlight[] = [];
@@ -61,6 +63,20 @@ export class AnchorService {
     });
   }
 
+  addHoverClass(annotationId) {
+    const { highlights } = this.getHighlightById(annotationId);
+    highlights.forEach((el) => {
+      el.classList.add(HOVER_CLASS);
+    });
+  }
+
+  removeHoverClass(annotationId) {
+    const { highlights } = this.getHighlightById(annotationId);
+    highlights.forEach((el) => {
+      el.classList.remove(HOVER_CLASS);
+    });
+  }
+
   private createSelectors(annotation: Annotation): SelectorWithType[] {
     if (!annotation || !annotation.subject?.selected) return [];
     const target = annotation.subject.selected;
@@ -94,6 +110,9 @@ export class AnchorService {
   }
 
   private onMouseOver(payload) {
+    this.addHoverClass(payload);
+
+    // signal
     this.events$.next({
       payload,
       type: 'mouseover',
@@ -101,6 +120,9 @@ export class AnchorService {
   }
 
   private onMouseLeave(payload) {
+    this.removeHoverClass(payload);
+
+    // signal
     this.events$.next({
       payload,
       type: 'mouseleave',

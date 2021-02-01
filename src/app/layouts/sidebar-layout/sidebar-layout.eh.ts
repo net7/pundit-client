@@ -92,6 +92,18 @@ export class SidebarLayoutEH extends EventHandler {
         case 'annotation.togglecollapse':
           this.dataSource.updateAnnotations();
           break;
+        case 'annotation.mouseenter':
+          this.layoutEvent$.next({
+            type: 'annotationmouseenter',
+            payload
+          });
+          break;
+        case 'annotation.mouseleave':
+          this.layoutEvent$.next({
+            type: 'annotationmouseleave',
+            payload
+          });
+          break;
         case 'notebook-panel.editsharingmode': {
           const {
             id, label, sharingMode, type: newSharingMode

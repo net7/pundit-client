@@ -21,5 +21,8 @@ pnd-mark.pnd-mark {
 
 pnd-mark.pnd-mark:hover {
     cursor: pointer;
+}
+
+pnd-mark.pnd-mark.is-hovered {
     background-color: rgba(46, 230, 230, 0.4);
 }
