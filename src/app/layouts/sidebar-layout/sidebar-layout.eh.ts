@@ -216,7 +216,8 @@ export class SidebarLayoutEH extends EventHandler {
   }
 
   private handleAnnotationUpdate(annotationID: string, notebookId: string) {
-    // annotation update (back-end)
+    // update the annotation on the back end
+
     const { _raw: rawAnnotation } = this.annotationService.getAnnotationById(annotationID);
     const annotationUpdate = {
       type: rawAnnotation.type,
@@ -225,15 +226,13 @@ export class SidebarLayoutEH extends EventHandler {
       subject: rawAnnotation.subject,
       userId: rawAnnotation.userId
     } as AnnotationAttributes;
-
     if (rawAnnotation.type === 'Commenting') {
       (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
     }
-
     annotation.update(annotationID, annotationUpdate);
-    // annotation update (service)
-    // this.annotationService.update(annotationID, notebookID);
+
     // update annotation component / collection
+
     this.emitOuter('annotationupdatenb', {
       annotationID,
       notebook: this.notebookService.getNotebookById(notebookId),

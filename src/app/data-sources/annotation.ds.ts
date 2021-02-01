@@ -21,6 +21,16 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  onAnnotationUpdate({ annotationID, notebook }) {
+    const annotation = this.getAnnotation(annotationID);
+    annotation.notebook = {
+      name: notebook.label,
+      anchor: {
+        payload: { source: 'notebook', id: notebook.id }
+      }
+    };
+  }
+
   onAnchorMouseOver(id: string) {
     const annotation = this.getAnnotation(id);
     annotation.classes = 'is-hovered';
@@ -35,7 +45,7 @@ export class AnnotationDS extends DataSource {
     this.toggleCollapse(id);
   }
 
-  private getAnnotation(id: string) {
+  private getAnnotation(id: string): AnnotationData {
     return this.output.find(({ _meta }) => _meta.id === id);
   }
 }

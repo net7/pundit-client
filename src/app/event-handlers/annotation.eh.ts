@@ -46,6 +46,9 @@ export class AnnotationEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
+        case 'sidebar-layout.annotationupdatenb':
+          this.dataSource.onAnnotationUpdate(payload);
+          break;
         case 'sidebar-layout.anchormouseover':
           this.dataSource.onAnchorMouseOver(payload);
           break;

@@ -40,11 +40,10 @@ export class AnnotationService {
    * @param annotationId id of the annotation to update
    * @param data data of the annotation that you want to change
    */
-  update(annotationId: string, data: AnnotationAttributes) {
+  update(annotationId: string, data) {
     const annotation = this.getAnnotationById(annotationId);
     if (!annotation) return;
     const { notebookId } = data;
-    // fixme: add the new notebook id to the correct param.
     if (notebookId && isAnchorPayload(annotation.notebook.anchor)) {
       annotation.notebook.anchor.payload.id = notebookId;
     }
