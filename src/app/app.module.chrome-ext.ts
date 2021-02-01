@@ -1,8 +1,10 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { DvComponentsLibModule } from '@n7-frontend/components';
+import { PunditLoginModule } from '@pundit/login';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
+import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
@@ -51,6 +53,7 @@ config.init(appConfig);
   imports: [
     BrowserModule,
     DvComponentsLibModule,
+    PunditLoginModule.forRoot(env.auth)
   ],
   providers: [
     { provide: APP_BASE_HREF, useValue: '/' },

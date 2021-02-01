@@ -1,6 +1,7 @@
 import {
   Component, OnInit, OnDestroy
 } from '@angular/core';
+import { PunditLoginService } from '@pundit/login';
 import { ReplaySubject } from 'rxjs';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -21,7 +22,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private userService: UserService,
     private notebookService: NotebookService,
     private annotationService: AnnotationService,
-    private anchorService: AnchorService
+    private anchorService: AnchorService,
+    private loginService: PunditLoginService
   ) {
     super(config);
 
@@ -45,6 +47,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
 
   ngOnInit() {
     this.onInit();
+    this.loginService.start();
+    // this.loginService.onAuth().subscribe(val=>console.log(val));
   }
 
   ngOnDestroy() {

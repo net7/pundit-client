@@ -54,3 +54,6 @@ package-lock.json
 
 # docs
 docs/
+
+# environments
+src/environments/local.ts
