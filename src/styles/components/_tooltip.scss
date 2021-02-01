@@ -8,6 +8,7 @@
    #TOOLTIP
 \* ------------------------------------ */
 .pnd-tooltip {
+
     display: none;
     background: $tooltip-background-color;
     border: 1px solid $tooltip-border-color;
@@ -69,16 +70,32 @@
 /* ------------------------------------ *\
    #NAV-INSIDE-TOOLTIP
 \* ------------------------------------ */
+.pnd-nav {
+    // Basic list styles from "@n7-frontend/components"
+    &__list {
+        padding: 0;
+        margin: 0;
+        list-style: none;
+    }
+    &__item {
+        padding: 0;
+        margin: 0;
+    }
+    &__link {
+        cursor: pointer;
+    }
+}
+
 .pnd-tooltip {
-    .n7-nav__item {
+    .pnd-nav__item {
         &:not(:last-child) {
             border-bottom: 1px solid $color-border-normal;
         }
     }
     
-    .n7-nav__label {
+    .pnd-nav__label {
         display: block;
-        padding: $space $space*1.5;        
+        padding: $space $space*1.5;
         color: $color-text;
         font-family: $font-family-main;
         font-size: $font-size-s;
