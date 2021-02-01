@@ -26,13 +26,6 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private loginService: PunditLoginService
   ) {
     super(config);
-
-    // FIXME: prendere utente defintivo
-    this.userService.iam({
-      id: 'rwpfgj6gsp',
-      username: 'johndoe',
-      thumb: 'https://placeimg.com/400/600/people'
-    });
   }
 
   protected initPayload() {
@@ -41,14 +34,13 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       userService: this.userService,
       notebookService: this.notebookService,
       annotationService: this.annotationService,
-      anchorService: this.anchorService
+      anchorService: this.anchorService,
+      loginService: this.loginService
     };
   }
 
   ngOnInit() {
     this.onInit();
-    this.loginService.start();
-    // this.loginService.onAuth().subscribe(val=>console.log(val));
   }
 
   ngOnDestroy() {

@@ -1,6 +1,7 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { NotebookService } from '../../services/notebook.service';
 
@@ -10,6 +11,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
   private annotationPositionService: AnnotationPositionService;
 
   private notebookService: NotebookService;
+
+  public userService: UserService;
 
   /** open/close the sidebar */
   public isCollapsed = new BehaviorSubject(true);
@@ -24,6 +27,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;
+    this.userService = payload.userService;
     this.one('notebook-panel').update({
       selected: this.notebookService.getSelected(),
       list: this.notebookService.getAll()

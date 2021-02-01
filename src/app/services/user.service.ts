@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
+import { BehaviorSubject } from 'rxjs';
 
 type UserData = {
   id: string;
@@ -9,6 +10,8 @@ type UserData = {
 
 @Injectable()
 export class UserService {
+  private logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
   private me: UserData;
 
   private users: UserData[] = [];
@@ -25,5 +28,13 @@ export class UserService {
 
   getUserById(userId: string): UserData | null {
     return this.users.find(({ id }) => id === userId) || null;
+  }
+
+  login() {
+    this.logged$.next(true);
+  }
+
+  logout() {
+    this.logged$.next(false);
   }
 }

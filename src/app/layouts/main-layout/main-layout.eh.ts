@@ -6,6 +6,7 @@ import {
   catchError, debounceTime, switchMap, switchMapTo, takeUntil
 } from 'rxjs/operators';
 import { CommentAnnotation } from '@pundit/communication';
+import { PunditLoginService } from '@pundit/login';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -30,6 +31,8 @@ export class MainLayoutEH extends EventHandler {
 
   private anchorService: AnchorService;
 
+  private loginService: PunditLoginService;
+
   public dataSource: MainLayoutDS;
 
   private commentState: {
@@ -48,6 +51,7 @@ export class MainLayoutEH extends EventHandler {
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
           this.anchorService = payload.anchorService;
+          this.loginService = payload.loginService;
           this.dataSource.onInit(payload);
 
           this.dataSource.getUserNotebooks().pipe(
@@ -80,6 +84,7 @@ export class MainLayoutEH extends EventHandler {
           this.listenSelection();
           this.listenLayoutEvents();
           this.listenAnchorEvents();
+          this.listenLoginEvents();
           break;
 
         case 'main-layout.destroy':
@@ -193,6 +198,21 @@ export class MainLayoutEH extends EventHandler {
         default:
           break;
       }
+    });
+  }
+
+  private listenLoginEvents() {
+    this.loginService.onAuth().subscribe((val) => {
+      // FIXME: prendere utente defintivo
+      console.warn('FIXME: gestire login', val);
+      this.userService.iam({
+        id: 'rwpfgj6gsp',
+        username: 'johndoe',
+        thumb: 'https://placeimg.com/400/600/people'
+      });
+
+      this.userService.login();
+      this.loginService.stop();
     });
   }
 
