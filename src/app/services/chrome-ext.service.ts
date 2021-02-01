@@ -2,23 +2,31 @@ import { Injectable } from '@angular/core';
 import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
+import { UserService } from './user.service';
 
 @Injectable()
 export class ChromeExtService {
   constructor(
     private anchorService: AnchorService,
-    private annotationService: AnnotationService
+    private annotationService: AnnotationService,
+    private userService: UserService,
   ) {}
 
   load(): Promise<void> {
     return new Promise((res) => {
       window.addEventListener('punditloaded', (ev: CustomEvent) => {
-        const { id } = ev.detail;
+        const { id, user, token } = ev.detail;
         config.set('chromeExtId', id);
         config.set('chromeExtUrl', `chrome-extension://${id}`);
+        if (user && token) {
+          this.userService.iam(user);
+          this.userService.setToken(token);
+          this.userService.logged$.next(true);
+        }
         this.addFontStyles();
         this.listenExtensionEvents();
         this.listenAnnotationUpdates();
+        this.listenLoginEvents();
         res();
       }, false);
     });
@@ -46,5 +54,27 @@ export class ChromeExtService {
       const signal = new CustomEvent('annotationsupdate', { detail: { total: number } });
       window.dispatchEvent(signal);
     });
+  }
+
+  private listenLoginEvents() {
+    this.userService.logged$.subscribe((isLogged) => {
+      // emit signal
+      const signal = new CustomEvent('userlogged', {
+        detail: {
+          isLogged,
+          user: this.userService.whoami(),
+          token: this.userService.getToken()
+        }
+      });
+      window.dispatchEvent(signal);
+    });
+
+    // login from memory
+    window.addEventListener('punditlogin', (ev: CustomEvent) => {
+      const { user, token } = ev.detail;
+      this.userService.iam(user);
+      this.userService.setToken(token);
+      this.userService.login();
+    }, false);
   }
 }
