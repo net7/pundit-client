@@ -28,20 +28,23 @@
         </div>
         
         <div class="pnd-annotation__header-info">
-            <n7-anchor-wrapper [data]="data.user.anchor">
-                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
-            </n7-anchor-wrapper>
+            <ng-container *ngIf="data.user.anchor as anchor">
+                <a (click)="onClick($event, anchor.payload)">
+                    <div class="pnd-annotation__header-name">{{data.user.name}}</div>
+                </a>
+            </ng-container>
+            
             
             <div class="pnd-annotation__header-additional-info">
                 <span class="pnd-annotation__header-date">{{data.date}}</span>
                 <span *ngIf="data.notebook?.anchor"
                       class="pnd-annotation__header-notebook">in
-                    <!-- rendering error appeared with n7-anchor-wrapper -->
-                    <a [href]="data.notebook.anchor.href"
-                       [target]="data.notebook.anchor.target || '_self'"
-                       class="pnd-annotation__header-notebook-link">
-                        <span>{{data.notebook.name}}</span>
-                    </a>
+                    <ng-container *ngIf="data.notebook.anchor as anchor">
+                        <a (click)="onClick($event, anchor.payload)"
+                           class="pnd-annotation__header-notebook-link">
+                           <span>{{ data.notebook.name }}</span>
+                        </a>
+                    </ng-container>
                 </span>
             </div>
         </div>

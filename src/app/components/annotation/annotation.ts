@@ -3,8 +3,8 @@
 //---------------------------
 
 import { Component, Input } from '@angular/core';
-import { Anchor, Icon } from '@n7-frontend/components';
 import { Annotation } from '@pundit/communication';
+import { Anchor, Icon } from '../../types';
 
 /**
  * Interface for AnnotationComponent's "data"

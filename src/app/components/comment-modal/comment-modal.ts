@@ -2,8 +2,8 @@ import {
   AfterContentChecked,
   Component, Input
 } from '@angular/core';
-import { Icon } from '@n7-frontend/components';
 import * as Draggable from 'draggable';
+import { Icon } from '../../types';
 
 /**
  * Interface for CommentModal's "data"
