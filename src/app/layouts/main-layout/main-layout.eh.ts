@@ -190,6 +190,12 @@ export class MainLayoutEH extends EventHandler {
             this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
           });
           break;
+        case 'annotationmouseenter':
+          this.anchorService.addHoverClass(payload.id);
+          break;
+        case 'annotationmouseleave':
+          this.anchorService.removeHoverClass(payload.id);
+          break;
         default:
           break;
       }
