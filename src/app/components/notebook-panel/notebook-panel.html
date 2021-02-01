@@ -26,7 +26,9 @@
                         *ngIf="data.selected.sharingMode !== 'private'">Private</button>
                 <button (click)="onClick('shared', data.selected)"
                         class="n7-btn"
-                        *ngIf="data.selected.sharingMode !== 'shared'">Share</button>
+                        *ngIf="data.selected.sharingMode !== 'shared'"
+                        disabled
+                        title="Coming soon!">Share</button>
             </div>
         </div>
     </div>
