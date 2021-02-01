@@ -225,6 +225,8 @@ export class MainLayoutEH extends EventHandler {
         thumb: 'https://placeimg.com/400/600/people'
       });
 
+      this.userService.setToken(val.access_token);
+
       this.userService.login();
       this.loginService.stop();
     });
