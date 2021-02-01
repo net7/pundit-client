@@ -34,7 +34,7 @@
             
             <div class="pnd-annotation__header-additional-info">
                 <span class="pnd-annotation__header-date">{{data.date}}</span>
-                <span *ngIf="data.notebook?.anchor?.href"
+                <span *ngIf="data.notebook?.anchor"
                       class="pnd-annotation__header-notebook">in
                     <!-- rendering error appeared with n7-anchor-wrapper -->
                     <a [href]="data.notebook.anchor.href"
