@@ -33,15 +33,15 @@
         <div *ngIf="ds.userService.logged$ | async" class="pundit-sidebar__actions">
             <a class="pundit-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
-                <n7-anchor-wrapper>
+                <a>
                     <span class="n7-icon-book pundit-sidebar__header-icon"></span>
-                </n7-anchor-wrapper>
+                </a>
             </a>
             <a class="pundit-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <n7-anchor-wrapper>
+                <a>
                     <span class="n7-icon-close pundit-sidebar__header-icon"></span>
-                </n7-anchor-wrapper>
+                </a>
             </a>
         </div>
     </div>
@@ -55,7 +55,6 @@
     <div class="pundit-sidebar__cont"
          [style.height]="ds.height$ | async">
         <div class="pundit-sidebar__annotation-column">
-            <n7-header [data]="ds.headerMock"></n7-header>
             <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
                 <annotation [ngClass]="annotation"
                             [data]="annotation"

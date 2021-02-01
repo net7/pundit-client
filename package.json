@@ -30,7 +30,6 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
-    "@n7-frontend/components": "git+ssh://git@github.com/net7/n7-frontend-components-dist.git#master",
     "@n7-frontend/core": "git+ssh://git@github.com/net7/n7-frontend-core.git#master",
     "@n7-frontend/icon-font": "git+ssh://git@github.com/net7/n7-icon-font.git#master",
     "@popperjs/core": "^2.6.0",

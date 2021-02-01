@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { DvComponentsLibModule } from '@n7-frontend/components';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { PunditLoginModule } from '@pundit/login';
@@ -51,7 +50,6 @@ config.init(appConfig);
   ],
   imports: [
     BrowserModule,
-    DvComponentsLibModule,
     PunditLoginModule,
     PunditLoginModule.forRoot(env.auth)
   ],

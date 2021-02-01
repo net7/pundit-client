@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnnotationData } from '../components/annotation/annotation';
+import { isAnchorPayload } from '../types';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -44,7 +45,9 @@ export class AnnotationService {
     if (!annotation) return;
     const { notebookId } = data;
     // fixme: add the new notebook id to the correct param.
-    if (notebookId) annotation.notebook.anchor.payload.id = notebookId;
+    if (notebookId && isAnchorPayload(annotation.notebook.anchor)) {
+      annotation.notebook.anchor.payload.id = notebookId;
+    }
   }
 
   remove(annotationId: string) {

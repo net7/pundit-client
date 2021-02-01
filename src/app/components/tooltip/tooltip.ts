@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { NavData } from '@n7-frontend/components';
 import { delay } from 'rxjs/operators';
 import tooltipHandler from 'src/app/models/tooltip-handler';
+import { NavData } from '../../types';
 
 /**
  * Interface for TooltipComponent's "data"
