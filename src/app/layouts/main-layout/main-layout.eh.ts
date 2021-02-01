@@ -1,9 +1,9 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY
+  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
@@ -32,6 +32,8 @@ export class MainLayoutEH extends EventHandler {
   private anchorService: AnchorService;
 
   private loginService: PunditLoginService;
+
+  private isLogged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public dataSource: MainLayoutDS;
 
@@ -95,24 +97,34 @@ export class MainLayoutEH extends EventHandler {
       }
     });
 
-    this.outerEvents$.subscribe(({ type, payload }) => {
+    this.outerEvents$.pipe(
+      withLatestFrom(this.isLogged$)
+    ).subscribe(([{ type, payload }, isLogged]) => {
       switch (type) {
         case 'tooltip.highlight': {
-          const requestPayload = this.dataSource.getAnnotationRequestPayload();
-          this.saveAnnotation(requestPayload);
+          if (!isLogged) {
+            this.loginService.start();
+          } else {
+            const requestPayload = this.dataSource.getAnnotationRequestPayload();
+            this.saveAnnotation(requestPayload);
+          }
           break;
         }
         case 'tooltip.comment': {
-          // reset
-          this.commentState = {
-            comment: null,
-            notebookId: null
-          };
-          this.pendingAnnotationPayload = (
-            this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
-          );
-          this.addPendingAnnotation();
-          this.dataSource.onComment();
+          if (!isLogged) {
+            this.loginService.start();
+          } else {
+            // reset
+            this.commentState = {
+              comment: null,
+              notebookId: null
+            };
+            this.pendingAnnotationPayload = (
+              this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
+            );
+            this.addPendingAnnotation();
+            this.dataSource.onComment();
+          }
           break;
         }
         case 'comment-modal.change':
@@ -202,7 +214,9 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private listenLoginEvents() {
-    this.loginService.onAuth().subscribe((val) => {
+    this.loginService.onAuth().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((val) => {
       // FIXME: prendere utente defintivo
       console.warn('FIXME: gestire login', val);
       this.userService.iam({
@@ -213,6 +227,12 @@ export class MainLayoutEH extends EventHandler {
 
       this.userService.login();
       this.loginService.stop();
+    });
+
+    this.userService.logged$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((isLogged) => {
+      this.isLogged$.next(isLogged);
     });
   }
 

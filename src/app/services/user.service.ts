@@ -10,11 +10,11 @@ type UserData = {
 
 @Injectable()
 export class UserService {
-  private logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-
   private me: UserData;
 
   private users: UserData[] = [];
+
+  public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public iam({ id, username, thumb }: UserData) {
     this.me = { id, username, thumb };
