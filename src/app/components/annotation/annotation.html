@@ -34,14 +34,13 @@
             
             <div class="pnd-annotation__header-additional-info">
                 <span class="pnd-annotation__header-date">{{data.date}}</span>
-                <span 
+                <span *ngIf="data.notebook?.anchor?.href"
                       class="pnd-annotation__header-notebook">in
                     <!-- rendering error appeared with n7-anchor-wrapper -->
                     <a [href]="data.notebook.anchor.href"
                        [target]="data.notebook.anchor.target || '_self'"
                        class="pnd-annotation__header-notebook-link">
-                        <!-- <span>{{data.notebook.name}}</span> -->
-                        <span>I pray you, have in mind where we must meet.</span>
+                        <span>{{data.notebook.name}}</span>
                     </a>
                 </span>
             </div>
