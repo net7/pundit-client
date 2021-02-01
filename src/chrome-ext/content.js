@@ -5,10 +5,10 @@ let badgeIntervalCount = 0;
 
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   switch(type) {
-    case 'iconclick': 
-    case 'tabactivated': {
-      if (payload) {
-        load();
+    case 'statechanged': {
+      const { isActive, user, token } = payload;
+      if (isActive) {
+        load(user, token);
       } else {
         destroy();
       }
@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
   }
 });
 
-function load() {
+function load(user, token) {
   if (appRoot) return;
 
   appRoot = document.createElement("pnd-root");
@@ -30,7 +30,13 @@ function load() {
   (document.head||document.documentElement).appendChild(main);
   main.onload = function() {
     // emit signal
-    const signal = new CustomEvent("punditloaded", { detail: { id: chrome.runtime.id } });
+    const signal = new CustomEvent("punditloaded", { 
+      detail: { 
+        user,
+        token,
+        id: chrome.runtime.id 
+      }
+    });
     window.dispatchEvent(signal);
 
     // loader interval
@@ -40,6 +46,8 @@ function load() {
 
     // listen to annotation updates
     window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
+    // listen login events
+    window.addEventListener('userlogged', onUserLogged, false);
     main.remove();
   };
 }
@@ -82,4 +90,11 @@ function onAnnotationUpdate(ev) {
 
   // clear loader
   clearInterval(badgeInterval);
+}
+
+function onUserLogged(ev) {
+  chrome.runtime.sendMessage({
+    type: 'userlogged',
+    payload: ev.detail
+  });
 }

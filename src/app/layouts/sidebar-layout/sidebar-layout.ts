@@ -8,6 +8,7 @@ import { AnnotationPositionService } from 'src/app/services/annotation-position.
 import { LayoutEvent } from 'src/app/types';
 import { _c } from 'src/app/models/config';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -30,6 +31,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private anchorService: AnchorService,
     private userService: UserService,
     private sanitizer: DomSanitizer,
+    private loginService: PunditLoginService,
   ) {
     super(config);
 
@@ -48,6 +50,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       detectorRef: this.detectorRef,
       userService: this.userService,
+      loginService: this.loginService
     };
   }
 

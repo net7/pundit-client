@@ -1,11 +1,12 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY
+  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, takeUntil
+  catchError, debounceTime, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { CommentAnnotation } from '@pundit/communication';
+import { PunditLoginService } from '@pundit/login';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -30,6 +31,10 @@ export class MainLayoutEH extends EventHandler {
 
   private anchorService: AnchorService;
 
+  private loginService: PunditLoginService;
+
+  private isLogged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
   public dataSource: MainLayoutDS;
 
   private commentState: {
@@ -48,6 +53,7 @@ export class MainLayoutEH extends EventHandler {
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
           this.anchorService = payload.anchorService;
+          this.loginService = payload.loginService;
           this.dataSource.onInit(payload);
 
           this.dataSource.getUserNotebooks().pipe(
@@ -80,6 +86,7 @@ export class MainLayoutEH extends EventHandler {
           this.listenSelection();
           this.listenLayoutEvents();
           this.listenAnchorEvents();
+          this.listenLoginEvents();
           break;
 
         case 'main-layout.destroy':
@@ -90,27 +97,37 @@ export class MainLayoutEH extends EventHandler {
       }
     });
 
-    this.outerEvents$.subscribe(({ type, payload }) => {
+    this.outerEvents$.pipe(
+      withLatestFrom(this.isLogged$)
+    ).subscribe(([{ type, payload }, isLogged]) => {
       switch (type) {
         case 'tooltip.highlight': {
-          const requestPayload = this.dataSource.getAnnotationRequestPayload();
-          this.saveAnnotation(requestPayload);
+          if (!isLogged) {
+            this.loginService.start();
+          } else {
+            const requestPayload = this.dataSource.getAnnotationRequestPayload();
+            this.saveAnnotation(requestPayload);
+          }
           break;
         }
         case 'tooltip.comment': {
-          // reset
-          this.commentState = {
-            comment: null,
-            notebookId: null
-          };
-          this.pendingAnnotationPayload = (
-            this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
-          );
-          this.addPendingAnnotation();
-          const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-            PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
-          );
-          this.dataSource.onComment({ selected: pendingAnnotation.subject.selected.text });
+          if (!isLogged) {
+            this.loginService.start();
+          } else {
+            // reset
+            this.commentState = {
+              comment: null,
+              notebookId: null
+            };
+            this.pendingAnnotationPayload = (
+              this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
+            );
+            this.addPendingAnnotation();
+            const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+              PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
+            );
+            this.dataSource.onComment({ selected: pendingAnnotation.subject.selected.text });
+          }
           break;
         }
         case 'comment-modal.change':
@@ -196,6 +213,31 @@ export class MainLayoutEH extends EventHandler {
         default:
           break;
       }
+    });
+  }
+
+  private listenLoginEvents() {
+    this.loginService.onAuth().pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((val) => {
+      // FIXME: prendere utente defintivo
+      console.warn('FIXME: gestire login', val);
+      this.userService.iam({
+        id: 'rwpfgj6gsp',
+        username: 'johndoe',
+        thumb: 'https://placeimg.com/400/600/people'
+      });
+
+      this.userService.setToken(val.access_token);
+
+      this.userService.login();
+      this.loginService.stop();
+    });
+
+    this.userService.logged$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((isLogged) => {
+      this.isLogged$.next(isLogged);
     });
   }
 

@@ -21,9 +21,16 @@
         </div>
         <!-- user name -->
         <div class="pundit-sidebar__user-name">
-            <n7-anchor-wrapper>Login</n7-anchor-wrapper>
+            <ng-container *ngIf="!(ds.userService.logged$ | async)">
+                <a (click)="lb.eventHandler.emitInner('requestlogin')">Login</a>
+            </ng-container>
+            <ng-container *ngIf="ds.userService.logged$ | async"> 
+                <a (click)="lb.eventHandler.emitInner('clickusername')">
+                    {{ ds.userService.whoami().username }}
+                </a>
+            </ng-container>
         </div>
-        <div class="pundit-sidebar__actions">
+        <div *ngIf="ds.userService.logged$ | async" class="pundit-sidebar__actions">
             <a class="pundit-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <n7-anchor-wrapper>

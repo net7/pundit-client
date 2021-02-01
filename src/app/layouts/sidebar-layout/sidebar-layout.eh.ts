@@ -11,6 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 import {
   AnnotationAttributes, CommentAnnotation, SharingModeType
 } from '@pundit/communication';
+import { PunditLoginService } from '@pundit/login';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 import * as notebook from '../../models/notebook';
 import * as annotation from '../../models/annotation';
@@ -28,6 +29,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   private userService: UserService;
 
+  private loginService: PunditLoginService;
+
   private detectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -42,6 +45,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$ = payload.layoutEvent$;
           this.detectorRef = payload.detectorRef;
           this.userService = payload.userService;
+          this.loginService = payload.loginService;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
@@ -63,6 +67,12 @@ export class SidebarLayoutEH extends EventHandler {
         case 'sidebar-layout.sidebarclose':
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);
+          break;
+        case 'sidebar-layout.clickusername':
+          console.warn('FIXME: gestire username click');
+          break;
+        case 'sidebar-layout.requestlogin':
+          this.loginService.start();
           break;
         default:
           console.warn('unhandled inner event of type', type);

@@ -1,5 +1,7 @@
 /* eslint-disable */
 const ACTIVE_KEY = 'active';
+const USER_KEY = 'pundit-user';
+const TOKEN_KEY = 'pundit-token';
 const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
 const BADGE_COLOR_ON = [13, 133, 236, 255];
@@ -9,7 +11,15 @@ class Storage {
   static get(key) {
     return new Promise((res) => {
       chrome.storage.local.get([key], (result) => {
-        res(!!result[key]);
+        res(result[key]);
+      })
+    });
+  }
+
+  static getMulti(keys) {
+    return new Promise((res) => {
+      chrome.storage.local.get(keys, (result) => {
+        res(result);
       })
     });
   }
@@ -46,29 +56,17 @@ chrome.browserAction.onClicked.addListener((tab) => {
     .then((value) => {
       return Storage.set(key, !value)
     })
-    .then((newValue) => {
-      // change icon
-      chrome.tabs.sendMessage(tab.id, { type: 'iconclick', payload: newValue });
-      updateExtensionIcon(newValue);
+    .then(() => {
+      onChange(tab.id);
     })
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
-  const key = `${ACTIVE_KEY}.${tabId}`;
-  Storage.get(key)
-    .then((value) => {
-      chrome.tabs.sendMessage(tabId, { type: 'tabactivated', payload: value });
-      updateExtensionIcon(value);
-    })
+  onChange(tabId);
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  const key = `${ACTIVE_KEY}.${tabId}`;
-  Storage.get(key)
-    .then((value) => {
-      chrome.tabs.sendMessage(tabId, { type: 'tabactivated', payload: value });
-      updateExtensionIcon(value);
-    })
+  onChange(tabId);
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -86,7 +84,39 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
         text: '' + payload
       });
       break;
+    case 'userlogged':
+      const { isLogged, user, token } = payload;
+      if (isLogged) {
+        saveUserInMemory(user, token);
+      } else {
+
+      }
+      break;
     default:
       break;
   }
 });
+
+function onChange(tabId) {
+  const key = `${ACTIVE_KEY}.${tabId}`;
+  Storage.getMulti([key, USER_KEY, TOKEN_KEY])
+    .then((values) => {
+      const isActive = values[key];
+      const user = values[USER_KEY];
+      const token = values[TOKEN_KEY];
+      chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
+        isActive, user, token
+      }});
+      updateExtensionIcon(isActive);
+    })
+}
+
+function saveUserInMemory(user, token) {
+  Storage.set(USER_KEY, user);
+  Storage.set(TOKEN_KEY, token);
+}
+
+function removeUserFromMemory() {
+  Storage.remove(USER_KEY);
+  Storage.remove(TOKEN_KEY);
+}
