@@ -33,6 +33,20 @@ export class AnnotationService {
     }
   }
 
+  /**
+   * Update a cached annotation.
+   * To change the data on the backend use "../models/annotation/update" instead!
+   * @param annotationId id of the annotation to update
+   * @param data data of the annotation that you want to change
+   */
+  update(annotationId: string, data: AnnotationAttributes) {
+    const annotation = this.getAnnotationById(annotationId);
+    if (!annotation) return;
+    const { notebookId } = data;
+    // fixme: add the new notebook id to the correct param.
+    if (notebookId) annotation.notebook.anchor.payload.id = notebookId;
+  }
+
   remove(annotationId: string) {
     const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
     [this.lastRemoved] = this.annotations.splice(index, 1);
@@ -78,7 +92,7 @@ export class AnnotationService {
     return newAnnotation;
   }
 
-  private transform(annotation: Annotation) {
+  private transform(annotation: Annotation): AnnotationData {
     const {
       id,
       notebookId,
@@ -100,6 +114,7 @@ export class AnnotationService {
 
     return {
       _meta: { id, created, startPosition },
+      _raw: annotation,
       payload: {
         source: 'box',
         id
@@ -151,16 +166,12 @@ export class AnnotationService {
         notebooks: {
           header: {
             label: 'Change notebook',
-            icon: {
-              id: 'n7-icon-caret-down',
-            },
             payload: {
               id,
               source: 'notebooks-header'
             }
           },
           items: notebooks
-            // .filter(({ id: itemId }) => itemId !== notebook.id)
             .map(({ id: itemId, label }) => ({
               label,
               payload: {

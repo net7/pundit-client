@@ -30,6 +30,7 @@ export class AnnotationEH extends EventHandler {
 
         case 'annotation.change':
           // change the assigned notebook
+          this.emitOuter('updatenotebook', payload);
           break;
         case 'annotation.mouseenter':
           // highlight the corresponding annotation

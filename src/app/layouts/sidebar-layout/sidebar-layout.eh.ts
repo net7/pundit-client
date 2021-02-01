@@ -8,9 +8,12 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
 import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { SharingModeType } from '@pundit/communication';
+import {
+  AnnotationAttributes, CommentAnnotation, SharingModeType
+} from '@pundit/communication';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
-import * as notebook from '../../models/notebook/update';
+import * as notebook from '../../models/notebook';
+import * as annotation from '../../models/annotation';
 
 export class SidebarLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
@@ -73,6 +76,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$.next({ type: 'annotationdelete', payload });
           break;
         case 'annotation.updatenotebook':
+          this.handleAnnotationUpdate(payload.annotation, payload.notebook);
           this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           break;
         case 'annotation.togglecollapse':
@@ -181,6 +185,31 @@ export class SidebarLayoutEH extends EventHandler {
     }).then(() => {
       // update the cached version of the notebook
       this.notebookService.update(nb.id, update);
+    });
+  }
+
+  private handleAnnotationUpdate(annotationID: string, notebookId: string) {
+    // annotation update (back-end)
+    const { _raw: rawAnnotation } = this.annotationService.getAnnotationById(annotationID);
+    const annotationUpdate = {
+      type: rawAnnotation.type,
+      notebookId,
+      serializedBy: rawAnnotation.serializedBy,
+      subject: rawAnnotation.subject,
+      userId: rawAnnotation.userId
+    } as AnnotationAttributes;
+
+    if (rawAnnotation.type === 'Commenting') {
+      (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
+    }
+
+    annotation.update(annotationID, annotationUpdate);
+    // annotation update (service)
+    // this.annotationService.update(annotationID, notebookID);
+    // update annotation component / collection
+    this.emitOuter('annotationupdatenb', {
+      annotationID,
+      notebook: this.notebookService.getNotebookById(notebookId),
     });
   }
 }

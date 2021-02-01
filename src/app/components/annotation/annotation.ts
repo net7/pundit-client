@@ -4,6 +4,7 @@
 
 import { Component, Input } from '@angular/core';
 import { Anchor, Icon } from '@n7-frontend/components';
+import { Annotation } from '@pundit/communication';
 
 /**
  * Interface for AnnotationComponent's "data"
@@ -73,6 +74,8 @@ export interface AnnotationData {
   payload?: any;
   /** additional data useful for the component's logic */
   _meta?: any;
+  /** rawAnnotation data from the backend */
+  _raw?: Annotation;
 }
 
 @Component({
