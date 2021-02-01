@@ -196,6 +196,9 @@ export class MainLayoutEH extends EventHandler {
         case 'annotationmouseleave':
           this.anchorService.removeHoverClass(payload.id);
           break;
+        case 'logout':
+          this.userService.logout();
+          break;
         default:
           break;
       }

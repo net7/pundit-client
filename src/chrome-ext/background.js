@@ -89,7 +89,7 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
       if (isLogged) {
         saveUserInMemory(user, token);
       } else {
-
+        removeUserFromMemory();
       }
       break;
     default:

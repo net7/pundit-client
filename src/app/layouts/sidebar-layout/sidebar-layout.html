@@ -37,6 +37,12 @@
                     <span class="n7-icon-book pundit-sidebar__header-icon"></span>
                 </a>
             </a>
+            <a class="pundit-sidebar__logout-button"
+               (click)="lb.eventHandler.emitInner('clicklogout')">
+                <a>
+                    <span class="n7-icon-share2 pundit-sidebar__header-icon"></span>
+                </a>
+            </a>
             <a class="pundit-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
                 <a>

@@ -71,6 +71,11 @@ export class SidebarLayoutEH extends EventHandler {
         case 'sidebar-layout.clickusername':
           console.warn('FIXME: gestire username click');
           break;
+        case 'sidebar-layout.clicklogout':
+          this.layoutEvent$.next({
+            type: 'logout'
+          });
+          break;
         case 'sidebar-layout.requestlogin':
           this.loginService.start();
           break;
