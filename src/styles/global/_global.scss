@@ -1,0 +1,21 @@
+/**
+ * GLOBAL
+ *
+ * Global styles, tags and common classes.
+ */
+
+/* ------------------------------------ *\
+   #GLOBAL
+\* ------------------------------------ */
+/* Class of all Pundit app wrapper */
+.pnd-main {
+    box-sizing: border-box;
+    color: $color-text;
+    font-size: $font-size-m;
+    font-family: $font-family-main;
+    font-weight: $font-weight-normal;
+}
+
+:focus {
+    outline: 0;
+}

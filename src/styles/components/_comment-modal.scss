@@ -16,7 +16,7 @@
         position: relative;
         max-width: $modal-width;
         background: $color-background-base;
-        @include cardShadow;
+        @include cardShadow-1;
         border: 1px solid $color-border-normal;
         border-radius: $border-radius;
         margin: $space*10 auto 0 auto;

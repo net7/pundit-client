@@ -1,0 +1,73 @@
+/**
+ * ANNOTATION-FORM
+ *
+ * Brief description of the component here.
+ */
+ 
+/* ------------------------------------ *\
+   #ANNOTATION-FORM
+\* ------------------------------------ */
+.n7-annotation-form {
+    width: 100%;
+
+    &__textarea, &__select, &__actions {
+        padding: $space;
+    }
+
+    &__textarea {
+        textarea {
+            width: 100%;
+            min-height: 100px;
+        }
+    }
+
+    &__select {
+        display: flex;
+    }
+
+    &__select-label {
+        flex-grow: 1;
+    }
+
+    &__select-container {
+        flex-grow: 1;
+    }
+
+    &__actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    &__actions-item a {
+        min-width: 100px;
+    }
+
+    &__actions-item:last-child a {
+        margin-left: $space;
+    }
+
+    &__select-items {
+        display: none;
+    }
+
+    &__select-container.is-open .n7-annotation-form__select-items {
+        display: block;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}

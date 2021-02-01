@@ -7,10 +7,10 @@
 // ------------------------------------ //
 // #MIXINS
 // ------------------------------------ //
-@mixin cardShadow {
+@mixin cardShadow-1 {
     box-shadow: 0 1px 1px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.04);
 }
 
-@mixin cardShadowHover {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.06), 0 3px 14px rgba(0,0,0,0.08);
+@mixin cardShadow-2 {
+    box-shadow: 0 2px 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.08);
 }

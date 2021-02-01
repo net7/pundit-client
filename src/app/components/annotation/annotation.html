@@ -1,72 +1,80 @@
 <div *ngIf="data"
-     class="n7-annotation__container {{ data.classes || ''}}"
+     class="pnd-annotation {{ data.classes || ''}}"
+     [ngClass]="{'is-collapsed': data.isCollapsed, 'is-expanded': !data.isCollapsed, 'has-comment': data.comment}"
      (click)="data.payload && onContainerClick(data.payload)"
      (mouseenter)="data.payload && onEnter(data.payload)"
      (mouseleave)="data.payload && onLeave(data.payload)">
+    
     <ng-container *ngIf="!data.isCollapsed">
         <!-- view the full annotation -->
         <ng-container *ngTemplateOutlet="expanded"></ng-container>
     </ng-container>
+    
     <ng-container *ngIf="data.isCollapsed">
         <!-- minimal view of the annotation -->
         <ng-container *ngTemplateOutlet="collapsed"></ng-container>
     </ng-container>
+
 </div>
 
 <ng-template #expanded>
-    <!-- metadata row -->
-    <div class="n7-annotation__metadata-row">
-        <!-- avatar -->
-        <div class="n7-annotation__image-wrapper">
+    <!-- Header -->
+    <div class="pnd-annotation__header">
+        
+        <div class="pnd-annotation__header-thumb-wrapper">
             <img [src]="data.user.image"
-                 alt="User profile picture"
-                 class="n7-annotation__image">
+                 alt="{{data.user.name}}"
+                 class="pnd-annotation__header-thumb-image">
         </div>
-        <!-- name -->
-        <div class="n7-annotation__info-cont">
+        
+        <div class="pnd-annotation__header-info">
             <n7-anchor-wrapper [data]="data.user.anchor">
-                <div class="n7-annotation__user-name">{{data.user.name}}</div>
+                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
             </n7-anchor-wrapper>
-            <!-- time ago - parent notebook -->
-            <div class="n7-annotation__info">
-                <span class="n7-annotation__date">{{data.date}}</span>
-                <span *ngIf="data.notebook?.anchor?.href"> in
+            
+            <div class="pnd-annotation__header-additional-info">
+                <span class="pnd-annotation__header-date">{{data.date}}</span>
+                <span *ngIf="data.notebook?.anchor?.href"
+                      class="pnd-annotation__header-notebook">in
                     <!-- rendering error appeared with n7-anchor-wrapper -->
                     <a [href]="data.notebook.anchor.href"
-                       [target]="data.notebook.anchor.target || '_self'">
+                       [target]="data.notebook.anchor.target || '_self'"
+                       class="pnd-annotation__header-notebook-link">
                         <span>{{data.notebook.name}}</span>
                     </a>
                 </span>
             </div>
         </div>
+        
         <div *ngIf="data.menu"
-             class="n7-annotation__menu {{ data.menu.classes || '' }}">
+             class="pnd-annotation__header-menu {{ data.menu.classes || '' }}">
             <!-- arrow icon -->
-            <span class="n7-annotation__menu-icon"
+            <button class="pnd-annotation__header-menu-button"
                   [ngClass]="data.menu.icon['id']"
                   (click)="onClick($event, data.menu.icon['payload'])">
-            </span>
-            <div class="n7-annotation__menu-dropdown">
+            </button>
+
+            <div class="pnd-annotation__menu-dropdown">
                 <!-- menu actions -->
-                <div class="n7-annotation__menu-actions"
+                <div class="pnd-annotation__menu-actions"
                      *ngIf="data.activeMenu === 'actions'">
                     <div *ngFor="let action of data.menu.actions"
                          (click)="onClick($event, action.payload)"
-                         class="n7-annotation__menu-action">
+                         class="pnd-annotation__menu-action">
                         {{ action.label }}
                     </div>
                 </div>
-                <div class="n7-annotation__menu-notebooks"
+                <div class="pnd-annotation__menu-notebooks"
                      *ngIf="data.activeMenu === 'notebooks'">
-                    <div class="n7-annotation__menu-notebooks-header"
+                    <div class="pnd-annotation__menu-notebooks-header"
                          (click)="onClick($event, data.menu.notebooks.header.payload)">
                         <!-- notebooks header label -->
-                        <span class="n7-annotation__notebooks-label">
+                        <span class="pnd-annotation__notebooks-label">
                             {{ data.menu.notebooks.header.label }}
                         </span>
                     </div>
-                    <div class="n7-annotation__select-cont">
-                        <select class="n7-annotation__select"
+                    <div class="pnd-annotation__select-cont">
+                        <select class="pnd-annotation__select"
                                 (change)="onChange($event, $event.target.value)"
                                 (click)="onClick($event, 'notebook-select')">
                             <option *ngFor="let notebook of data.menu.notebooks.items"
@@ -79,36 +87,49 @@
             </div>
         </div>
     </div>
+    <!-- END // Header -->
 
-    <hr class="n7-annotation__divider">
-
-    <!-- highlight -->
-    <div class="n7-annotation__body-row"
+    <!-- Highlight -->
+    <div class="pnd-annotation__highlight"
          *ngIf="data.body">
-        <span class="n7-annotation__body">
+        <span class="pnd-annotation__highlight-text">
             {{data.body}}
         </span>
     </div>
+    <!-- END // Highlight -->
 
-    <!-- comment -->
-    <div class="n7-annotation__comment-row"
-         *ngIf="data.comment">
-        <span class="n7-annotation__comment">
+    <!-- Caret and comment -->
+    <div class="pnd-annotation__caret"
+        *ngIf="data.comment"></div>
+
+    <div class="pnd-annotation__comment"
+        *ngIf="data.comment">
+        <span class="pnd-annotation__comment-text">
             {{data.comment}}
         </span>
     </div>
+    <!-- END // Caret and comment -->
 </ng-template>
 
 <ng-template #collapsed>
-    <div class="n7-annotation__collapsed">
-        <span class="n7-annotation__body">
+    <!-- Highlight -->
+    <div class="pnd-annotation__highlight"
+         *ngIf="data.body">
+        <span class="pnd-annotation__highlight-text">
             {{data.body}}
         </span>
-        <span>
-            <n7-anchor-wrapper [data]="data.notebook.anchor"
-                               class="n7-annotation__notebook">
-                {{data.notebook.name}}
-            </n7-anchor-wrapper>
+    </div>
+    <!-- END // Highlight -->
+
+    <!-- Caret and comment -->
+    <div class="pnd-annotation__caret"
+         *ngIf="data.comment"></div>
+
+    <div class="pnd-annotation__comment"
+         *ngIf="data.comment">
+        <span class="pnd-annotation__comment-text">
+            {{data.comment}}
         </span>
     </div>
+    <!-- END // Caret and comment -->
 </ng-template>

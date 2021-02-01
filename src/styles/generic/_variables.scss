@@ -1,13 +1,124 @@
+//
+// VARIABLES
+//
+// Definition of all variables used by the Pundit annotator.
+//
+
+// ------------------------------------ //
+// #SPACING-UNIT
+// ------------------------------------ //
+$space: 8px;
+
+
 // ------------------------------------ //
 // FONTS
 // ------------------------------------ //
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+
 
 // ------------------------------------ //
 // TYPOGRAPHY
 // ------------------------------------ //
 $font-family-main: 'Source Sans Pro', sans-serif;
 $font-family-headings: $font-family-main;
+
+$font-size-xxxl: 38px;
+$font-size-xxl: 30px;
+$font-size-xl: 26px;
+$font-size-l: 20px;
+$font-size-m: 16px;
+$font-size-s: 14px;
+$font-size-xs: 13px;
+
+// Font weight
+$font-weight-normal: 300;
+$font-weight-bold: 500;
+
+
+// ------------------------------------ //
+// COLORS
+// ------------------------------------ //
+// Text Colors
+$color-text: $color-gray-05;
+$color-text-inverse: $color-gray-00;
+$color-text-light: rgb(127, 133, 140); // $color-gray-04;
+$color-text-link: $color-main;
+$color-text-link-hover: $color-text-hover;
+$color-text-link-visited: $color-text-hover;
+$color-text-form-placeholder: $color-gray-04;
+
+// Borders
+$color-border-light: $color-gray-02;
+$color-border-normal: $color-gray-03;
+
+// Backgrounds
+$color-background-base: $color-gray-00;
+$color-background-light: $color-gray-01;
+$color-background-medium: $color-gray-02;
+$color-background-dark: $color-gray-03;
+
+
+// ------------------------------------ //
+// #BORDER-RADIUS
+// ------------------------------------ //
+$border-radius: 3px;
+$border-radius-hard: 8px;
+
+
+// ------------------------------------ //
+// #TRANSITIONS
+// ------------------------------------ //
+$transition-durations: 0.2s;
+
+
+// ------------------------------------ //
+// SIDEBAR
+// ------------------------------------ //
+$sidebar-exploded-width: 326px;
+$sidebar-collapsed-width: 15px;
+
+
+// ------------------------------------ //
+// ANNOTATION
+// ------------------------------------ //
+$annotation-background-color: $color-background-base;
+$annotation-comment-background-color: $color-background-medium;
+$annotation-border-color: $color-border-normal;
+$annotation-collapsed-height: 26px;
+
+
+// ------------------------------------ //
+// TOOLTIP
+// ------------------------------------ //
+$tooltip-background-color: $color-background-base;
+$tooltip-border-color: $color-border-normal;
+
+
+// ------------------------------------ //
+// #MODAL
+// ------------------------------------ //
+$modal-width: 480px;
+
+
+// ------------------------------------ //
+// #MEDIA-QUERIES-BREAKPOINT
+// ------------------------------------ //
+$breakpoint-desktop-wide: 1180px;
+$breakpoint-laptop: 960px;
+$breakpoint-ipad-portrait: 768px;
+$breakpoint-mobile: 650px;
+$breakpoint-smartphone-landscape: 480px;
+$breakpoint-smartphone-portrait: 400px;
+
+
+// ------------------------------------ //
+// Z-INDEX
+// ------------------------------------ //
+$z-index-max: 2147483647;
+$z-index-sidebar: $z-index-max - 1;
+$z-index-modal: $z-index-max - 0;
+
+
 
 
 //
@@ -214,7 +325,4 @@ $font-family-headings: $font-family-main;
 // $table-footer-bg: $color-background-medium;
 
 
-// ------------------------------------ //
-// #MODAL
-// ------------------------------------ //
-$modal-width: $breakpoint-smartphone-landscape;
+
