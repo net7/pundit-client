@@ -107,7 +107,10 @@ export class MainLayoutEH extends EventHandler {
             this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
           );
           this.addPendingAnnotation();
-          this.dataSource.onComment();
+          const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+            PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
+          );
+          this.dataSource.onComment({ selected: pendingAnnotation.subject.selected.text });
           break;
         }
         case 'comment-modal.change':

@@ -47,14 +47,13 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onComment() {
+  onComment({ selected }) {
     // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
-
     const currentNotebook = this.notebookService.getSelected();
     const notebooks = this.notebookService.getAll();
-    this.one('comment-modal').update({ currentNotebook, notebooks });
+    this.one('comment-modal').update({ selected, currentNotebook, notebooks });
   }
 
   onAnnotationDelete(id: string) {
