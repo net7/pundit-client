@@ -66,7 +66,10 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  onChange(tabId);
+  chrome.tabs.get((tabId), (tab) => {
+    console.log('tab', tab);
+    onChange(tabId);
+  });
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
@@ -81,7 +84,7 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
       const { tab } = _sender; 
       chrome.browserAction.setBadgeText({
         tabId: tab.id,
-        text: '' + payload
+        text: payload ? '' + payload : null
       });
       break;
     case 'userlogged':

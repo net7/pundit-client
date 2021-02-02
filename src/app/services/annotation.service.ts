@@ -186,4 +186,8 @@ export class AnnotationService {
       },
     };
   }
+
+  clear() {
+    this.annotations = [];
+  }
 }

@@ -56,33 +56,13 @@ export class MainLayoutEH extends EventHandler {
           this.loginService = payload.loginService;
           this.dataSource.onInit(payload);
 
-          this.dataSource.getUserNotebooks().pipe(
-            switchMap(({ data: notebooksData }) => {
-              const { notebooks } = notebooksData;
-              // first notebook as default
-              const { id } = notebooks[0];
-              this.notebookService.load(notebooks);
-              this.notebookService.setSelected(id);
-
-              return this.dataSource.getUserAnnotations();
-            }),
-            catchError((e) => {
-              this.handleError(e);
-              return EMPTY;
-            })
-          ).subscribe(({ data: searchData }) => {
-            const { users, annotations } = searchData;
-            // load order matters
-            this.userService.load(users);
-            this.annotationService.load(annotations);
-            this.anchorService.load(annotations);
-            // signal
-            if (!this.annotationService.getAnnotations().length) {
-              this.annotationService.totalChanged$.next(0);
-            }
-            this.layoutEvent$.next({ type: 'searchresponse' });
+          // user logged
+          if (this.userService.whoami()) {
+            this.onLogin();
+          } else {
             this.dataSource.hasLoaded.next(true);
-          });
+            this.annotationService.totalChanged$.next(0);
+          }
           this.listenSelection();
           this.listenLayoutEvents();
           this.listenAnchorEvents();
@@ -198,6 +178,7 @@ export class MainLayoutEH extends EventHandler {
           break;
         case 'logout':
           this.userService.logout();
+          this.onLogout();
           break;
         default:
           break;
@@ -241,6 +222,7 @@ export class MainLayoutEH extends EventHandler {
 
       this.userService.login();
       this.loginService.stop();
+      this.onLogin();
     });
 
     this.userService.logged$.pipe(
@@ -281,5 +263,46 @@ export class MainLayoutEH extends EventHandler {
 
   private removePendingAnnotation() {
     this.anchorService.remove(PENDING_ANNOTATION_ID);
+  }
+
+  private onLogin() {
+    this.dataSource.getUserNotebooks().pipe(
+      switchMap(({ data: notebooksData }) => {
+        const { notebooks } = notebooksData;
+        // first notebook as default
+        const { id } = notebooks[0];
+        this.notebookService.load(notebooks);
+        this.notebookService.setSelected(id);
+
+        return this.dataSource.getUserAnnotations();
+      }),
+      catchError((e) => {
+        this.handleError(e);
+        return EMPTY;
+      })
+    ).subscribe(({ data: searchData }) => {
+      const { users, annotations } = searchData;
+      // load order matters
+      this.userService.load(users);
+      this.annotationService.load(annotations);
+      this.anchorService.load(annotations);
+      // signal
+      if (!this.annotationService.getAnnotations().length) {
+        this.annotationService.totalChanged$.next(0);
+      }
+      this.layoutEvent$.next({ type: 'searchresponse' });
+      this.dataSource.hasLoaded.next(true);
+    });
+  }
+
+  private onLogout() {
+    // reset
+    this.userService.clear();
+    this.notebookService.clear();
+    this.annotationService.clear();
+    this.anchorService.clear();
+    this.annotationService.totalChanged$.next(0);
+
+    this.layoutEvent$.next({ type: 'clear' });
   }
 }

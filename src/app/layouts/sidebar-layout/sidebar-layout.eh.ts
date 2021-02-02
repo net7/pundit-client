@@ -149,6 +149,9 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.isCollapsed.next(false);
           this.dataSource.updateAnnotations();
           break;
+        case 'clear':
+          this.dataSource.updateAnnotations(true);
+          break;
         default:
           break;
       }

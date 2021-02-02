@@ -61,6 +61,10 @@ export class UserService {
     }
   }
 
+  clear() {
+    this.users = [];
+  }
+
   private setUserFromMemory() {
     const user = localStorage.getItem('pundit-user');
     const token = localStorage.getItem('pundit-token');

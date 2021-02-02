@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { delay } from 'rxjs/operators';
 import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
@@ -49,7 +50,9 @@ export class ChromeExtService {
   }
 
   private listenAnnotationUpdates() {
-    this.annotationService.totalChanged$.subscribe((number) => {
+    this.annotationService.totalChanged$.pipe(
+      delay(1) // symbolic delay waiting for extension load
+    ).subscribe((number) => {
       // emit signal
       const signal = new CustomEvent('annotationsupdate', { detail: { total: number } });
       window.dispatchEvent(signal);

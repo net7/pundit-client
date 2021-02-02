@@ -56,4 +56,8 @@ export class NotebookService {
   }
 
   getAll = (): NotebookData[] => this.notebooks;
+
+  clear() {
+    this.notebooks = [];
+  }
 }

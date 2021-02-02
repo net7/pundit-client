@@ -77,6 +77,10 @@ export class AnchorService {
     });
   }
 
+  clear() {
+    this.removeAll();
+  }
+
   private createSelectors(annotation: Annotation): SelectorWithType[] {
     if (!annotation || !annotation.subject?.selected) return [];
     const target = annotation.subject.selected;
