@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { User } from '@pundit/communication';
+import { CommunicationSettings, User } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
 import { environment as env } from '../../environments/environment';
 
@@ -31,6 +31,9 @@ export class UserService {
 
   public setToken(token: string) {
     this.token = token;
+
+    // add token to communication
+    CommunicationSettings.token = token;
   }
 
   public getToken = () => this.token;

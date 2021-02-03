@@ -210,19 +210,22 @@ export class MainLayoutEH extends EventHandler {
     this.loginService.onAuth().pipe(
       takeUntil(this.destroy$)
     ).subscribe((val) => {
-      // FIXME: prendere utente defintivo
-      console.warn('FIXME: gestire login', val);
-      this.userService.iam({
-        id: 'rwpfgj6gsp',
-        username: 'johndoe',
-        thumb: 'https://placeimg.com/400/600/people'
-      });
+      if ('error' in val) {
+        const { error } = val;
+        console.warn('Gestire login error', error);
+      } else if ('user' in val) {
+        const { token, user } = val;
+        this.userService.iam({
+          ...user,
+          id: `${user.id}`
+        });
 
-      this.userService.setToken(val.access_token);
+        this.userService.setToken(token.access_token);
 
-      this.userService.login();
-      this.loginService.stop();
-      this.onLogin();
+        this.userService.login();
+        this.loginService.stop();
+        this.onLogin();
+      }
     });
 
     this.userService.logged$.pipe(
@@ -233,7 +236,7 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private handleError(error) {
-    console.warn('TODO: error handler', error);
+    console.warn('FIXME: error handler', error);
   }
 
   private saveAnnotation(payload) {
@@ -281,7 +284,9 @@ export class MainLayoutEH extends EventHandler {
         return EMPTY;
       })
     ).subscribe(({ data: searchData }) => {
-      const { users, annotations } = searchData;
+      const { users, annotations, notebooks } = searchData;
+      // update notebooks
+      this.notebookService.load(notebooks);
       // load order matters
       this.userService.load(users);
       this.annotationService.load(annotations);
