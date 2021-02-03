@@ -24,7 +24,7 @@ export class CommentModalDS extends DataSource {
             header: {
               label: currentNotebook.label,
               icon: {
-                id: 'n7-icon-caret-down',
+                id: 'pundit-icon-angle-down',
               },
               payload: {
                 source: 'notebooks-header'

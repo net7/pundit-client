@@ -146,7 +146,7 @@ export class AnnotationService {
       comment,
       menu: {
         icon: {
-          id: 'n7-icon-angle-down',
+          id: 'pundit-icon-angle-down',
           payload: {
             id,
             source: 'menu-header',

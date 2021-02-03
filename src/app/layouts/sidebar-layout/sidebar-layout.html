@@ -6,7 +6,7 @@
         'notebook-panel-open': (lb.dataSource.notebookEditor | async)
      }">
 
-    <div class="n7-icon-pundit pundit-sidebar__logo"
+    <div class="pundit-icon-pundit pundit-sidebar__logo"
          (click)="lb.eventHandler.emitInner('clicklogo')">
         <img [src]="logo"
              alt="pundit mock logo">
@@ -14,7 +14,7 @@
 
     <div class="pundit-sidebar__user-row">
         <!-- pundit icon inside a circle -->
-        <div class="n7-icon-pundit pundit-sidebar__logo"
+        <div class="pundit-icon-pundit pundit-sidebar__logo"
              (click)="lb.eventHandler.emitInner('clicklogo')">
             <img [src]="logo"
                  alt="pundit mock logo">
@@ -34,19 +34,19 @@
             <a class="pundit-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <a>
-                    <span class="n7-icon-book pundit-sidebar__header-icon"></span>
+                    <span class="pundit-icon-book pundit-sidebar__header-icon"></span>
                 </a>
             </a>
             <a class="pundit-sidebar__logout-button"
                (click)="lb.eventHandler.emitInner('clicklogout')">
                 <a>
-                    <span class="n7-icon-share2 pundit-sidebar__header-icon"></span>
+                    <span class="pundit-icon-signout pundit-sidebar__header-icon"></span>
                 </a>
             </a>
             <a class="pundit-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
                 <a>
-                    <span class="n7-icon-close pundit-sidebar__header-icon"></span>
+                    <span class="pundit-icon-times pundit-sidebar__header-icon"></span>
                 </a>
             </a>
         </div>

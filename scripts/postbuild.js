@@ -19,7 +19,7 @@ if (argv.c === 'chrome-ext') {
   allowedFiles = [
     ...allowedFiles,
     'assets',
-    'n7-icon',
+    'pundit-icon',
     'background.js',
     'content.js',
     'manifest.json',
