@@ -1,0 +1,32 @@
+/**
+ * UTILITIES
+ *
+ * Utilities classes.
+ */
+ 
+/* ------------------------------------ *\
+   #UTILITIES
+\* ------------------------------------ */
+.pnd-text {
+    color: $color-text;
+    font-size: $font-size-s;
+    font-weight: $font-weight-normal;
+}
+
+.pnd-text-small {
+    color: $color-text-light;
+    font-size: $font-size-xs;
+    font-weight: $font-weight-normal;
+}
+
+.pnd-label {
+    color: $color-text-light;
+    font-size: $font-size-s;
+    font-weight: $font-weight-normal;
+}
+
+.pnd-value {
+    color: $color-text-light;
+    font-size: $font-size-s;
+    font-weight: $font-weight-normal;
+}

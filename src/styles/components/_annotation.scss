@@ -18,6 +18,13 @@
     transition: box-shadow $transition-durations;
 }
 
+annotation {
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    visibility: hidden;
+}
+
 
 /* ------------------------------------ *\
    #ANNOTATION-HEADER

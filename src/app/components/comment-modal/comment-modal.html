@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="pnd-comment-modal__actions">
-                    <a *ngFor="let action of data.form.actions" class="n7-btn {{ action.classes || '' }}" 
+                    <a *ngFor="let action of data.form.actions" class="pnd-btn {{ action.classes || '' }}" 
                     (click)="onClick($event, action.payload)">
                         {{ action.label }}
                     </a>

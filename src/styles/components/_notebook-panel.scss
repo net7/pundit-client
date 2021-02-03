@@ -1,38 +1,102 @@
-.notebook-panel {
+/**
+ * NOTEBOOK PANEL
+ *
+ * Panel to select the current notebook and change status (public, private, shared)
+ */
+ 
+/* ------------------------------------ *\
+   #NOTEBOOK-PANEL
+\* ------------------------------------ */
+.pnd-notebook-panel {
+    position: fixed;
+    box-sizing: border-box;
+    top: 56px;
+    right: 0;
+    padding: $space*2;
+    width: $sidebar-exploded-width;
+    z-index: 2;
     background-color: $color-background-base;
-    padding: 2 * $space;
     color: $color-text;
-
-    &__label {
-        font-size: $font-size-s;
+    border-bottom: 1px solid $color-border-normal;
+    @include cardShadow-1;
+    
+    /* Sections */
+    &__section:not(:last-child) {
+        margin-bottom: $space*1.5;
+        padding-bottom: $space*2;
+        border-bottom: 1px solid $color-border-normal;
     }
 
-    &__name {
-        background-color: $color-background-medium;
-        padding: $space;
+    /* Current notebook name */
+    &__current-notebook-name {
+        display: inline-block;
+        // padding: $space/2 $space;
         font-weight: $font-weight-bold;
+        font-size: $font-size-s;
         border-radius: $border-radius;
+        // background-color: $color-background-medium;
     }
 
-    &__current-status {
-        font-weight: $font-weight-bold;
-        margin: $space auto;
-    }
-
-    &__status-description {
-        color: $color-text-light;
-        font-size: $font-size-s;
-    }
-
-    &__separator {
+    /* Utilities */
+    .pnd-text {
         margin-bottom: $space;
+    }
+
+    /* Status */
+    &__current-notebook-status {
+        display: inline-block;
+        margin-bottom: $space;
+        // padding: $space/2 $space;
+        font-weight: $font-weight-bold;
+        font-size: $font-size-s;
+        border-radius: $border-radius;
+        // background-color: $color-background-medium;
+    }
+    
+    /* Change status */
+    &__change-status {
+        .pnd-btn {
+            margin-right: $space/2;
+        }
+    }
+
+
+    /* Notebook selection */
+    &__select-cont {
+        select {
+            appearance: none;
+            background-color: transparent;
+            border: 0;
+            margin: 0;
+            width: 100%;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: inherit;
+            line-height: inherit;
+            outline: none;
+        }
+        border: 1px solid $color-gray-03;
+        background-color: $color-gray-02;
+        border-radius: 3px;
+        display: flex;
+        position: relative;
+
+        &::after {
+            content: "\e900";
+            font-family: "pundit-icon-font";
+            position: absolute;
+            padding: 0px 4px;
+            right: 0px;
+            top: 0px;
+            display: flex;
+            height: 100%;
+            background: $color-gray-02;
+            align-items: center;
+            border-left: 1px solid $color-gray-03;
+        }
     }
 
     &__select {
         background-color: $color-background-light;
-    }
-
-    .n7-btn {
-        margin: $space $space auto auto;
     }
 }

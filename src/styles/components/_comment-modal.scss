@@ -50,7 +50,7 @@
         text-align: right;
         font-weight: $font-weight-normal;
 
-        .n7-btn {
+        .pnd-btn {
             margin-left: $space;
             padding: 0 1.5 * $space;
         }
@@ -123,7 +123,7 @@
         position: relative;
 
         &::after {
-            content: "\e908";
+            content: "\e900";
             font-family: "pundit-icon-font";
             position: absolute;
             padding: 0px 4px;
