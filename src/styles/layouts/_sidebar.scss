@@ -1,4 +1,11 @@
-.pundit-sidebar {
+/**
+ * SIDEBAR
+ *
+ * Style for the whole sidebar.
+ */
+
+
+.pnd-sidebar {
     font-family: $font-family-main;
 
     &__cont {
@@ -209,10 +216,10 @@ n7-annotation {
     visibility: hidden;
 }
 
+
 /* ------------------------------------ *\
     ANIMATIONS
 \* ------------------------------------ */
-
 @keyframes collapsing {
     0% {
         // sidebar is open and visible
