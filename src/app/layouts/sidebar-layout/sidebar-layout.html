@@ -3,62 +3,53 @@
      [ngClass]="{
         'is-collapsed': (ds.isCollapsed | async),
         'is-expanded': !(ds.isCollapsed | async),
-        'notebook-panel-open': (lb.dataSource.notebookEditor | async)
-     }">
-
+        'has-notebook-panel-open': (lb.dataSource.notebookEditor | async)
+    }">
+    
+    <!-- Pundit Logo toggle -->
     <div class="pundit-icon-pundit pnd-sidebar__logo"
          (click)="lb.eventHandler.emitInner('clicklogo')">
-        <img [src]="logo"
-             alt="pundit mock logo">
     </div>
+    <!-- END // Pundit Logo toggle -->
 
-    <div class="pnd-sidebar__user-row">
-        <!-- pundit icon inside a circle -->
-        <div class="pundit-icon-pundit pnd-sidebar__logo"
-             (click)="lb.eventHandler.emitInner('clicklogo')">
-            <img [src]="logo"
-                 alt="pundit mock logo">
-        </div>
-        <!-- user name -->
+    <!-- Header -->
+    <div class="pnd-sidebar__header">
         <div class="pnd-sidebar__user-name">
             <ng-container *ngIf="!(ds.userService.logged$ | async)">
                 <a (click)="lb.eventHandler.emitInner('requestlogin')">Login</a>
             </ng-container>
             <ng-container *ngIf="ds.userService.logged$ | async"> 
-                <a (click)="lb.eventHandler.emitInner('clickusername')">
+                <a (click)="lb.eventHandler.emitInner('clickusername')"
+                   class="pnd-sidebar__user-name-link">
                     {{ ds.userService.whoami().username }}
                 </a>
             </ng-container>
         </div>
         <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
-            <a class="pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'active' : ''}}"
+            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
-                <a>
-                    <span class="pundit-icon-book pnd-sidebar__header-icon"></span>
-                </a>
+                <span class="pundit-icon-book"></span>
             </a>
-            <a class="pnd-sidebar__logout-button"
+            <a class="pnd-sidebar__action pnd-sidebar__logout-button"
                (click)="lb.eventHandler.emitInner('clicklogout')">
-                <a>
-                    <span class="pundit-icon-signout pnd-sidebar__header-icon"></span>
-                </a>
+                <span class="pundit-icon-signout"></span>
             </a>
-            <a class="pnd-sidebar__close-button"
+            <a class="pnd-sidebar__action pnd-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <a>
-                    <span class="pundit-icon-times pnd-sidebar__header-icon"></span>
-                </a>
+                <span class="pundit-icon-times"></span>
             </a>
         </div>
     </div>
+    <!-- END // Header -->
 
-    <!-- notebook selection / creation panel -->
+    <!-- Notebook popover -->
     <ng-container *ngIf="lb.dataSource.notebookEditor.getValue()">
         <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
     </ng-container>
+    <!-- END // Notebook popover -->
 
-
-    <div class="pnd-sidebar__cont"
+    <!-- Sidebar content -->
+    <div class="pnd-sidebar__content"
          [style.height]="ds.height$ | async">
         <div class="pnd-sidebar__annotation-column">
             <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
@@ -69,6 +60,7 @@
             </ng-container>
         </div>
     </div>
+    <!-- END //Sidebar content -->
 </div>
 
 
