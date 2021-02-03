@@ -6,7 +6,6 @@ import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { LayoutEvent } from 'src/app/types';
-import { _c } from 'src/app/models/config';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
@@ -35,10 +34,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
   ) {
     super(config);
 
-    this.logo = '/assets/mocks/pundit-icon-48-light.png';
-    if (_c('chromeExt')) {
-      this.logo = this.sanitizer.bypassSecurityTrustResourceUrl(`${_c('chromeExtUrl')}${this.logo}`);
-    }
+    this.logo = 'https://static.thepund.it/assets/mocks/pundit-icon-48-light.png';
   }
 
   protected initPayload() {

@@ -24,22 +24,12 @@ export class ChromeExtService {
           this.userService.setToken(token);
           this.userService.logged$.next(true);
         }
-        this.addFontStyles();
         this.listenExtensionEvents();
         this.listenAnnotationUpdates();
         this.listenLoginEvents();
         res();
       }, false);
     });
-  }
-
-  private addFontStyles() {
-    const chromeExtUrl = config.get('chromeExtUrl');
-
-    // add style to document
-    const style = document.createElement('style');
-    style.innerHTML = `@import "${chromeExtUrl}/n7-icon/style.css";`;
-    document.head.appendChild(style);
   }
 
   private listenExtensionEvents() {
