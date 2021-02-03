@@ -57,10 +57,10 @@
                   (click)="onClick($event, data.menu.icon['payload'])">
             </button>
 
-            <div class="pnd-annotation__menu-dropdown">
+            <div class="pnd-annotation__menu-dropdown"
+                *ngIf="data.activeMenu === 'actions'">
                 <!-- menu actions -->
-                <div class="pnd-annotation__menu-actions"
-                     *ngIf="data.activeMenu === 'actions'">
+                <div class="pnd-annotation__menu-actions">
                     <div *ngFor="let action of data.menu.actions"
                          (click)="onClick($event, action.payload)"
                          class="pnd-annotation__menu-action">

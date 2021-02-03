@@ -13,7 +13,7 @@
                         {{ data.header.label }}
                     </div>
                     <div class="pnd-comment-modal__close">
-                        <a class="pnd-comment-modal__close-link n7-icon-close" (click)="onClose()"></a>
+                        <a class="pnd-comment-modal__close-link pundit-icon-times" (click)="onClose()"></a>
                     </div>
                 </div>
                 <div class="pnd-comment-modal__comment">
@@ -36,7 +36,7 @@
                     </div>
                 </div>
                 <div class="pnd-comment-modal__actions">
-                    <a *ngFor="let action of data.form.actions" class="n7-btn {{ action.classes || '' }}" 
+                    <a *ngFor="let action of data.form.actions" class="pnd-btn {{ action.classes || '' }}" 
                     (click)="onClick($event, action.payload)">
                         {{ action.label }}
                     </a>

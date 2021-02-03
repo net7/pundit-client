@@ -1,42 +1,44 @@
-<div class="notebook-panel"
+<div class="pnd-notebook-panel"
      *ngIf="data && data.selected.sharingMode as currentSharingMode">
-    <div class="notebook-panel__row n7-grid-1">
-        <div class="notebook-panel__label">Current notebook:</div>
-        <div class="notebook-panel__name">
-            <span class="notebook-panel__sharingMode {{ data.icons[currentSharingMode] }}"></span>
+    
+    <section class="pnd-notebook-panel__section">
+        <div class="pnd-notebook-panel__label pnd-text">Current notebook:</div>
+        <div class="pnd-notebook-panel__current-notebook-name">
+            <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}"></span>
             {{data.selected.label}}
         </div>
-    </div>
-    <div class="notebook-panel__row n7-grid-2">
-        <div class="notebook-panel__status">
-            <div class="notebook-panel__label">Notebook status:</div>
-            <div class="notebook-panel__current-status">{{currentSharingMode.toUpperCase()}}</div>
-            <div class="notebook-panel__status-description">
+    </section>
+    
+    <section class="pnd-notebook-panel__section pnd-grid-2">
+        <div class="pnd-notebook-panel__status">
+            <div class="pnd-notebook-panel__label pnd-text">Notebook status:</div>
+            <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
+            <div class="pnd-notebook-panel__status-description pnd-text-small">
                 {{ data.descriptions[currentSharingMode] }}
             </div>
         </div>
-        <div class="notebook-panel__change-status">
-            <div class="notebook-panel__label">Change status:</div>
-            <div class="notebook-panel__buttons">
+        <div class="pnd-notebook-panel__change-status">
+            <div class="pnd-notebook-panel__label pnd-text">Change status:</div>
+            <div class="pnd-notebook-panel__buttons">
                 <button (click)="onClick('public', data.selected)"
-                        class="n7-btn"
+                        class="pnd-btn"
                         *ngIf="data.selected.sharingMode !== 'public'">Public</button>
                 <button (click)="onClick('private', data.selected)"
-                        class="n7-btn"
+                        class="pnd-btn"
                         *ngIf="data.selected.sharingMode !== 'private'">Private</button>
                 <button (click)="onClick('shared', data.selected)"
-                        class="n7-btn"
+                        class="pnd-btn"
                         *ngIf="data.selected.sharingMode !== 'shared'"
                         disabled
                         title="Coming soon!">Share</button>
             </div>
         </div>
-    </div>
-    <hr class="notebook-panel__separator">
-    <div class="notebook-panel__row n7-grid-1">
-        <div class="notebook-panel__label">Change current notebook</div>
-        <div class="notebook-panel__select-cont">
-            <select class="notebook-panel__select"
+    </section>
+    
+    <section class="pnd-notebook-panel__section">
+        <div class="pnd-notebook-panel__label pnd-text">Change current notebook</div>
+        <div class="pnd-notebook-panel__select-cont">
+            <select class="pnd-notebook-panel__select"
                     name="current-notebook"
                     id="current-notebook"
                     (change)="onChange($event.target.value)">
@@ -46,5 +48,5 @@
                 </ng-container>
             </select>
         </div>
-    </div>
+    </section>
 </div>

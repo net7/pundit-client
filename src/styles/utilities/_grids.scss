@@ -1,0 +1,28 @@
+/**
+ * GRIDS
+ *
+ * Helper class to display items feed in grids.
+ * Apply the class to the container of the griddable elements (like cards). Direct
+ * descendants will be gridded.
+ */
+
+/* ------------------------------------ *\
+   #GRIDS
+\* ------------------------------------ */
+/* General grid setting */
+[class*="pnd-grid-"],
+[class^="pnd-grid-"] {
+    display: grid;
+    grid-column-gap: $grid-gutter-h;
+    grid-row-gap: $grid-gutter-v;
+}
+
+/* 2 */
+.pnd-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+/* 1 */
+.pnd-grid-1 {
+    grid-template-columns: repeat(1, 1fr);
+}

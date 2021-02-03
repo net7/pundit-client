@@ -24,7 +24,7 @@
   "web_accessible_resources": [
     "pundit.chrome-ext.js",
     "assets/mocks/pundit-icon-48-light.png",
-    "n7-icon/*"
+    "pundit-icon/*"
   ],
   "permissions": ["activeTab", "storage"]
 }

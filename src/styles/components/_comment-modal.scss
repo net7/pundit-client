@@ -50,16 +50,15 @@
         text-align: right;
         font-weight: $font-weight-normal;
 
-        .n7-btn {
+        .pnd-btn {
             margin-left: $space;
             padding: 0 1.5 * $space;
         }
 
         .primary {
-            color: $color-text-inverse;
-            background: $gradient;
-            font-size: $font-size-s;
-            font-weight: $font-weight-normal;
+            // color: $color-text-inverse;
+            // font-size: $font-size-s;
+            // font-weight: $font-weight-normal;
         }
     }
 }
@@ -124,8 +123,8 @@
         position: relative;
 
         &::after {
-            content: "\e908";
-            font-family: "n7-icon";
+            content: "\e900";
+            font-family: "pundit-icon-font";
             position: absolute;
             padding: 0px 4px;
             right: 0px;
