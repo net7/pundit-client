@@ -94,7 +94,18 @@ annotation {
 
     /* Dropdown */
     &__header-menu {
+        position: relative;
+    }
 
+    &__menu-dropdown {
+        position: absolute;
+        z-index: 2;
+        right: 0;
+        width: 130px;
+        padding: $space;
+        background-color: $color-background-base;
+        border: 1px solid $color-border-normal;
+        border-radius: $border-radius;
     }
 
     &__header-menu-button {
@@ -251,6 +262,7 @@ annotation {
 .pnd-sidebar.is-collapsed {
     .pnd-annotation {
         height: $annotation-collapsed-height;
+        width: $sidebar-collapsed-width - 6px;
         cursor: pointer;
 
         &__highlight {
@@ -260,9 +272,12 @@ annotation {
             bottom: 1px;
             left: 1px;
             right: 1px;
+            max-width: none;
+            padding: 0;
             background-color: $color-highlight;
         }
 
+        &__header,
         &__highlight-text,
         &__comment,
         &__notebook {
