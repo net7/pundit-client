@@ -51,14 +51,12 @@
     <!-- Sidebar content -->
     <div class="pnd-sidebar__content"
          [style.height]="ds.height$ | async">
-        <div class="pnd-sidebar__annotation-column">
-            <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
-                <annotation [ngClass]="annotation"
-                            [data]="annotation"
-                            [emit]="lb.widgets['annotation'].emit">
-                </annotation>
-            </ng-container>
-        </div>
+         <ng-container *ngFor="let annotation of lb.widgets['annotation'].ds.out$ | async">
+            <annotation [ngClass]="annotation"
+                        [data]="annotation"
+                        [emit]="lb.widgets['annotation'].emit">
+            </annotation>
+        </ng-container>
     </div>
     <!-- END //Sidebar content -->
 </div>

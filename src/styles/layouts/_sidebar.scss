@@ -11,20 +11,12 @@
     z-index: $z-index-sidebar;
     font-family: $font-family-main;
 
-    &__annotation-column {
-        overflow: hidden;
-    }
-
     &.is-expanded {
         .n7-annotation__container.is-hovered {
             .n7-annotation__body {
                 background: rgba(46, 230, 230, 0.4);
             }
         }
-    }
-
-    &__close-button {
-        cursor: pointer;
     }
 }
 
@@ -71,32 +63,6 @@
             border-left: 1px solid $color-gray-03;
         }
     }
-}
-
-.n7-icon-arrow-right {
-    background: #ff7f50;
-    border-radius: 50%;
-    min-height: 10px;
-    min-width: 10px;
-    cursor: pointer;
-}
-
-.n7-annotation__container {
-    margin: $space $space;
-    padding: $space;
-    background: #ffffff;
-    border-radius: $space/2;
-    border: 1px solid #dbdfe3;
-    border-bottom-width: 4px;
-}
-
-.annotation,
-annotation,
-n7-annotation {
-    position: absolute;
-    width: 100%;
-    box-sizing: border-box;
-    visibility: hidden;
 }
 
 
@@ -229,7 +195,7 @@ n7-annotation {
 
         &.is-active {
             color: $color-text-link;
-            border-bottom: 1px solid  #2e5bff;
+            border-bottom: 1px solid $color-main;
         }
     }
 }
@@ -240,14 +206,14 @@ n7-annotation {
 \* ------------------------------------ */
 .pnd-sidebar {
     &__content {
-        border-left: #dbdfe3 1px solid;
-        background: #f7f7f7;
         position: absolute;
+        border-left: 1px solid $color-border-normal;
         right: 0px;
         top: 0px;
-        z-index: 1;
-        height: 100vh;
         width: $sidebar-exploded-width;
+        height: 100vh;
+        background-color: $color-background-light;
+        z-index: 1;
         transition: all $transition-durations*1.5 ease-out;
     }
 
@@ -267,6 +233,7 @@ n7-annotation {
 /* ------------------------------------ *\
     ANIMATIONS
 \* ------------------------------------ */
+/*
 @keyframes collapsing {
     0% {
         // sidebar is open and visible
@@ -295,3 +262,4 @@ n7-annotation {
         visibility: visible;
     }
 }
+*/
