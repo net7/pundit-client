@@ -9,6 +9,9 @@ type UserData = {
   thumb: string;
 }
 
+const USER_KEY = 'pundit-user';
+const TOKEN_KEY = 'pundit-token';
+
 @Injectable()
 export class UserService {
   private me: UserData;
@@ -69,8 +72,8 @@ export class UserService {
   }
 
   private setUserFromMemory() {
-    const user = localStorage.getItem('pundit-user');
-    const token = localStorage.getItem('pundit-token');
+    const user = localStorage.getItem(USER_KEY);
+    const token = localStorage.getItem(TOKEN_KEY);
     if (user && token) {
       this.iam(JSON.parse(user));
       this.setToken(token);
@@ -79,12 +82,12 @@ export class UserService {
   }
 
   private saveUserInMemory() {
-    localStorage.setItem('pundit-user', JSON.stringify(this.whoami()));
-    localStorage.setItem('pundit-token', this.getToken());
+    localStorage.setItem(USER_KEY, JSON.stringify(this.whoami()));
+    localStorage.setItem(TOKEN_KEY, this.getToken());
   }
 
   private removeUserFromMemory() {
-    localStorage.removeItem('pundit-user');
-    localStorage.removeItem('pundit-token');
+    localStorage.removeItem(USER_KEY);
+    localStorage.removeItem(TOKEN_KEY);
   }
 }

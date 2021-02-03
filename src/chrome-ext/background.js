@@ -2,6 +2,7 @@
 const ACTIVE_KEY = 'active';
 const USER_KEY = 'pundit-user';
 const TOKEN_KEY = 'pundit-token';
+const SELECTED_NOTEBOOK_KEY = 'pundit-notebook';
 const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
 const BADGE_COLOR_ON = [13, 133, 236, 255];
@@ -87,12 +88,16 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
         text: payload ? '' + payload : null
       });
       break;
+    case 'notebooksupdate':
+      saveSelectedNotebookInMemory(payload);
+      break;
     case 'userlogged':
       const { isLogged, user, token } = payload;
       if (isLogged) {
         saveUserInMemory(user, token);
       } else {
         removeUserFromMemory();
+        removeSelectedNotebookFromMemory();
       }
       break;
     default:
@@ -102,13 +107,14 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
 
 function onChange(tabId) {
   const key = `${ACTIVE_KEY}.${tabId}`;
-  Storage.getMulti([key, USER_KEY, TOKEN_KEY])
+  Storage.getMulti([key, USER_KEY, TOKEN_KEY, SELECTED_NOTEBOOK_KEY])
     .then((values) => {
       const isActive = values[key];
       const user = values[USER_KEY];
       const token = values[TOKEN_KEY];
+      const notebookId = values[SELECTED_NOTEBOOK_KEY];
       chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
-        isActive, user, token
+        isActive, user, token, notebookId
       }});
       updateExtensionIcon(isActive);
     })
@@ -122,4 +128,12 @@ function saveUserInMemory(user, token) {
 function removeUserFromMemory() {
   Storage.remove(USER_KEY);
   Storage.remove(TOKEN_KEY);
+}
+
+function saveSelectedNotebookInMemory(selectedId) {
+  Storage.set(SELECTED_NOTEBOOK_KEY, selectedId);
+}
+
+function removeSelectedNotebookFromMemory() {
+  Storage.remove(SELECTED_NOTEBOOK_KEY);
 }

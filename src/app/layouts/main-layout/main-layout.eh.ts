@@ -272,10 +272,12 @@ export class MainLayoutEH extends EventHandler {
     this.dataSource.getUserNotebooks().pipe(
       switchMap(({ data: notebooksData }) => {
         const { notebooks } = notebooksData;
-        // first notebook as default
-        const { id } = notebooks[0];
         this.notebookService.load(notebooks);
-        this.notebookService.setSelected(id);
+        if (!this.notebookService.getSelected()) {
+          // first notebook as default
+          const { id } = notebooks[0];
+          this.notebookService.setSelected(id);
+        }
 
         return this.dataSource.getUserAnnotations();
       }),

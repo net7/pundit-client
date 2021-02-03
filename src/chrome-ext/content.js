@@ -6,9 +6,9 @@ let badgeIntervalCount = 0;
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   switch(type) {
     case 'statechanged': {
-      const { isActive, user, token } = payload;
+      const { isActive, user, token, notebookId } = payload;
       if (isActive) {
-        load(user, token);
+        load(user, token, notebookId);
       } else {
         destroy();
       }
@@ -19,7 +19,7 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
   }
 });
 
-function load(user, token) {
+function load(user, token, notebookId) {
   if (appRoot) return;
 
   appRoot = document.createElement("pnd-root");
@@ -34,6 +34,7 @@ function load(user, token) {
       detail: { 
         user,
         token,
+        notebookId,
         id: chrome.runtime.id 
       }
     });
@@ -46,6 +47,8 @@ function load(user, token) {
 
     // listen to annotation updates
     window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
+    // listen to notebook updates
+    window.addEventListener('notebooksupdate', onNotebookUpdate, false);
     // listen login events
     window.addEventListener('userlogged', onUserLogged, false);
     main.remove();
@@ -55,12 +58,15 @@ function load(user, token) {
 function destroy() {
   if (!appRoot) return;
   
-  // remove annotation listener
+  // remove listeners
   window.removeEventListener('annotationsupdate', onAnnotationUpdate);
+  window.removeEventListener('notebooksupdate', onNotebookUpdate);
+  window.removeEventListener('userlogged', onUserLogged);
 
   // emit signal
   const signal = new CustomEvent("punditdestroy");
   window.dispatchEvent(signal);
+
   // clear
   clearInterval(badgeInterval);
   badgeIntervalCount = 0;
@@ -90,6 +96,14 @@ function onAnnotationUpdate(ev) {
 
   // clear loader
   clearInterval(badgeInterval);
+}
+
+function onNotebookUpdate(ev) {
+  const { selectedId } = ev.detail;
+  chrome.runtime.sendMessage({
+    type: 'notebooksupdate',
+    payload: selectedId
+  });
 }
 
 function onUserLogged(ev) {
