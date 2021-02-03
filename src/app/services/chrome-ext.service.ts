@@ -50,6 +50,7 @@ export class ChromeExtService {
   }
 
   private listenLoginEvents() {
+    // from host
     this.userService.logged$.subscribe((isLogged) => {
       // emit signal
       const signal = new CustomEvent('userlogged', {
@@ -62,7 +63,7 @@ export class ChromeExtService {
       window.dispatchEvent(signal);
     });
 
-    // login from memory
+    // from extension
     window.addEventListener('punditlogin', (ev: CustomEvent) => {
       const { user, token } = ev.detail;
       this.userService.iam(user);
