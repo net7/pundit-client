@@ -1,33 +1,33 @@
 <ng-container *ngIf="data">
     <div class="notebook-panel__select-cont">
-        <select *ngIf="data.mode === 'select'"
+        <ul *ngIf="data.mode === 'select'"
                 class="notebook-panel__select"
                 name="current-notebook"
-                id="current-notebook"
-                (change)="onChange($event.target.value)">
+                id="current-notebook">
 
             <!-- list of selectable notebooks -->
             <ng-container *ngFor="let notebook of data.notebookList">
-                <option [value]="notebook.id"
-                        [selected]="notebook.id === data.selectedNotebook">
+                <li (click)="onClick('option', notebook.id)"
+                        [class]="notebook.id === data.selectedNotebook ? 'selected' : ''">
                     {{ notebook.label }}
-                </option>
+                </li>
             </ng-container>
 
             <!-- create new notebook option -->
             <ng-container *ngIf="data.createOption as create">
-                <option [value]="create.value">
+                <li (click)="onInputMode()">
                     {{ create.label }}
-                </option>
+                </li>
             </ng-container>
-        </select>
+        </ul>
 
         <!-- creating a new notebook -->
         <input *ngIf="data.mode === 'input'"
                type="text"
-               name="new-notebook">
+               name="new-notebook"
+               (input)="onInput($event.target.value)">
         <button class="pnd-btn"
-                (click)="onClick('create', {})">
+                (click)="onCreation(data._meta.inputValue)">
             Create
         </button>
     </div>

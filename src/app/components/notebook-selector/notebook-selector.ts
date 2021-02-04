@@ -26,8 +26,9 @@ export interface NotebookSelectorData {
     /** Label to display as an option */
     label: string;
   };
-
   mode: 'select' | 'input';
+  /** Internal data */
+  _meta?: any;
 }
 
 @Component({
@@ -46,11 +47,42 @@ export class NotebookSelectorComponent {
 
   onClick(type, payload) {
     if (!this.emit) return;
-    this.emit('click', { ...payload, type });
+
+    if (payload === 'createmode') {
+      this.data.mode = 'input';
+      return;
+    } if (payload === 'createnotebook') {
+      this.data.mode = 'select';
+    }
+
+    this.emit(type, payload);
   }
 
-  onChange(payload) {
+  /**
+   * When pressing the "create new notebook" button.
+   */
+  onInputMode() {
+    this.data.mode = 'input';
+  }
+
+  /**
+   * When pressing the "save new notebook" button.
+   * @param payload Label of the newly created notebook.
+   */
+  onCreation(payload) {
     if (!this.emit) return;
-    this.emit('change', payload);
+    this.data.mode = 'select';
+    this.emit('createnotebook', payload);
+  }
+
+  /**
+   * When typing the new name of the notebook
+   * @param payload Name of the new notebook
+   */
+  onInput(payload) {
+    if (!this.data._meta) {
+      this.data._meta = {};
+    }
+    this.data._meta.inputValue = payload;
   }
 }

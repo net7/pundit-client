@@ -6,6 +6,7 @@ export interface NotebookPanelData {
   list: NotebookData[];
   descriptions: string;
   icons: string;
+  _meta?: any;
 }
 
 @Component({
@@ -19,13 +20,14 @@ export class NotebookPanelComponent {
 
   constructor(
     private ref: ChangeDetectorRef
-  ) {
-    // fix update out of pnd-root context
-    // tooltipHandler.changed$.pipe(
-    //   delay(1)
-    // ).subscribe(() => {
-    //   this.ref.detectChanges();
-    // });
+  ) {}
+
+  /**
+   * Event emitter for the internal notebook-selector component
+   */
+  onNotebookSelection = (type, payload) => {
+    if (!this.emit) return;
+    this.emit(type, payload);
   }
 
   onClick(type, payload) {
