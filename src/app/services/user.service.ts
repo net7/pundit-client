@@ -29,9 +29,8 @@ export class UserService {
   }
 
   public iam({ id, username, thumb }: UserData) {
-    this.me = { id, username, thumb };
-
-    this.add(this.me);
+    this.add({ id, username, thumb });
+    this.me = this.getUserById(id);
   }
 
   public setToken(token: string) {
@@ -47,7 +46,11 @@ export class UserService {
 
   load(rawUsers: User[]) {
     rawUsers.forEach(({ id, username, thumb }) => {
-      this.add({ id, username, thumb });
+      this.add({
+        id,
+        username,
+        thumb: thumb || 'https://static.thepund.it/assets/img/user-thumb-default.png'
+      });
     });
   }
 
