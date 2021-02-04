@@ -236,6 +236,16 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private handleError(error) {
+    const { status } = error.response;
+    switch (status) {
+      // Unauthorized
+      case 401:
+        this.userService.logout();
+        break;
+      default:
+        // TODO
+        break;
+    }
     console.warn('FIXME: error handler', error);
   }
 
