@@ -240,7 +240,7 @@ export class MainLayoutEH extends EventHandler {
     switch (status) {
       // Unauthorized
       case 401:
-        this.userService.logout();
+        this.layoutEvent$.next({ type: 'logout' });
         break;
       default:
         // TODO
