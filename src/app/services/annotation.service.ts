@@ -103,11 +103,13 @@ export class AnnotationService {
       created
     } = annotation;
     // FIXME: togliere controllo user
+    const currentUser = this.userService.whoami();
     const user = this.userService.getUserById(userId) || {} as any;
     const notebook = this.notebookService.getNotebookById(notebookId);
     const notebooks = this.notebookService.getAll();
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
+    const hasMenu = currentUser.id === user.id;
     let comment;
     if (annotation.type === 'Commenting') {
       const { content } = annotation;
@@ -144,7 +146,7 @@ export class AnnotationService {
       },
       body: text,
       comment,
-      menu: {
+      menu: hasMenu ? {
         icon: {
           id: 'pundit-icon-ellipsis-v',
           payload: {
@@ -183,7 +185,7 @@ export class AnnotationService {
               }
             }))
         }
-      },
+      } : null,
     };
   }
 
