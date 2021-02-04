@@ -8,15 +8,26 @@
    #GENERAL-SIDEBAR
 \* ------------------------------------ */
 .pnd-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    overflow: hidden;
     z-index: $z-index-sidebar;
     font-family: $font-family-main;
 
     &.is-expanded {
+        width: $sidebar-exploded-width + 1;
+
         .n7-annotation__container.is-hovered {
             .n7-annotation__body {
                 background: rgba(46, 230, 230, 0.4);
             }
         }
+    }
+
+    &.is-collapsed {
+        width: $sidebar-collapsed-width + 1;
     }
 }
 
