@@ -106,7 +106,7 @@ export class AnnotationService {
     const currentUser = this.userService.whoami();
     const user = this.userService.getUserById(userId) || {} as any;
     const notebook = this.notebookService.getNotebookById(notebookId);
-    const notebooks = this.notebookService.getAll();
+    const notebooks = this.notebookService.getByUserId(currentUser.id);
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
     const hasMenu = currentUser.id === user.id;

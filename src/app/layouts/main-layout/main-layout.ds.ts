@@ -52,7 +52,7 @@ export class MainLayoutDS extends LayoutDataSource {
     selectionHandler.clearSelection();
     tooltipHandler.hide();
     const currentNotebook = this.notebookService.getSelected();
-    const notebooks = this.notebookService.getAll();
+    const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
     this.one('comment-modal').update({ selected, currentNotebook, notebooks });
   }
 

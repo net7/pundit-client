@@ -111,9 +111,18 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case 'notebook-panel.editsharingmode': {
           const {
-            id, label, sharingMode, type: newSharingMode
+            id,
+            label,
+            sharingMode,
+            userId,
+            type: newSharingMode
           } = payload;
-          this.handleNotebookUpdate({ id, label, sharingMode }, { sharingMode: newSharingMode });
+          this.handleNotebookUpdate({
+            id,
+            label,
+            sharingMode,
+            userId
+          }, { sharingMode: newSharingMode });
         } break;
         default:
           break;
@@ -128,6 +137,7 @@ export class SidebarLayoutEH extends EventHandler {
       switch (type) {
         case 'searchresponse':
           this.dataSource.updateAnnotations(true);
+          this.dataSource.updateNotebookPanel();
           break;
         case 'annotationdeletesuccess':
           this.annotationService.remove(payload);
@@ -177,7 +187,8 @@ export class SidebarLayoutEH extends EventHandler {
   private listenIsCollapse() {
     this.dataSource.isCollapsed
       .pipe(
-        withLatestFrom(this.dataSource.notebookEditor)
+        withLatestFrom(this.dataSource.notebookEditor),
+        takeUntil(this.destroy$)
       )
       .subscribe(([isCollapsed, notebookOpen]) => {
         if (isCollapsed && notebookOpen) {

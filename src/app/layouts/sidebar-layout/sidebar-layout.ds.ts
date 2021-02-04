@@ -28,9 +28,12 @@ export class SidebarLayoutDS extends LayoutDataSource {
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;
     this.userService = payload.userService;
+  }
+
+  updateNotebookPanel() {
     this.one('notebook-panel').update({
       selected: this.notebookService.getSelected(),
-      list: this.notebookService.getAll()
+      list: this.notebookService.getByUserId(this.userService.whoami().id)
     });
   }
 

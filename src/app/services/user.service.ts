@@ -30,6 +30,8 @@ export class UserService {
 
   public iam({ id, username, thumb }: UserData) {
     this.me = { id, username, thumb };
+
+    this.add(this.me);
   }
 
   public setToken(token: string) {
@@ -44,7 +46,15 @@ export class UserService {
   public whoami = () => this.me;
 
   load(rawUsers: User[]) {
-    this.users = rawUsers.map(({ id, username, thumb }) => ({ id, username, thumb }));
+    rawUsers.forEach(({ id, username, thumb }) => {
+      this.add({ id, username, thumb });
+    });
+  }
+
+  add(user: UserData) {
+    if (!this.getUserById(user.id)) {
+      this.users.push(user);
+    }
   }
 
   getUserById(userId: string): UserData | null {

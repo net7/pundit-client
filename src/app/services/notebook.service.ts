@@ -7,6 +7,7 @@ export type NotebookData = {
   id: string;
   label: string;
   sharingMode: string;
+  userId: string;
 }
 
 export type NotebookUpdate = {
@@ -65,13 +66,21 @@ export class NotebookService {
 
   add(rawNotebook: Notebook) {
     if (!this.getNotebookById(rawNotebook.id)) {
-      const { id, label, sharingMode } = rawNotebook;
-      this.notebooks.push({ id, label, sharingMode });
+      const {
+        id, label, sharingMode, userId
+      } = rawNotebook;
+      this.notebooks.push({
+        id, label, sharingMode, userId
+      });
     }
   }
 
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
+  }
+
+  getByUserId(id: string): NotebookData[] {
+    return this.notebooks.filter(({ userId }) => userId === id);
   }
 
   getAll = (): NotebookData[] => this.notebooks;
