@@ -10,7 +10,7 @@
             <ng-container *ngFor="let notebook of data.notebookList">
                 <option [value]="notebook.id"
                         [selected]="notebook.id === data.selectedNotebook">
-                    {{ option.label }}
+                    {{ notebook.label }}
                 </option>
             </ng-container>
 
@@ -27,7 +27,7 @@
                type="text"
                name="new-notebook">
         <button class="pnd-btn"
-                (click)="onClick('create')">
+                (click)="onClick('create', {})">
             Create
         </button>
     </div>
