@@ -8,11 +8,6 @@
    #GENERAL-SIDEBAR
 \* ------------------------------------ */
 .pnd-sidebar {
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    overflow: hidden;
     z-index: $z-index-sidebar;
     font-family: $font-family-main;
 
@@ -174,13 +169,13 @@
 .pnd-sidebar {
     &__content {
         position: absolute;
-        border-left: 1px solid $color-border-normal;
-        right: 0px;
-        top: 0px;
+        z-index: 1;
+        top: 0;
+        right: 0;
         width: $sidebar-exploded-width;
         height: 100vh;
         background-color: $color-background-light;
-        z-index: 1;
+        border-left: 1px solid $color-border-normal;
         transition: all $transition-durations*1.5 ease-out;
     }
 
@@ -190,7 +185,7 @@
 
     &.is-collapsed {
         .pnd-sidebar__content {
-            margin-right: - ($sidebar-exploded-width - $sidebar-collapsed-width);
+            width: $sidebar-collapsed-width;
             overflow: hidden;
         }
     }
