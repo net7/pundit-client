@@ -14,7 +14,7 @@
     right: 0;
     padding: $space*2;
     width: $sidebar-exploded-width;
-    z-index: 2;
+    z-index: $z-index-sidebar - 1;
     background-color: $color-background-base;
     color: $color-text;
     border-bottom: 1px solid $color-border-normal;
