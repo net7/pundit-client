@@ -321,5 +321,8 @@ export class MainLayoutEH extends EventHandler {
     this.annotationService.totalChanged$.next(0);
 
     this.layoutEvent$.next({ type: 'clear' });
+
+    // emit loaded
+    this.dataSource.hasLoaded.next(true);
   }
 }
