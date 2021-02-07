@@ -22,7 +22,7 @@ export class NotebookPanelDS extends DataSource {
       },
       notebookList: data.list,
       mode: 'select',
-      selectedNotebook: data.selected.id
+      selectedNotebook: data.selected
     };
     return {
       ...data,

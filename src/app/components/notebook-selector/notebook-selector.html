@@ -1,34 +1,52 @@
 <ng-container *ngIf="data">
-    <div class="notebook-panel__select-cont">
-        <ul *ngIf="data.mode === 'select'"
-                class="notebook-panel__select"
-                name="current-notebook"
-                id="current-notebook">
+    <div class="pnd-select">
 
-            <!-- list of selectable notebooks -->
-            <ng-container *ngFor="let notebook of data.notebookList">
-                <li (click)="onClick('option', notebook.id)"
-                        [class]="notebook.id === data.selectedNotebook ? 'selected' : ''">
-                    {{ notebook.label }}
-                </li>
-            </ng-container>
+        <ng-container *ngIf="data.mode === 'select'">
+            <!-- Label of selected element -->
+            <div class="pnd-select-label-selected"
+                 title="{{data.selectedNotebook.label}}"
+                 (click)="onToggleExpand()">
+                {{data.selectedNotebook.label}}
+            </div>
 
-            <!-- create new notebook option -->
-            <ng-container *ngIf="data.createOption as create">
-                <li (click)="onInputMode()">
-                    {{ create.label }}
-                </li>
-            </ng-container>
-        </ul>
+            <!-- Toggle for opening the select -->
+            <div class="pnd-select-open-options"
+                 (click)="onToggleExpand()">
+                <span class="pundit-icon pundit-icon-angle-down"></span>
+            </div>
 
+            <div class="pnd-select-option-container {{ data._meta?.isExpanded ? 'expanded' : '' }}"
+                 name="current-notebook"
+                 id="current-notebook">
+    
+                <!-- list of selectable notebooks -->
+                <ng-container *ngFor="let notebook of data.notebookList">
+                    <div (click)="onClick('option', notebook.id)"
+                         class="option {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
+                        {{ notebook.label }}
+                    </div>
+                </ng-container>
+    
+                <!-- create new notebook option -->
+                <ng-container *ngIf="data.createOption as create">
+                    <div class="option"
+                         (click)="onInputMode()">
+                        {{ create.label }}
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+ 
         <!-- creating a new notebook -->
-        <input *ngIf="data.mode === 'input'"
-               type="text"
-               name="new-notebook"
-               (input)="onInput($event.target.value)">
-        <button class="pnd-btn"
-                (click)="onCreation(data._meta.inputValue)">
-            Create
-        </button>
+        <div *ngIf="data.mode === 'input'">
+            <input type="text"
+                   name="new-notebook"
+                   (input)="onInput($event.target.value)">
+            <button class="pnd-btn"
+                    (click)="onCreation(data._meta.inputValue)">
+                Create
+            </button>
+        </div>
+
     </div>
 </ng-container>

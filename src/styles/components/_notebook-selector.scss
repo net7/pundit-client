@@ -1,0 +1,165 @@
+/**
+ * SELECT
+ *
+ * Style for pnd select
+ */
+
+/* ------------------------------------ *\
+   #SELECT
+\* ------------------------------------ */
+
+.pnd-select {
+    position: relative;
+    display: inline-block;
+    height: 28px;
+    min-width: 80px;
+    margin: 0 4px;
+    text-align: left;
+    overflow: visible;
+    color: $color-text;
+
+    .pnd-select-label-selected {
+        display: block;
+        position: relative;
+        height: 28px;
+        margin: 0 23px 0 4px;
+        padding: 0 6px;
+        background-color: $color-background-light;
+        border: 1px solid $color-border-normal;
+        border-radius: 3px 0 0 3px;
+
+        font-size: 13px;
+        font-weight: $font-weight-bold;
+        line-height: 28px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        cursor: pointer;
+    }
+
+    .pnd-select-open-options {
+        position: absolute;
+        right: 0;
+        top: 0;
+
+        height: 28px;
+        width: 23px;
+
+        background-color: $color-background-light;
+        border-top: 1px solid $color-border-normal;
+        border-right: 1px solid $color-border-normal;
+        border-bottom: 1px solid $color-border-normal;
+        border-radius: 0 3px 3px 0;
+
+        line-height: 27px;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+            opacity: 1;
+        }
+
+        .pnd-icon {
+            line-height: 27px;
+        }
+    }
+
+    .pnd-select-option-container {
+        display: block;
+        position: absolute;
+        visibility: hidden;
+        height: auto;
+        max-height: 160px;
+        width: 100%;
+
+        background-color: $color-background-medium;
+        border: 1px solid $color-border-normal;
+        border-radius: $border-radius;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
+
+        overflow-y: auto !important;
+        z-index: $z-index-max;
+
+        &.expanded {
+            visibility: visible;
+        }
+
+        .option {
+            position: relative;
+            left: 0;
+            height: auto;
+            width: 100%;
+            padding: 5px 10px;
+
+            background-color: $color-background-medium;
+            cursor: pointer;
+
+            overflow: hidden;
+
+            font-size: 13px;
+            font-weight: $font-weight-normal;
+            color: $color-text;
+            white-space: nowrap;
+            line-height: 1.5;
+            text-overflow: ellipsis;
+            text-align: left;
+
+            &:hover {
+                background-color: $color-background-dark;
+            }
+        }
+
+        .option.selected {
+            cursor: default;
+            background-color: $color-background-dark;
+
+            &:hover {
+                background-color: $color-background-dark;
+            }
+        }
+
+        .divider {
+            display: block;
+            height: 1px;
+            background-color: $color-border-normal;
+            border: none;
+            margin: 0;
+        }
+
+        .option.custom-action {
+            font-weight: $font-weight-bold;
+            color: $color-text;
+        }
+
+        /* Option drwopdown must be shown above */
+        &.move-top {
+            bottom: 28px;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .pnd-select-item-creation {
+        /* Buttons for saving new notebook */
+        /* This is very specific for the use of the component
+        inside annotation-popover.less */
+        .pnd-select-item-creation-button {
+            position: absolute;
+            right: -5px;
+            top: 35px;
+            padding: 5px;
+            background-color: #ffffff;
+
+            button {
+                margin-left: 10px;
+            }
+        }
+    }
+
+    /* Displayed while saving */
+    .pnd-select-item-saving {
+        font-size: 13px;
+        line-height: 30px;
+        font-weight: $font-weight-bold;
+    }
+}

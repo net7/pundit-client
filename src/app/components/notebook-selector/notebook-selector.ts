@@ -16,7 +16,7 @@ type NotebookOption = {
  */
 export interface NotebookSelectorData {
   /** ID of the default selected notebook */
-  selectedNotebook: string;
+  selectedNotebook: NotebookOption;
   /** Data for the list of notebooks */
   notebookList: NotebookOption[];
   /** Data for the contextual notebook creation */
@@ -58,6 +58,15 @@ export class NotebookSelectorComponent {
     this.emit(type, payload);
   }
 
+  onToggleExpand() {
+    if (!this.data._meta) {
+      this.data._meta = { isExpanded: false };
+    } else if (!this.data._meta.isExpanded) {
+      this.data._meta.isExpanded = false;
+    }
+    this.data._meta.isExpanded = !this.data._meta.isExpanded;
+  }
+
   /**
    * When pressing the "create new notebook" button.
    */
@@ -72,6 +81,7 @@ export class NotebookSelectorComponent {
   onCreation(payload) {
     if (!this.emit) return;
     this.data.mode = 'select';
+    this.data._meta = {};
     this.emit('createnotebook', payload);
   }
 
