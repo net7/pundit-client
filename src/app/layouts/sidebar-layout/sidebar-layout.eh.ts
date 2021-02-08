@@ -33,6 +33,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   private detectorRef: ChangeDetectorRef;
 
+  private changeDetectorRef: ChangeDetectorRef;
+
   public dataSource: SidebarLayoutDS;
 
   public listen() {
@@ -46,6 +48,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.detectorRef = payload.detectorRef;
           this.userService = payload.userService;
           this.punditLoginService = payload.punditLoginService;
+          this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
@@ -82,6 +85,11 @@ export class SidebarLayoutEH extends EventHandler {
         default:
           console.warn('unhandled inner event of type', type);
           break;
+      }
+
+      // force-reload change detection
+      if (this.changeDetectorRef) {
+        this.changeDetectorRef.detectChanges();
       }
     });
 

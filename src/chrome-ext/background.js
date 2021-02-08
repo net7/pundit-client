@@ -54,7 +54,6 @@ function updateExtensionIcon(active) {
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  console.log('icon clicked')
   const activeKey = `${StorageKeys.Active}.${tab.id}`;
   Storage.get(activeKey)
     .then((value) => {
