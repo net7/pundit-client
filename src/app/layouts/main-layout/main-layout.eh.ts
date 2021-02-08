@@ -15,6 +15,7 @@ import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
 import { TokenService } from 'src/app/services/token.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { MainLayoutDS } from './main-layout.ds';
 
 const PENDING_ANNOTATION_ID = 'pending-id';
@@ -35,6 +36,8 @@ export class MainLayoutEH extends EventHandler {
   private punditLoginService: PunditLoginService;
 
   private tokenService: TokenService;
+
+  private changeDetectorRef: ChangeDetectorRef;
 
   private isLogged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
@@ -58,6 +61,7 @@ export class MainLayoutEH extends EventHandler {
           this.anchorService = payload.anchorService;
           this.punditLoginService = payload.punditLoginService;
           this.tokenService = payload.tokenService;
+          this.changeDetectorRef = payload.changeDetectorRef;
           this.dataSource.onInit(payload);
 
           // user logged
@@ -284,6 +288,11 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private onLogin() {
+    // restart angular change detection
+    if (this.changeDetectorRef) {
+      this.changeDetectorRef.detectChanges();
+    }
+
     this.dataSource.getUserNotebooks().pipe(
       switchMap(({ data: notebooksData }) => {
         const { notebooks } = notebooksData;

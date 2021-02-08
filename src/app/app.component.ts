@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
 
 @Component({
   selector: 'pnd-root',
@@ -8,4 +8,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
 })
 export class AppComponent {
   title = 'angular-test';
+
+  constructor(private changeDetectorRef: ChangeDetectorRef) {}
 }
