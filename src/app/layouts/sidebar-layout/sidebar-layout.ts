@@ -30,6 +30,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private anchorService: AnchorService,
     private userService: UserService,
     private punditLoginService: PunditLoginService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
     super(config);
 
@@ -45,7 +46,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       detectorRef: this.detectorRef,
       userService: this.userService,
-      punditLoginService: this.punditLoginService
+      punditLoginService: this.punditLoginService,
+      changeDetectorRef: this.changeDetectorRef,
     };
   }
 
