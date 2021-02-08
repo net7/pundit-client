@@ -87,10 +87,7 @@ export class SidebarLayoutEH extends EventHandler {
           break;
       }
 
-      // force-reload change detection
-      if (this.changeDetectorRef) {
-        this.changeDetectorRef.detectChanges();
-      }
+      this.detectChanges();
     });
 
     this.outerEvents$.subscribe(({ type, payload }) => {
@@ -135,6 +132,8 @@ export class SidebarLayoutEH extends EventHandler {
         default:
           break;
       }
+
+      this.detectChanges();
     });
   }
 
@@ -173,6 +172,8 @@ export class SidebarLayoutEH extends EventHandler {
         default:
           break;
       }
+
+      this.detectChanges();
     });
   }
 
@@ -259,5 +260,16 @@ export class SidebarLayoutEH extends EventHandler {
       annotationID,
       notebook: this.notebookService.getNotebookById(notebookId),
     });
+  }
+
+  /**
+   * Forces angular's ChangeDetector to
+   * detect changes to the UI.
+   */
+  private detectChanges() {
+    // force-reload change detection
+    if (this.changeDetectorRef) {
+      this.changeDetectorRef.detectChanges();
+    }
   }
 }
