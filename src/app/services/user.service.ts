@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { CommunicationSettings, User } from '@pundit/communication';
+import { User } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
-import { environment as env } from '../../environments/environment';
+import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
 
 type UserData = {
   id: string;
@@ -9,38 +9,35 @@ type UserData = {
   thumb: string;
 }
 
-const USER_KEY = 'pundit-user';
-const TOKEN_KEY = 'pundit-token';
-
 @Injectable()
 export class UserService {
   private me: UserData;
-
-  private token: string;
 
   private users: UserData[] = [];
 
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
-  constructor() {
-    if (!env.chromeExt) {
-      this.setUserFromMemory();
+  constructor(
+    private storage: StorageSyncService
+  ) {
+    const user = this.storage.get(StorageSyncKey.User);
+    if (user) {
+      this.iam(JSON.parse(user), false);
     }
   }
 
-  public iam({ id, username, thumb }: UserData) {
+  public iam({ id, username, thumb }: UserData, sync = true) {
     this.add({ id, username, thumb });
     this.me = this.getUserById(id);
+
+    // storage sync
+    if (sync) {
+      this.storage.set(StorageSyncKey.User, JSON.stringify(this.me));
+    }
+
+    // emit signal
+    this.logged$.next(true);
   }
-
-  public setToken(token: string) {
-    this.token = token;
-
-    // add token to communication
-    CommunicationSettings.token = token;
-  }
-
-  public getToken = () => this.token;
 
   public whoami = () => this.me;
 
@@ -64,43 +61,14 @@ export class UserService {
     return this.users.find(({ id }) => id === userId) || null;
   }
 
-  login() {
-    this.logged$.next(true);
-
-    if (!env.chromeExt) {
-      this.saveUserInMemory();
-    }
-  }
-
   logout() {
     this.logged$.next(false);
 
-    if (!env.chromeExt) {
-      this.removeUserFromMemory();
-    }
+    // storage sync
+    this.storage.remove(StorageSyncKey.User);
   }
 
   clear() {
     this.users = [];
-  }
-
-  private setUserFromMemory() {
-    const user = localStorage.getItem(USER_KEY);
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (user && token) {
-      this.iam(JSON.parse(user));
-      this.setToken(token);
-      this.logged$.next(true);
-    }
-  }
-
-  private saveUserInMemory() {
-    localStorage.setItem(USER_KEY, JSON.stringify(this.whoami()));
-    localStorage.setItem(TOKEN_KEY, this.getToken());
-  }
-
-  private removeUserFromMemory() {
-    localStorage.removeItem(USER_KEY);
-    localStorage.removeItem(TOKEN_KEY);
   }
 }

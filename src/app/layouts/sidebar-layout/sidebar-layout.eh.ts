@@ -29,7 +29,7 @@ export class SidebarLayoutEH extends EventHandler {
 
   private userService: UserService;
 
-  private loginService: PunditLoginService;
+  private punditLoginService: PunditLoginService;
 
   private detectorRef: ChangeDetectorRef;
 
@@ -45,7 +45,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$ = payload.layoutEvent$;
           this.detectorRef = payload.detectorRef;
           this.userService = payload.userService;
-          this.loginService = payload.loginService;
+          this.punditLoginService = payload.punditLoginService;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
@@ -77,7 +77,7 @@ export class SidebarLayoutEH extends EventHandler {
           });
           break;
         case 'sidebar-layout.requestlogin':
-          this.loginService.start();
+          this.punditLoginService.start();
           break;
         default:
           console.warn('unhandled inner event of type', type);

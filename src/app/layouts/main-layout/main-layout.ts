@@ -7,6 +7,7 @@ import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
+import { TokenService } from 'src/app/services/token.service';
 import { UserService } from 'src/app/services/user.service';
 import { LayoutEvent } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
@@ -23,7 +24,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private notebookService: NotebookService,
     private annotationService: AnnotationService,
     private anchorService: AnchorService,
-    private loginService: PunditLoginService
+    private punditLoginService: PunditLoginService,
+    private tokenService: TokenService
   ) {
     super(config);
   }
@@ -35,7 +37,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       notebookService: this.notebookService,
       annotationService: this.annotationService,
       anchorService: this.anchorService,
-      loginService: this.loginService
+      punditLoginService: this.punditLoginService,
+      tokenService: this.tokenService
     };
   }
 

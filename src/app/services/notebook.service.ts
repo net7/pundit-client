@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
-import { environment as env } from '../../environments/environment';
+import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
 
 export type NotebookData = {
   id: string;
@@ -15,8 +15,6 @@ export type NotebookUpdate = {
   sharingMode?: SharingModeType;
 }
 
-const SELECTED_NOTEBOOK_KEY = 'pundit-notebook';
-
 @Injectable()
 export class NotebookService {
   private notebooks: NotebookData[] = [];
@@ -25,9 +23,13 @@ export class NotebookService {
 
   public selectedChanged$: Subject<void> = new Subject();
 
-  constructor() {
-    if (!env.chromeExt) {
-      this.setSelectedFromMemory();
+  constructor(
+    private storage: StorageSyncService
+  ) {
+    // check storage sync
+    const selected = this.storage.get(StorageSyncKey.Notebook);
+    if (selected) {
+      this.selectedId = selected;
     }
   }
 
@@ -36,12 +38,11 @@ export class NotebookService {
   public setSelected(id: string) {
     this.selectedId = id;
 
+    // storage sync
+    this.storage.set(StorageSyncKey.Notebook, id);
+
     // emit signal
     this.selectedChanged$.next();
-
-    if (!env.chromeExt) {
-      this.saveSelectedInMemory(this.selectedId);
-    }
   }
 
   /**
@@ -88,23 +89,7 @@ export class NotebookService {
   clear() {
     this.notebooks = [];
 
-    if (!env.chromeExt) {
-      this.removeSelectedFromMemory();
-    }
-  }
-
-  private setSelectedFromMemory() {
-    const selected = localStorage.getItem(SELECTED_NOTEBOOK_KEY);
-    if (selected) {
-      this.selectedId = selected;
-    }
-  }
-
-  private saveSelectedInMemory(selectedId) {
-    localStorage.setItem(SELECTED_NOTEBOOK_KEY, selectedId);
-  }
-
-  private removeSelectedFromMemory() {
-    localStorage.removeItem(SELECTED_NOTEBOOK_KEY);
+    // storage sync
+    this.storage.remove(StorageSyncKey.Notebook);
   }
 }
