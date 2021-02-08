@@ -68,7 +68,6 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 
 chrome.tabs.onUpdated.addListener((tabId) => {
   chrome.tabs.get((tabId), (tab) => {
-    console.log('tab', tab);
     onChange(tabId);
   });
 });
