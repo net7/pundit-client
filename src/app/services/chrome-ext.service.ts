@@ -4,6 +4,7 @@ import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 import { NotebookService } from './notebook.service';
+import { TokenService } from './token.service';
 import { UserService } from './user.service';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class ChromeExtService {
     private annotationService: AnnotationService,
     private userService: UserService,
     private notebookService: NotebookService,
+    private tokenService: TokenService
   ) {}
 
   load(): Promise<void> {
@@ -22,9 +24,8 @@ export class ChromeExtService {
         config.set('chromeExtId', id);
         config.set('chromeExtUrl', `chrome-extension://${id}`);
         if (user && token) {
+          this.tokenService.set(token);
           this.userService.iam(user);
-          this.userService.setToken(token);
-          this.userService.logged$.next(true);
         }
         this.listenExtensionEvents();
         this.listenAnnotationUpdates();
@@ -74,7 +75,7 @@ export class ChromeExtService {
         detail: {
           isLogged,
           user: this.userService.whoami(),
-          token: this.userService.getToken()
+          token: this.tokenService.get()
         }
       });
       window.dispatchEvent(signal);
@@ -83,9 +84,8 @@ export class ChromeExtService {
     // from extension
     window.addEventListener('punditlogin', (ev: CustomEvent) => {
       const { user, token, notebookId } = ev.detail;
+      this.tokenService.set(token);
       this.userService.iam(user);
-      this.userService.setToken(token);
-      this.userService.login();
       if (notebookId) {
         this.notebookService.setSelected(notebookId);
       }

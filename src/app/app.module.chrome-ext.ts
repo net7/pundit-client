@@ -14,6 +14,8 @@ import { NotebookService } from './services/notebook.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
 import { AnchorService } from './services/anchor.service';
 import { ChromeExtService } from './services/chrome-ext.service';
+import { TokenService } from './services/token.service';
+import { StorageSyncService } from './services/storage-sync.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -61,6 +63,8 @@ config.init(appConfig);
     AnchorService,
     AnnotationPositionService,
     ChromeExtService,
+    TokenService,
+    StorageSyncService,
     {
       provide: APP_INITIALIZER,
       useFactory: (

@@ -1,12 +1,14 @@
 /* eslint-disable */
-const ACTIVE_KEY = 'active';
-const USER_KEY = 'pundit-user';
-const TOKEN_KEY = 'pundit-token';
-const SELECTED_NOTEBOOK_KEY = 'pundit-notebook';
 const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
 const BADGE_COLOR_ON = [13, 133, 236, 255];
 const BADGE_COLOR_OFF = [128, 128, 128, 255];
+const StorageKeys = {
+  Active: 'active',
+  User: 'pundit-user',
+  Token: 'pundit-token',
+  Notebook: 'pundit-notebook'
+}
 
 class Storage {
   static get(key) {
@@ -52,10 +54,10 @@ function updateExtensionIcon(active) {
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  const key = `${ACTIVE_KEY}.${tab.id}`;
-  Storage.get(key)
+  const activeKey = `${StorageKeys.Active}.${tab.id}`;
+  Storage.get(activeKey)
     .then((value) => {
-      return Storage.set(key, !value)
+      return Storage.set(activeKey, !value)
     })
     .then(() => {
       onChange(tab.id);
@@ -67,14 +69,18 @@ chrome.tabs.onActivated.addListener(({ tabId }) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => {
-  chrome.tabs.get((tabId), (tab) => {
-    onChange(tabId);
+  chrome.tabs.get((tabId), () => {
+    if (chrome.runtime.lastError) {
+      // do nothing
+    } else {
+      onChange(tabId);
+    }
   });
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
-  const key = `${ACTIVE_KEY}.${tabId}`;
-  Storage.remove(key)
+  const activeKey = `${StorageKeys.Active}.${tabId}`;
+  Storage.remove(activeKey)
 });
 
 // content listener
@@ -88,15 +94,19 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
       });
       break;
     case 'notebooksupdate':
-      saveSelectedNotebookInMemory(payload);
+      // storage sync
+      Storage.set(StorageKeys.Notebook, payload);
       break;
     case 'userlogged':
       const { isLogged, user, token } = payload;
+      // storage sync
       if (isLogged) {
-        saveUserInMemory(user, token);
+        Storage.set(StorageKeys.User, user);
+        Storage.set(StorageKeys.Token, token);
       } else {
-        removeUserFromMemory();
-        removeSelectedNotebookFromMemory();
+        Storage.remove(StorageKeys.User);
+        Storage.remove(StorageKeys.Token);
+        Storage.remove(StorageKeys.Notebook);
       }
       break;
     default:
@@ -105,34 +115,22 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
 });
 
 function onChange(tabId) {
-  const key = `${ACTIVE_KEY}.${tabId}`;
-  Storage.getMulti([key, USER_KEY, TOKEN_KEY, SELECTED_NOTEBOOK_KEY])
+  const activeKey = `${StorageKeys.Active}.${tabId}`;
+  Storage.getMulti([
+      activeKey, 
+      StorageKeys.User, 
+      StorageKeys.Token, 
+      StorageKeys.Notebook
+    ])
     .then((values) => {
-      const isActive = values[key];
-      const user = values[USER_KEY];
-      const token = values[TOKEN_KEY];
-      const notebookId = values[SELECTED_NOTEBOOK_KEY];
+      const isActive = values[activeKey];
+      const user = values[StorageKeys.User];
+      const token = values[StorageKeys.Token];
+      const notebookId = values[StorageKeys.Notebook];
+
       chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
         isActive, user, token, notebookId
       }});
       updateExtensionIcon(isActive);
     })
-}
-
-function saveUserInMemory(user, token) {
-  Storage.set(USER_KEY, user);
-  Storage.set(TOKEN_KEY, token);
-}
-
-function removeUserFromMemory() {
-  Storage.remove(USER_KEY);
-  Storage.remove(TOKEN_KEY);
-}
-
-function saveSelectedNotebookInMemory(selectedId) {
-  Storage.set(SELECTED_NOTEBOOK_KEY, selectedId);
-}
-
-function removeSelectedNotebookFromMemory() {
-  Storage.remove(SELECTED_NOTEBOOK_KEY);
 }
