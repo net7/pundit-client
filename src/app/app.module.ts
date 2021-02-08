@@ -13,6 +13,8 @@ import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
+import { StorageSyncService } from './services/storage-sync.service';
+import { TokenService } from './services/token.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -59,6 +61,8 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
+    StorageSyncService,
+    TokenService,
     { provide: APP_BASE_HREF, useValue: '/' }
   ],
   bootstrap: [AppComponent],

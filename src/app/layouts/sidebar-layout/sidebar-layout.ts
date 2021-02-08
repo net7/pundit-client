@@ -6,7 +6,7 @@ import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { LayoutEvent } from 'src/app/types';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
@@ -29,8 +29,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private detectorRef: ChangeDetectorRef,
     private anchorService: AnchorService,
     private userService: UserService,
-    private sanitizer: DomSanitizer,
-    private loginService: PunditLoginService,
+    private punditLoginService: PunditLoginService,
   ) {
     super(config);
 
@@ -46,7 +45,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       detectorRef: this.detectorRef,
       userService: this.userService,
-      loginService: this.loginService
+      punditLoginService: this.punditLoginService
     };
   }
 
