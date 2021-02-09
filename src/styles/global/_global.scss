@@ -9,6 +9,10 @@
 \* ------------------------------------ */
 /* Class of all Pundit app wrapper */
 .pnd-main {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: $z-index-pundit;
     box-sizing: border-box;
     color: $color-text;
     font-size: $font-size-m;
