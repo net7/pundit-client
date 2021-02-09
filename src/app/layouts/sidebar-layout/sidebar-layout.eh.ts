@@ -31,8 +31,6 @@ export class SidebarLayoutEH extends EventHandler {
 
   private punditLoginService: PunditLoginService;
 
-  private detectorRef: ChangeDetectorRef;
-
   private changeDetectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -45,7 +43,6 @@ export class SidebarLayoutEH extends EventHandler {
           this.notebookService = payload.notebookService;
           this.anchorService = payload.anchorService;
           this.layoutEvent$ = payload.layoutEvent$;
-          this.detectorRef = payload.detectorRef;
           this.userService = payload.userService;
           this.punditLoginService = payload.punditLoginService;
           this.changeDetectorRef = payload.changeDetectorRef;
@@ -216,7 +213,7 @@ export class SidebarLayoutEH extends EventHandler {
     this.dataSource.height$.next(`${scrollHeight}px`);
     // fix update sidebar height
     setTimeout(() => {
-      this.detectorRef.detectChanges();
+      this.detectChanges();
       this.dataSource.updateAnnotations();
     });
   }
