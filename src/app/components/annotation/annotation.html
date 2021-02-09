@@ -49,12 +49,15 @@
             </div>
         </div>
         
-        <div *ngIf="data.menu"
-             class="pnd-annotation__header-menu {{ data.menu.classes || '' }}">
-            <!-- arrow icon -->
-            <button class="pnd-annotation__header-menu-button"
+        <div class="pnd-annotation__header-menu">
+            <button class="pnd-annotation__header-menu-button {{ data.menu.classes || '' }}"
+                   *ngIf="data.menu"
                   [ngClass]="data.menu.icon['id']"
                   (click)="onClick($event, data.menu.icon['payload'])">
+            </button>
+
+            <button class="pnd-annotation__header-menu-button">
+                <span class="pundit-icon-compress"></span>
             </button>
 
             <div *ngIf="data.activeMenu" class="pnd-annotation__menu-dropdown">

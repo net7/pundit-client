@@ -94,6 +94,7 @@ annotation {
 
     /* Dropdown */
     &__header-menu {
+        display: flex;
         position: relative;
     }
 
@@ -109,15 +110,23 @@ annotation {
     }
 
     &__header-menu-button {
-        border: 0;
-        background-color: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-left: $space/2;
+        border-radius: $border-radius;
+        border: 1px solid $color-border-normal;
+        background-color: $color-background-light;
         cursor: pointer;
         color: $color-text-light;
-        font-size: $font-size-l;
-        transparent: color $transition-durations;
+        font-size: $font-size-s;
+        transition: color $transition-durations;
 
         &:hover {
             color: $color-text-link;
+            border: 1px solid $color-text-link;
         }
     }
 }
