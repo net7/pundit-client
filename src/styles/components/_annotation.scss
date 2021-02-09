@@ -9,7 +9,7 @@
 \* ------------------------------------ */
 .pnd-annotation {
     position: relative;
-    max-height: 200px;
+    // max-height: 200px;
     margin: 0 $space/4 $space/4 $space/4;
     border-radius: $border-radius;
     background-color: $annotation-background-color;
@@ -92,21 +92,10 @@ annotation {
         }
     }
 
-    /* Dropdown */
+    /* Menu and dropdown */
     &__header-menu {
         display: flex;
         position: relative;
-    }
-
-    &__menu-dropdown {
-        position: absolute;
-        z-index: 2;
-        right: 0;
-        width: 130px;
-        padding: $space;
-        background-color: $color-background-base;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
     }
 
     &__header-menu-button {
@@ -129,6 +118,38 @@ annotation {
             border: 1px solid $color-text-link;
         }
     }
+
+    &__menu-dropdown {
+        position: absolute;
+        z-index: 2;
+        top: 24px + $space/2;
+        right: 24px + $space/2;
+        width: 140px;
+        padding: 0;
+        background-color: $color-background-base;
+        border: 1px solid $color-border-normal;
+        border-radius: $border-radius;
+    }
+
+    &__menu-dropdown-actions {
+
+    }
+
+    &__menu-dropdown-action {
+        padding: $space*1 $space*1.5;
+        font-size: $font-size-s;
+        color: $color-text;
+        cursor: pointer;
+        transition: color $transition-durations;
+
+        &:not(:last-child) {
+            border-bottom: 1px solid $color-border-normal;
+        }
+
+        &:hover {
+            color: $color-text-link;
+        }
+    }
 }
 
 
@@ -146,10 +167,8 @@ annotation {
 
     .pnd-annotation__comment {
         position: relative;
-        display: flex;
-        align-items: center;
         z-index: 2;
-        background-color:$annotation-comment-background-color;
+        background-color: $annotation-comment-background-color;
     }
 
     .pnd-annotation__comment-text {
@@ -165,7 +184,15 @@ annotation {
 \* ------------------------------------ */
 .pnd-annotation.is-expanded {
     .pnd-annotation__highlight {
-        padding: 0 $space $space $space;
+        max-height: 100px;
+        overflow-y: auto;
+        padding: $space $space $space $space;
+    }
+
+    &.has-comment {
+        .pnd-annotation__highlight {
+            padding-bottom: $space*2;
+        }
     }
 
     .pnd-annotation__highlight-text {
@@ -173,9 +200,40 @@ annotation {
     }
 
     .pnd-annotation__comment {
-        border-top: 1px solid $annotation-border-color;
-        margin-top: $space;
+        max-height: 100px;
+        overflow-y: auto;
         padding: $space $space $space $space;
+        border-top: 1px solid $annotation-border-color;
+    }
+
+    /* Caret */
+    .pnd-annotation__caret {
+        position: absolute;
+        z-index: 5;
+        display: block;
+        width: 0;
+        height: 0;
+        border-color: transparent;
+        border-style: solid;
+        border-bottom-color: $annotation-border-color;
+        border-top-width: 0;
+        border-width: 10px;
+        margin-top: -19px;
+        left: 15px;
+
+        &:after {
+            content: " ";
+            position: absolute;
+            display: block;
+            width: 0;
+            left: -9px;
+            top: 1px;
+            border-color: transparent;
+            border-style: solid;
+            border-width: 9px;
+            border-bottom-color: $annotation-comment-background-color;
+            border-top-width: 0;
+        }
     }
 }
 
@@ -220,6 +278,8 @@ annotation {
     }
 
     .pnd-annotation__comment {
+        display: flex;
+        align-items: center;
         width: calc( 50% - 12px );
         height: $annotation-collapsed-height;
     }
