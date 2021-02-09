@@ -29,9 +29,9 @@ export class SidebarLayoutEH extends EventHandler {
 
   private userService: UserService;
 
-  private loginService: PunditLoginService;
+  private punditLoginService: PunditLoginService;
 
-  private detectorRef: ChangeDetectorRef;
+  private changeDetectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
 
@@ -43,9 +43,9 @@ export class SidebarLayoutEH extends EventHandler {
           this.notebookService = payload.notebookService;
           this.anchorService = payload.anchorService;
           this.layoutEvent$ = payload.layoutEvent$;
-          this.detectorRef = payload.detectorRef;
           this.userService = payload.userService;
-          this.loginService = payload.loginService;
+          this.punditLoginService = payload.punditLoginService;
+          this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
           this.listenLayoutEvents();
@@ -77,12 +77,14 @@ export class SidebarLayoutEH extends EventHandler {
           });
           break;
         case 'sidebar-layout.requestlogin':
-          this.loginService.start();
+          this.punditLoginService.start();
           break;
         default:
           console.warn('unhandled inner event of type', type);
           break;
       }
+
+      this.detectChanges();
     });
 
     this.outerEvents$.subscribe(({ type, payload }) => {
@@ -127,6 +129,8 @@ export class SidebarLayoutEH extends EventHandler {
         default:
           break;
       }
+
+      this.detectChanges();
     });
   }
 
@@ -165,6 +169,8 @@ export class SidebarLayoutEH extends EventHandler {
         default:
           break;
       }
+
+      this.detectChanges();
     });
   }
 
@@ -207,7 +213,7 @@ export class SidebarLayoutEH extends EventHandler {
     this.dataSource.height$.next(`${scrollHeight}px`);
     // fix update sidebar height
     setTimeout(() => {
-      this.detectorRef.detectChanges();
+      this.detectChanges();
       this.dataSource.updateAnnotations();
     });
   }
@@ -251,5 +257,16 @@ export class SidebarLayoutEH extends EventHandler {
       annotationID,
       notebook: this.notebookService.getNotebookById(notebookId),
     });
+  }
+
+  /**
+   * Forces angular's ChangeDetector to
+   * detect changes to the UI.
+   */
+  private detectChanges() {
+    // force-reload change detection
+    if (this.changeDetectorRef) {
+      this.changeDetectorRef.detectChanges();
+    }
   }
 }

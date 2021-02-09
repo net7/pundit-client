@@ -14,6 +14,8 @@ import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
+import { TokenService } from 'src/app/services/token.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { MainLayoutDS } from './main-layout.ds';
 
 const PENDING_ANNOTATION_ID = 'pending-id';
@@ -31,7 +33,11 @@ export class MainLayoutEH extends EventHandler {
 
   private anchorService: AnchorService;
 
-  private loginService: PunditLoginService;
+  private punditLoginService: PunditLoginService;
+
+  private tokenService: TokenService;
+
+  private changeDetectorRef: ChangeDetectorRef;
 
   private isLogged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
@@ -53,7 +59,9 @@ export class MainLayoutEH extends EventHandler {
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
           this.anchorService = payload.anchorService;
-          this.loginService = payload.loginService;
+          this.punditLoginService = payload.punditLoginService;
+          this.tokenService = payload.tokenService;
+          this.changeDetectorRef = payload.changeDetectorRef;
           this.dataSource.onInit(payload);
 
           // user logged
@@ -83,7 +91,7 @@ export class MainLayoutEH extends EventHandler {
       switch (type) {
         case 'tooltip.highlight': {
           if (!isLogged) {
-            this.loginService.start();
+            this.punditLoginService.start();
           } else {
             const requestPayload = this.dataSource.getAnnotationRequestPayload();
             this.saveAnnotation(requestPayload);
@@ -92,7 +100,7 @@ export class MainLayoutEH extends EventHandler {
         }
         case 'tooltip.comment': {
           if (!isLogged) {
-            this.loginService.start();
+            this.punditLoginService.start();
           } else {
             // reset
             this.commentState = {
@@ -207,7 +215,7 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private listenLoginEvents() {
-    this.loginService.onAuth().pipe(
+    this.punditLoginService.onAuth().pipe(
       takeUntil(this.destroy$)
     ).subscribe((val) => {
       if ('error' in val) {
@@ -215,15 +223,16 @@ export class MainLayoutEH extends EventHandler {
         console.warn('Gestire login error', error);
       } else if ('user' in val) {
         const { token, user } = val;
+
+        // set token
+        this.tokenService.set(token.access_token);
+
+        // set user
         this.userService.iam({
           ...user,
           id: `${user.id}`
         });
-
-        this.userService.setToken(token.access_token);
-
-        this.userService.login();
-        this.loginService.stop();
+        this.punditLoginService.stop();
         this.onLogin();
       }
     });
@@ -279,6 +288,11 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private onLogin() {
+    // restart angular change detection
+    if (this.changeDetectorRef) {
+      this.changeDetectorRef.detectChanges();
+    }
+
     this.dataSource.getUserNotebooks().pipe(
       switchMap(({ data: notebooksData }) => {
         const { notebooks } = notebooksData;
@@ -314,15 +328,15 @@ export class MainLayoutEH extends EventHandler {
 
   private onLogout() {
     // reset
+    this.tokenService.clear();
     this.userService.clear();
     this.notebookService.clear();
     this.annotationService.clear();
     this.anchorService.clear();
+
+    // emit signals
     this.annotationService.totalChanged$.next(0);
-
     this.layoutEvent$.next({ type: 'clear' });
-
-    // emit loaded
     this.dataSource.hasLoaded.next(true);
   }
 }

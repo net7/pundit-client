@@ -14,6 +14,7 @@
     border: 1px solid $tooltip-border-color;
     border-radius: $border-radius;
     @include cardShadow-1;
+    z-index: $z-index-max;
     
     /* Arrow css */
     &[data-popper-placement^="top"] {
@@ -36,7 +37,7 @@
         position: absolute;
         width: 8px;
         height: 8px;
-        z-index: -1;
+        z-index: $z-index-max - 1;
     }
 
     #arrow::before {
