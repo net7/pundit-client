@@ -18,7 +18,7 @@
             <div class="pnd-select-option-container {{ data._meta?.isExpanded ? 'expanded' : '' }}"
                  name="current-notebook"
                  id="current-notebook">
-    
+
                 <!-- list of selectable notebooks -->
                 <ng-container *ngFor="let notebook of data.notebookList">
                     <div (click)="onClick('option', notebook.id)"
@@ -26,7 +26,7 @@
                         {{ notebook.label }}
                     </div>
                 </ng-container>
-    
+
                 <!-- create new notebook option -->
                 <ng-container *ngIf="data.createOption as create">
                     <div class="option"
@@ -36,12 +36,16 @@
                 </ng-container>
             </div>
         </ng-container>
- 
+
         <!-- creating a new notebook -->
         <div *ngIf="data.mode === 'input'">
             <input type="text"
                    name="new-notebook"
                    (input)="onInput($event.target.value)">
+            <button class="pnd-btn"
+                    (click)="onCreation('')">
+                Cancel
+            </button>
             <button class="pnd-btn"
                     (click)="onCreation(data._meta.inputValue)">
                 Create

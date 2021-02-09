@@ -82,6 +82,8 @@ export class NotebookSelectorComponent {
     if (!this.emit) return;
     this.data.mode = 'select';
     this.data._meta = {};
+    // stop the creation if empty name or cancelling the operation
+    if (!payload) return;
     this.emit('createnotebook', payload);
   }
 

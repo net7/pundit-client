@@ -15,6 +15,7 @@ export class NotebookPanelDS extends DataSource {
   }
 
   transform(data) {
+    // Data for the internal notebook-selector component
     const notebookSelectorData: NotebookSelectorData = {
       createOption: {
         label: 'New notebook',
