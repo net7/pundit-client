@@ -9,7 +9,7 @@ import { LayoutEvent } from 'src/app/types';
 import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import {
-  AnnotationAttributes, CommentAnnotation, NotebookAttributes, PublicNotebook, SharingModeType
+  AnnotationAttributes, CommentAnnotation, PublicNotebook, SharingModeType
 } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
@@ -132,11 +132,11 @@ export class SidebarLayoutEH extends EventHandler {
         } break;
         case 'notebook-panel.createnotebook': {
           // create default data for the new notebook
-          const notebookData: NotebookAttributes = {
+          const notebookData: PublicNotebook = {
             label: payload, // assign the chosen name
             sharingMode: 'public',
             userId: this.userService.whoami().id, // authentication
-          } as PublicNotebook; // defaults to public nb
+          };
           // create the notebook in the backend first to generate the id
           notebook.create({
             data: notebookData
