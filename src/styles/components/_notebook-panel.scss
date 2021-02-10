@@ -56,10 +56,11 @@
     /* Change status */
     &__change-status {
         .pnd-btn {
+            display: block; // ! To be removed when sharing will be implemented
             margin-right: $space/2;
+            margin-bottom: $space/2; // ! To be removed when sharing will be implemented
         }
     }
-
 
     /* Notebook selection */
     &__select-cont {
