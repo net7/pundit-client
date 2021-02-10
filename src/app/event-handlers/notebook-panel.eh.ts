@@ -10,6 +10,9 @@ export class NotebookPanelEH extends EventHandler {
         case 'notebook-panel.option':
           this.emitOuter('changeselected', payload);
           break;
+        case 'notebook-panel.createnotebook':
+          this.emitOuter('createnotebook', payload);
+          break;
         default:
           break;
       }

@@ -85,7 +85,7 @@ annotation {
 
     &__header-notebook-link {
         text-decoration: none;
-        color:$color-text;
+        color: $color-text;
         
         &:hover {
             color: $color-text-link;
@@ -121,7 +121,7 @@ annotation {
 
     &__menu-dropdown {
         position: absolute;
-        z-index: 2;
+        z-index: $z-index-max;
         top: 24px + $space/2;
         right: 24px + $space/2;
         width: 140px;
@@ -319,7 +319,7 @@ annotation {
             border-style: solid;
             border-width: $annotation-collapsed-height/2 - 1;
             border-right-color: $annotation-comment-background-color;
-            border-left-width: 0;    
+            border-left-width: 0;
         }
     }
 }
