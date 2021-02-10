@@ -7,8 +7,11 @@ export class NotebookPanelEH extends EventHandler {
         case 'notebook-panel.click':
           this.emitOuter('editsharingmode', payload);
           break;
-        case 'notebook-panel.change':
+        case 'notebook-panel.option':
           this.emitOuter('changeselected', payload);
+          break;
+        case 'notebook-panel.createnotebook':
+          this.emitOuter('createnotebook', payload);
           break;
         default:
           break;

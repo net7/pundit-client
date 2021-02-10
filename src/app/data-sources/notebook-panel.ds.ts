@@ -1,4 +1,5 @@
 import { DataSource } from '@n7-frontend/core';
+import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class NotebookPanelDS extends DataSource {
   public labelMap = {
@@ -14,8 +15,19 @@ export class NotebookPanelDS extends DataSource {
   }
 
   transform(data) {
+    // Data for the internal notebook-selector component
+    const notebookSelectorData: NotebookSelectorData = {
+      createOption: {
+        label: 'New notebook',
+        value: 'create'
+      },
+      notebookList: data.list,
+      mode: 'select',
+      selectedNotebook: data.selected
+    };
     return {
       ...data,
+      _meta: { notebookSelectorData },
       descriptions: this.labelMap,
       icons: this.iconMap,
     };

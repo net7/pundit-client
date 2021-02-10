@@ -65,6 +65,11 @@ export class NotebookService {
     });
   }
 
+  /**
+   * Transforms a notebook object and
+   * adds it to the cache.
+   * @param rawNotebook a notebook object
+   */
   add(rawNotebook: Notebook) {
     if (!this.getNotebookById(rawNotebook.id)) {
       const {
@@ -75,6 +80,8 @@ export class NotebookService {
       });
     }
   }
+
+  create = this.add;
 
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;

@@ -1,6 +1,6 @@
 <div class="pnd-notebook-panel"
      *ngIf="data && data.selected.sharingMode as currentSharingMode">
-    
+
     <section class="pnd-notebook-panel__section">
         <div class="pnd-notebook-panel__label pnd-text">Current notebook:</div>
         <div class="pnd-notebook-panel__current-notebook-name">
@@ -8,7 +8,7 @@
             {{data.selected.label}}
         </div>
     </section>
-    
+
     <section class="pnd-notebook-panel__section pnd-grid-2">
         <div class="pnd-notebook-panel__status">
             <div class="pnd-notebook-panel__label pnd-text">Notebook status:</div>
@@ -22,31 +22,27 @@
             <div class="pnd-notebook-panel__buttons">
                 <button (click)="onClick('public', data.selected)"
                         class="pnd-btn"
-                        *ngIf="data.selected.sharingMode !== 'public'">Public</button>
+                        *ngIf="data.selected.sharingMode !== 'public'">
+                    Public
+                </button>
                 <button (click)="onClick('private', data.selected)"
                         class="pnd-btn"
-                        *ngIf="data.selected.sharingMode !== 'private'">Private</button>
+                        *ngIf="data.selected.sharingMode !== 'private'">
+                    Private
+                </button>
                 <button (click)="onClick('shared', data.selected)"
                         class="pnd-btn"
                         *ngIf="data.selected.sharingMode !== 'shared'"
                         disabled
-                        title="Coming soon!">Share</button>
+                        title="Coming soon!">
+                    Share
+                </button>
             </div>
         </div>
     </section>
-    
     <section class="pnd-notebook-panel__section">
-        <div class="pnd-notebook-panel__label pnd-text">Change current notebook</div>
-        <div class="pnd-notebook-panel__select-cont">
-            <select class="pnd-notebook-panel__select"
-                    name="current-notebook"
-                    id="current-notebook"
-                    (change)="onChange($event.target.value)">
-                <ng-container *ngFor="let option of data.list">
-                    <option [value]="option.id"
-                            [selected]="option.id === data.selected.id">{{option.label}}</option>
-                </ng-container>
-            </select>
-        </div>
+        <notebook-selector [data]="data._meta.notebookSelectorData"
+                           [emit]="onNotebookSelection">
+        </notebook-selector>
     </section>
 </div>

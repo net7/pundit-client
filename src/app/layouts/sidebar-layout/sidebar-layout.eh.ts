@@ -9,7 +9,7 @@ import { LayoutEvent } from 'src/app/types';
 import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import {
-  AnnotationAttributes, CommentAnnotation, SharingModeType
+  AnnotationAttributes, CommentAnnotation, NotebookAttributes, PublicNotebook, SharingModeType
 } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
@@ -89,29 +89,33 @@ export class SidebarLayoutEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'annotation.delete':
+        case 'notebook-panel.changeselected': // change the default notebook
+          this.notebookService.setSelected(payload);
+          this.dataSource.updateNotebookPanel();
+          break;
+        case 'annotation.delete': // delete an annotation
           this.layoutEvent$.next({ type: 'annotationdelete', payload });
           break;
-        case 'annotation.updatenotebook':
+        case 'annotation.updatenotebook': // move an annotation to another notebook
           this.handleAnnotationUpdate(payload.annotation, payload.notebook);
           this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           break;
-        case 'annotation.togglecollapse':
+        case 'annotation.togglecollapse': // collapse an annotation (UI)
           this.dataSource.updateAnnotations();
           break;
-        case 'annotation.mouseenter':
+        case 'annotation.mouseenter': // highlight the corresponding annotation in the host
           this.layoutEvent$.next({
             type: 'annotationmouseenter',
             payload
           });
           break;
-        case 'annotation.mouseleave':
+        case 'annotation.mouseleave': // remove the highlight from the corresponding annotation
           this.layoutEvent$.next({
             type: 'annotationmouseleave',
             payload
           });
           break;
-        case 'notebook-panel.editsharingmode': {
+        case 'notebook-panel.editsharingmode': { // change sharing mode for the notebook
           const {
             id,
             label,
@@ -125,6 +129,28 @@ export class SidebarLayoutEH extends EventHandler {
             sharingMode,
             userId
           }, { sharingMode: newSharingMode });
+        } break;
+        case 'notebook-panel.createnotebook': {
+          // create default data for the new notebook
+          const notebookData: NotebookAttributes = {
+            label: payload, // assign the chosen name
+            sharingMode: 'public',
+            userId: this.userService.whoami().id, // authentication
+          } as PublicNotebook; // defaults to public nb
+          // create the notebook in the backend first to generate the id
+          notebook.create({
+            data: notebookData
+          }).then((res) => {
+            // use the received id to cache the new notebook
+            this.notebookService.create({
+              id: res.data.id,
+              ...notebookData, // use the same data for the cache
+              created: new Date(),
+              changed: new Date(),
+            });
+            this.notebookService.setSelected(res.data.id); // select the new notebook
+            this.dataSource.updateNotebookPanel();
+          }).catch((e) => console.error(e));
         } break;
         default:
           break;
@@ -237,7 +263,6 @@ export class SidebarLayoutEH extends EventHandler {
 
   private handleAnnotationUpdate(annotationID: string, notebookId: string) {
     // update the annotation on the back end
-
     const { _raw: rawAnnotation } = this.annotationService.getAnnotationById(annotationID);
     const annotationUpdate = {
       type: rawAnnotation.type,
@@ -252,7 +277,6 @@ export class SidebarLayoutEH extends EventHandler {
     annotation.update(annotationID, annotationUpdate);
 
     // update annotation component / collection
-
     this.emitOuter('annotationupdatenb', {
       annotationID,
       notebook: this.notebookService.getNotebookById(notebookId),
