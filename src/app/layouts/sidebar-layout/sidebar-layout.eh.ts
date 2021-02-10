@@ -148,6 +148,7 @@ export class SidebarLayoutEH extends EventHandler {
               created: new Date(),
               changed: new Date(),
             });
+            this.notebookService.setSelected(res.data.id); // select the new notebook
             this.dataSource.updateNotebookPanel();
           }).catch((e) => console.error(e));
         } break;
