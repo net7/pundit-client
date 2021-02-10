@@ -40,6 +40,11 @@ annotation {
     }
 
     /* Image */
+    &__header-thumb-wrapper {
+        flex-grow: 0;
+        flex-shrink: 0;
+    }
+
     &__header-thumb-image {
         height: 30px;
         width: auto;
@@ -50,6 +55,8 @@ annotation {
     /* Info */
     &__header-info {
         margin-right: auto;
+        padding-right: 8px;
+        overflow: hidden;
     }
     
     &__header-name {
@@ -60,6 +67,9 @@ annotation {
         color: $color-text;
         cursor: pointer;
         transition: color $transition-durations;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
 
         &:hover {
             color: $color-text-link;
@@ -76,6 +86,10 @@ annotation {
     }
 
     &__header-notebook {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
         &:before {
             content: "·";
             margin-right: $space/2;
@@ -86,6 +100,7 @@ annotation {
     &__header-notebook-link {
         text-decoration: none;
         color: $color-text;
+        cursor: pointer;
         
         &:hover {
             color: $color-text-link;
@@ -94,6 +109,8 @@ annotation {
 
     /* Menu and dropdown */
     &__header-menu {
+        flex-grow: 0;
+        flex-shrink: 0;
         display: flex;
         position: relative;
     }
