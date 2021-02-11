@@ -48,7 +48,7 @@ $font-weight-bold: 500;
 // Text Colors
 $color-text: $color-gray-05;
 $color-text-inverse: $color-gray-00;
-$color-text-light: rgb(127, 133, 140); // $color-gray-04;
+$color-text-light: $color-gray-04;
 $color-text-link: $color-main;
 $color-text-link-hover: $color-text-hover;
 $color-text-link-visited: $color-text-hover;
@@ -178,6 +178,14 @@ $z-index-modal: $z-index-max - 1;
 $z-index-pundit: $z-index-max - 0;
 
 
+// ------------------------------------ //
+// #FORMS
+// ------------------------------------ //
+$form-input-height: 38px;
+$form-input-small-height: 28px;
+$form-input-placeholder-color: $color-gray-04;
+$form-border-radius: $border-radius;
+$form-dropdown-height: 30px;
 
 
 //
@@ -324,14 +332,6 @@ $z-index-pundit: $z-index-max - 0;
 // $color-button-light-text-disabled: $color-text-light;
 // $color-button-light-text-active: $color-text-link-hover;
 
-
-// ------------------------------------ //
-// #FORMS
-// ------------------------------------ //
-// $form-input-height: 38px;
-// $form-input-small-height: 26px;
-// $form-border-radius: $border-radius;
-// $form-dropdown-height: 30px;
 
 // ------------------------------------ //
 // #TRANSITIONS

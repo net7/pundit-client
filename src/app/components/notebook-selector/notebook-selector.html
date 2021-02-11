@@ -35,16 +35,19 @@
             </div>
         </ng-container>
 
-        <!-- creating a new notebook -->
-        <div *ngIf="data.mode === 'input'">
+        <!-- Creating a new notebook -->
+        <div *ngIf="data.mode === 'input'"
+             class="pnd-notebook-selector__create">
             <input type="text"
                    name="new-notebook"
+                   class="pnd-notebook-selector__create-field small"
+                   placeholder="Insert new notebook's name"
                    (input)="onInput($event.target.value)">
-            <button class="pnd-btn"
+            <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
                     (click)="onCreation('')">
                 Cancel
             </button>
-            <button class="pnd-btn"
+            <button class="pnd-btn pnd-btn-cta pnd-notebook-selector__create-btn-save"
                     (click)="onCreation(data._meta.inputValue)">
                 Create
             </button>

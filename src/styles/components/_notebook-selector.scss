@@ -12,7 +12,7 @@
     display: inline-block;
     height: $notebook-selector-height;
     min-width: 80px;
-    margin: 0 4px;
+    margin: 0;
     text-align: left;
     overflow: visible;
     color: $color-text;
@@ -20,6 +20,7 @@
     /* Selected element */
     &__selected {
         display: flex;
+        box-sizing: border-box;
         align-items: center;
         height: 28px;
         padding: 0 8px;
@@ -74,6 +75,7 @@
     &__dropdown-notebook {
         padding: $space/2 $space;
         color: $color-text;
+        font-size: $font-size-s;
         transition: color $transition-durations;
         cursor: pointer;
 
@@ -90,6 +92,7 @@
         padding: $space/2 $space;
         font-weight: $font-weight-bold;
         color: $color-text;
+        font-size: $font-size-s;
         cursor: pointer;
 
         &:hover {
@@ -97,21 +100,23 @@
         }
     }
 
-    .pnd-select-item-creation {
-        /* Buttons for saving new notebook */
-        /* This is very specific for the use of the component
-        inside annotation-popover.less */
-        .pnd-select-item-creation-button {
-            position: absolute;
-            right: -5px;
-            top: 35px;
-            padding: 5px;
-            background-color: #ffffff;
+    /* Creating a new notebook */
+    &__create {
+        text-align: right;
+    }
 
-            button {
-                margin-left: 10px;
-            }
-        }
+    &__create-field {
+        display: block;
+        width: 100%;
+        margin-bottom: $space;
+    }
+
+    &__create-btn-cancel {
+        
+    }
+
+    &__create-btn-save {
+        margin-left: $space/2;
     }
 
     /* Displayed while saving */

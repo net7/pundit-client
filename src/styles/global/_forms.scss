@@ -12,21 +12,18 @@ input[type="datetime-local"], input[type="email"],
 input[type="month"], input[type="number"], input[type="password"],
 input[type="search"], input[type="tel"], input[type="text"],
 input[type="time"], input[type="url"], input[type="week"] {
-    // padding: 0 $space;
-    // border-width: 1px;
-    // border-style: solid;
-    // border-color: $color-border-normal;
+    height: $form-input-height;
+    padding: 0 $space;
+    box-sizing: border-box;
     border: 1px solid $color-border-normal;
-    border-bottom: 1px solid $color-text;
-    // background-color: $color-background-base;
-    border-radius: 0;
-    // color: $color-text;
-    // font-size: $font-size-s;
-    // font-weight: $font-weight-normal;
-    // outline: none;
-    // box-shadow: inset 0px 0px 6px 0px rgba(0,0,0,0.05);
-    // transition-property: border;
-    // transition-duration: $transition-durations;
+    background-color: $color-background-base;
+    border-radius: $form-border-radius;
+    color: $color-text;
+    font-family: $font-family-main;
+    font-size: $font-size-s;
+    outline: none;
+    box-shadow: inset 0px 0px 6px 0px rgba(0,0,0,0.05);
+    @include placeholder;
 
     &:hover {
     }
@@ -38,27 +35,7 @@ input[type="time"], input[type="url"], input[type="week"] {
     }
 
     &.small {
-        // height: $form-input-small-height;
-        // padding: 0 8px;
-        // font-size: $font-size-s;
-        // line-height: $form-input-small-height;
-    }
-
-    &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
-        // color: $color-text-light !important;
-        // font-weight: $font-weight-normal!important;
-    }
-    &::-moz-placeholder { /* Firefox 19+ */
-        // color: $color-text-light !important;
-        // font-weight: $font-weight-normal !important;
-    }
-    &:-ms-input-placeholder { /* IE 10+ */
-        // color: $color-text-light !important;
-        // font-weight: $font-weight-normal !important;
-    }
-    &:-moz-placeholder { /* Firefox 18- */
-        // color: $color-text-light !important;
-        // font-weight: $font-weight-normal !important;
+        height: $form-input-small-height;
     }
 }
 

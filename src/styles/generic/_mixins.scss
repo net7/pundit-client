@@ -18,3 +18,33 @@
 @mixin punditGradient-1 {
     background: linear-gradient(55deg, #0d85ec 0%, #516eee 50%, #7c53ea 100%);
 }
+
+
+// ------------------------------------ //
+// #INPUT PLACEHOLDER STYLE
+// ------------------------------------ //
+@mixin placeholder {
+    &::-webkit-input-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &:-moz-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &::-moz-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &:-ms-input-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+}
