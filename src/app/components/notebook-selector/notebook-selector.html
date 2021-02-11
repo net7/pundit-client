@@ -20,8 +20,7 @@
                 <ng-container *ngFor="let notebook of data.notebookList">
                     <div (click)="onClick('option', notebook.id)"
                          class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
-                         What stuff 'tis made of, whereof it is born,
-                         I am to learn;
+                         {{ notebook.label }}
                     </div>
                 </ng-container>
 

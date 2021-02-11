@@ -82,7 +82,7 @@
 .pnd-comment-modal {
     &__close {
         position: absolute;
-        top: $space*2;
+        top: $space*1.5;
         right: $space*2;
         cursor: pointer;
 
@@ -113,6 +113,13 @@
         [class^="pundit-icon-"] {
             font-size: $font-size-l;
             color: $color-text-light;
+            transition: color $transition-durations;
+        }
+
+        &:hover {
+            [class^="pundit-icon-"] {
+                color: $color-text;
+            }   
         }
     }
 }
