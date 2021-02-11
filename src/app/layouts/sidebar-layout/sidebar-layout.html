@@ -16,7 +16,8 @@
     <div class="pnd-sidebar__header">
         <div class="pnd-sidebar__user-name">
             <ng-container *ngIf="!(ds.userService.logged$ | async)">
-                <a (click)="lb.eventHandler.emitInner('requestlogin')">Login</a>
+                <a (click)="lb.eventHandler.emitInner('requestlogin')"
+                    class="pnd-sidebar__header-login">Login</a>
             </ng-container>
             <ng-container *ngIf="ds.userService.logged$ | async"> 
                 <a (click)="lb.eventHandler.emitInner('clickusername')"

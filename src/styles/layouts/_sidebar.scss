@@ -118,6 +118,21 @@
         cursor: pointer;
     }
 
+    &__header-login {
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        transition: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
+
+        &:visited,
+        &:active {
+            color: $color-text;
+        }
+    }
+
     &__user-name-link {
         color: $color-text;
         transition: color $transition-durations;
