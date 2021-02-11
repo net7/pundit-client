@@ -44,7 +44,7 @@ export class CommentModalDS extends DataSource {
           }
         }, {
           label: _t('commentmodal#save'),
-          classes: 'primary',
+          classes: 'pnd-btn-cta',
           payload: {
             source: 'action-save'
           }

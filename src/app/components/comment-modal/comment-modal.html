@@ -2,7 +2,7 @@
     <div class="pnd-comment-modal__overlay" (click)="onClose($event.target)">
         <div class="pnd-comment-modal__window" [attr.id]="draggableTarget">
             
-            <div class="pnd-comment-modal__handle">
+            <div class="pnd-comment-modal__handle" [attr.id]="draggableHandle">
                 <span class="pundit-icon-drag"></span>
             </div>
 
@@ -17,11 +17,12 @@
             </div>
             
             <div class="pnd-comment-modal__comment-wrapper">
-                <div class="pnd-comment-modal__header-label">
+                <div class="pnd-comment-modal__comment-label">
                     {{ data.header.label }}
                 </div>
-                <div class="pnd-comment-modal__comment">
+                <div class="pnd-comment-modal__comment-textarea-wrapper">
                     <textarea *ngIf="data.visible" name="pnd-comment" 
+                    class="pnd-comment-modal__comment-textarea"
                     (change)="onChange('changetext', $event.target.value)">{{ data.form.comment.value || '' }}</textarea>
                 </div>
             </div>

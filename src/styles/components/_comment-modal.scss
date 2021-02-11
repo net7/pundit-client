@@ -25,8 +25,9 @@
 
     &__highlight-wrapper {
         padding: $space*2;
-        max-height: 140px;
-        overflow: hidden;
+        max-height: 120px;
+        overflow-x: hidden;
+        overflow-y: auto;
         border-top: 1px solid $annotation-border-color;
     }
 
@@ -44,7 +45,12 @@
         background-color: $annotation-comment-background-color;
     }
 
-    textarea {
+    &__comment-label {
+        margin-bottom: $space;
+        font-size: $font-size-s;
+    }
+
+    .pnd-comment-modal__comment-textarea {
         width: 100%;
         height: $space*20;
         resize: none;
@@ -54,21 +60,17 @@
         padding: $space*2 $space*2 0 $space*2;
     }
 
+    &__notebooks-label {
+        margin-bottom: $space;
+        font-size: $font-size-s;
+    }
 
     &__actions {
         padding: $space*2;
         text-align: right;
-        font-weight: $font-weight-normal;
-
-        .pnd-btn {
-            margin-left: $space;
-            padding: 0 1.5 * $space;
-        }
-
-        .primary {
-            // color: $color-text-inverse;
-            // font-size: $font-size-s;
-            // font-weight: $font-weight-normal;
+        
+        .pnd-btn:last-child {
+            margin-left: $space/2;
         }
     }
 }
