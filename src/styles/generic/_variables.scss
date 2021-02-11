@@ -153,6 +153,12 @@ $modal-width: 480px;
 
 
 // ------------------------------------ //
+// #COMMENT-MODAL
+// ------------------------------------ //
+$comment-modal-width: 520px;
+
+
+// ------------------------------------ //
 // NOTEBOOK-SELECTOR
 // ------------------------------------ //
 $notebook-selector-height: 28px;
@@ -172,10 +178,13 @@ $breakpoint-smartphone-portrait: 400px;
 // ------------------------------------ //
 // Z-INDEX
 // ------------------------------------ //
-$z-index-max: 2147483647;
-$z-index-sidebar: $z-index-max - 2;
-$z-index-modal: $z-index-max - 1;
-$z-index-pundit: $z-index-max - 0;
+$z-app-index-max: 2147483647;
+$z-internal-index-max: 100;
+
+$z-index-pundit: $z-app-index-max - 0;
+$z-index-annotation-tooltip: $z-app-index-max - 1;
+$z-index-sidebar: $z-internal-index-max - 1;
+$z-index-modal: $z-internal-index-max - 0;
 
 
 // ------------------------------------ //

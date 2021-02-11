@@ -8,45 +8,55 @@
    #RESOURCE MODAL
 \* ------------------------------------ */
 .pnd-comment-modal {
-    font-family: $font-family-main;
-    z-index: 200; // in front of the sidebar
+    z-index: $z-index-modal;
     box-shadow: 0px 8px 11px 0px $color-gray-03;
+    font-family: $font-family-main;
 
     &__window {
         position: relative;
-        max-width: $modal-width;
-        background: $color-background-base;
+        max-width: $comment-modal-width;
         @include cardShadow-1;
         border: 1px solid $color-border-normal;
         border-radius: $border-radius;
         margin: $space*10 auto 0 auto;
+        background: $color-background-base;
         overflow-y: auto;
     }
 
-    /* Close */
-    &__close {
-        text-align: right;
-        cursor: pointer;
+    &__highlight-wrapper {
+        padding: $space*2;
+        max-height: 140px;
+        overflow: hidden;
+        border-top: 1px solid $annotation-border-color;
     }
 
-    &__close-link {
-        color: $color-gray-04;
-    }
-
-    /* Content */
-    &__content {
-        padding: 0 $space * 2 $space * 2 $space * 2;
+    &__highlight {
+        display: inline;
+        background-color: $color-highlight;
         font-size: $font-size-s;
+        font-style: italic;
+    }
+
+    &__comment-wrapper {
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+        background-color: $annotation-comment-background-color;
     }
 
     textarea {
-        resize: none;
-        margin-bottom: $space;
         width: 100%;
-        height: $space * 20;
+        height: $space*20;
+        resize: none;
     }
 
+    &__notebooks {
+        padding: $space*2 $space*2 0 $space*2;
+    }
+
+
     &__actions {
+        padding: $space*2;
         text-align: right;
         font-weight: $font-weight-normal;
 
@@ -63,38 +73,45 @@
     }
 }
 
+
 /* ------------------------------------ *\
-   #MOVE ICON
+   #CLOSE
 \* ------------------------------------ */
 .pnd-comment-modal {
-    &__move {
-        text-align: center;
-    }
+    &__close {
+        position: absolute;
+        top: $space*2;
+        right: $space*2;
+        cursor: pointer;
 
-    &__handle {
-        display: inline-block;
-        width: 16px;
-        height: 8px;
+        [class^="pundit-icon-"] {
+            font-size: $font-size-m;
+            color: $color-text-light;
+            transition: color $transition-durations;
 
-        &:hover {
-            cursor: move;
+            &:hover {
+                color: $color-text-link;
+            }
         }
     }
+}
 
-    &__handle,
-    &__handle::before {
-        background-image: radial-gradient($color-gray-03 40%, transparent 40%);
-        background-size: 6px 6px;
-        background-position: 0 70%;
-        background-repeat: repeat-x;
-        margin-top: 4px;
-        width: 24px;
-    }
 
-    &__handle::before {
-        content: "";
-        display: block;
-        height: 11px;
+/* ------------------------------------ *\
+   #HANDLE
+\* ------------------------------------ */
+.pnd-comment-modal {
+    &__handle {
+        height: 40px;
+        cursor: grab;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        [class^="pundit-icon-"] {
+            font-size: $font-size-l;
+            color: $color-text-light;
+        }
     }
 }
 
@@ -138,13 +155,14 @@
     }
 }
 
+
 /* ------------------------------------ *\
    #OVERLAY
 \* ------------------------------------ */
 .pnd-comment-modal {
     &__overlay {
         position: fixed;
-        z-index: 999;
+        z-index: 10;
         top: 0;
         bottom: 0;
         right: 0;

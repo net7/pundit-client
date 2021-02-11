@@ -1,47 +1,54 @@
 <div *ngIf="data" [hidden]="!data.visible" class="pnd-comment-modal">
     <div class="pnd-comment-modal__overlay" (click)="onClose($event.target)">
         <div class="pnd-comment-modal__window" [attr.id]="draggableTarget">
-            <div class="pnd-comment-modal__move">
-                <span class="pnd-comment-modal__handle" [attr.id]="draggableHandle"></span>
+            
+            <div class="pnd-comment-modal__handle">
+                <span class="pundit-icon-drag"></span>
             </div>
-            <div class="pnd-comment-modal__content">
-                <div class="pnd-comment-modal__row">
+
+            <div class="pnd-comment-modal__close">
+                <a class="pundit-icon-times" (click)="onClose()"></a>
+            </div>
+            
+            <div class="pnd-comment-modal__highlight-wrapper">
+                <div class="pnd-comment-modal__highlight">
                     {{ data.selectedText }}
                 </div>
-                <div class="pnd-comment-modal__row n7-grid-2">
-                    <div class="pnd-comment-modal__header-label">
-                        {{ data.header.label }}
-                    </div>
-                    <div class="pnd-comment-modal__close">
-                        <a class="pnd-comment-modal__close-link pundit-icon-times" (click)="onClose()"></a>
-                    </div>
+            </div>
+            
+            <div class="pnd-comment-modal__comment-wrapper">
+                <div class="pnd-comment-modal__header-label">
+                    {{ data.header.label }}
                 </div>
                 <div class="pnd-comment-modal__comment">
                     <textarea *ngIf="data.visible" name="pnd-comment" 
                     (change)="onChange('changetext', $event.target.value)">{{ data.form.comment.value || '' }}</textarea>
                 </div>
-                <div class="pnd-comment-modal__notebooks n7-grid-2">
-                    <div class="pnd-comment-modal__notebooks-label">
-                        {{ data.form.notebooks.label }}
-                    </div>
-                    <div class="pnd-comment-modal__select">
-                        <select name="change-notebook"
-                                id="change-notebook"
-                                (change)="onChange('changenotebook', $event.target.value)">
-                            <option [value]="notebook.id"
-                                    *ngFor="let notebook of data.form.notebooks.select.items">
-                                {{notebook.label}}
-                            </option>
-                        </select>
-                    </div>
+            </div>
+
+            <div class="pnd-comment-modal__notebooks">
+                <div class="pnd-comment-modal__notebooks-label">
+                    {{ data.form.notebooks.label }}
                 </div>
-                <div class="pnd-comment-modal__actions">
-                    <a *ngFor="let action of data.form.actions" class="pnd-btn {{ action.classes || '' }}" 
-                    (click)="onClick($event, action.payload)">
-                        {{ action.label }}
-                    </a>
+                <div class="pnd-comment-modal__select">
+                    <select name="change-notebook"
+                            id="change-notebook"
+                            (change)="onChange('changenotebook', $event.target.value)">
+                        <option [value]="notebook.id"
+                                *ngFor="let notebook of data.form.notebooks.select.items">
+                            {{notebook.label}}
+                        </option>
+                    </select>
                 </div>
             </div>
+            
+            <div class="pnd-comment-modal__actions">
+                <a *ngFor="let action of data.form.actions" class="pnd-btn {{ action.classes || '' }}" 
+                (click)="onClick($event, action.payload)">
+                    {{ action.label }}
+                </a>
+            </div>
+
         </div>
     </div>
 </div>

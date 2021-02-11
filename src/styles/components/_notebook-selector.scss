@@ -68,8 +68,7 @@
         background-color: $color-background-base;
         border: 1px solid $color-border-normal;
         border-radius: $border-radius;
-
-        
+        @include cardShadow-1;
     }
 
     &__dropdown-notebook {
