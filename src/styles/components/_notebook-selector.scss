@@ -1,141 +1,99 @@
 /**
- * SELECT
+ * NOTEBOOK SELECTOR
  *
- * Style for pnd select
+ * Components to select a notebook or create a new one on the fly.
  */
 
 /* ------------------------------------ *\
-   #SELECT
+   #NOTEBOOK-SELECTOR
 \* ------------------------------------ */
-
-.pnd-select {
+.pnd-notebook-selector {
     position: relative;
     display: inline-block;
-    height: 28px;
+    height: $notebook-selector-height;
     min-width: 80px;
     margin: 0 4px;
     text-align: left;
     overflow: visible;
     color: $color-text;
 
-    .pnd-select-label-selected {
-        display: block;
-        position: relative;
+    /* Selected element */
+    &__selected {
+        display: flex;
+        align-items: center;
         height: 28px;
-        margin: 0 23px 0 4px;
-        padding: 0 6px;
+        padding: 0 8px;
         background-color: $color-background-light;
         border: 1px solid $color-border-normal;
-        border-radius: 3px 0 0 3px;
+        border-radius: $border-radius;
+        cursor: pointer;
+        transition: color $transition-durations;
 
-        font-size: 13px;
+        &:hover {
+            .pnd-notebook-selector__selected-icon {
+                color: $color-text-link;
+            }
+
+            &:after {
+                color: $color-text-link;
+            }
+        }
+
+        &:after {
+            content: "\e900";
+            color: $color-text;
+            font-family: 'pundit-icon-font' !important;
+            margin-left: $space;
+            font-size: $font-size-s;
+        }
+    }
+
+    &__selected-label {
+        margin-right: auto;
+        font-size: $font-size-s;
         font-weight: $font-weight-bold;
-        line-height: 28px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-
-        cursor: pointer;
     }
 
-    .pnd-select-open-options {
+    /* Dropdown */
+    &__dropdown {
+        display: none;
         position: absolute;
+        left: 0;
         right: 0;
-        top: 0;
+        top: $notebook-selector-height + 2;
+        background-color: $color-background-base;
+        border: 1px solid $color-border-normal;
+        border-radius: $border-radius;
 
-        height: 28px;
-        width: 23px;
+        
+    }
 
-        background-color: $color-background-light;
-        border-top: 1px solid $color-border-normal;
-        border-right: 1px solid $color-border-normal;
-        border-bottom: 1px solid $color-border-normal;
-        border-radius: 0 3px 3px 0;
-
-        line-height: 27px;
-        text-align: center;
+    &__dropdown-notebook {
+        padding: $space/2 $space;
+        color: $color-text;
+        transition: color $transition-durations;
         cursor: pointer;
 
         &:hover {
-            opacity: 1;
+            color: $color-text-link;
         }
 
-        .pnd-icon {
-            line-height: 27px;
+        &:not(:last-child) {
+            border-bottom: 1px solid $color-border-normal;
         }
     }
 
-    .pnd-select-option-container {
-        display: block;
-        position: absolute;
-        visibility: hidden;
-        height: auto;
-        max-height: 160px;
-        width: 100%;
+    &__dropdown-new {
+        padding: $space/2 $space;
+        font-weight: $font-weight-bold;
+        color: $color-text;
+        cursor: pointer;
 
-        background-color: $color-background-medium;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.1);
-
-        overflow-y: auto !important;
-        z-index: $z-index-max;
-
-        &.expanded {
-            visibility: visible;
-        }
-
-        .option {
-            position: relative;
-            left: 0;
-            height: auto;
-            width: 100%;
-            padding: 5px 10px;
-
-            background-color: $color-background-medium;
-            cursor: pointer;
-
-            overflow: hidden;
-
-            font-size: 13px;
-            font-weight: $font-weight-normal;
-            color: $color-text;
-            white-space: nowrap;
-            line-height: 1.5;
-            text-overflow: ellipsis;
-            text-align: left;
-
-            &:hover {
-                background-color: $color-background-dark;
-            }
-        }
-
-        .option.selected {
-            cursor: default;
-            background-color: $color-background-dark;
-
-            &:hover {
-                background-color: $color-background-dark;
-            }
-        }
-
-        .divider {
-            display: block;
-            height: 1px;
-            background-color: $color-border-normal;
-            border: none;
-            margin: 0;
-        }
-
-        .option.custom-action {
-            font-weight: $font-weight-bold;
-            color: $color-text;
-        }
-
-        /* Option drwopdown must be shown above */
-        &.move-top {
-            bottom: 28px;
-            box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+        &:hover {
+            color: $color-text-link;
         }
     }
 
@@ -161,5 +119,27 @@
         font-size: 13px;
         line-height: 30px;
         font-weight: $font-weight-bold;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #EXPANDED
+\* ------------------------------------ */
+.pnd-notebook-selector {
+    &.is-expanded {
+        .pnd-notebook-selector__selected {
+            &:after {
+                content: "\e90c";
+                color: $color-text;
+                font-family: 'pundit-icon-font' !important;
+                margin-left: $space;
+                font-size: $font-size-s;
+            }
+        }
+
+        .pnd-notebook-selector__dropdown {
+            display: block;
+        }
     }
 }

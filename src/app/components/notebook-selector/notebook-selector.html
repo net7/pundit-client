@@ -1,35 +1,33 @@
 <ng-container *ngIf="data">
-    <div class="pnd-select">
+    <div class="pnd-notebook-selector {{ data._meta?.isExpanded ? 'is-expanded' : '' }}">
 
         <ng-container *ngIf="data.mode === 'select'">
-            <!-- Label of selected element -->
-            <div class="pnd-select-label-selected"
-                 title="{{data.selectedNotebook.label}}"
+            <!-- Selected element -->
+            <div class="pnd-notebook-selector__selected"
                  (click)="onToggleExpand()">
-                {{data.selectedNotebook.label}}
+                <div class="pnd-notebook-selector__selected-label"
+                    title="{{data.selectedNotebook.label}}">
+                    {{data.selectedNotebook.label}}
+                </div>
             </div>
-
-            <!-- Toggle for opening the select -->
-            <div class="pnd-select-open-options"
-                 (click)="onToggleExpand()">
-                <span class="pundit-icon pundit-icon-angle-down"></span>
-            </div>
-
-            <div class="pnd-select-option-container {{ data._meta?.isExpanded ? 'expanded' : '' }}"
+            
+            <!-- Dropdown -->
+            <div class="pnd-notebook-selector__dropdown"
                  name="current-notebook"
                  id="current-notebook">
 
                 <!-- list of selectable notebooks -->
                 <ng-container *ngFor="let notebook of data.notebookList">
                     <div (click)="onClick('option', notebook.id)"
-                         class="option {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
-                        {{ notebook.label }}
+                         class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
+                         What stuff 'tis made of, whereof it is born,
+                         I am to learn;
                     </div>
                 </ng-container>
 
                 <!-- create new notebook option -->
                 <ng-container *ngIf="data.createOption as create">
-                    <div class="option"
+                    <div class="pnd-notebook-selector__dropdown-new"
                          (click)="onInputMode()">
                         {{ create.label }}
                     </div>
