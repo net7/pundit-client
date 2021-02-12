@@ -24,6 +24,7 @@ import { AnnotationComponent } from './components/annotation/annotation';
 import { CommentModalComponent } from './components/comment-modal/comment-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
+import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 
 import appConfig from './config';
 import i18n from './config/i18n';
@@ -49,6 +50,7 @@ config.init(appConfig);
     AnnotationComponent,
     CommentModalComponent,
     NotebookPanelComponent,
+    NotebookSelectorComponent,
     TooltipComponent,
   ],
   imports: [
