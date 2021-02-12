@@ -3,13 +3,13 @@
 
         <ng-container *ngIf="data.mode === 'select'">
             <!-- Selected element -->
-            <div class="pnd-notebook-selector__selected"
+            <button class="pnd-notebook-selector__selected"
                  (click)="onToggleExpand()">
                 <div class="pnd-notebook-selector__selected-label"
                     title="{{data.selectedNotebook.label}}">
                     {{data.selectedNotebook.label}}
                 </div>
-            </div>
+            </button>
             
             <!-- Dropdown -->
             <div class="pnd-notebook-selector__dropdown"
