@@ -113,4 +113,12 @@ export class AnnotationComponent {
     if (!this.emit) return;
     this.emit('mouseleave', payload);
   }
+
+  /**
+   * Event emitter for the internal notebook-selector component
+   */
+  onNotebookSelection = (type, payload) => {
+    if (!this.emit) return;
+    this.emit(type, payload);
+  }
 }

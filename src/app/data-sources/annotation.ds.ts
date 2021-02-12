@@ -1,9 +1,21 @@
 import { DataSource } from '@n7-frontend/core';
 import { AnnotationData } from '../components/annotation/annotation';
+import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class AnnotationDS extends DataSource {
   transform(data: AnnotationData[]): AnnotationData[] {
     return data;
+    return data.map((d) => ({
+      ...d,
+      _meta: {
+        notebookSelectorData: {
+          createOption: {
+            label: 'New Notebook',
+            value: 'createnew',
+          }
+        } as NotebookSelectorData
+      }
+    }));
   }
 
   toggleCollapse(id: string) {
