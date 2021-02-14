@@ -23,6 +23,11 @@ export class AnnotationDS extends DataSource {
     annotation.isCollapsed = !annotation.isCollapsed;
   }
 
+  setCollapsedState(id: string, collapse: boolean) {
+    const annotation = this.getAnnotation(id);
+    annotation.isCollapsed = collapse;
+  }
+
   updateMenuState(id: string, source) {
     const annotation = this.getAnnotation(id);
     if (source === 'menu-header') {
