@@ -114,7 +114,11 @@ export class AnnotationService {
     const notebookSelectorData: NotebookSelectorData = {
       selectedNotebook: notebook,
       notebookList: notebooks,
-      mode: 'select'
+      mode: 'select',
+      createOption: {
+        label: 'New notebook',
+        value: 'createnotebook',
+      }
     };
     let comment;
     if (annotation.type === 'Commenting') {

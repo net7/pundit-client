@@ -1,24 +1,14 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-
-/**
- * Represents a notebook item inside
- * of the select element.
- */
-type NotebookOption = {
-  /** internal ID of the notebook */
-  id: string;
-  /** Label to display as an option */
-  label: string;
-}
+import { NotebookData } from 'src/app/services/notebook.service';
 
 /**
  * Data for NotebookSelector Component.
  */
 export interface NotebookSelectorData {
   /** ID of the default selected notebook */
-  selectedNotebook: NotebookOption;
+  selectedNotebook: NotebookData;
   /** Data for the list of notebooks */
-  notebookList: NotebookOption[];
+  notebookList: NotebookData[];
   /** Data for the contextual notebook creation */
   createOption?: {
     /** onChange value */

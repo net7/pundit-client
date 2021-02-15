@@ -4,13 +4,16 @@
         <ng-container *ngIf="data.mode === 'select'">
             <!-- Selected element -->
             <button class="pnd-notebook-selector__selected"
-                 (click)="onToggleExpand()">
+                    (click)="onToggleExpand()">
                 <div class="pnd-notebook-selector__selected-label"
-                    title="{{data.selectedNotebook.label}}">
+                     title="{{data.selectedNotebook.label}}">
+                    <ng-container *ngTemplateOutlet="sharingModeIcon;
+                                  context: {sharingMode: data.selectedNotebook.sharingMode}">
+                    </ng-container>
                     {{data.selectedNotebook.label}}
                 </div>
             </button>
-            
+
             <!-- Dropdown -->
             <div class="pnd-notebook-selector__dropdown"
                  name="current-notebook"
@@ -20,7 +23,10 @@
                 <ng-container *ngFor="let notebook of data.notebookList">
                     <div (click)="onClick('option', notebook.id)"
                          class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
-                         {{ notebook.label }}
+                        <ng-container *ngTemplateOutlet="sharingModeIcon; context: {
+                             sharingMode: notebook.sharingMode
+                         }"></ng-container>
+                        {{ notebook.label }}
                     </div>
                 </ng-container>
 
@@ -54,3 +60,15 @@
 
     </div>
 </ng-container>
+
+<!-- NG TEMPLATES -->
+
+<ng-template #sharingModeIcon
+             let-icon="sharingMode">
+    <span class="pundit-icon-lock"
+          *ngIf="icon === 'private'">
+    </span>
+    <span class="pundit-icon-users"
+          *ngIf="icon === 'shared'">
+    </span>
+</ng-template>
