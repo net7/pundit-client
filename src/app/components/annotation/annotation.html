@@ -60,7 +60,9 @@
                 <span class="pundit-icon-compress"></span>
             </button>
 
-            <div *ngIf="data.activeMenu" class="pnd-annotation__menu-dropdown">
+            <div *ngIf="data.activeMenu" 
+                 class="pnd-annotation__menu-dropdown"
+                 [ngClass]="{'has-notebooks': data.activeMenu === 'notebooks' }">
                 <!-- menu actions -->
                 <div class="pnd-annotation__menu-dropdown-actions"
                      *ngIf="data.activeMenu === 'actions'">
@@ -74,10 +76,7 @@
                      *ngIf="data.activeMenu === 'notebooks'">
                     <div class="pnd-annotation__menu-notebooks-header"
                          (click)="onClick($event, data.menu.notebooks.header.payload)">
-                        <!-- notebooks header label -->
-                        <span class="pnd-annotation__notebooks-label">
-                            {{ data.menu.notebooks.header.label }}
-                        </span>
+                        {{ data.menu.notebooks.header.label }}                        
                     </div>
                     <div class="pnd-annotation__select-cont">
                         <notebook-selector [data]="data._meta.notebookSelectorData"

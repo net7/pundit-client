@@ -165,10 +165,20 @@ annotation {
         background-color: $color-background-base;
         border: 1px solid $color-border-normal;
         border-radius: $border-radius;
+        @include cardShadow-1;
+
+        &.has-notebooks {
+            width: 240px;
+            padding: $space;
+        }
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
     }
 
-    &__menu-dropdown-actions {
-
+    &__menu-notebooks-header {
+        margin-bottom: $space/2;
     }
 
     &__menu-dropdown-action {
