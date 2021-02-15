@@ -93,12 +93,6 @@ export class AnnotationComponent {
     this.emit('click', payload);
   }
 
-  onChange(ev: Event, payload) {
-    if (!this.emit) return;
-    ev.stopPropagation();
-    this.emit('change', payload);
-  }
-
   onContainerClick(payload) {
     if (!this.emit) return;
     this.emit('click', payload);
@@ -112,5 +106,16 @@ export class AnnotationComponent {
   onLeave(payload) {
     if (!this.emit) return;
     this.emit('mouseleave', payload);
+  }
+
+  /**
+   * Event emitter for the internal notebook-selector component
+   */
+  onNotebookSelection = (type, payload) => {
+    if (!this.emit) return;
+    const annotationID = this.data.payload.id;
+    const notebookID = payload;
+    if (!annotationID || !notebookID) return;
+    this.emit(type, { annotation: annotationID, notebook: notebookID });
   }
 }
