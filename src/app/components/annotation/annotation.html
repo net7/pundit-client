@@ -55,8 +55,8 @@
                   [ngClass]="data.menu.icon['id']"
                   (click)="onClick($event, data.menu.icon['payload'])">
             </button>
-
-            <button class="pnd-annotation__header-menu-button">
+            <button class="pnd-annotation__header-menu-button"
+                    (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
                 <span class="pundit-icon-compress"></span>
             </button>
 
@@ -80,15 +80,9 @@
                         </span>
                     </div>
                     <div class="pnd-annotation__select-cont">
-                        <select class="pnd-annotation__select"
-                                (change)="onChange($event, { annotation: data.payload.id, notebook: $event.target.value })"
-                                (click)="onClick($event, 'notebook-select')">
-                            <option *ngFor="let notebook of data.menu.notebooks.items"
-                                    value="{{ notebook.payload.notebookId }}"
-                                    [selected]="notebook.payload.notebookId === data._raw.notebookId">
-                                {{ notebook.label }}
-                            </option>
-                        </select>
+                        <notebook-selector [data]="data._meta.notebookSelectorData"
+                                           [emit]="onNotebookSelection">
+                        </notebook-selector>
                     </div>
                 </div>
             </div>

@@ -20,7 +20,7 @@ export interface NotebookSelectorData {
   /** Data for the list of notebooks */
   notebookList: NotebookOption[];
   /** Data for the contextual notebook creation */
-  createOption: {
+  createOption?: {
     /** onChange value */
     value: any;
     /** Label to display as an option */

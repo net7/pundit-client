@@ -16,9 +16,10 @@
     text-align: left;
     overflow: visible;
     color: $color-text;
-
+    
     /* Selected element */
     &__selected {
+        width: 100%;
         display: flex;
         box-sizing: border-box;
         align-items: center;
