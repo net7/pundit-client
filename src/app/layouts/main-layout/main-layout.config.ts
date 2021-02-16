@@ -8,6 +8,10 @@ export const MainLayoutConfig = {
   widgets: [
     { id: 'comment-modal' },
     {
+      id: 'delete-modal',
+      hasStaticData: true
+    },
+    {
       id: 'tooltip',
       hasStaticData: true
     },

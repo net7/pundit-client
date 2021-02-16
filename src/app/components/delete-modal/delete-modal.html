@@ -1,0 +1,29 @@
+<div *ngIf="data" [hidden]="!data.visible" class="pnd-delete-modal">
+    <div class="pnd-delete-modal__overlay" (click)="onClose($event.target)">
+        <div class="pnd-delete-modal__window">
+            <div class="pnd-delete-modal__close">
+                <a class="pundit-icon-times" (click)="onClose()"></a>
+            </div>
+            
+            <div class="pnd-delete-modal__header">
+                <div class="pnd-delete-modal__header-label">
+                    {{ data.header.label }}
+                </div>
+            </div>
+            
+            <div class="pnd-delete-modal__body">
+                <div class="pnd-delete-modal__body-text">
+                    {{ data.body.text }}
+                </div>
+            </div>
+            
+            <div class="pnd-delete-modal__actions">
+                <a *ngFor="let action of data.actions" class="pnd-btn {{ action.classes || '' }}" 
+                (click)="onClick($event, action.payload)">
+                    {{ action.label }}
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

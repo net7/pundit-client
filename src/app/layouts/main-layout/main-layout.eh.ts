@@ -52,6 +52,8 @@ export class MainLayoutEH extends EventHandler {
 
   private pendingAnnotationPayload: CommentAnnotation;
 
+  private annotationIdToDelete: string;
+
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
@@ -141,6 +143,24 @@ export class MainLayoutEH extends EventHandler {
           // clear pending
           this.removePendingAnnotation();
           break;
+        case 'delete-modal.ok':
+          this.dataSource.onAnnotationDelete(this.annotationIdToDelete).pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            })
+          ).subscribe(() => {
+            this.anchorService.remove(this.annotationIdToDelete);
+            // signal
+            this.layoutEvent$.next({
+              type: 'annotationdeletesuccess',
+              payload: this.annotationIdToDelete
+            });
+          });
+          break;
+        case 'delete-modal.close':
+          this.annotationIdToDelete = null;
+          break;
         default:
           break;
       }
@@ -168,17 +188,9 @@ export class MainLayoutEH extends EventHandler {
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case 'annotationdelete':
-          this.dataSource.onAnnotationDelete(payload).pipe(
-            catchError((e) => {
-              this.handleError(e);
-              return EMPTY;
-            })
-          ).subscribe(() => {
-            this.anchorService.remove(payload);
-            // signal
-            this.layoutEvent$.next({ type: 'annotationdeletesuccess', payload });
-          });
+        case 'annotationdeleteclick':
+          this.annotationIdToDelete = payload;
+          this.emitOuter('annotationdeleteclick');
           break;
         case 'annotationmouseenter':
           this.anchorService.addHoverClass(payload.id);

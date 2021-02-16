@@ -94,7 +94,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.updateNotebookPanel();
           break;
         case 'annotation.delete': // delete an annotation
-          this.layoutEvent$.next({ type: 'annotationdelete', payload });
+          this.layoutEvent$.next({ type: 'annotationdeleteclick', payload });
           break;
         case 'annotation.updatenotebook': // move an annotation to another notebook
           this.handleAnnotationUpdate(payload.annotation, payload.notebook);

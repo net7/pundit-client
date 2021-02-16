@@ -10,5 +10,9 @@
     <pnd-comment-modal [data]="lb.widgets['comment-modal'].ds.out$ | async"
                        [emit]="lb.widgets['comment-modal'].emit">
     </pnd-comment-modal>
+    <!-- Delete annotation template -->
+    <pnd-delete-modal [data]="lb.widgets['delete-modal'].ds.out$ | async"
+                      [emit]="lb.widgets['delete-modal'].emit">
+    </pnd-delete-modal>
     <lib-pundit-login></lib-pundit-login>
 </div>
