@@ -100,7 +100,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.handleAnnotationUpdate(payload.annotation, payload.notebook);
           this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           break;
-        case 'annotation.togglecollapse': // collapse an annotation (UI)
+        case 'annotation.togglecollapsed': // collapse an annotation (UI)
           this.dataSource.updateAnnotations();
           break;
         case 'annotation.mouseenter': // highlight the corresponding annotation in the host
