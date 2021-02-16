@@ -3,5 +3,10 @@ import { _c } from '../config';
 
 export function search() {
   const baseURL = _c('baseURL');
-  return notebook.search({ baseURL, data: {} });
+  return notebook.search({
+    baseURL,
+    data: {
+      size: 20
+    }
+  });
 }

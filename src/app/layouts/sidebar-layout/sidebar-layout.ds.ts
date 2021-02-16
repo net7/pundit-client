@@ -28,6 +28,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;
     this.userService = payload.userService;
+    this.one('annotation').updateOptions({ notebookService: this.notebookService });
   }
 
   updateNotebookPanel() {

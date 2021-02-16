@@ -41,6 +41,9 @@ export class AnnotationEH extends EventHandler {
         case 'annotation.mouseleave':
           this.emitOuter('mouseleave', payload);
           break;
+        case 'annotation.createnotebook':
+          this.emitOuter('createnotebook', payload);
+          break;
         default:
           console.warn('unhandled inner event of type', type);
           break;

@@ -1,7 +1,9 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
-import { Subject, ReplaySubject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Subject, ReplaySubject, EMPTY } from 'rxjs';
+import {
+  catchError, takeUntil, withLatestFrom
+} from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -12,6 +14,7 @@ import {
   AnnotationAttributes, CommentAnnotation, PublicNotebook, SharingModeType
 } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
+import { from } from 'rxjs/internal/observable/from';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 import * as notebook from '../../models/notebook';
 import * as annotation from '../../models/annotation';
@@ -137,6 +140,34 @@ export class SidebarLayoutEH extends EventHandler {
             sharingMode,
             userId
           }, { sharingMode: newSharingMode });
+        } break;
+        case 'annotation.createnotebook': {
+          // create default data for the new notebook
+          const notebookData: PublicNotebook = {
+            label: payload.notebook, // assign the chosen name
+            sharingMode: 'public',
+            userId: this.userService.whoami().id, // authentication
+          };
+          // create the notebook in the backend first to generate the id
+          from(notebook.create({
+            data: notebookData
+          })).pipe(
+            catchError((e) => {
+              console.error(e);
+              return EMPTY;
+            })
+          ).subscribe((res) => {
+            // use the received id to cache the new notebook
+            this.notebookService.create({
+              id: res.data.id,
+              ...notebookData, // use the same data for the cache
+              created: new Date(),
+              changed: new Date(),
+            });
+            this.dataSource.updateNotebookPanel();
+            this.handleAnnotationUpdate(payload.annotation, res.data.id);
+            this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
+          });
         } break;
         case 'notebook-panel.createnotebook': {
           // create default data for the new notebook
@@ -287,8 +318,9 @@ export class SidebarLayoutEH extends EventHandler {
     if (rawAnnotation.type === 'Commenting') {
       (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
     }
-    annotation.update(annotationID, annotationUpdate);
-
+    setTimeout(() => { // waiting for elastic-search index update
+      annotation.update(annotationID, annotationUpdate);
+    }, 1100);
     // update annotation component / collection
     this.emitOuter('annotationupdatenb', {
       annotationID,

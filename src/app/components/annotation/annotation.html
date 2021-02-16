@@ -76,9 +76,10 @@
                      *ngIf="data.activeMenu === 'notebooks'">
                     <div class="pnd-annotation__menu-notebooks-header"
                          (click)="onClick($event, data.menu.notebooks.header.payload)">
-                        {{ data.menu.notebooks.header.label }}                        
+                        {{ data.menu.notebooks.header.label }}
                     </div>
-                    <div class="pnd-annotation__select-cont">
+                    <div class="pnd-annotation__select-cont"
+                         *ngIf="data._meta.notebookSelectorData">
                         <notebook-selector [data]="data._meta.notebookSelectorData"
                                            [emit]="onNotebookSelection">
                         </notebook-selector>
