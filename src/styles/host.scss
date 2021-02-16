@@ -26,3 +26,12 @@ pnd-mark.pnd-mark:hover {
 pnd-mark.pnd-mark.is-hovered {
     background-color: rgba(46, 230, 230, 0.4);
 }
+
+// ------------------------------------ //
+// #HOST BODY
+// ------------------------------------ //
+body.pnd-annotation-sidebar-expanded {
+    position: static;
+    margin-right: 326px;
+    width: auto;
+}

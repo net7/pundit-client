@@ -20,6 +20,8 @@ import { MainLayoutDS } from './main-layout.ds';
 
 const PENDING_ANNOTATION_ID = 'pending-id';
 
+const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
+
 export class MainLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
@@ -184,6 +186,15 @@ export class MainLayoutEH extends EventHandler {
         case 'annotationmouseleave':
           this.anchorService.removeHoverClass(payload.id);
           break;
+        case 'sidebarcollapse': {
+          const { isCollapsed } = payload;
+          if (isCollapsed) {
+            document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
+          } else {
+            document.body.classList.add(SIDEBAR_EXPANDED_CLASS);
+          }
+          break;
+        }
         case 'logout':
           this.userService.logout();
           this.onLogout();

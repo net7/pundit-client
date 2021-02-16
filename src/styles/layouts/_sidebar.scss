@@ -44,7 +44,7 @@
         border-radius: 50%;
         cursor: pointer;
         z-index: 30;
-        transition: right $transition-durations ease-out;
+        // transition: right $transition-durations ease-out;
     }
 
     &.is-expanded {
@@ -109,7 +109,7 @@
         @include cardShadow-1;
         z-index: 20;
         opacity: 1;
-        transition: all $transition-durations ease-out;
+        // transition: all $transition-durations ease-out;
     }
 
     &__user-name {
@@ -121,7 +121,7 @@
     &__header-login {
         font-weight: $font-weight-bold;
         color: $color-text;
-        transition: color $transition-durations;
+        // transition: color $transition-durations;
 
         &:hover {
             color: $color-text-link;
@@ -135,7 +135,7 @@
 
     &__user-name-link {
         color: $color-text;
-        transition: color $transition-durations;
+        // transition: color $transition-durations;
 
         &:hover {
             color: $color-text-link;
@@ -164,7 +164,7 @@
         cursor: pointer;
         font-size: $font-size-m;
         color: $color-text-light;
-        transition: color $transition-durations;
+        // transition: color $transition-durations;
 
         &:hover {
             color: $color-text-link;
@@ -191,7 +191,7 @@
         height: 100vh;
         background-color: $color-background-light;
         border-left: 1px solid $color-border-normal;
-        transition: all $transition-durations*1.5 ease-out;
+        // transition: all $transition-durations*1.5 ease-out;
         @include cardShadow-left;
     }
 

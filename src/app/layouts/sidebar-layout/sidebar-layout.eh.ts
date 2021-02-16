@@ -234,10 +234,13 @@ export class SidebarLayoutEH extends EventHandler {
         if (isCollapsed && notebookOpen) {
           this.dataSource.notebookEditor.next(false);
         }
-        // sidebar open/close animation timeout
-        setTimeout(() => {
-          this.dataSource.updateAnnotations();
-        }, 200);
+        this.dataSource.updateAnnotations();
+
+        // signal
+        this.layoutEvent$.next({
+          type: 'sidebarcollapse',
+          payload: { isCollapsed }
+        });
       });
   }
 
