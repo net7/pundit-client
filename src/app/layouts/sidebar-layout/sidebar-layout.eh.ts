@@ -101,8 +101,16 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           break;
         case 'annotation.togglecollapsed': // collapse an annotation (UI)
+        {
+          const sidebarIsCollapsed = this.dataSource.isCollapsed.value;
+          const { collapsed } = payload;
+          if (!collapsed && sidebarIsCollapsed) {
+            // Open sidebar
+            this.dataSource.isCollapsed.next(false);
+          }
           this.dataSource.updateAnnotations();
           break;
+        }
         case 'annotation.mouseenter': // highlight the corresponding annotation in the host
           this.layoutEvent$.next({
             type: 'annotationmouseenter',
@@ -225,9 +233,11 @@ export class SidebarLayoutEH extends EventHandler {
       .subscribe(([isCollapsed, notebookOpen]) => {
         if (isCollapsed && notebookOpen) {
           this.dataSource.notebookEditor.next(false);
-        } else if (!isCollapsed) {
-          this.dataSource.updateAnnotations();
         }
+        // sidebar open/close animation timeout
+        setTimeout(() => {
+          this.dataSource.updateAnnotations();
+        }, 200);
       });
   }
 

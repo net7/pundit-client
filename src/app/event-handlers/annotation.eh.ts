@@ -16,11 +16,11 @@ export class AnnotationEH extends EventHandler {
           switch (source) {
             case 'box': // click on the annotation container
               this.dataSource.setCollapsedState(id, false);
-              this.emitOuter('togglecollapsed');
+              this.emitOuter('togglecollapsed', { collapsed: false });
               break;
             case 'compress':
               this.dataSource.setCollapsedState(id, true);
-              this.emitOuter('togglecollapsed');
+              this.emitOuter('togglecollapsed', { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
               this.emitOuter('delete', id);
