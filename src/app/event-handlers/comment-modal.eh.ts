@@ -15,12 +15,13 @@ export class CommentModalEH extends EventHandler {
           } else if (source === 'notebooks-header') {
             this.dataSource.notebooksToggle();
           } else if (source === 'action-save') {
-            this.emitOuter('save');
             this.dataSource.close();
+            this.emitOuter('save');
           }
           break;
         }
-        case 'comment-modal.changetext': // the comment is edited
+        case 'comment-modal.textchange': // the comment is edited
+          this.dataSource.onTextChange(payload);
           this.emitOuter('change', payload);
           break;
         case 'comment-modal.changenotebook': // a different notebook is selected

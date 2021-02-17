@@ -1,6 +1,8 @@
 import { DataSource, _t } from '@n7-frontend/core';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 
+const TEXT_MIN_LIMIT = 3;
+
 export class CommentModalDS extends DataSource {
   private instance;
 
@@ -45,6 +47,7 @@ export class CommentModalDS extends DataSource {
         }, {
           label: _t('commentmodal#save'),
           classes: 'pnd-btn-cta',
+          disabled: true,
           payload: {
             source: 'action-save'
           }
@@ -68,5 +71,17 @@ export class CommentModalDS extends DataSource {
     const { select } = this.output.form.notebooks;
     const { classes } = select;
     select.classes = classes ? null : 'is-open';
+  }
+
+  public onTextChange(text) {
+    const { actions } = this.output.form;
+    const textLength = (typeof text === 'string' && text.trim())
+      ? text.length
+      : 0;
+
+    // update save button disabled state
+    setTimeout(() => {
+      actions[1].disabled = textLength < TEXT_MIN_LIMIT;
+    });
   }
 }

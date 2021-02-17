@@ -37,6 +37,7 @@ export interface CommentModalData {
       label: string;
       payload: any;
       classes?: string;
+      disabled?: boolean;
     }[];
   };
   _setInstance: (instance: any) => void;
