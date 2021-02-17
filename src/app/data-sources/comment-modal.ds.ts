@@ -10,6 +10,10 @@ export class CommentModalDS extends DataSource {
 
   transform(data): CommentModalData {
     const { currentNotebook, notebooks, selected } = data;
+
+    // textarea focus
+    this.focusTextarea();
+
     return {
       selectedText: selected,
       visible: true,
@@ -59,6 +63,16 @@ export class CommentModalDS extends DataSource {
         this.defaultPosition = { x, y };
       }
     };
+  }
+
+  private focusTextarea() {
+    setTimeout(() => {
+      const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+      const textarea = shadowRoot.querySelector('.pnd-comment-modal textarea') as HTMLElement;
+      if (textarea) {
+        textarea.focus();
+      }
+    });
   }
 
   public close() {
