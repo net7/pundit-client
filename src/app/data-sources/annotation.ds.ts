@@ -49,6 +49,11 @@ export class AnnotationDS extends DataSource {
         payload: { source: 'notebook', id: notebook.id }
       }
     };
+    if (annotation._meta?.notebookSelectorData) {
+      annotation._meta.notebookSelectorData.selectedNotebook = notebook;
+      annotation._meta.isExpanded = false;
+      annotation.activeMenu = undefined;
+    }
   }
 
   onAnchorMouseOver(id: string) {
