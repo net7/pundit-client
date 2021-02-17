@@ -5,17 +5,6 @@ import { NotebookSelectorData } from '../components/notebook-selector/notebook-s
 export class AnnotationDS extends DataSource {
   transform(data: AnnotationData[]): AnnotationData[] {
     return data;
-    return data.map((d) => ({
-      ...d,
-      _meta: {
-        notebookSelectorData: {
-          createOption: {
-            label: 'New Notebook',
-            value: 'createnew',
-          }
-        } as NotebookSelectorData
-      }
-    }));
   }
 
   toggleCollapse(id: string) {
@@ -33,7 +22,21 @@ export class AnnotationDS extends DataSource {
     if (source === 'menu-header') {
       annotation.activeMenu = annotation.activeMenu ? undefined : 'actions';
     }
-    if (source === 'action-notebooks') {
+    if (source === 'action-notebooks') { // click on "Change notebook"
+      const { notebookService } = this.options;
+      const { notebookId, userId } = annotation._meta;
+      const notebook = notebookService.getNotebookById(notebookId);
+      const notebooks = notebookService.getByUserId(userId);
+      const notebookSelectorData: NotebookSelectorData = {
+        selectedNotebook: notebook,
+        notebookList: notebooks,
+        mode: 'select',
+        createOption: {
+          label: 'New notebook',
+          value: 'createnotebook',
+        }
+      };
+      annotation._meta.notebookSelectorData = notebookSelectorData;
       annotation.activeMenu = 'notebooks';
     }
   }
@@ -46,6 +49,11 @@ export class AnnotationDS extends DataSource {
         payload: { source: 'notebook', id: notebook.id }
       }
     };
+    if (annotation._meta?.notebookSelectorData) {
+      annotation._meta.notebookSelectorData.selectedNotebook = notebook;
+      annotation._meta.isExpanded = false;
+      annotation.activeMenu = undefined;
+    }
   }
 
   onAnchorMouseOver(id: string) {

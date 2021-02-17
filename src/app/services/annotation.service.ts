@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnnotationData } from '../components/annotation/annotation';
-import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 import { isAnchorPayload } from '../types';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
@@ -111,15 +110,6 @@ export class AnnotationService {
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
     const hasMenu = currentUser.id === user.id;
-    const notebookSelectorData: NotebookSelectorData = {
-      selectedNotebook: notebook,
-      notebookList: notebooks,
-      mode: 'select',
-      createOption: {
-        label: 'New notebook',
-        value: 'createnotebook',
-      }
-    };
     let comment;
     if (annotation.type === 'Commenting') {
       const { content } = annotation;
@@ -131,7 +121,8 @@ export class AnnotationService {
         id,
         created,
         startPosition,
-        notebookSelectorData
+        userId,
+        notebookId
       },
       _raw: annotation,
       payload: {
