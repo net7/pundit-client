@@ -35,5 +35,18 @@ export class CommentModalEH extends EventHandler {
           break;
       }
     });
+
+    this.outerEvents$.subscribe(({ type }) => {
+      switch (type) {
+        case 'main-layout.keyupescape':
+          if (this.dataSource.isVisible()) {
+            this.dataSource.close();
+            this.emitOuter('close');
+          }
+          break;
+        default:
+          break;
+      }
+    });
   }
 }

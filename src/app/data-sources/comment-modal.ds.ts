@@ -98,4 +98,6 @@ export class CommentModalDS extends DataSource {
       actions[1].disabled = textLength < TEXT_MIN_LIMIT;
     });
   }
+
+  public isVisible = () => this.output?.visible;
 }

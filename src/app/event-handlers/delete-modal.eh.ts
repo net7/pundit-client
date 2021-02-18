@@ -29,6 +29,12 @@ export class DeleteModalEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
+        case 'main-layout.keyupescape':
+          if (this.dataSource.isVisible()) {
+            this.dataSource.close();
+            this.emitOuter('close');
+          }
+          break;
         case 'main-layout.annotationdeleteclick':
           this.dataSource.open();
           break;

@@ -58,6 +58,8 @@ class TooltipHandler {
     this.changed$.next();
   }
 
+  isOpen = () => this.tooltipWrapper.getAttribute('data-show') !== null;
+
   /**
    * Loads the tooltip instance when pundit HTML is loaded
    */

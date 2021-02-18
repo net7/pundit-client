@@ -188,6 +188,10 @@ export class MainLayoutEH extends EventHandler {
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
+        case 'keyupescape':
+          this.dataSource.onKeyupEscape();
+          this.emitOuter(type);
+          break;
         case 'annotationdeleteclick':
           this.annotationIdToDelete = payload;
           this.emitOuter('annotationdeleteclick');

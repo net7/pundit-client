@@ -1,5 +1,5 @@
 import {
-  Component, OnInit, OnDestroy, ChangeDetectorRef
+  Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener
 } from '@angular/core';
 import { PunditLoginService } from '@pundit/login';
 import { ReplaySubject } from 'rxjs';
@@ -17,6 +17,15 @@ import { MainLayoutConfig as config } from './main-layout.config';
   templateUrl: './main-layout.html'
 })
 export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
+  @HostListener('document:keyup', ['$event'])
+  onKeyUp({ key }: KeyboardEvent) {
+    if (key === 'Escape') {
+      this.layoutEvent$.next({
+        type: 'keyupescape'
+      });
+    }
+  }
+
   public layoutEvent$: ReplaySubject<LayoutEvent> = new ReplaySubject();
 
   constructor(

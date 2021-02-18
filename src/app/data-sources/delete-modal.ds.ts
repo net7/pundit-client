@@ -33,4 +33,6 @@ export class DeleteModalDS extends DataSource {
   public open() {
     this.output.visible = true;
   }
+
+  public isVisible = () => this.output?.visible;
 }

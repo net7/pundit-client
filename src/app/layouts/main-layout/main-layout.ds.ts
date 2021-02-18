@@ -100,4 +100,11 @@ export class MainLayoutDS extends LayoutDataSource {
       switchMap(({ data }) => of({ id: data.id, requestPayload }))
     );
   }
+
+  onKeyupEscape() {
+    if (tooltipHandler.isOpen()) {
+      selectionHandler.clearSelection();
+      tooltipHandler.hide();
+    }
+  }
 }
