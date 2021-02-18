@@ -51,6 +51,7 @@ export class AnnotationDS extends DataSource {
     };
     if (annotation._meta?.notebookSelectorData) {
       annotation._meta.notebookSelectorData.selectedNotebook = notebook;
+      annotation._meta.notebookId = notebook.id;
       annotation._meta.isExpanded = false;
       annotation.activeMenu = undefined;
     }
