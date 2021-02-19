@@ -220,7 +220,11 @@ export class MainLayoutEH extends EventHandler {
             isUpdate: true,
           };
           this.annotationUpdatePayload = annotation._raw;
-          this.dataSource.onComment({ textQuote: annotation.body, notebook });
+          this.dataSource.onComment({
+            textQuote: annotation.body,
+            notebook,
+            comment: annotation.comment
+          });
         } break;
         case 'sidebarcollapse': {
           const { isCollapsed } = payload;

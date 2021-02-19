@@ -9,7 +9,9 @@ export class CommentModalDS extends DataSource {
   private defaultPosition: { x: number; y: number };
 
   transform(data): CommentModalData {
-    const { currentNotebook, notebooks, textQuote } = data;
+    const {
+      currentNotebook, notebooks, textQuote, comment
+    } = data;
 
     // textarea focus
     this.focusTextarea();
@@ -22,7 +24,7 @@ export class CommentModalDS extends DataSource {
       },
       form: {
         comment: {
-          value: null
+          value: comment || null
         },
         notebooks: {
           label: _t('commentmodal#notebook'),

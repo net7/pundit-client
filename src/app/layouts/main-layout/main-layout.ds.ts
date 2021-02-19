@@ -53,7 +53,7 @@ export class MainLayoutDS extends LayoutDataSource {
    * @param notebook (optional) The notebook of the annotation
    * @param comment (optional) The existing comment
    */
-  onComment({ textQuote, notebook }: {
+  onComment({ textQuote, notebook, comment }: {
     textQuote: string;
     notebook?: NotebookData;
     comment?: string;
@@ -63,7 +63,9 @@ export class MainLayoutDS extends LayoutDataSource {
     tooltipHandler.hide();
     const currentNotebook = notebook || this.notebookService.getSelected();
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-    this.one('comment-modal').update({ textQuote, currentNotebook, notebooks });
+    this.one('comment-modal').update({
+      textQuote, currentNotebook, notebooks, comment
+    });
   }
 
   onAnnotationDelete(id: string) {
