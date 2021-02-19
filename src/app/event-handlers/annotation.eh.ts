@@ -12,18 +12,20 @@ export class AnnotationEH extends EventHandler {
          */
         case 'annotation.click': {
           const { source, id } = payload;
-          // collapse
           switch (source) {
-            case 'box': // click on the annotation container
+            case 'box': // click on the annotation container (while collapsed)
               this.dataSource.setCollapsedState(id, false);
               this.emitOuter('togglecollapsed', { collapsed: false });
               break;
-            case 'compress':
+            case 'compress': // collapse the annotation
               this.dataSource.setCollapsedState(id, true);
               this.emitOuter('togglecollapsed', { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
               this.emitOuter('delete', id);
+              break;
+            case 'action-comment': // click on the "edit comment" button
+              this.emitOuter('editcomment', id);
               break;
             default:
               // annotation update menu state

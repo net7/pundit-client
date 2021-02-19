@@ -11,6 +11,7 @@ import { LayoutEvent } from 'src/app/types';
 import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import {
+  Annotation,
   AnnotationAttributes, CommentAnnotation, PublicNotebook, SharingModeType
 } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
@@ -100,7 +101,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$.next({ type: 'annotationdeleteclick', payload });
           break;
         case 'annotation.updatenotebook': // move an annotation to another notebook
-          this.handleAnnotationUpdate(payload.annotation, payload.notebook);
+          this.updateAnnotationNotebook(payload.annotation, payload.notebook);
           this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           break;
         case 'annotation.togglecollapsed': // collapse an annotation (UI)
@@ -123,6 +124,12 @@ export class SidebarLayoutEH extends EventHandler {
         case 'annotation.mouseleave': // remove the highlight from the corresponding annotation
           this.layoutEvent$.next({
             type: 'annotationmouseleave',
+            payload
+          });
+          break;
+        case 'annotation.editcomment': // open the comment modal and let the user edit
+          this.layoutEvent$.next({
+            type: 'annotationeditcomment',
             payload
           });
           break;
@@ -165,7 +172,7 @@ export class SidebarLayoutEH extends EventHandler {
               changed: new Date(),
             });
             this.dataSource.updateNotebookPanel();
-            this.handleAnnotationUpdate(payload.annotation, res.data.id);
+            this.updateAnnotationNotebook(payload.annotation, res.data.id);
             this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
           });
         } break;
@@ -217,6 +224,9 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.updateAnnotations(true);
           break;
         }
+        case 'commentupdate':
+          this.updateAnnotationComment(payload);
+          break;
         case 'anchormouseover':
           this.emitOuter('anchormouseover', payload);
           break;
@@ -305,7 +315,33 @@ export class SidebarLayoutEH extends EventHandler {
     });
   }
 
-  private handleAnnotationUpdate(annotationID: string, notebookId: string) {
+  /**
+   * Updates the comment of an annotation
+   * or changes it from a 'highlight' type to a 'comment' type.
+   * @param rawAnnotation Data for the annotation that must be updated
+   */
+  private updateAnnotationComment(rawAnnotation: Annotation) {
+    if (rawAnnotation.type === 'Commenting') {
+      const data: AnnotationAttributes = {
+        type: rawAnnotation.type,
+        content: rawAnnotation.content,
+        notebookId: rawAnnotation.notebookId,
+        serializedBy: rawAnnotation.serializedBy,
+        subject: rawAnnotation.subject,
+        userId: rawAnnotation.userId,
+      };
+      annotation.update(rawAnnotation.id, data).then(() => {
+        this.annotationService.update(rawAnnotation.id, { comment: rawAnnotation.content.comment });
+      });
+    }
+  }
+
+  /**
+   * Moves one annotation from it's parent notebook to another notebook.
+   * @param annotationID id of the annotation that must be updated
+   * @param notebookId id of the notebook that will host the annotation
+   */
+  private updateAnnotationNotebook(annotationID: string, notebookId: string) {
     // update the annotation on the back end
     const { _raw: rawAnnotation } = this.annotationService.getAnnotationById(annotationID);
     const annotationUpdate = {

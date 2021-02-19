@@ -5,7 +5,7 @@ import {
 import {
   catchError, debounceTime, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
-import { CommentAnnotation } from '@pundit/communication';
+import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
@@ -48,11 +48,15 @@ export class MainLayoutEH extends EventHandler {
   private commentState: {
     comment: string | null;
     notebookId: string | null;
+    isUpdate?: boolean;
   };
 
   private pendingAnnotationPayload: CommentAnnotation;
 
   private annotationIdToDelete: string;
+
+  /** request payload that is used when updating an existing annotation */
+  private annotationUpdatePayload: Annotation;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -118,7 +122,7 @@ export class MainLayoutEH extends EventHandler {
             const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
               PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
             );
-            this.dataSource.onComment({ selected: pendingAnnotation.subject.selected.text });
+            this.dataSource.onComment({ textQuote: pendingAnnotation.subject.selected.text });
           }
           break;
         }
@@ -129,13 +133,18 @@ export class MainLayoutEH extends EventHandler {
           this.commentState.notebookId = payload;
           break;
         case 'comment-modal.save': {
-          const requestPayload = this.dataSource.getCommentRequestPayload(
-            this.pendingAnnotationPayload,
-            this.commentState
-          );
-          if (requestPayload) {
-            // save
+          const requestPayload = this.pendingAnnotationPayload
+            ? this.dataSource.getCommentRequestPayload(
+              this.pendingAnnotationPayload,
+              this.commentState
+            ) : this.dataSource.getCommentRequestPayload(
+              this.annotationUpdatePayload,
+              this.commentState
+            );
+          if (requestPayload && !this.annotationUpdatePayload) {
             this.saveAnnotation(requestPayload);
+          } else if (requestPayload && this.annotationUpdatePayload) {
+            this.layoutEvent$.next({ type: 'commentupdate', payload: requestPayload });
           }
           break;
         }
@@ -202,6 +211,17 @@ export class MainLayoutEH extends EventHandler {
         case 'annotationmouseleave':
           this.anchorService.removeHoverClass(payload.id);
           break;
+        case 'annotationeditcomment': {
+          const annotation = this.annotationService.getAnnotationById(payload);
+          const notebook = this.notebookService.getNotebookById(annotation._meta.notebookId);
+          this.commentState = {
+            comment: annotation.comment || null,
+            notebookId: null,
+            isUpdate: true,
+          };
+          this.annotationUpdatePayload = annotation._raw;
+          this.dataSource.onComment({ textQuote: annotation.body, notebook });
+        } break;
         case 'sidebarcollapse': {
           const { isCollapsed } = payload;
           if (isCollapsed) {

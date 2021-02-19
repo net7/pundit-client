@@ -9,7 +9,7 @@ import {
 import { search as searchNotebooks } from 'src/app/models/notebook';
 import tooltipHandler from 'src/app/models/tooltip-handler';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
-import { NotebookService } from 'src/app/services/notebook.service';
+import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 
 import { AnnotationType } from '@pundit/communication';
@@ -47,13 +47,23 @@ export class MainLayoutDS extends LayoutDataSource {
 
   hasSelection = () => !!selectionHandler.getCurrentSelection();
 
-  onComment({ selected }) {
+  /**
+   * Open the comment modal
+   * @param textQuote The highlighted string of text
+   * @param notebook (optional) The notebook of the annotation
+   * @param comment (optional) The existing comment
+   */
+  onComment({ textQuote, notebook }: {
+    textQuote: string;
+    notebook?: NotebookData;
+    comment?: string;
+  }) {
     // clear
     selectionHandler.clearSelection();
     tooltipHandler.hide();
-    const currentNotebook = this.notebookService.getSelected();
+    const currentNotebook = notebook || this.notebookService.getSelected();
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-    this.one('comment-modal').update({ selected, currentNotebook, notebooks });
+    this.one('comment-modal').update({ textQuote, currentNotebook, notebooks });
   }
 
   onAnnotationDelete(id: string) {

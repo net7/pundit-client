@@ -9,13 +9,13 @@ export class CommentModalDS extends DataSource {
   private defaultPosition: { x: number; y: number };
 
   transform(data): CommentModalData {
-    const { currentNotebook, notebooks, selected } = data;
+    const { currentNotebook, notebooks, textQuote } = data;
 
     // textarea focus
     this.focusTextarea();
 
     return {
-      selectedText: selected,
+      textQuote,
       visible: true,
       header: {
         label: _t('commentmodal#label'),

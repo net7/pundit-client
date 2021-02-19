@@ -9,7 +9,7 @@ import { Icon } from '../../types';
  * Interface for CommentModal's "data"
  */
 export interface CommentModalData {
-  selectedText: string;
+  textQuote: string;
   visible: boolean;
   header: {
     label: string;

@@ -43,9 +43,12 @@ export class AnnotationService {
   update(annotationId: string, data) {
     const annotation = this.getAnnotationById(annotationId);
     if (!annotation) return;
-    const { notebookId } = data;
+    const { notebookId, comment } = data;
     if (notebookId && isAnchorPayload(annotation.notebook.anchor)) {
       annotation.notebook.anchor.payload.id = notebookId;
+    }
+    if (comment) {
+      annotation.comment = comment;
     }
   }
 
@@ -165,6 +168,12 @@ export class AnnotationService {
           payload: {
             id,
             source: 'action-notebooks'
+          }
+        }, {
+          label: 'Add/edit comment',
+          payload: {
+            id,
+            source: 'action-comment'
           }
         }, {
           label: 'Delete',
