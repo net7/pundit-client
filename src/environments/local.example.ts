@@ -9,7 +9,8 @@ const REDIRECT_URI_FACEBOOK = '';
 const GOOGLE_URL = '';
 const FACEBOOK_URL = '';
 const EGI_URL = '';
-const EMAIL_URL = '';
+// const EMAIL_URL = '';
+const POPUP_ORIGIN = '';
 
 export default {
   auth: {
@@ -17,6 +18,7 @@ export default {
       {
         id: 'google',
         type: 'OAuth',
+        popupOrigin: POPUP_ORIGIN,
         params: {
           clientId: GOOGLE_CLIENT_ID,
           redirect: REDIRECT_URI_GOOGLE,
@@ -27,6 +29,7 @@ export default {
       {
         id: 'facebook',
         type: 'OAuth',
+        popupOrigin: POPUP_ORIGIN,
         params: {
           clientId: FACEBOOK_CLIENT_ID,
           redirect: REDIRECT_URI_FACEBOOK,
@@ -37,6 +40,7 @@ export default {
       {
         id: 'egi',
         type: 'OAuth',
+        popupOrigin: POPUP_ORIGIN,
         params: {
           clientId: EGI_CLIENT_ID,
           redirect: REDIRECT_URI_EGI,
@@ -45,13 +49,13 @@ export default {
         }
       }
     ],
-    email: {
-      id: 'default',
-      params: {
-        register: false,
-        url: EMAIL_URL
-      },
-      type: 'email'
-    }
+    // email: {
+    //   id: 'default',
+    //   params: {
+    //     register: false,
+    //     url: EMAIL_URL
+    //   },
+    //   type: 'email'
+    // }
   } as AuthConfig
 };
