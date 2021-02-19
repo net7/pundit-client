@@ -1,10 +1,32 @@
 import { DataSource } from '@n7-frontend/core';
+import { fromEvent, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class AnnotationDS extends DataSource {
+  private onMenuFocusLost = new Subject();
+
   transform(data: AnnotationData[]): AnnotationData[] {
     return data;
+  }
+
+  /**
+   * Listen for clicks on the HTML document,
+   * if the document is clicked outside of the inner menu
+   * then the menu should be dismissed.
+   */
+  listenDocumentClicks(id: string) {
+    fromEvent(document, 'click') // listen for clicks on the document
+      .pipe(takeUntil(this.onMenuFocusLost)) // keep listening until the menu is closed
+      .subscribe((e: PointerEvent) => {
+        const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
+        // only act if the clicked item is NOT the notebook-selector component
+        if (!clickedElement.classList.contains('pnd-notebook-selector__selected')) {
+          this.onMenuFocusLost.next(true);
+          this.updateMenuState(id, 'document');
+        }
+      });
   }
 
   toggleCollapse(id: string) {
@@ -21,6 +43,7 @@ export class AnnotationDS extends DataSource {
     const annotation = this.getAnnotation(id);
     if (source === 'menu-header') {
       annotation.activeMenu = annotation.activeMenu ? undefined : 'actions';
+      this.listenDocumentClicks(id);
     }
     if (source === 'action-notebooks') { // click on "Change notebook"
       const { notebookService } = this.options;
@@ -38,6 +61,10 @@ export class AnnotationDS extends DataSource {
       };
       annotation._meta.notebookSelectorData = notebookSelectorData;
       annotation.activeMenu = 'notebooks';
+      this.listenDocumentClicks(id);
+    }
+    if (source === 'document') {
+      annotation.activeMenu = undefined;
     }
   }
 
