@@ -3,7 +3,7 @@ import {
   fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, takeUntil, withLatestFrom
+  catchError, debounceTime, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
@@ -351,8 +351,14 @@ export class MainLayoutEH extends EventHandler {
       }),
       catchError((e) => {
         const { status } = e.response;
+        // on login error load public annotations
         if (status === 401) {
-          this.loadPublicAnnotations();
+          this.layoutEvent$.pipe(
+            filter(({ type }) => type === 'clear'),
+            first()
+          ).subscribe(() => {
+            this.loadPublicAnnotations();
+          });
         }
         this.handleError(e);
         return EMPTY;
