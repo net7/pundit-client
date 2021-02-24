@@ -1,57 +1,56 @@
 /**
- * DELETE MODAL
+ * MODAL
  *
- * Style for the modal.
+ * Style for the modal modal.
  */
 
 /* ------------------------------------ *\
-   #DELETE MODAL
+   #MODAL
 \* ------------------------------------ */
-.pnd-delete-modal {
+.pnd-modal {
+    position: relative;
     z-index: $z-index-modal;
-    box-shadow: 0px 8px 11px 0px $color-gray-03;
-    font-family: $font-family-main;
-
+    
     &__window {
         position: relative;
         max-width: $modal-width;
-        @include cardShadow-1;
+        margin: $space*10 auto 0 auto;
+        @include modalShadow;
         border: 1px solid $color-border-normal;
         border-radius: $border-radius;
-        margin: $space*10 auto 0 auto;
         background: $color-background-base;
         overflow-y: auto;
     }
     
     &__header {
-        padding: $space*3;
-        background-color: $annotation-comment-background-color;
+        padding: $space*2 $space*3;
+        background-color: $color-background-light;
     }
 
-    &__header-label {
+    &__header-text {
         color: $color-text;
-        margin-bottom: $space;
+        // margin-bottom: $space;
         font-size: $font-size-xxl;
-        font-weight: bold;
+        font-weight: $font-weight-bold;
     }
 
     &__body {
         padding: $space*3;
-        border-top: 1px solid $annotation-border-color;
-        border-bottom: 1px solid $annotation-border-color;
+        border-top: 1px solid $color-border-normal;
+        border-bottom: 1px solid $color-border-normal;
     }
     
     &__body-text {
         color: $color-text;
-        font-size: $font-size-s;
+        font-size: $font-size-m;
     }
 
     &__actions {
         padding: $space*2;
         text-align: right;
         
-        .pnd-btn:last-child {
-            margin-left: $space/2;
+        .pnd-btn:not( :first-child ) {
+            margin-left: $space;
         }
     }
 }
@@ -60,7 +59,7 @@
 /* ------------------------------------ *\
    #CLOSE
 \* ------------------------------------ */
-.pnd-delete-modal {
+.pnd-modal {
     &__close {
         position: absolute;
         top: $space*1.5;
@@ -68,7 +67,7 @@
         cursor: pointer;
 
         [class^="pundit-icon-"] {
-            font-size: $font-size-m;
+            font-size: $font-size-l;
             color: $color-text-light;
             transition: color $transition-durations;
 
@@ -79,10 +78,11 @@
     }
 }
 
+
 /* ------------------------------------ *\
    #OVERLAY
 \* ------------------------------------ */
-.pnd-delete-modal {
+.pnd-modal {
     &__overlay {
         position: fixed;
         z-index: 10;
@@ -92,8 +92,10 @@
         left: 0;
         width: 100%;
         height: 100%;
+        background-color: rgba( $color-background-light, .5);
     }
 }
+
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES

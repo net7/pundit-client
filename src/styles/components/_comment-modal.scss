@@ -8,18 +8,10 @@
    #RESOURCE MODAL
 \* ------------------------------------ */
 .pnd-comment-modal {
-    z-index: $z-index-modal;
-    box-shadow: 0px 8px 11px 0px $color-gray-03;
-    font-family: $font-family-main;
-
+    
     &__window {
-        position: relative;
-        max-width: $comment-modal-width;
-        @include cardShadow-1;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        margin: $space*10 auto 0 auto;
-        background: $color-background-base;
+        pointer-events: auto;
+        height: auto !important;
         overflow-y: auto;
     }
 
@@ -79,21 +71,11 @@
 /* ------------------------------------ *\
    #CLOSE
 \* ------------------------------------ */
-.pnd-comment-modal {
+.pnd-modal {
     &__close {
-        position: absolute;
-        top: $space*1.5;
-        right: $space*2;
-        cursor: pointer;
-
+        
         [class^="pundit-icon-"] {
-            font-size: $font-size-m;
-            color: $color-text-light;
-            transition: color $transition-durations;
-
-            &:hover {
-                color: $color-text-link;
-            }
+            font-size: $font-size-m;            
         }
     }
 }
@@ -170,16 +152,11 @@
 \* ------------------------------------ */
 .pnd-comment-modal {
     &__overlay {
-        position: fixed;
-        z-index: 10;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        pointer-events: none;
+        background-color: transparent;
     }
 }
+
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES

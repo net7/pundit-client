@@ -36,7 +36,7 @@ export class DeleteModalComponent {
   }
 
   onClose(target?: { className: string }) {
-    if (target && target.className !== 'pnd-delete-modal__overlay') {
+    if (target && target.className !== 'pnd-modal__overlay') {
       return;
     }
     this.emit('close');

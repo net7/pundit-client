@@ -23,6 +23,10 @@
     background: linear-gradient(55deg, #0d85ec 0%, #516eee 50%, #7c53ea 100%);
 }
 
+@mixin modalShadow {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.07), 0 5px 20px rgba(0,0,0,0.09);
+}
+
 
 // ------------------------------------ //
 // #INPUT PLACEHOLDER STYLE

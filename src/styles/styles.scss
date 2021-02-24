@@ -36,8 +36,8 @@
 // ------------------------------------ //
 @import "./components/annotation";
 @import "./components/annotation-form";
-@import "./components/comment-modal";
-@import "./components/delete-modal";
+@import "./components/modal";
+@import "./components/comment-modal"; // After modal
 @import "./components/nav";
 @import "./components/notebook-panel";
 @import "./components/tooltip";
