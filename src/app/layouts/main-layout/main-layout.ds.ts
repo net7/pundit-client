@@ -14,18 +14,26 @@ import { UserService } from 'src/app/services/user.service';
 
 import { AnnotationType } from '@pundit/communication';
 import { switchMap } from 'rxjs/operators';
+import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnchorService } from 'src/app/services/anchor.service';
 
 export class MainLayoutDS extends LayoutDataSource {
   private userService: UserService;
 
   private notebookService: NotebookService;
 
+  private annotationService: AnnotationService;
+
+  private anchorService: AnchorService;
+
   /** Let other layouts know that all services are ready */
-  public hasLoaded = new BehaviorSubject(false);
+  public hasLoaded$ = new BehaviorSubject(false);
 
   onInit(payload) {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
+    this.annotationService = payload.annotationService;
+    this.anchorService = payload.anchorService;
   }
 
   getUserAnnotations() {
@@ -33,8 +41,37 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(search(uri));
   }
 
+  getPublicAnnotations() {
+    const uri = getDocumentHref();
+    return from(search(uri));
+  }
+
   getUserNotebooks() {
     return from(searchNotebooks());
+  }
+
+  handleUserNotebooksResponse(notebooksData) {
+    const { notebooks } = notebooksData;
+    this.notebookService.load(notebooks);
+    if (!this.notebookService.getSelected()) {
+      // first notebook as default
+      const { id } = notebooks[0];
+      this.notebookService.setSelected(id);
+    }
+  }
+
+  handleSearchResponse(searchData) {
+    const { users, annotations, notebooks } = searchData;
+    // update notebooks
+    this.notebookService.load(notebooks);
+    // load order matters
+    this.userService.load(users);
+    this.annotationService.load(annotations);
+    this.anchorService.load(annotations);
+    // signal
+    if (!this.annotationService.getAnnotations().length) {
+      this.annotationService.totalChanged$.next(0);
+    }
   }
 
   onSelectionChange() {

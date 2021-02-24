@@ -1,5 +1,5 @@
 <div class="pnd-main"
-     *ngIf="lb.dataSource.hasLoaded.getValue()">
+     *ngIf="lb.dataSource.hasLoaded$ | async">
     <!-- Sidebar -->
     <sidebar-layout [layoutEvent$]="layoutEvent$"></sidebar-layout>
     <!-- Tooltip template -->

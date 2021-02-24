@@ -1,9 +1,10 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject
+  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject,
+  of
 } from 'rxjs';
 import {
-  catchError, debounceTime, switchMap, switchMapTo, takeUntil, withLatestFrom
+  catchError, debounceTime, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
@@ -76,8 +77,7 @@ export class MainLayoutEH extends EventHandler {
           if (this.userService.whoami()) {
             this.onLogin();
           } else {
-            this.dataSource.hasLoaded.next(true);
-            this.annotationService.totalChanged$.next(0);
+            this.loadPublicAnnotations();
           }
           this.listenSelection();
           this.listenLayoutEvents();
@@ -346,34 +346,28 @@ export class MainLayoutEH extends EventHandler {
 
     this.dataSource.getUserNotebooks().pipe(
       switchMap(({ data: notebooksData }) => {
-        const { notebooks } = notebooksData;
-        this.notebookService.load(notebooks);
-        if (!this.notebookService.getSelected()) {
-          // first notebook as default
-          const { id } = notebooks[0];
-          this.notebookService.setSelected(id);
-        }
+        this.dataSource.handleUserNotebooksResponse(notebooksData);
 
         return this.dataSource.getUserAnnotations();
       }),
       catchError((e) => {
+        const { status } = e.response;
+        // on login error load public annotations
+        if (status === 401) {
+          this.layoutEvent$.pipe(
+            filter(({ type }) => type === 'clear'),
+            first()
+          ).subscribe(() => {
+            this.loadPublicAnnotations();
+          });
+        }
         this.handleError(e);
         return EMPTY;
       })
     ).subscribe(({ data: searchData }) => {
-      const { users, annotations, notebooks } = searchData;
-      // update notebooks
-      this.notebookService.load(notebooks);
-      // load order matters
-      this.userService.load(users);
-      this.annotationService.load(annotations);
-      this.anchorService.load(annotations);
-      // signal
-      if (!this.annotationService.getAnnotations().length) {
-        this.annotationService.totalChanged$.next(0);
-      }
+      this.dataSource.handleSearchResponse(searchData);
       this.layoutEvent$.next({ type: 'searchresponse' });
-      this.dataSource.hasLoaded.next(true);
+      this.dataSource.hasLoaded$.next(true);
     });
   }
 
@@ -388,6 +382,24 @@ export class MainLayoutEH extends EventHandler {
     // emit signals
     this.annotationService.totalChanged$.next(0);
     this.layoutEvent$.next({ type: 'clear' });
-    this.dataSource.hasLoaded.next(true);
+    this.dataSource.hasLoaded$.next(true);
+  }
+
+  private loadPublicAnnotations() {
+    this.dataSource.getPublicAnnotations()
+      .pipe(
+        catchError((err) => {
+          console.warn('PublicAnnotations error:', err);
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          const { data: searchData } = response;
+          this.dataSource.handleSearchResponse(searchData);
+          this.layoutEvent$.next({ type: 'searchresponse' });
+        }
+        this.dataSource.hasLoaded$.next(true);
+      });
   }
 }
