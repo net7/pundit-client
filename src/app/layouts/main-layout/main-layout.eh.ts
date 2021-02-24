@@ -1,6 +1,7 @@
 import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject
+  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject,
+  of
 } from 'rxjs';
 import {
   catchError, debounceTime, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
@@ -366,6 +367,7 @@ export class MainLayoutEH extends EventHandler {
     ).subscribe(({ data: searchData }) => {
       this.dataSource.handleSearchResponse(searchData);
       this.layoutEvent$.next({ type: 'searchresponse' });
+      this.dataSource.hasLoaded$.next(true);
     });
   }
 
@@ -380,14 +382,24 @@ export class MainLayoutEH extends EventHandler {
     // emit signals
     this.annotationService.totalChanged$.next(0);
     this.layoutEvent$.next({ type: 'clear' });
-    this.dataSource.hasLoaded.next(true);
+    this.dataSource.hasLoaded$.next(true);
   }
 
   private loadPublicAnnotations() {
     this.dataSource.getPublicAnnotations()
-      .subscribe(({ data: searchData }) => {
-        this.dataSource.handleSearchResponse(searchData);
-        this.layoutEvent$.next({ type: 'searchresponse' });
+      .pipe(
+        catchError((err) => {
+          console.warn('PublicAnnotations error:', err);
+          return of(null);
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          const { data: searchData } = response;
+          this.dataSource.handleSearchResponse(searchData);
+          this.layoutEvent$.next({ type: 'searchresponse' });
+        }
+        this.dataSource.hasLoaded$.next(true);
       });
   }
 }

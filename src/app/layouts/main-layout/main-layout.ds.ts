@@ -27,7 +27,7 @@ export class MainLayoutDS extends LayoutDataSource {
   private anchorService: AnchorService;
 
   /** Let other layouts know that all services are ready */
-  public hasLoaded = new BehaviorSubject(false);
+  public hasLoaded$ = new BehaviorSubject(false);
 
   onInit(payload) {
     this.userService = payload.userService;
@@ -72,7 +72,6 @@ export class MainLayoutDS extends LayoutDataSource {
     if (!this.annotationService.getAnnotations().length) {
       this.annotationService.totalChanged$.next(0);
     }
-    this.hasLoaded.next(true);
   }
 
   onSelectionChange() {
