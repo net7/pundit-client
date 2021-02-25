@@ -12,6 +12,7 @@ export default {
   // toast
   'toast#login_warn_title': 'Please log in',
   'toast#login_warn_text': 'Log in or register to Pundit to save your annotations and see your private notebooks.',
+  'toast#login_warn_action': 'LOGIN',
   'toast#login_success_title': 'Welcome to Pundit!',
   'toast#login_success_text': 'Now you can start browsing and creating annotations.',
   'toast#login_error_title': 'Oops! Something went wrong',

@@ -1,10 +1,10 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler, _t } from '@n7-frontend/core';
 import {
   fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject,
   of
 } from 'rxjs';
 import {
-  catchError, debounceTime, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
+  catchError, debounceTime, delay, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
@@ -17,6 +17,7 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { LayoutEvent } from 'src/app/types';
 import { TokenService } from 'src/app/services/token.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { ToastService } from 'src/app/services/toast.service';
 import { MainLayoutDS } from './main-layout.ds';
 
 const PENDING_ANNOTATION_ID = 'pending-id';
@@ -39,6 +40,8 @@ export class MainLayoutEH extends EventHandler {
   private punditLoginService: PunditLoginService;
 
   private tokenService: TokenService;
+
+  private toastService: ToastService;
 
   private changeDetectorRef: ChangeDetectorRef;
 
@@ -70,6 +73,7 @@ export class MainLayoutEH extends EventHandler {
           this.anchorService = payload.anchorService;
           this.punditLoginService = payload.punditLoginService;
           this.tokenService = payload.tokenService;
+          this.toastService = payload.toastService;
           this.changeDetectorRef = payload.changeDetectorRef;
           this.dataSource.onInit(payload);
 
@@ -77,6 +81,7 @@ export class MainLayoutEH extends EventHandler {
           if (this.userService.whoami()) {
             this.onLogin();
           } else {
+            this.loginAlert();
             this.loadPublicAnnotations();
           }
           this.listenSelection();
@@ -271,7 +276,13 @@ export class MainLayoutEH extends EventHandler {
     ).subscribe((val) => {
       if ('error' in val) {
         const { error } = val;
-        console.warn('Gestire login error', error);
+        console.warn('Login error', error);
+
+        // toast
+        this.toastService.error({
+          title: _t('toast#login_error_title'),
+          text: _t('toast#login_error_text'),
+        });
       } else if ('user' in val) {
         const { token, user } = val;
 
@@ -285,6 +296,12 @@ export class MainLayoutEH extends EventHandler {
         });
         this.punditLoginService.stop();
         this.onLogin();
+
+        // toast
+        this.toastService.success({
+          title: _t('toast#login_success_title'),
+          text: _t('toast#login_success_text'),
+        });
       }
     });
 
@@ -358,6 +375,7 @@ export class MainLayoutEH extends EventHandler {
             filter(({ type }) => type === 'clear'),
             first()
           ).subscribe(() => {
+            this.loginAlert();
             this.loadPublicAnnotations();
           });
         }
@@ -401,5 +419,28 @@ export class MainLayoutEH extends EventHandler {
         }
         this.dataSource.hasLoaded$.next(true);
       });
+  }
+
+  private loginAlert() {
+    this.dataSource.hasLoaded$.pipe(
+      first(),
+      delay(1000) // fix render
+    ).subscribe(() => {
+      const toast = this.toastService.warn({
+        title: _t('toast#login_warn_title'),
+        text: _t('toast#login_warn_text'),
+        actions: [{
+          text: _t('toast#login_warn_action'),
+          payload: 'login'
+        }],
+        autoClose: false,
+        onAction: (payload) => {
+          if (payload === 'login') {
+            this.punditLoginService.start();
+            toast.close();
+          }
+        }
+      });
+    });
   }
 }
