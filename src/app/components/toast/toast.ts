@@ -58,6 +58,10 @@ export interface ToastBox {
    */
   actions?: ToastAction[];
   /**
+   * progress bar
+   */
+  progress?: number;
+  /**
    * additional info
    */
   _meta?: any;
@@ -99,5 +103,13 @@ export class ToastComponent {
     if (!this.emit) return;
 
     this.emit('click', payload);
+  }
+
+  onMouseover(payload) {
+    this.emit('mouseover', payload);
+  }
+
+  onMouseout(payload) {
+    this.emit('mouseout', payload);
   }
 }

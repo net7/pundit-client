@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { interval, Subject } from 'rxjs';
+import {
+  filter, takeWhile, map
+} from 'rxjs/operators';
 import { ToastAction, ToastBox, ToastData } from '../components/toast/toast';
 
 export enum ToastType {
-  Log = 'log',
-  Warn = 'warning',
   Info = 'info',
+  Success = 'success',
+  Warn = 'warning',
   Error = 'error',
 }
 
@@ -26,10 +29,11 @@ export interface ToastUpdateParams extends ToastParams {
 type EmitFunction = (payload: any) => void;
 
 const DEFAULTS: ToastParams = {
-  hasDismiss: true
+  hasDismiss: true,
+  autoClose: true
 };
 
-const AUTOCLOSE_DELAY = 10000; // 10secs
+const AUTOCLOSE_DELAY = 5000; // 5secs
 
 @Injectable()
 export class ToastService {
@@ -39,10 +43,14 @@ export class ToastService {
     onAction: EmitFunction;
   }[] = [];
 
+  private mouseoverState: {
+    [id: string]: boolean;
+  } = {};
+
   data$: Subject<ToastData | null> = new Subject();
 
-  log(params: ToastParams) {
-    return this.notify(ToastType.Log, params);
+  success(params: ToastParams) {
+    return this.notify(ToastType.Success, params);
   }
 
   warn(params: ToastParams) {
@@ -58,17 +66,26 @@ export class ToastService {
   }
 
   componentEmit(type: string, payload: any) {
-    if (type !== 'click') {
-      return;
-    }
-
-    if (payload.action === 'close') {
-      this.close(payload.id);
-    } else {
-      const onActionFunc = this.toasts.find(({ id }) => id === payload.id)?.onAction;
-      if (onActionFunc) {
-        onActionFunc(payload.action);
+    switch (type) {
+      case 'click': {
+        if (payload.action === 'close') {
+          this.close(payload.id);
+        } else {
+          const onActionFunc = this.toasts.find(({ id }) => id === payload.id)?.onAction;
+          if (onActionFunc) {
+            onActionFunc(payload.action);
+          }
+        }
+        break;
       }
+      case 'mouseover':
+        this.mouseoverState[payload] = true;
+        break;
+      case 'mouseout':
+        this.mouseoverState[payload] = false;
+        break;
+      default:
+        break;
     }
   }
 
@@ -90,6 +107,10 @@ export class ToastService {
         actions: toastParams.actions
           ? this.getDataActions(toastId, toastParams.actions)
           : null,
+        _meta: {
+          id: toastId
+        },
+        progress: toastParams.autoClose ? 0 : 100
       },
       onAction: toastParams.onAction
         ? this.getOnAction(toastParams.onAction)
@@ -100,7 +121,7 @@ export class ToastService {
     this.updateDataStream();
 
     // auto close
-    this.autoClose(toastId, toastParams);
+    this.onAutoClose(toastId, toastParams);
 
     // toast public api
     return {
@@ -115,10 +136,14 @@ export class ToastService {
 
   private close(toastId: string) {
     const index = this.toasts.map(({ id }) => id).indexOf(toastId);
-    this.toasts.splice(index, 1);
-
-    // update stream
-    this.updateDataStream();
+    if (index >= 0) {
+      // remove toast
+      this.toasts.splice(index, 1);
+      // remove mouseover state
+      delete this.mouseoverState[toastId];
+      // update stream
+      this.updateDataStream();
+    }
   }
 
   private updateDataStream() {
@@ -179,12 +204,32 @@ export class ToastService {
     return onAction.bind(this);
   }
 
-  private autoClose(toastId: string, params: ToastParams) {
+  // auto close with mouseover check (stop/continue timer)
+  private onAutoClose(toastId: string, params: ToastParams) {
     const { autoClose, autoCloseDelay } = params;
     if (autoClose) {
-      setTimeout(() => {
-        this.close(toastId);
-      }, autoCloseDelay || AUTOCLOSE_DELAY);
+      const toast = this.toasts.find(({ id }) => id === toastId);
+      const timerDelay = 10; // ms
+      const timer$ = interval(timerDelay);
+      const closeDelay = autoCloseDelay || AUTOCLOSE_DELAY;
+      const tickCounterLimit = closeDelay / timerDelay;
+      let tickCounter = 0;
+      timer$.pipe(
+        filter(() => !this.mouseoverState[toastId]),
+        map(() => {
+          tickCounter += 1;
+          return tickCounter;
+        }),
+        takeWhile((tick) => tick <= tickCounterLimit)
+      ).subscribe((tick: number) => {
+        // update progress
+        toast.data.progress = (tick * 100) / tickCounterLimit;
+        this.updateDataStream();
+        // close check
+        if (tick === tickCounterLimit) {
+          this.close(toastId);
+        }
+      });
     }
   }
 }

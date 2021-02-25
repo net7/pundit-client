@@ -13,11 +13,13 @@
     left: $space*2;
 
     &__box {
-        max-width: $toast-max-width;
+        // max-width: $toast-max-width;
+        width: $toast-max-width;
         padding: $space $space 0 $space;
         margin-top: $space;
         background-color: $toast-background-color;
-        border: $toast-border-size solid $toast-border-color;
+        // border: $toast-border-size solid $toast-border-color;
+        border-top: 4px solid rgba(0,0,0,.12);
     }
 
     &__title {
@@ -81,6 +83,46 @@
     }
 }
 
+/* ------------------------------------ *\
+   #PROGRESS BAR
+\* ------------------------------------ */
+.pnd-toast__progress {
+    position: absolute;
+    top: -4px;
+    left: 0px;
+    height: 4px;
+    background-color: $color-info;
+    transition-property: width;
+    transition-timing-function: linear;
+    width: 0%;
+}
+
+/* ------------------------------------ *\
+   #COLORS
+\* ------------------------------------ */
+.pnd-toast .is-success {
+    .pnd-toast__progress {
+        background-color: $color-success;
+    }
+}
+
+.pnd-toast .is-info {
+    .pnd-toast__progress {
+        background-color: $color-info;
+    }
+}
+
+.pnd-toast .is-warning {
+    .pnd-toast__progress {
+        background-color: $color-warning;
+    }
+}
+
+.pnd-toast .is-error {
+    .pnd-toast__progress {
+        background-color: $color-error;
+    }
+}
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES
