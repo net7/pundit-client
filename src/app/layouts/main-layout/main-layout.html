@@ -14,5 +14,9 @@
     <pnd-delete-modal [data]="lb.widgets['delete-modal'].ds.out$ | async"
                       [emit]="lb.widgets['delete-modal'].emit">
     </pnd-delete-modal>
+    <!-- Toast template -->
+    <pnd-toast [data]="toastService.data$ | async"
+               [emit]="toastService.componentEmit.bind(toastService)">
+    </pnd-toast>
     <lib-pundit-login></lib-pundit-login>
 </div>

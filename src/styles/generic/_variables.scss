@@ -163,6 +163,16 @@ $comment-modal-width: 520px;
 // ------------------------------------ //
 $notebook-selector-height: 28px;
 
+// ------------------------------------ //
+// #TOAST
+// ------------------------------------ //
+$toast-background-color: $color-background-medium;
+$toast-border-size: 1px;
+$toast-border-color: $color-border-normal;
+$toast-title-color: $color-text;
+$toast-text-color: $color-text;
+$toast-max-width: 300px;
+
 
 // ------------------------------------ //
 // #MEDIA-QUERIES-BREAKPOINT
@@ -391,6 +401,4 @@ $form-dropdown-height: 30px;
 // $table-footer-font-size: $font-size-s;
 // $table-footer-text-color: $color-text-light;
 // $table-footer-bg: $color-background-medium;
-
-
 

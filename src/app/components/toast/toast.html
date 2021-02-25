@@ -1,0 +1,33 @@
+<div *ngIf="data" class="pnd-toast">
+    <div class="pnd-toast__column {{data.classes || ''}}">
+
+        <!-- Toast boxes -->
+        <div class="pnd-toast__box" 
+             *ngFor="let box of data.toasts"
+             [ngClass]="{ 'has-actions' : !! (box.actions || box.closeIcon) }">
+        
+            <!-- Toast text -->
+            <div class="pnd-toast__content {{box.classes || ''}}" *ngIf="box.title || box.text">
+                <span class="pnd-toast__title" *ngIf="box.title">{{ box.title }}</span>
+                <span class="pnd-toast__text" *ngIf="box.text">{{ box.text }}</span>
+            </div>
+
+            <!-- Toast actions -->
+            <div class="pnd-toast__actions" *ngIf="box.actions || box.closeIcon">
+                <span
+                class="pnd-toast__closeIcon {{ box.closeIcon.icon }}" 
+                *ngIf="box.closeIcon" 
+                (click)="onClick(box.closeIcon.payload)">
+                </span>
+                <span class="pnd-toast__action-wrapper" *ngIf="box.actions">
+                    <span class="pnd-toast__action-content" *ngFor="let action of box.actions">
+                        <button class="pnd-toast__action-button pnd-btn pnd-btn-s {{action.classes || ''}}"
+                                (click)="onClick(action.payload)">
+                                {{action.text}}
+                        </button>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
