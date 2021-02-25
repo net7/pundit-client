@@ -3,7 +3,7 @@ import {
   Component, Input
 } from '@angular/core';
 import * as Draggable from 'draggable';
-import { Icon } from '../../types';
+import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 
 /**
  * Interface for CommentModal's "data"
@@ -18,21 +18,22 @@ export interface CommentModalData {
     comment: {
       value: string | null;
     };
-    notebooks: {
-      label: string;
-      select: {
-        header: {
-          label: string;
-          icon: Icon;
-          payload: any;
-        };
-        items: {
-          label: string;
-          id: string;
-        }[];
-        classes?: string;
-      };
-    };
+    // notebooks: {
+    //   label: string;
+    //   select: {
+    //     header: {
+    //       label: string;
+    //       icon: Icon;
+    //       payload: any;
+    //     };
+    //     items: {
+    //       label: string;
+    //       id: string;
+    //     }[];
+    //     classes?: string;
+    //   };
+    // };
+    notebookSelectorData: NotebookSelectorData;
     actions: {
       label: string;
       payload: any;
@@ -97,5 +98,13 @@ export class CommentModalComponent implements AfterContentChecked {
       return;
     }
     this.emit('close');
+  }
+
+  /**
+   * Event emitter for the internal notebook-selector component
+   */
+  onNotebookSelection = (type, payload) => {
+    if (!this.emit) return;
+    this.emit(type, payload);
   }
 }
