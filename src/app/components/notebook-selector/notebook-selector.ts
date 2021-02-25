@@ -43,8 +43,12 @@ export class NotebookSelectorComponent {
       return;
     } if (payload === 'createnotebook') {
       this.data.mode = 'select';
+    } else {
+      // if a notebook option is clicked
+      this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload);
     }
-
+    // collapse the list of notebooks
+    this.data._meta.isExpanded = false;
     this.emit(type, payload);
   }
 

@@ -43,25 +43,6 @@ export class CommentModalDS extends DataSource {
             value: 'create'
           }
         },
-        // notebooks: {
-        //   label: _t('commentmodal#notebook'),
-        //   select: {
-        //     header: {
-        //       label: currentNotebook.label,
-        //       icon: {
-        //         id: 'pundit-icon-angle-down',
-        //       },
-        //       payload: {
-        //         source: 'notebooks-header'
-        //       }
-        //     },
-        //     items: notebooks
-        //       .map(({ id: itemId, label }) => ({
-        //         label,
-        //         id: itemId
-        //       })),
-        //   },
-        // },
         actions: [{
           label: _t('commentmodal#cancel'),
           payload: {
@@ -106,16 +87,18 @@ export class CommentModalDS extends DataSource {
     select.classes = classes ? null : 'is-open';
   }
 
+  /** Lock or unlock the save button */
+  public updateSaveButtonState(isDisabled: boolean) {
+    setTimeout(() => {
+      this.output.form.actions[1].disabled = isDisabled;
+    });
+  }
+
   public onTextChange(text) {
-    const { actions } = this.output.form;
     const textLength = (typeof text === 'string' && text.trim())
       ? text.length
       : 0;
-
-    // update save button disabled state
-    setTimeout(() => {
-      actions[1].disabled = textLength < TEXT_MIN_LIMIT;
-    });
+    this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
   }
 
   public isVisible = () => this.output?.visible;

@@ -44,10 +44,14 @@ export class AnnotationService {
     const annotation = this.getAnnotationById(annotationId);
     if (!annotation) return;
     const { notebookId, comment } = data;
+    const notebook = this.notebookService.getNotebookById(notebookId);
     if (notebookId && isAnchorPayload(annotation.notebook.anchor)) {
+      // update the notebook
       annotation.notebook.anchor.payload.id = notebookId;
+      annotation.notebook.name = notebook.label;
     }
     if (comment) {
+      // update the comment
       annotation.comment = comment;
     }
   }
