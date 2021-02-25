@@ -15,6 +15,8 @@ export interface ToastParams {
   hasDismiss?: boolean;
   actions?: ToastAction[];
   onAction?: (payload: any) => void;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
 }
 
 export interface ToastUpdateParams extends ToastParams {
@@ -26,6 +28,8 @@ type EmitFunction = (payload: any) => void;
 const DEFAULTS: ToastParams = {
   hasDismiss: true
 };
+
+const AUTOCLOSE_DELAY = 10000; // 10secs
 
 @Injectable()
 export class ToastService {
@@ -94,6 +98,9 @@ export class ToastService {
 
     // update stream
     this.updateDataStream();
+
+    // auto close
+    this.autoClose(toastId, toastParams);
 
     // toast public api
     return {
@@ -170,5 +177,14 @@ export class ToastService {
 
   private getOnAction(onAction: EmitFunction): EmitFunction {
     return onAction.bind(this);
+  }
+
+  private autoClose(toastId: string, params: ToastParams) {
+    const { autoClose, autoCloseDelay } = params;
+    if (autoClose) {
+      setTimeout(() => {
+        this.close(toastId);
+      }, autoCloseDelay || AUTOCLOSE_DELAY);
+    }
   }
 }
