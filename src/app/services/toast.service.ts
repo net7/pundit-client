@@ -35,10 +35,9 @@ type EmitFunction = (instance: ToastInstance, payload: any) => void;
 
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
-  autoClose: true
+  autoClose: true,
+  autoCloseDelay: 3000 // 3secs
 };
-
-const AUTOCLOSE_DELAY = 5000; // 5secs
 
 @Injectable()
 export class ToastService {
@@ -223,8 +222,7 @@ export class ToastService {
       const toast = this.toasts.find(({ id }) => id === toastId);
       const timerDelay = 200; // ms
       const timer$ = interval(timerDelay);
-      const closeDelay = autoCloseDelay || AUTOCLOSE_DELAY;
-      const tickCounterLimit = (closeDelay / timerDelay);
+      const tickCounterLimit = (autoCloseDelay / timerDelay);
       let tickCounter = 0;
       timer$.pipe(
         filter(() => !this.mouseoverState[toastId]),
