@@ -161,6 +161,12 @@ export class MainLayoutEH extends EventHandler {
           this.dataSource.onAnnotationDelete(this.annotationIdToDelete).pipe(
             catchError((e) => {
               this.handleError(e);
+
+              // toast
+              this.toastService.error({
+                title: _t('toast#annotationdelete_error_title'),
+                text: _t('toast#annotationdelete_error_text'),
+              });
               return EMPTY;
             })
           ).subscribe(() => {
@@ -169,6 +175,12 @@ export class MainLayoutEH extends EventHandler {
             this.layoutEvent$.next({
               type: 'annotationdeletesuccess',
               payload: this.annotationIdToDelete
+            });
+
+            // toast
+            this.toastService.info({
+              title: _t('toast#annotationdelete_success_title'),
+              text: _t('toast#annotationdelete_success_text'),
             });
           });
           break;
@@ -330,6 +342,12 @@ export class MainLayoutEH extends EventHandler {
     this.dataSource.create$(payload).pipe(
       catchError((e) => {
         this.handleError(e);
+
+        // toast
+        this.toastService.error({
+          title: _t('toast#annotationsave_error_title'),
+          text: _t('toast#annotationsave_error_text'),
+        });
         return EMPTY;
       })
     ).subscribe(({ id, requestPayload }) => {
@@ -341,6 +359,12 @@ export class MainLayoutEH extends EventHandler {
       this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
       // clear pending
       this.removePendingAnnotation();
+
+      // toast
+      this.toastService.success({
+        title: _t('toast#annotationsave_success_title'),
+        text: _t('toast#annotationsave_success_text'),
+      });
     });
   }
 
