@@ -28,8 +28,11 @@
                     (input)="onChange('textchange', $event.target.value)">{{ data.form.comment.value || '' }}</textarea>
                 </div>
             </div>
-
-            <div class="pnd-comment-modal__notebooks">
+            <notebook-selector *ngIf="data.form.notebookSelectorData"
+                               [data]="data.form.notebookSelectorData"
+                               [emit]="onNotebookSelection">
+            </notebook-selector>
+            <!-- <div class="pnd-comment-modal__notebooks">
                 <div class="pnd-comment-modal__notebooks-label">
                     {{ data.form.notebooks.label }}
                 </div>
@@ -43,7 +46,7 @@
                         </option>
                     </select>
                 </div>
-            </div>
+            </div> -->
             
             <div class="pnd-comment-modal__actions">
                 <button *ngFor="let action of data.form.actions"

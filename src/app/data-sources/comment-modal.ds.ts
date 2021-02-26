@@ -1,14 +1,22 @@
 import { DataSource, _t } from '@n7-frontend/core';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
+import { NotebookData } from '../services/notebook.service';
 
 const TEXT_MIN_LIMIT = 3;
+
+interface CommentModalInput {
+  comment: string | undefined;
+  currentNotebook: NotebookData;
+  notebooks: NotebookData[];
+  textQuote: string;
+}
 
 export class CommentModalDS extends DataSource {
   private instance;
 
   private defaultPosition: { x: number; y: number };
 
-  transform(data): CommentModalData {
+  transform(data: CommentModalInput): CommentModalData {
     const {
       currentNotebook, notebooks, textQuote, comment
     } = data;
@@ -26,24 +34,14 @@ export class CommentModalDS extends DataSource {
         comment: {
           value: comment || null
         },
-        notebooks: {
-          label: _t('commentmodal#notebook'),
-          select: {
-            header: {
-              label: currentNotebook.label,
-              icon: {
-                id: 'pundit-icon-angle-down',
-              },
-              payload: {
-                source: 'notebooks-header'
-              }
-            },
-            items: notebooks
-              .map(({ id: itemId, label }) => ({
-                label,
-                id: itemId
-              })),
-          },
+        notebookSelectorData: {
+          selectedNotebook: currentNotebook,
+          notebookList: notebooks,
+          mode: 'select',
+          createOption: {
+            label: 'Create new notebook',
+            value: 'create'
+          }
         },
         actions: [{
           label: _t('commentmodal#cancel'),
@@ -89,16 +87,18 @@ export class CommentModalDS extends DataSource {
     select.classes = classes ? null : 'is-open';
   }
 
+  /** Lock or unlock the save button */
+  public updateSaveButtonState(isDisabled: boolean) {
+    setTimeout(() => {
+      this.output.form.actions[1].disabled = isDisabled;
+    });
+  }
+
   public onTextChange(text) {
-    const { actions } = this.output.form;
     const textLength = (typeof text === 'string' && text.trim())
       ? text.length
       : 0;
-
-    // update save button disabled state
-    setTimeout(() => {
-      actions[1].disabled = textLength < TEXT_MIN_LIMIT;
-    });
+    this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
   }
 
   public isVisible = () => this.output?.visible;

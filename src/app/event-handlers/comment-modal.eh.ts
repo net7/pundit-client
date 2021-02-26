@@ -24,7 +24,8 @@ export class CommentModalEH extends EventHandler {
           this.dataSource.onTextChange(payload);
           this.emitOuter('change', payload);
           break;
-        case 'comment-modal.changenotebook': // a different notebook is selected
+        case 'comment-modal.option': // a different notebook is selected
+          this.dataSource.updateSaveButtonState(false);
           this.emitOuter('notebook', payload);
           break;
         case 'comment-modal.close':

@@ -331,7 +331,10 @@ export class SidebarLayoutEH extends EventHandler {
         userId: rawAnnotation.userId,
       };
       annotation.update(rawAnnotation.id, data).then(() => {
-        this.annotationService.update(rawAnnotation.id, { comment: rawAnnotation.content.comment });
+        this.annotationService.update(rawAnnotation.id, {
+          comment: rawAnnotation.content.comment,
+          notebookId: rawAnnotation.notebookId,
+        });
       });
     }
   }
