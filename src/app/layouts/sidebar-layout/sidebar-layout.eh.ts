@@ -1,5 +1,5 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler, _t } from '@n7-frontend/core';
 import { Subject, ReplaySubject, EMPTY } from 'rxjs';
 import {
   catchError, takeUntil, withLatestFrom
@@ -16,6 +16,7 @@ import {
 } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { from } from 'rxjs/internal/observable/from';
+import { ToastService } from 'src/app/services/toast.service';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 import * as notebook from '../../models/notebook';
 import * as annotation from '../../models/annotation';
@@ -35,6 +36,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   private punditLoginService: PunditLoginService;
 
+  private toastService: ToastService;
+
   private changeDetectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -49,6 +52,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.layoutEvent$ = payload.layoutEvent$;
           this.userService = payload.userService;
           this.punditLoginService = payload.punditLoginService;
+          this.toastService = payload.toastService;
           this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
@@ -96,6 +100,11 @@ export class SidebarLayoutEH extends EventHandler {
         case 'notebook-panel.changeselected': // change the default notebook
           this.notebookService.setSelected(payload);
           this.dataSource.updateNotebookPanel();
+          // toast
+          this.toastService.success({
+            title: _t('toast#notebookchangecurrent_success_title'),
+            text: _t('toast#notebookchangecurrent_success_text'),
+          });
           break;
         case 'annotation.delete': // delete an annotation
           this.layoutEvent$.next({ type: 'annotationdeleteclick', payload });
@@ -287,6 +296,18 @@ export class SidebarLayoutEH extends EventHandler {
     }).then(() => {
       // update the cached version of the notebook
       this.notebookService.update(nb.id, update);
+      // toast
+      this.toastService.success({
+        title: _t('toast#notebookedit_success_title'),
+        text: _t('toast#notebookedit_success_text'),
+      });
+    }).catch((err) => {
+      // toast
+      this.toastService.error({
+        title: _t('toast#notebookedit_error_title'),
+        text: _t('toast#notebookedit_error_text'),
+      });
+      console.warn('Notebook update error:', err);
     });
   }
 
@@ -310,6 +331,19 @@ export class SidebarLayoutEH extends EventHandler {
           comment: rawAnnotation.content.comment,
           notebookId: rawAnnotation.notebookId,
         });
+      }).then(() => {
+        // toast
+        this.toastService.success({
+          title: _t('toast#annotationedit_success_title'),
+          text: _t('toast#annotationedit_success_text'),
+        });
+      }).catch((err) => {
+        // toast
+        this.toastService.error({
+          title: _t('toast#annotationedit_error_title'),
+          text: _t('toast#annotationedit_error_text'),
+        });
+        console.warn('Updated annotation error:', err);
       });
     }
   }
@@ -333,7 +367,20 @@ export class SidebarLayoutEH extends EventHandler {
       (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
     }
     setTimeout(() => { // waiting for elastic-search index update
-      annotation.update(annotationID, annotationUpdate);
+      annotation.update(annotationID, annotationUpdate).then(() => {
+        // toast
+        this.toastService.success({
+          title: _t('toast#notebookchange_success_title'),
+          text: _t('toast#notebookchange_success_text'),
+        });
+      }).catch((err) => {
+        // toast
+        this.toastService.error({
+          title: _t('toast#notebookchange_error_title'),
+          text: _t('toast#notebookchange_error_text'),
+        });
+        console.warn('Update annotation notebook error:', err);
+      });
     }, 1100);
     // update annotation component / collection
     this.emitOuter('annotationupdatenb', {

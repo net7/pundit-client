@@ -37,6 +37,10 @@ export default {
   'toast#notebookedit_success_text': 'Your notebook has been correctly saved.',
   'toast#notebookedit_error_title': 'Oops! Something went wrong',
   'toast#notebookedit_error_text': 'Pundit couldn\'t edit your notebook, please try again in 5 minutes.',
+  'toast#notebookchangecurrent_success_title': 'Current notebook changed',
+  'toast#notebookchangecurrent_success_text': 'Your current notebook has been correctly changed.',
+  'toast#notebookchangecurrent_error_title': 'Oops! Something went wrong',
+  'toast#notebookchangecurrent_error_text': 'Pundit couldn\'t change your current notebook, please try again in 5 minutes.',
   'toast#genericerror_title': 'Sorry there was a problem',
   'toast#genericerror_text': 'The system might be too busy, please try again in 5 minutes.',
 };

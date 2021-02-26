@@ -11,6 +11,7 @@ import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
+import { ToastService } from 'src/app/services/toast.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
 @Component({
@@ -29,6 +30,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private anchorService: AnchorService,
     private userService: UserService,
     private punditLoginService: PunditLoginService,
+    private toastService: ToastService,
     private changeDetectorRef: ChangeDetectorRef,
   ) {
     super(config);
@@ -45,6 +47,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       layoutEvent$: this.layoutEvent$,
       userService: this.userService,
       punditLoginService: this.punditLoginService,
+      toastService: this.toastService,
       changeDetectorRef: this.changeDetectorRef,
     };
   }
