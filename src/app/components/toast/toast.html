@@ -1,0 +1,38 @@
+<div *ngIf="data" class="pnd-toast {{ data.classes || '' }}">
+    <div class="pnd-toast__column">
+        <!-- Toast boxes -->
+        <div class="pnd-toast__box  {{ box.classes || '' }}" 
+             *ngFor="let box of data.toasts"
+             (mouseover)="onMouseover(box._meta.id)" 
+             (mouseout)="onMouseout(box._meta.id)"
+             [ngClass]="{ 'has-actions' : !! (box.actions || box.closeIcon) }">
+
+             <div class="pnd-toast__progress" [ngStyle]="{
+                 width: (box.progress$ | async) + '%'
+             }"></div>
+        
+            <!-- Toast text -->
+            <div class="pnd-toast__content" *ngIf="box.title || box.text">
+                <span class="pnd-toast__title" *ngIf="box.title">{{ box.title }}</span>
+                <span class="pnd-toast__text" *ngIf="box.text">{{ box.text }}</span>
+            </div>
+
+            <!-- Toast actions -->
+            <div class="pnd-toast__actions" *ngIf="box.actions || box.closeIcon">
+                <span
+                class="pnd-toast__closeIcon {{ box.closeIcon.icon }}" 
+                *ngIf="box.closeIcon" 
+                (click)="onClick(box.closeIcon.payload)">
+                </span>
+                <span class="pnd-toast__action-wrapper" *ngIf="box.actions">
+                    <span class="pnd-toast__action-content" *ngFor="let action of box.actions">
+                        <button class="pnd-toast__action-button pnd-btn pnd-btn-s {{action.classes || ''}}"
+                                (click)="onClick(action.payload)">
+                                {{action.text}}
+                        </button>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>

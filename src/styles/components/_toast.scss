@@ -1,0 +1,143 @@
+/**
+ * TOAST
+ *
+ * Component used to display alerts on the bottom left of the application.
+ */
+ 
+/* ------------------------------------ *\
+   #TOAST
+\* ------------------------------------ */
+.pnd-toast {
+    position: fixed;
+    bottom: $space*2;
+    left: $space*2;
+
+    &__box {
+        // max-width: $toast-max-width;
+        width: $toast-max-width;
+        padding: $space $space 0 $space;
+        margin-top: $space;
+        background-color: $toast-background-color;
+        // border: $toast-border-size solid $toast-border-color;
+        border-top: 4px solid rgba(0,0,0,.12);
+    }
+
+    &__title {
+        display: block;
+        padding-bottom: $space;
+        font-size: $font-size-m;
+        color: $toast-title-color;
+    }
+
+    &__text {
+        display: block;
+        padding-bottom: $space;
+        font-size: $font-size-s;
+        color: $toast-text-color;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #WITH-ACTIONS
+\* ------------------------------------ */
+.pnd-toast__box.has-actions {
+    position: relative;
+    display: flex;
+    // display: grid;
+    // grid-template-columns: auto minmax(20px, auto);
+    // grid-column-gap: $space;
+}
+
+.pnd-toast__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1 0 auto;
+    min-width: 20px;
+}
+
+.pnd-toast__action-content {
+    flex: 1;
+    margin-right: $space;
+
+    .pnd-toast__action-button {
+        margin-left: $space/2;
+    }
+    
+    &:first-child {
+        .pnd-toast__action-button {
+            margin-left: 0;
+        }
+    }
+}
+
+.pnd-toast__closeIcon {
+    position: absolute;
+    top: $space;
+    right: $space;
+    cursor: pointer;
+
+    &:hover {
+        color: $color-text-link;
+    }
+}
+
+/* ------------------------------------ *\
+   #PROGRESS BAR
+\* ------------------------------------ */
+.pnd-toast__progress {
+    position: absolute;
+    top: -4px;
+    left: 0px;
+    height: 4px;
+    background-color: $color-info;
+    width: 0%;
+    -webkit-transition: width 0.2s linear;
+    -moz-transition: width 0.2s linear;
+    -o-transition: width 0.2s linear;
+    transition: width 0.2s linear;
+}
+
+/* ------------------------------------ *\
+   #COLORS
+\* ------------------------------------ */
+.pnd-toast .is-success {
+    .pnd-toast__progress {
+        background-color: $color-success;
+    }
+}
+
+.pnd-toast .is-info {
+    .pnd-toast__progress {
+        background-color: $color-info;
+    }
+}
+
+.pnd-toast .is-warning {
+    .pnd-toast__progress {
+        background-color: $color-warning;
+    }
+}
+
+.pnd-toast .is-error {
+    .pnd-toast__progress {
+        background-color: $color-error;
+    }
+}
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}

@@ -15,6 +15,7 @@ import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
 import { StorageSyncService } from './services/storage-sync.service';
 import { TokenService } from './services/token.service';
+import { ToastService } from './services/toast.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -25,6 +26,7 @@ import { DeleteModalComponent } from './components/delete-modal/delete-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
+import { ToastComponent } from './components/toast/toast';
 
 import appConfig from './config';
 import i18n from './config/i18n';
@@ -53,6 +55,7 @@ config.init(appConfig);
     NotebookSelectorComponent,
     CommentModalComponent,
     DeleteModalComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -67,6 +70,7 @@ config.init(appConfig);
     AnnotationPositionService,
     StorageSyncService,
     TokenService,
+    ToastService,
     { provide: APP_BASE_HREF, useValue: '/' }
   ],
   bootstrap: [AppComponent],
