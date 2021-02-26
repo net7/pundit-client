@@ -148,34 +148,9 @@ export class SidebarLayoutEH extends EventHandler {
             userId
           }, { sharingMode: newSharingMode });
         } break;
-        case 'annotation.createnotebook': {
-          // create default data for the new notebook
-          const notebookData: PublicNotebook = {
-            label: payload.notebook, // assign the chosen name
-            sharingMode: 'public',
-            userId: this.userService.whoami().id, // authentication
-          };
-          // create the notebook in the backend first to generate the id
-          from(notebook.create({
-            data: notebookData
-          })).pipe(
-            catchError((e) => {
-              console.error(e);
-              return EMPTY;
-            })
-          ).subscribe((res) => {
-            // use the received id to cache the new notebook
-            this.notebookService.create({
-              id: res.data.id,
-              ...notebookData, // use the same data for the cache
-              created: new Date(),
-              changed: new Date(),
-            });
-            this.dataSource.updateNotebookPanel();
-            this.updateAnnotationNotebook(payload.annotation, res.data.id);
-            this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
-          });
-        } break;
+        case 'annotation.createnotebook':
+          this.createAnnotationNotebook(payload);
+          break;
         case 'notebook-panel.createnotebook': {
           // create default data for the new notebook
           const notebookData: PublicNotebook = {
@@ -364,6 +339,35 @@ export class SidebarLayoutEH extends EventHandler {
     this.emitOuter('annotationupdatenb', {
       annotationID,
       notebook: this.notebookService.getNotebookById(notebookId),
+    });
+  }
+
+  private createAnnotationNotebook(payload: { notebook: string; annotation: string }) {
+    // create default data for the new notebook
+    const notebookData: PublicNotebook = {
+      label: payload.notebook, // assign the chosen name
+      sharingMode: 'public',
+      userId: this.userService.whoami().id, // authentication
+    };
+    // create the notebook in the backend first to generate the id
+    from(notebook.create({
+      data: notebookData
+    })).pipe(
+      catchError((e) => {
+        console.error(e);
+        return EMPTY;
+      })
+    ).subscribe((res) => {
+      // use the received id to cache the new notebook
+      this.notebookService.create({
+        id: res.data.id,
+        ...notebookData, // use the same data for the cache
+        created: new Date(),
+        changed: new Date(),
+      });
+      this.dataSource.updateNotebookPanel();
+      this.updateAnnotationNotebook(payload.annotation, res.data.id);
+      this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
     });
   }
 

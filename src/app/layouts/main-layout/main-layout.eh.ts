@@ -6,7 +6,7 @@ import {
 import {
   catchError, debounceTime, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
 } from 'rxjs/operators';
-import { Annotation, CommentAnnotation } from '@pundit/communication';
+import { Annotation, CommentAnnotation, Notebook } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { _c } from 'src/app/models/config';
 import { selectionHandler } from 'src/app/models/selection/selection-handler';
@@ -18,6 +18,7 @@ import { LayoutEvent } from 'src/app/types';
 import { TokenService } from 'src/app/services/token.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { MainLayoutDS } from './main-layout.ds';
+import * as notebook from '../../models/notebook';
 
 const PENDING_ANNOTATION_ID = 'pending-id';
 
@@ -132,6 +133,32 @@ export class MainLayoutEH extends EventHandler {
         case 'comment-modal.notebook':
           this.commentState.notebookId = payload;
           break;
+        case 'comment-modal.createnotebook': {
+          const iam = this.userService.whoami().id;
+          notebook.create({
+            data: {
+              label: payload,
+              sharingMode: 'public',
+              userId: iam,
+            }
+          }).then((res) => {
+            const rawNotebook: Notebook = {
+              id: res.data.id,
+              changed: new Date(),
+              created: new Date(),
+              label: payload,
+              sharingMode: 'public',
+              userId: iam
+            };
+            this.notebookService.add(rawNotebook);
+            this.commentState.notebookId = res.data.id;
+            // update select
+            this.emitOuter('updatenotebookselect', {
+              notebookList: this.notebookService.getByUserId(iam),
+              selectedNotebook: this.notebookService.getNotebookById(res.data.id)
+            });
+          });
+        } break;
         case 'comment-modal.save': {
           const requestPayload = this.pendingAnnotationPayload
             ? this.dataSource.getCommentRequestPayload(
@@ -213,7 +240,7 @@ export class MainLayoutEH extends EventHandler {
           break;
         case 'annotationeditcomment': {
           const annotation = this.annotationService.getAnnotationById(payload);
-          const notebook = this.notebookService.getNotebookById(annotation._meta.notebookId);
+          const newnotebook = this.notebookService.getNotebookById(annotation._meta.notebookId);
           this.commentState = {
             comment: annotation.comment || null,
             notebookId: null,
@@ -222,7 +249,7 @@ export class MainLayoutEH extends EventHandler {
           this.annotationUpdatePayload = annotation._raw;
           this.dataSource.onComment({
             textQuote: annotation.body,
-            notebook,
+            notebook: newnotebook,
             comment: annotation.comment
           });
         } break;

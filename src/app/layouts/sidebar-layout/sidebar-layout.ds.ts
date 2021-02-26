@@ -1,5 +1,7 @@
 import { LayoutDataSource } from '@n7-frontend/core';
-import { BehaviorSubject, Subject } from 'rxjs';
+import {
+  BehaviorSubject, Subject
+} from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';

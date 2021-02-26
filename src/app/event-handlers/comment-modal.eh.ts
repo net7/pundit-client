@@ -18,8 +18,10 @@ export class CommentModalEH extends EventHandler {
             this.dataSource.close();
             this.emitOuter('save');
           }
+        } break;
+        case 'comment-modal.createnotebook':
+          this.emitOuter('createnotebook', payload);
           break;
-        }
         case 'comment-modal.textchange': // the comment is edited
           this.dataSource.onTextChange(payload);
           this.emitOuter('change', payload);
@@ -37,13 +39,16 @@ export class CommentModalEH extends EventHandler {
       }
     });
 
-    this.outerEvents$.subscribe(({ type }) => {
+    this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'main-layout.keyupescape':
           if (this.dataSource.isVisible()) {
             this.dataSource.close();
             this.emitOuter('close');
           }
+          break;
+        case 'main-layout.updatenotebookselect':
+          this.dataSource.updateNotebookSelector(payload);
           break;
         default:
           break;

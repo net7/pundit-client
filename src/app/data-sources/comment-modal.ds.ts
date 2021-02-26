@@ -75,6 +75,11 @@ export class CommentModalDS extends DataSource {
     });
   }
 
+  public updateNotebookSelector({ notebookList, selectedNotebook }) {
+    this.output.form.notebookSelectorData.selectedNotebook = selectedNotebook;
+    this.output.form.notebookSelectorData.notebookList = notebookList;
+  }
+
   public close() {
     this.output.visible = false;
     const { x, y } = this.defaultPosition;

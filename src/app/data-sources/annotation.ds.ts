@@ -22,7 +22,8 @@ export class AnnotationDS extends DataSource {
       .subscribe((e: PointerEvent) => {
         const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
         // only act if the clicked item is NOT the notebook-selector component
-        if (!clickedElement.classList.contains('pnd-notebook-selector__selected')) {
+        if (!clickedElement.className
+          .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field)/gi)) {
           this.onMenuFocusLost.next(true);
           this.updateMenuState(id, 'document');
         }
