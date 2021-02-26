@@ -92,9 +92,11 @@
     left: 0px;
     height: 4px;
     background-color: $color-info;
-    transition-property: width;
-    transition-timing-function: linear;
     width: 0%;
+    -webkit-transition: width 0.2s linear;
+    -moz-transition: width 0.2s linear;
+    -o-transition: width 0.2s linear;
+    transition: width 0.2s linear;
 }
 
 /* ------------------------------------ *\

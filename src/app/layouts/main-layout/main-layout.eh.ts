@@ -426,7 +426,7 @@ export class MainLayoutEH extends EventHandler {
       first(),
       delay(1000) // fix render
     ).subscribe(() => {
-      const toast = this.toastService.warn({
+      this.toastService.warn({
         title: _t('toast#login_warn_title'),
         text: _t('toast#login_warn_text'),
         actions: [{
@@ -434,7 +434,7 @@ export class MainLayoutEH extends EventHandler {
           payload: 'login'
         }],
         autoClose: false,
-        onAction: (payload) => {
+        onAction: (toast, payload) => {
           if (payload === 'login') {
             this.punditLoginService.start();
             toast.close();

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { interval, Subject } from 'rxjs';
+import { BehaviorSubject, interval, Subject } from 'rxjs';
 import {
   filter, takeWhile, map
 } from 'rxjs/operators';
@@ -17,7 +17,7 @@ export interface ToastParams {
   text?: string;
   hasDismiss?: boolean;
   actions?: ToastAction[];
-  onAction?: (payload: any) => void;
+  onAction?: (instance: ToastInstance, payload: any) => void;
   autoClose?: boolean;
   autoCloseDelay?: number;
 }
@@ -26,7 +26,12 @@ export interface ToastUpdateParams extends ToastParams {
   type?: ToastType;
 }
 
-type EmitFunction = (payload: any) => void;
+type ToastInstance = {
+  close: () => void;
+  update: (newParams: ToastUpdateParams) => void;
+};
+
+type EmitFunction = (instance: ToastInstance, payload: any) => void;
 
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
@@ -37,10 +42,13 @@ const AUTOCLOSE_DELAY = 5000; // 5secs
 
 @Injectable()
 export class ToastService {
+  static counter = 0;
+
   private toasts: {
     id: string;
     data: ToastBox;
     onAction: EmitFunction;
+    instance: ToastInstance;
   }[] = [];
 
   private mouseoverState: {
@@ -71,9 +79,9 @@ export class ToastService {
         if (payload.action === 'close') {
           this.close(payload.id);
         } else {
-          const onActionFunc = this.toasts.find(({ id }) => id === payload.id)?.onAction;
-          if (onActionFunc) {
-            onActionFunc(payload.action);
+          const toast = this.toasts.find(({ id }) => id === payload.id);
+          if (toast.onAction) {
+            toast.onAction(toast.instance, payload.action);
           }
         }
         break;
@@ -90,12 +98,23 @@ export class ToastService {
   }
 
   private notify(toastType: ToastType, params: ToastParams) {
-    const toastId = `toast-${this.toasts.length}`;
+    // updated class counter
+    ToastService.counter += 1;
+    const toastId = `toast-${ToastService.counter}`;
     const toastParams = {
       ...DEFAULTS,
       ...params
     };
+    const instance = {
+      close: () => {
+        this.close(toastId);
+      },
+      update: (newParams: ToastUpdateParams) => {
+        this.update(toastId, newParams);
+      }
+    };
     this.toasts.push({
+      instance,
       id: toastId,
       data: {
         classes: this.getDataClasses(toastType),
@@ -110,7 +129,7 @@ export class ToastService {
         _meta: {
           id: toastId
         },
-        progress: toastParams.autoClose ? 0 : 100
+        progress$: new BehaviorSubject(toastParams.autoClose ? 0 : 100)
       },
       onAction: toastParams.onAction
         ? this.getOnAction(toastParams.onAction)
@@ -123,15 +142,8 @@ export class ToastService {
     // auto close
     this.onAutoClose(toastId, toastParams);
 
-    // toast public api
-    return {
-      close: () => {
-        this.close(toastId);
-      },
-      update: (newParams: ToastUpdateParams) => {
-        this.update(toastId, newParams);
-      }
-    };
+    // return instance
+    return instance;
   }
 
   private close(toastId: string) {
@@ -209,10 +221,10 @@ export class ToastService {
     const { autoClose, autoCloseDelay } = params;
     if (autoClose) {
       const toast = this.toasts.find(({ id }) => id === toastId);
-      const timerDelay = 10; // ms
+      const timerDelay = 200; // ms
       const timer$ = interval(timerDelay);
       const closeDelay = autoCloseDelay || AUTOCLOSE_DELAY;
-      const tickCounterLimit = closeDelay / timerDelay;
+      const tickCounterLimit = (closeDelay / timerDelay);
       let tickCounter = 0;
       timer$.pipe(
         filter(() => !this.mouseoverState[toastId]),
@@ -222,12 +234,15 @@ export class ToastService {
         }),
         takeWhile((tick) => tick <= tickCounterLimit)
       ).subscribe((tick: number) => {
+        const progress = (tick * 100) / tickCounterLimit;
         // update progress
-        toast.data.progress = (tick * 100) / tickCounterLimit;
-        this.updateDataStream();
+        toast.data.progress$.next(progress);
         // close check
         if (tick === tickCounterLimit) {
-          this.close(toastId);
+          // timeout to complete animation before close
+          setTimeout(() => {
+            this.close(toastId);
+          }, timerDelay * 2);
         }
       });
     }

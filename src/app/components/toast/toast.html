@@ -8,7 +8,7 @@
              [ngClass]="{ 'has-actions' : !! (box.actions || box.closeIcon) }">
 
              <div class="pnd-toast__progress" [ngStyle]="{
-                 width: box.progress + '%'
+                 width: (box.progress$ | async) + '%'
              }"></div>
         
             <!-- Toast text -->

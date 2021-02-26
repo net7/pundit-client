@@ -3,6 +3,7 @@
 //---------------------------
 
 import { Component, Input } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * Interface for ToastComponent's "data"
@@ -60,7 +61,7 @@ export interface ToastBox {
   /**
    * progress bar
    */
-  progress?: number;
+  progress$?: BehaviorSubject<number>;
   /**
    * additional info
    */
