@@ -17,7 +17,7 @@ export interface ToastParams {
   text?: string;
   hasDismiss?: boolean;
   actions?: ToastAction[];
-  onAction?: (instance: ToastInstance, payload: any) => void;
+  onAction?: (payload: any, instance: ToastInstance) => void;
   autoClose?: boolean;
   autoCloseDelay?: number;
 }
@@ -31,7 +31,7 @@ type ToastInstance = {
   update: (newParams: ToastUpdateParams) => void;
 };
 
-type EmitFunction = (instance: ToastInstance, payload: any) => void;
+type EmitFunction = (payload: any, instance: ToastInstance) => void;
 
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
@@ -80,7 +80,7 @@ export class ToastService {
         } else {
           const toast = this.toasts.find(({ id }) => id === payload.id);
           if (toast.onAction) {
-            toast.onAction(toast.instance, payload.action);
+            toast.onAction(payload.action, toast.instance);
           }
         }
         break;
