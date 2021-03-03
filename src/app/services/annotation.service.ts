@@ -26,11 +26,16 @@ export class AnnotationService {
   }
 
   add(rawAnnotation: Annotation) {
+    const currentUser = this.userService.whoami();
     if (!this.getAnnotationById(rawAnnotation.id)) {
       this.annotations.push(this.transform(rawAnnotation));
 
       // emit signal
       this.totalChanged$.next(this.annotations.length);
+    // check for user annotations
+    } else if (currentUser && currentUser.id === rawAnnotation.userId) {
+      const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(rawAnnotation.id);
+      this.annotations[index] = this.transform(rawAnnotation);
     }
   }
 
@@ -113,10 +118,10 @@ export class AnnotationService {
     const currentUser = this.userService.whoami();
     const user = this.userService.getUserById(userId) || {} as any;
     const notebook = this.notebookService.getNotebookById(notebookId);
-    const notebooks = this.notebookService.getByUserId(currentUser.id);
+    const notebooks = currentUser ? this.notebookService.getByUserId(currentUser.id) : [];
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
-    const hasMenu = currentUser.id === user.id;
+    const hasMenu = currentUser?.id === user.id;
     let comment;
     if (annotation.type === 'Commenting') {
       const { content } = annotation;
