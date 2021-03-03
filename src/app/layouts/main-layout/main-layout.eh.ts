@@ -477,7 +477,7 @@ export class MainLayoutEH extends EventHandler {
       first(),
       delay(1000) // fix render
     ).subscribe(() => {
-      this.toastService.warn({
+      const loginToast = this.toastService.warn({
         title: _t('toast#login_warn_title'),
         text: _t('toast#login_warn_text'),
         actions: [{
@@ -485,12 +485,18 @@ export class MainLayoutEH extends EventHandler {
           payload: 'login'
         }],
         autoClose: false,
-        onAction: (toast, payload) => {
+        onAction: (payload) => {
           if (payload === 'login') {
             this.punditLoginService.start();
-            toast.close();
           }
         }
+      });
+
+      // on auth close toast
+      this.punditLoginService.onAuth().pipe(
+        first()
+      ).subscribe(() => {
+        loginToast.close();
       });
     });
   }
