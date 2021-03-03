@@ -70,5 +70,6 @@ export class UserService {
 
   clear() {
     this.users = [];
+    this.me = null;
   }
 }
