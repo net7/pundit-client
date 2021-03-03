@@ -34,10 +34,13 @@ export class SidebarLayoutDS extends LayoutDataSource {
   }
 
   updateNotebookPanel() {
-    this.one('notebook-panel').update({
-      selected: this.notebookService.getSelected(),
-      list: this.notebookService.getByUserId(this.userService.whoami().id)
-    });
+    const currentUser = this.userService.whoami();
+    if (currentUser) {
+      this.one('notebook-panel').update({
+        selected: this.notebookService.getSelected(),
+        list: this.notebookService.getByUserId(currentUser.id)
+      });
+    }
   }
 
   updateAnnotations(load = false) {
