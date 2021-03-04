@@ -153,7 +153,10 @@ export class SidebarLayoutEH extends EventHandler {
          * Annotation Events
          * --------------------------------------------------------------------> */
         case AnnotationEvent.Delete: // delete an annotation
-          this.appEvent$.next({ type: 'annotationdeleteclick', payload });
+          this.appEvent$.next({
+            payload,
+            type: AppEvent.AnnotationDeleteClick,
+          });
           break;
         case AnnotationEvent.UpdateNotebook: // move an annotation to another notebook
           this.updateAnnotationNotebook(payload.annotation, payload.notebook);
@@ -175,19 +178,19 @@ export class SidebarLayoutEH extends EventHandler {
         }
         case AnnotationEvent.MouseEnter: // highlight the corresponding annotation in the host
           this.appEvent$.next({
-            type: 'annotationmouseenter',
+            type: AppEvent.AnnotationMouseEnter,
             payload
           });
           break;
         case AnnotationEvent.MouseLeave: // remove the highlight from the corresponding annotation
           this.appEvent$.next({
-            type: 'annotationmouseleave',
+            type: AppEvent.AnnotationMouseLeave,
             payload
           });
           break;
         case AnnotationEvent.EditComment: // open the comment modal and let the user edit
           this.appEvent$.next({
-            type: 'annotationeditcomment',
+            type: AppEvent.AnnotationEditComment,
             payload
           });
           break;
