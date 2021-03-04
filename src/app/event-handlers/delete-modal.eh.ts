@@ -36,7 +36,7 @@ export class DeleteModalEH extends EventHandler {
             this.emitOuter(getEventType(DeleteModalEvent.Close));
           }
           break;
-        case MainLayoutEvent.UpdateNotebookSelect:
+        case MainLayoutEvent.AnnotationDeleteClick:
           this.dataSource.open();
           break;
         default:
