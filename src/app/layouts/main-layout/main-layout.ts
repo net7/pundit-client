@@ -3,6 +3,7 @@ import {
 } from '@angular/core';
 import { PunditLoginService } from '@pundit/login';
 import { ReplaySubject } from 'rxjs';
+import { AppEvent } from 'src/app/events';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -22,7 +23,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   onKeyUp({ key }: KeyboardEvent) {
     if (key === 'Escape') {
       this.appEvent$.next({
-        type: 'keyupescape'
+        type: AppEvent.KeyUpEscape
       });
     }
   }
