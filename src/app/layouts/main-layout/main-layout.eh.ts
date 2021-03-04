@@ -18,6 +18,11 @@ import { LayoutEvent } from 'src/app/types';
 import { TokenService } from 'src/app/services/token.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { ToastService } from 'src/app/services/toast.service';
+import {
+  AnchorEvent,
+  AppEvent,
+  CommentModalEvent, DeleteModalEvent, DocumentEvent, getEventType, MainLayoutEvent, TooltipEvent
+} from 'src/app/events';
 import { MainLayoutDS } from './main-layout.ds';
 import * as notebook from '../../models/notebook';
 
@@ -28,7 +33,7 @@ const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
 export class MainLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
-  private layoutEvent$: ReplaySubject<LayoutEvent>;
+  private appEvent$: ReplaySubject<LayoutEvent>;
 
   private userService: UserService;
 
@@ -66,8 +71,8 @@ export class MainLayoutEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'main-layout.init':
-          this.layoutEvent$ = payload.layoutEvent$;
+        case MainLayoutEvent.Init:
+          this.appEvent$ = payload.appEvent$;
           this.userService = payload.userService;
           this.notebookService = payload.notebookService;
           this.annotationService = payload.annotationService;
@@ -91,7 +96,7 @@ export class MainLayoutEH extends EventHandler {
           this.listenLoginEvents();
           break;
 
-        case 'main-layout.destroy':
+        case MainLayoutEvent.Destroy:
           this.destroy$.next();
           break;
         default:
@@ -103,19 +108,16 @@ export class MainLayoutEH extends EventHandler {
       withLatestFrom(this.isLogged$)
     ).subscribe(([{ type, payload }, isLogged]) => {
       switch (type) {
-        case 'tooltip.highlight': {
+        /**
+         * Tooltip Events
+         * --------------------------------------------------------------------> */
+        case TooltipEvent.Click: {
           if (!isLogged) {
             this.punditLoginService.start();
-          } else {
+          } else if (payload === 'highlight') {
             const requestPayload = this.dataSource.getAnnotationRequestPayload();
             this.saveAnnotation(requestPayload);
-          }
-          break;
-        }
-        case 'tooltip.comment': {
-          if (!isLogged) {
-            this.punditLoginService.start();
-          } else {
+          } else if (payload === 'comment') {
             // reset
             this.commentState = {
               comment: null,
@@ -132,13 +134,16 @@ export class MainLayoutEH extends EventHandler {
           }
           break;
         }
-        case 'comment-modal.change':
+        /**
+         * CommentModal Events
+         * --------------------------------------------------------------------> */
+        case CommentModalEvent.TextChange:
           this.commentState.comment = payload;
           break;
-        case 'comment-modal.notebook':
+        case CommentModalEvent.NotebookChange:
           this.commentState.notebookId = payload;
           break;
-        case 'comment-modal.createnotebook': {
+        case CommentModalEvent.CreateNotebook: {
           const iam = this.userService.whoami().id;
           notebook.create({
             data: {
@@ -164,7 +169,7 @@ export class MainLayoutEH extends EventHandler {
             });
           });
         } break;
-        case 'comment-modal.save': {
+        case CommentModalEvent.Save: {
           const requestPayload = this.pendingAnnotationPayload
             ? this.dataSource.getCommentRequestPayload(
               this.pendingAnnotationPayload,
@@ -176,15 +181,21 @@ export class MainLayoutEH extends EventHandler {
           if (requestPayload && !this.annotationUpdatePayload) {
             this.saveAnnotation(requestPayload);
           } else if (requestPayload && this.annotationUpdatePayload) {
-            this.layoutEvent$.next({ type: 'commentupdate', payload: requestPayload });
+            this.appEvent$.next({
+              type: AppEvent.CommentUpdate,
+              payload: requestPayload
+            });
           }
           break;
         }
-        case 'comment-modal.close':
+        case CommentModalEvent.Close:
           // clear pending
           this.removePendingAnnotation();
           break;
-        case 'delete-modal.ok':
+        /**
+         * DeleteModal Events
+         * --------------------------------------------------------------------> */
+        case DeleteModalEvent.Confirm:
           this.dataSource.onAnnotationDelete(this.annotationIdToDelete).pipe(
             catchError((e) => {
               this.handleError(e);
@@ -199,8 +210,8 @@ export class MainLayoutEH extends EventHandler {
           ).subscribe(() => {
             this.anchorService.remove(this.annotationIdToDelete);
             // signal
-            this.layoutEvent$.next({
-              type: 'annotationdeletesuccess',
+            this.appEvent$.next({
+              type: AppEvent.AnnotationDeleteSuccess,
               payload: this.annotationIdToDelete
             });
 
@@ -211,7 +222,7 @@ export class MainLayoutEH extends EventHandler {
             });
           });
           break;
-        case 'delete-modal.close':
+        case DeleteModalEvent.Close:
           this.annotationIdToDelete = null;
           break;
         default:
@@ -221,8 +232,8 @@ export class MainLayoutEH extends EventHandler {
   }
 
   listenSelection() {
-    const mouseDown$ = fromEvent(document, 'mousedown');
-    const mouseUp$ = fromEvent(document, 'mouseup');
+    const mouseDown$ = fromEvent(document, DocumentEvent.MouseDown);
+    const mouseUp$ = fromEvent(document, DocumentEvent.MouseUp);
     const selectionChanged$ = selectionHandler.changed$;
 
     mouseDown$.pipe(
@@ -232,30 +243,30 @@ export class MainLayoutEH extends EventHandler {
       takeUntil(this.destroy$)
     ).subscribe(() => {
       this.dataSource.onSelectionChange();
-      this.emitOuter('selectionchange', this.dataSource.hasSelection());
+      this.emitOuter(getEventType(MainLayoutEvent.SelectionChange), this.dataSource.hasSelection());
     });
   }
 
   private listenLayoutEvents() {
-    this.layoutEvent$.pipe(
+    this.appEvent$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case 'keyupescape':
+        case AppEvent.KeyUpEscape:
           this.dataSource.onKeyupEscape();
-          this.emitOuter(type);
+          this.emitOuter(getEventType(MainLayoutEvent.KeyUpEscape));
           break;
-        case 'annotationdeleteclick':
+        case AppEvent.AnnotationDeleteClick:
           this.annotationIdToDelete = payload;
-          this.emitOuter('annotationdeleteclick');
+          this.emitOuter(getEventType(MainLayoutEvent.AnnotationDeleteClick));
           break;
-        case 'annotationmouseenter':
+        case AppEvent.AnnotationMouseEnter:
           this.anchorService.addHoverClass(payload.id);
           break;
-        case 'annotationmouseleave':
+        case AppEvent.AnnotationMouseLeave:
           this.anchorService.removeHoverClass(payload.id);
           break;
-        case 'annotationeditcomment': {
+        case AppEvent.AnnotationEditComment: {
           const annotation = this.annotationService.getAnnotationById(payload);
           const newnotebook = this.notebookService.getNotebookById(annotation._meta.notebookId);
           this.commentState = {
@@ -270,7 +281,7 @@ export class MainLayoutEH extends EventHandler {
             comment: annotation.comment
           });
         } break;
-        case 'sidebarcollapse': {
+        case AppEvent.SidebarCollapse: {
           const { isCollapsed } = payload;
           if (isCollapsed) {
             document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
@@ -279,7 +290,7 @@ export class MainLayoutEH extends EventHandler {
           }
           break;
         }
-        case 'logout':
+        case AppEvent.Logout:
           this.userService.logout();
           this.onLogout();
           break;
@@ -294,14 +305,23 @@ export class MainLayoutEH extends EventHandler {
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case 'mouseover':
-          this.layoutEvent$.next({ type: 'anchormouseover', payload });
+        case AnchorEvent.MouseOver:
+          this.appEvent$.next({
+            payload,
+            type: AppEvent.AnchorMouseOver
+          });
           break;
-        case 'mouseleave':
-          this.layoutEvent$.next({ type: 'anchormouseleave', payload });
+        case AnchorEvent.MouseLeave:
+          this.appEvent$.next({
+            payload,
+            type: AppEvent.AnchorMouseLeave
+          });
           break;
-        case 'click':
-          this.layoutEvent$.next({ type: 'anchorclick', payload });
+        case AnchorEvent.Click:
+          this.appEvent$.next({
+            payload,
+            type: AppEvent.AnchorClick,
+          });
           break;
         default:
           break;
@@ -356,7 +376,7 @@ export class MainLayoutEH extends EventHandler {
     switch (status) {
       // Unauthorized
       case 401:
-        this.layoutEvent$.next({ type: 'logout' });
+        this.appEvent$.next({ type: AppEvent.Logout });
         break;
       default:
         // TODO
@@ -383,7 +403,10 @@ export class MainLayoutEH extends EventHandler {
       );
       this.anchorService.add(newAnnotation);
       // signal
-      this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
+      this.appEvent$.next({
+        type: AppEvent.AnnotationCreateSuccess,
+        payload: newAnnotation
+      });
       // clear pending
       this.removePendingAnnotation();
 
@@ -422,7 +445,7 @@ export class MainLayoutEH extends EventHandler {
         const { status } = e.response;
         // on login error load public annotations
         if (status === 401) {
-          this.layoutEvent$.pipe(
+          this.appEvent$.pipe(
             filter(({ type }) => type === 'clear'),
             first()
           ).subscribe(() => {
@@ -435,7 +458,9 @@ export class MainLayoutEH extends EventHandler {
       })
     ).subscribe(({ data: searchData }) => {
       this.dataSource.handleSearchResponse(searchData);
-      this.layoutEvent$.next({ type: 'searchresponse' });
+      this.appEvent$.next({
+        type: AppEvent.SearchResponse
+      });
       this.dataSource.hasLoaded$.next(true);
     });
   }
@@ -450,7 +475,9 @@ export class MainLayoutEH extends EventHandler {
 
     // emit signals
     this.annotationService.totalChanged$.next(0);
-    this.layoutEvent$.next({ type: 'clear' });
+    this.appEvent$.next({
+      type: AppEvent.Clear
+    });
     this.dataSource.hasLoaded$.next(true);
 
     // reload public annotations
@@ -469,7 +496,9 @@ export class MainLayoutEH extends EventHandler {
         if (response) {
           const { data: searchData } = response;
           this.dataSource.handleSearchResponse(searchData);
-          this.layoutEvent$.next({ type: 'searchresponse' });
+          this.appEvent$.next({
+            type: AppEvent.SearchResponse
+          });
         }
         this.dataSource.hasLoaded$.next(true);
       });

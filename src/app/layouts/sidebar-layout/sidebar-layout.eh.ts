@@ -17,6 +17,9 @@ import {
 import { PunditLoginService } from '@pundit/login';
 import { from } from 'rxjs/internal/observable/from';
 import { ToastService } from 'src/app/services/toast.service';
+import {
+  AnnotationEvent, AppEvent, getEventType, NotebookPanelEvent, SidebarLayoutEvent
+} from 'src/app/events';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 import * as notebook from '../../models/notebook';
 import * as annotation from '../../models/annotation';
@@ -24,7 +27,7 @@ import * as annotation from '../../models/annotation';
 export class SidebarLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
-  private layoutEvent$: ReplaySubject<LayoutEvent>;
+  private appEvent$: ReplaySubject<LayoutEvent>;
 
   private annotationService: AnnotationService;
 
@@ -45,11 +48,11 @@ export class SidebarLayoutEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'sidebar-layout.init':
+        case SidebarLayoutEvent.Init:
           this.annotationService = payload.annotationService;
           this.notebookService = payload.notebookService;
           this.anchorService = payload.anchorService;
-          this.layoutEvent$ = payload.layoutEvent$;
+          this.appEvent$ = payload.appEvent$;
           this.userService = payload.userService;
           this.punditLoginService = payload.punditLoginService;
           this.toastService = payload.toastService;
@@ -60,31 +63,31 @@ export class SidebarLayoutEH extends EventHandler {
           this.listenDocumentResize();
           this.listenIsCollapse();
           break;
-        case 'sidebar-layout.destroy':
+        case SidebarLayoutEvent.Destroy:
           this.destroy$.next();
           break;
-        case 'sidebar-layout.clicklogo': {
+        case SidebarLayoutEvent.ClickLogo: {
           // invert the state of the sidebar
           const state = this.dataSource.isCollapsed.value;
           this.dataSource.isCollapsed.next(!state);
         } break;
-        case 'sidebar-layout.notebookpanel': {
+        case SidebarLayoutEvent.ClickNotebookPanel: {
           const state = this.dataSource.notebookEditor.getValue();
           this.dataSource.notebookEditor.next(!state);
         } break;
-        case 'sidebar-layout.sidebarclose':
+        case SidebarLayoutEvent.Close:
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);
           break;
-        case 'sidebar-layout.clickusername':
+        case SidebarLayoutEvent.ClickUsername:
           console.warn('FIXME: gestire username click');
           break;
-        case 'sidebar-layout.clicklogout':
-          this.layoutEvent$.next({
-            type: 'logout'
+        case SidebarLayoutEvent.ClickLogout:
+          this.appEvent$.next({
+            type: AppEvent.Logout
           });
           break;
-        case 'sidebar-layout.requestlogin':
+        case SidebarLayoutEvent.RequestLogin:
           this.punditLoginService.start();
           break;
         default:
@@ -97,7 +100,10 @@ export class SidebarLayoutEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'notebook-panel.changeselected': // change the default notebook
+        /**
+         * NotebookPanel Events
+         * --------------------------------------------------------------------> */
+        case NotebookPanelEvent.ChangeSelected: // change the default notebook
           this.notebookService.setSelected(payload);
           this.dataSource.updateNotebookPanel();
           // toast
@@ -106,43 +112,7 @@ export class SidebarLayoutEH extends EventHandler {
             text: _t('toast#notebookchangecurrent_success_text'),
           });
           break;
-        case 'annotation.delete': // delete an annotation
-          this.layoutEvent$.next({ type: 'annotationdeleteclick', payload });
-          break;
-        case 'annotation.updatenotebook': // move an annotation to another notebook
-          this.updateAnnotationNotebook(payload.annotation, payload.notebook);
-          this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
-          break;
-        case 'annotation.togglecollapsed': // collapse an annotation (UI)
-        {
-          const sidebarIsCollapsed = this.dataSource.isCollapsed.value;
-          const { collapsed } = payload;
-          if (!collapsed && sidebarIsCollapsed) {
-            // Open sidebar
-            this.dataSource.isCollapsed.next(false);
-          }
-          this.dataSource.updateAnnotations();
-          break;
-        }
-        case 'annotation.mouseenter': // highlight the corresponding annotation in the host
-          this.layoutEvent$.next({
-            type: 'annotationmouseenter',
-            payload
-          });
-          break;
-        case 'annotation.mouseleave': // remove the highlight from the corresponding annotation
-          this.layoutEvent$.next({
-            type: 'annotationmouseleave',
-            payload
-          });
-          break;
-        case 'annotation.editcomment': // open the comment modal and let the user edit
-          this.layoutEvent$.next({
-            type: 'annotationeditcomment',
-            payload
-          });
-          break;
-        case 'notebook-panel.editsharingmode': { // change sharing mode for the notebook
+        case NotebookPanelEvent.EditSharingMode: { // change sharing mode for the notebook
           const {
             id,
             label,
@@ -157,17 +127,14 @@ export class SidebarLayoutEH extends EventHandler {
             userId
           }, { sharingMode: newSharingMode });
         } break;
-        case 'annotation.createnotebook':
-          this.createAnnotationNotebook(payload);
-          break;
-        case 'notebook-panel.createnotebook': {
+        case NotebookPanelEvent.CreateNotebook: {
           // create default data for the new notebook
           const notebookData: PublicNotebook = {
             label: payload, // assign the chosen name
             sharingMode: 'public',
             userId: this.userService.whoami().id, // authentication
           };
-          // create the notebook in the backend first to generate the id
+            // create the notebook in the backend first to generate the id
           notebook.create({
             data: notebookData
           }).then((res) => {
@@ -182,6 +149,51 @@ export class SidebarLayoutEH extends EventHandler {
             this.dataSource.updateNotebookPanel();
           }).catch((e) => console.error(e));
         } break;
+        /**
+         * Annotation Events
+         * --------------------------------------------------------------------> */
+        case AnnotationEvent.Delete: // delete an annotation
+          this.appEvent$.next({ type: 'annotationdeleteclick', payload });
+          break;
+        case AnnotationEvent.UpdateNotebook: // move an annotation to another notebook
+          this.updateAnnotationNotebook(payload.annotation, payload.notebook);
+          this.appEvent$.next({
+            payload,
+            type: AppEvent.AnnotationUpdateNotebook,
+          });
+          break;
+        case AnnotationEvent.ToggleCollapsed: // collapse an annotation (UI)
+        {
+          const sidebarIsCollapsed = this.dataSource.isCollapsed.value;
+          const { collapsed } = payload;
+          if (!collapsed && sidebarIsCollapsed) {
+            // Open sidebar
+            this.dataSource.isCollapsed.next(false);
+          }
+          this.dataSource.updateAnnotations();
+          break;
+        }
+        case AnnotationEvent.MouseEnter: // highlight the corresponding annotation in the host
+          this.appEvent$.next({
+            type: 'annotationmouseenter',
+            payload
+          });
+          break;
+        case AnnotationEvent.MouseLeave: // remove the highlight from the corresponding annotation
+          this.appEvent$.next({
+            type: 'annotationmouseleave',
+            payload
+          });
+          break;
+        case AnnotationEvent.EditComment: // open the comment modal and let the user edit
+          this.appEvent$.next({
+            type: 'annotationeditcomment',
+            payload
+          });
+          break;
+        case AnnotationEvent.CreateNotebook:
+          this.createAnnotationNotebook(payload);
+          break;
         default:
           break;
       }
@@ -191,38 +203,38 @@ export class SidebarLayoutEH extends EventHandler {
   }
 
   private listenLayoutEvents() {
-    this.layoutEvent$.pipe(
+    this.appEvent$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case 'searchresponse':
+        case AppEvent.SearchResponse:
           this.dataSource.updateAnnotations(true);
           this.dataSource.updateNotebookPanel();
           break;
-        case 'annotationdeletesuccess':
+        case AppEvent.AnnotationDeleteSuccess:
           this.annotationService.remove(payload);
           this.dataSource.updateAnnotations(true);
           break;
-        case 'annotationcreatesuccess': {
+        case AppEvent.AnnotationCreateSuccess: {
           this.annotationService.add(payload);
           this.dataSource.updateAnnotations(true);
           break;
         }
-        case 'commentupdate':
+        case AppEvent.CommentUpdate:
           this.updateAnnotationComment(payload);
           break;
-        case 'anchormouseover':
-          this.emitOuter('anchormouseover', payload);
+        case AppEvent.AnchorMouseOver:
+          this.emitOuter(getEventType(SidebarLayoutEvent.AnchorMouseOver), payload);
           break;
-        case 'anchormouseleave':
-          this.emitOuter('anchormouseleave', payload);
+        case AppEvent.AnchorMouseLeave:
+          this.emitOuter(getEventType(SidebarLayoutEvent.AnchorMouseLeave), payload);
           break;
-        case 'anchorclick':
-          this.emitOuter('anchorclick', payload);
+        case AppEvent.AnchorClick:
+          this.emitOuter(getEventType(SidebarLayoutEvent.AnchorClick), payload);
           this.dataSource.isCollapsed.next(false);
           this.dataSource.updateAnnotations();
           break;
-        case 'clear':
+        case AppEvent.Clear:
           this.dataSource.updateAnnotations(true);
           break;
         default:
@@ -262,8 +274,8 @@ export class SidebarLayoutEH extends EventHandler {
         this.dataSource.updateAnnotations();
 
         // signal
-        this.layoutEvent$.next({
-          type: 'sidebarcollapse',
+        this.appEvent$.next({
+          type: AppEvent.SidebarCollapse,
           payload: { isCollapsed }
         });
       });
@@ -383,10 +395,13 @@ export class SidebarLayoutEH extends EventHandler {
       });
     }, 1100);
     // update annotation component / collection
-    this.emitOuter('annotationupdatenb', {
-      annotationID,
-      notebook: this.notebookService.getNotebookById(notebookId),
-    });
+    this.emitOuter(
+      getEventType(SidebarLayoutEvent.AnnotationUpdateNotebook),
+      {
+        annotationID,
+        notebook: this.notebookService.getNotebookById(notebookId),
+      }
+    );
   }
 
   private createAnnotationNotebook(payload: { notebook: string; annotation: string }) {
@@ -414,7 +429,10 @@ export class SidebarLayoutEH extends EventHandler {
       });
       this.dataSource.updateNotebookPanel();
       this.updateAnnotationNotebook(payload.annotation, res.data.id);
-      this.layoutEvent$.next({ type: 'annotationupdatenotebook', payload });
+      this.appEvent$.next({
+        type: AppEvent.AnnotationUpdateNotebook,
+        payload
+      });
     });
   }
 

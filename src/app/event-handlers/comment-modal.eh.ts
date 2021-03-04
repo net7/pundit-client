@@ -1,5 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { CommentModalDS } from '../data-sources';
+import { CommentModalEvent, getEventType, MainLayoutEvent } from '../events';
 
 export class CommentModalEH extends EventHandler {
   public dataSource: CommentModalDS;
@@ -7,32 +8,32 @@ export class CommentModalEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'comment-modal.click': {
+        case CommentModalEvent.Click: {
           const { source } = payload;
           if (['close-icon', 'action-cancel'].includes(source)) {
             this.dataSource.close();
-            this.emitOuter('close');
+            this.emitOuter(getEventType(CommentModalEvent.Close));
           } else if (source === 'notebooks-header') {
             this.dataSource.notebooksToggle();
           } else if (source === 'action-save') {
             this.dataSource.close();
-            this.emitOuter('save');
+            this.emitOuter(getEventType(CommentModalEvent.Save));
           }
         } break;
-        case 'comment-modal.createnotebook':
-          this.emitOuter('createnotebook', payload);
+        case CommentModalEvent.CreateNotebook:
+          this.emitOuter(getEventType(CommentModalEvent.CreateNotebook), payload);
           break;
-        case 'comment-modal.textchange': // the comment is edited
+        case CommentModalEvent.TextChange: // the comment is edited
           this.dataSource.onTextChange(payload);
-          this.emitOuter('change', payload);
+          this.emitOuter(getEventType(CommentModalEvent.TextChange), payload);
           break;
-        case 'comment-modal.option': // a different notebook is selected
+        case CommentModalEvent.NotebookChange: // a different notebook is selected
           this.dataSource.updateSaveButtonState(false);
-          this.emitOuter('notebook', payload);
+          this.emitOuter(getEventType(CommentModalEvent.NotebookChange), payload);
           break;
-        case 'comment-modal.close':
+        case CommentModalEvent.Close:
           this.dataSource.close();
-          this.emitOuter('close');
+          this.emitOuter(getEventType(CommentModalEvent.Close));
           break;
         default:
           break;
@@ -41,13 +42,13 @@ export class CommentModalEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'main-layout.keyupescape':
+        case MainLayoutEvent.KeyUpEscape:
           if (this.dataSource.isVisible()) {
             this.dataSource.close();
             this.emitOuter('close');
           }
           break;
-        case 'main-layout.updatenotebookselect':
+        case MainLayoutEvent.UpdateNotebookSelect:
           this.dataSource.updateNotebookSelector(payload);
           break;
         default:

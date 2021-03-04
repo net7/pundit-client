@@ -21,13 +21,13 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   @HostListener('document:keyup', ['$event'])
   onKeyUp({ key }: KeyboardEvent) {
     if (key === 'Escape') {
-      this.layoutEvent$.next({
+      this.appEvent$.next({
         type: 'keyupescape'
       });
     }
   }
 
-  public layoutEvent$: ReplaySubject<LayoutEvent> = new ReplaySubject();
+  public appEvent$: ReplaySubject<LayoutEvent> = new ReplaySubject();
 
   constructor(
     private anchorService: AnchorService,
@@ -48,7 +48,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       anchorService: this.anchorService,
       annotationService: this.annotationService,
       changeDetectorRef: this.changeDetectorRef,
-      layoutEvent$: this.layoutEvent$,
+      appEvent$: this.appEvent$,
       loginService: this.loginService,
       notebookService: this.notebookService,
       punditLoginService: this.punditLoginService,

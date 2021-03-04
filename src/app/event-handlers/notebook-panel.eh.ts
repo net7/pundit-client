@@ -1,17 +1,14 @@
 import { EventHandler } from '@n7-frontend/core';
+import { getEventType, NotebookPanelEvent } from '../events';
 
 export class NotebookPanelEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'notebook-panel.click':
-          this.emitOuter('editsharingmode', payload);
-          break;
-        case 'notebook-panel.option':
-          this.emitOuter('changeselected', payload);
-          break;
-        case 'notebook-panel.createnotebook':
-          this.emitOuter('createnotebook', payload);
+        case NotebookPanelEvent.EditSharingMode:
+        case NotebookPanelEvent.ChangeSelected:
+        case NotebookPanelEvent.CreateNotebook:
+          this.emitOuter(getEventType(type), payload);
           break;
         default:
           break;

@@ -1,5 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { AnnotationDS } from '../data-sources';
+import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../events';
 
 export class AnnotationEH extends EventHandler {
   public dataSource: AnnotationDS;
@@ -10,22 +11,22 @@ export class AnnotationEH extends EventHandler {
         /**
          * Handle all click events on an annotation with different "source" values
          */
-        case 'annotation.click': {
+        case AnnotationEvent.Click: {
           const { source, id } = payload;
           switch (source) {
             case 'box': // click on the annotation container (while collapsed)
               this.dataSource.setCollapsedState(id, false);
-              this.emitOuter('togglecollapsed', { collapsed: false });
+              this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: false });
               break;
             case 'compress': // collapse the annotation
               this.dataSource.setCollapsedState(id, true);
-              this.emitOuter('togglecollapsed', { collapsed: true });
+              this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
-              this.emitOuter('delete', id);
+              this.emitOuter(getEventType(AnnotationEvent.Delete), id);
               break;
             case 'action-comment': // click on the "edit comment" button
-              this.emitOuter('editcomment', id);
+              this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
               break;
             default:
               // annotation update menu state
@@ -33,18 +34,11 @@ export class AnnotationEH extends EventHandler {
               break;
           }
         } break;
-        case 'annotation.option':
-          // change the assigned notebook
-          this.emitOuter('updatenotebook', payload);
-          break;
-        case 'annotation.mouseenter':
-          this.emitOuter('mouseenter', payload);
-          break;
-        case 'annotation.mouseleave':
-          this.emitOuter('mouseleave', payload);
-          break;
-        case 'annotation.createnotebook':
-          this.emitOuter('createnotebook', payload);
+        case AnnotationEvent.UpdateNotebook:
+        case AnnotationEvent.MouseEnter:
+        case AnnotationEvent.MouseLeave:
+        case AnnotationEvent.CreateNotebook:
+          this.emitOuter(getEventType(type), payload);
           break;
         default:
           console.warn('unhandled inner event of type', type);
@@ -54,16 +48,16 @@ export class AnnotationEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'sidebar-layout.annotationupdatenb':
+        case SidebarLayoutEvent.AnnotationUpdateNotebook:
           this.dataSource.onAnnotationUpdate(payload);
           break;
-        case 'sidebar-layout.anchormouseover':
+        case SidebarLayoutEvent.AnchorMouseOver:
           this.dataSource.onAnchorMouseOver(payload);
           break;
-        case 'sidebar-layout.anchormouseleave':
+        case SidebarLayoutEvent.AnchorMouseLeave:
           this.dataSource.onAnchorMouseLeave(payload);
           break;
-        case 'sidebar-layout.anchorclick':
+        case SidebarLayoutEvent.AnchorClick:
           this.dataSource.onAnchorClick(payload);
           break;
         default:

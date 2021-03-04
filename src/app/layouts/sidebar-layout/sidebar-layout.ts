@@ -19,7 +19,7 @@ import { SidebarLayoutConfig as config } from './sidebar-layout.config';
   templateUrl: './sidebar-layout.html'
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
-  @Input() layoutEvent$: ReplaySubject<LayoutEvent>;
+  @Input() appEvent$: ReplaySubject<LayoutEvent>;
 
   public logo: SafeResourceUrl;
 
@@ -44,7 +44,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       annotationService: this.annotationService,
       notebookService: this.notebookService,
       anchorService: this.anchorService,
-      layoutEvent$: this.layoutEvent$,
+      appEvent$: this.appEvent$,
       userService: this.userService,
       punditLoginService: this.punditLoginService,
       toastService: this.toastService,

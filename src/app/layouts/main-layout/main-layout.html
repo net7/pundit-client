@@ -1,7 +1,7 @@
 <div class="pnd-main"
      *ngIf="lb.dataSource.hasLoaded$ | async">
     <!-- Sidebar -->
-    <sidebar-layout [layoutEvent$]="layoutEvent$"></sidebar-layout>
+    <sidebar-layout [appEvent$]="appEvent$"></sidebar-layout>
     <!-- Tooltip template -->
     <pnd-tooltip [data]="lb.widgets['tooltip'].ds.out$ | async"
                  [emit]="lb.widgets['tooltip'].emit">
