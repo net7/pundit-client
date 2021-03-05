@@ -59,7 +59,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
-          this.listenLayoutEvents();
+          this.listenAppEvents();
           this.listenDocumentResize();
           this.listenIsCollapse();
           break;
@@ -205,7 +205,7 @@ export class SidebarLayoutEH extends EventHandler {
     });
   }
 
-  private listenLayoutEvents() {
+  private listenAppEvents() {
     this.appEvent$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {

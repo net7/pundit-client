@@ -91,7 +91,7 @@ export class MainLayoutEH extends EventHandler {
             this.loadPublicAnnotations();
           }
           this.listenSelection();
-          this.listenLayoutEvents();
+          this.listenAppEvents();
           this.listenAnchorEvents();
           this.listenLoginEvents();
           break;
@@ -247,7 +247,7 @@ export class MainLayoutEH extends EventHandler {
     });
   }
 
-  private listenLayoutEvents() {
+  private listenAppEvents() {
     this.appEvent$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(({ type, payload }) => {
