@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import tooltipModel from 'src/app/models/tooltip-model';
+import { tooltipModel } from 'src/app/models/tooltip-model';
 import { NavData } from '../../types';
 
 /**

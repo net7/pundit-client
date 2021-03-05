@@ -101,5 +101,4 @@ class TooltipModel {
   }
 }
 
-const tooltipModel = new TooltipModel();
-export default tooltipModel;
+export const tooltipModel: TooltipModel = new TooltipModel();
