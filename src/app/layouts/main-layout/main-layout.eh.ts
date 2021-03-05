@@ -14,7 +14,7 @@ import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
-import { LayoutEvent } from 'src/app/types';
+import { AppEventData } from 'src/app/types';
 import { TokenService } from 'src/app/services/token.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { ToastService } from 'src/app/services/toast.service';
@@ -33,7 +33,7 @@ const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
 export class MainLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
-  private appEvent$: ReplaySubject<LayoutEvent>;
+  private appEvent$: ReplaySubject<AppEventData>;
 
   private userService: UserService;
 

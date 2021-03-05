@@ -1,4 +1,4 @@
-export type LayoutEvent = {
+export type AppEventData = {
   type: string;
   payload?: any;
 }

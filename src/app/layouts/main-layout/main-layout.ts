@@ -11,7 +11,7 @@ import { NotebookService } from 'src/app/services/notebook.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { TokenService } from 'src/app/services/token.service';
 import { UserService } from 'src/app/services/user.service';
-import { LayoutEvent } from 'src/app/types';
+import { AppEventData } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
 
 @Component({
@@ -28,7 +28,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     }
   }
 
-  public appEvent$: ReplaySubject<LayoutEvent> = new ReplaySubject();
+  public appEvent$: ReplaySubject<AppEventData> = new ReplaySubject();
 
   constructor(
     private anchorService: AnchorService,

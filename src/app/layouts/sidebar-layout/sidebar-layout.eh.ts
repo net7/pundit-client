@@ -7,7 +7,7 @@ import {
 import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
-import { LayoutEvent } from 'src/app/types';
+import { AppEventData } from 'src/app/types';
 import { NotebookData, NotebookService, NotebookUpdate } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import {
@@ -27,7 +27,7 @@ import * as annotation from '../../models/annotation';
 export class SidebarLayoutEH extends EventHandler {
   private destroy$: Subject<void> = new Subject();
 
-  private appEvent$: ReplaySubject<LayoutEvent>;
+  private appEvent$: ReplaySubject<AppEventData>;
 
   private annotationService: AnnotationService;
 
