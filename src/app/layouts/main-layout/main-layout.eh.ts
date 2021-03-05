@@ -9,7 +9,7 @@ import {
 import { Annotation, CommentAnnotation, Notebook } from '@pundit/communication';
 import { PunditLoginService } from '@pundit/login';
 import { _c } from 'src/app/models/config';
-import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import { selectionModel } from 'src/app/models/selection/selection-model';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
@@ -234,7 +234,7 @@ export class MainLayoutEH extends EventHandler {
   listenSelection() {
     const mouseDown$ = fromEvent(document, DocumentEvent.MouseDown);
     const mouseUp$ = fromEvent(document, DocumentEvent.MouseUp);
-    const selectionChanged$ = selectionHandler.changed$;
+    const selectionChanged$ = selectionModel.changed$;
 
     mouseDown$.pipe(
       switchMapTo(selectionChanged$),

@@ -2,7 +2,7 @@ import { createPopper } from '@popperjs/core';
 import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from './range-util';
 
-class TooltipHandler {
+class TooltipModel {
   public changed$: Subject<any> = new Subject();
 
   private instance;
@@ -101,5 +101,5 @@ class TooltipHandler {
   }
 }
 
-const tooltipHandler = new TooltipHandler();
-export default tooltipHandler;
+const tooltipModel = new TooltipModel();
+export default tooltipModel;

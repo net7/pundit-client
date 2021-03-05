@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import tooltipHandler from 'src/app/models/tooltip-handler';
+import tooltipModel from 'src/app/models/tooltip-model';
 import { NavData } from '../../types';
 
 /**
@@ -24,7 +24,7 @@ export class TooltipComponent {
       private ref: ChangeDetectorRef
     ) {
       // fix update out of pnd-root context
-      tooltipHandler.changed$.pipe(
+      tooltipModel.changed$.pipe(
         delay(1)
       ).subscribe(() => {
         this.ref.detectChanges();

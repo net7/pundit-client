@@ -2,12 +2,12 @@ import { LayoutDataSource } from '@n7-frontend/core';
 import {
   from, of, BehaviorSubject
 } from 'rxjs';
-import { selectionHandler } from 'src/app/models/selection/selection-handler';
+import { selectionModel } from 'src/app/models/selection/selection-model';
 import {
   create as createAnnotation, createRequestPayload, remove as deleteAnnotation, search
 } from 'src/app/models/annotation';
 import { search as searchNotebooks } from 'src/app/models/notebook';
-import tooltipHandler from 'src/app/models/tooltip-handler';
+import tooltipModel from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
@@ -76,13 +76,13 @@ export class MainLayoutDS extends LayoutDataSource {
 
   onSelectionChange() {
     if (this.hasSelection()) {
-      tooltipHandler.show(selectionHandler.getCurrentSelection());
+      tooltipModel.show(selectionModel.getCurrentSelection());
     } else {
-      tooltipHandler.hide();
+      tooltipModel.hide();
     }
   }
 
-  hasSelection = () => !!selectionHandler.getCurrentSelection();
+  hasSelection = () => !!selectionModel.getCurrentSelection();
 
   /**
    * Open the comment modal
@@ -96,8 +96,8 @@ export class MainLayoutDS extends LayoutDataSource {
     comment?: string;
   }) {
     // clear
-    selectionHandler.clearSelection();
-    tooltipHandler.hide();
+    selectionModel.clearSelection();
+    tooltipModel.hide();
     const currentNotebook = notebook || this.notebookService.getSelected();
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
     this.one('comment-modal').update({
@@ -111,7 +111,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   getAnnotationRequestPayload() {
-    const range = selectionHandler.getCurrentRange();
+    const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;
     const type: AnnotationType = 'Highlighting';
@@ -142,8 +142,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   create$(requestPayload) {
     // clear
-    selectionHandler.clearSelection();
-    tooltipHandler.hide();
+    selectionModel.clearSelection();
+    tooltipModel.hide();
     // request
     return from(createAnnotation(requestPayload)).pipe(
       switchMap(({ data }) => of({ id: data.id, requestPayload }))
@@ -151,9 +151,9 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   onKeyupEscape() {
-    if (tooltipHandler.isOpen()) {
-      selectionHandler.clearSelection();
-      tooltipHandler.hide();
+    if (tooltipModel.isOpen()) {
+      selectionModel.clearSelection();
+      tooltipModel.hide();
     }
   }
 }

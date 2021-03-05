@@ -5,7 +5,7 @@ import { fromEvent, Subject } from 'rxjs';
  * keeping the last selection (currentSelection) and
  * sends a signal (changed$) when the event occurs
  */
-class SelectionHandler {
+class SelectionModel {
   public changed$: Subject<any> = new Subject();
 
   private currentSelection: Selection | null;
@@ -58,4 +58,4 @@ class SelectionHandler {
   }
 }
 
-export const selectionHandler: SelectionHandler = new SelectionHandler();
+export const selectionModel: SelectionModel = new SelectionModel();
