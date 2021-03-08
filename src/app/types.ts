@@ -33,6 +33,10 @@ export interface NavData {
   _meta?: any;
 }
 
+export interface LayoutHandler {
+  listen: () => void;
+}
+
 // ------------------------------------ //
 // # TYPE GUARDS
 // ------------------------------------ //

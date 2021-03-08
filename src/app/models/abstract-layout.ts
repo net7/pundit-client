@@ -23,13 +23,28 @@ export abstract class AbstractLayout {
 
     const LayoutDS = this.config.layoutDS;
     const LayoutEH = this.config.layoutEH;
+    const layoutDSInstance = new LayoutDS();
+    const layoutEHInstance = new LayoutEH();
+
+    // init
     this.lb.init({
       widgetsConfig: this.widgets,
       widgetsDataSources: this.config.widgetsDataSources,
       widgetsEventHandlers: this.config.widgetsEventHandlers,
-      dataSource: new LayoutDS(),
-      eventHandler: new LayoutEH(),
+      dataSource: layoutDSInstance,
+      eventHandler: layoutEHInstance,
     });
+
+    // handlers
+    if (Array.isArray(this.config.handlers)) {
+      this.config.handlers.forEach((HandlerClass) => {
+        const handlerInstance = new HandlerClass(
+          layoutDSInstance,
+          layoutEHInstance
+        );
+        handlerInstance.listen();
+      });
+    }
   }
 
   protected onDestroy() {
