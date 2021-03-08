@@ -101,6 +101,7 @@ export class MainLayoutEH extends EventHandler {
       filter(() => {
         if (!this.dataSource.isUserLogged()) {
           this.punditLoginService.start();
+          return false;
         }
         return true;
       })
