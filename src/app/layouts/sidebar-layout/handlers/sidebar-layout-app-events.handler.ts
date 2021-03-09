@@ -80,11 +80,13 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
             comment: rawAnnotation.content.comment,
             notebookId: rawAnnotation.notebookId,
           });
-        }).then(() => {
+          // toast
           this.layoutEH.toastService.success({
             title: _t('toast#annotationedit_success_title'),
             text: _t('toast#annotationedit_success_text'),
           });
+          // update sidebar annotations (re-render)
+          this.layoutDS.updateAnnotations();
         }).catch((err) => {
           this.layoutEH.toastService.error({
             title: _t('toast#annotationedit_error_title'),
