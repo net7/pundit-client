@@ -64,7 +64,10 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
           });
           break;
         case AnnotationEvent.CreateNotebook:
-          this.createAnnotationNotebook(payload);
+          this.createAnnotationNotebook({
+            label: payload.notebook,
+            annotationID: payload.annotation
+          });
           break;
 
         default:
@@ -146,10 +149,6 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         });
         this.layoutDS.updateNotebookPanel();
         this.updateAnnotationNotebook(payload.annotationID, res.data.id);
-        this.layoutEH.appEvent$.next({
-          type: AppEvent.AnnotationUpdateNotebook,
-          payload
-        });
       })
       .catch((err) => console.error(err));
   }
