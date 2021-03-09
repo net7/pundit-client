@@ -2,7 +2,7 @@ import { LayoutDataSource } from '@n7-frontend/core';
 import {
   BehaviorSubject, Subject
 } from 'rxjs';
-import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnnotationConfig, AnnotationService } from 'src/app/services/annotation.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { NotebookService } from '../../services/notebook.service';
@@ -25,12 +25,18 @@ export class SidebarLayoutDS extends LayoutDataSource {
   /** dynamically update the document height on scroll */
   public height$: Subject<string> = new Subject();
 
+  public annotations: AnnotationConfig[] = [];
+
   onInit(payload) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;
     this.userService = payload.userService;
-    this.one('annotation').updateOptions({ notebookService: this.notebookService });
+
+    // add annotation service to event handler
+    // to identify the single annotation
+    const annotationsEH = this.getWidgetEventHandler('annotation');
+    annotationsEH.annotationService = this.annotationService;
   }
 
   updateNotebookPanel() {
@@ -45,7 +51,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   updateAnnotations(load = false) {
     if (load) {
-      this.one('annotation').update(this.annotationService.getAnnotations());
+      this.annotations = this.annotationService.getAnnotations();
     }
 
     // fix elements load delay

@@ -72,18 +72,21 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onAnnotationEditComment(payload) {
-    const annotation = this.layoutDS.annotationService.getAnnotationById(payload);
-    const notebookData = this.layoutDS.notebookService.getNotebookById(annotation._meta.notebookId);
+    const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
+    const {
+      _meta, comment, _raw, body
+    } = ds.output;
+    const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.state.comment = {
-      comment: annotation.comment || null,
+      comment: comment || null,
       notebookId: null,
       isUpdate: true,
     };
-    this.layoutDS.state.annotation.updatePayload = annotation._raw;
+    this.layoutDS.state.annotation.updatePayload = _raw;
     this.layoutDS.openCommentModal({
       notebookData,
-      textQuote: annotation.body,
-      comment: annotation.comment
+      comment,
+      textQuote: body,
     });
   }
 

@@ -89,7 +89,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
    */
   private updateAnnotationNotebook(annotationID: string, notebookId: string) {
     // update the annotation on the back end
-    const { _raw: rawAnnotation } = this.layoutEH.annotationService.getAnnotationById(annotationID);
+    const { data: rawAnnotation } = this.layoutEH.annotationService.getAnnotationById(annotationID);
     const annotationUpdate = {
       type: rawAnnotation.type,
       notebookId,
@@ -116,7 +116,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         console.warn('Update annotation notebook error:', err);
       });
     }, 1100);
-    // update annotation component / collection
+    // update annotation component
     this.layoutEH.emitOuter(
       getEventType(SidebarLayoutEvent.AnnotationUpdateNotebook),
       {

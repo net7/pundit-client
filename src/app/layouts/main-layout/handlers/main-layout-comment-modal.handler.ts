@@ -66,14 +66,21 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
               return EMPTY;
             }),
             filter((data) => data)
-          ).subscribe(({ isUpdate, requestPayload }) => {
-            if (isUpdate) {
+          ).subscribe((data) => {
+            if (data.isUpdate) {
               // signal
               this.layoutEH.appEvent$.next({
                 type: AppEvent.CommentUpdate,
-                payload: requestPayload
+                payload: data.requestPayload
               });
             } else {
+              // clear
+              this.layoutDS.state.annotation.pendingPayload = null;
+              // signal
+              this.layoutEH.appEvent$.next({
+                type: AppEvent.AnnotationCreateSuccess,
+                payload: data
+              });
               // toast
               this.layoutDS.toastService.success({
                 title: _t('toast#annotationsave_success_title'),
@@ -129,21 +136,21 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
   }
 
   private onCommentModalSave() {
-    const { comment } = this.layoutDS.state.comment;
+    const { comment, isUpdate } = this.layoutDS.state.comment;
     let source$ = of(null);
     if (typeof comment === 'string' && comment.trim()) {
-      const requestPayload = this.layoutDS.state.annotation.pendingPayload
-        ? this.getCommentRequestPayload(
-          this.layoutDS.state.annotation.pendingPayload,
-          this.layoutDS.state.comment
-        ) : this.getCommentRequestPayload(
+      if (isUpdate) {
+        const updateRequestPayload = this.getCommentRequestPayload(
           this.layoutDS.state.annotation.updatePayload,
           this.layoutDS.state.comment
         );
-      if (requestPayload && !this.layoutDS.state.annotation.updatePayload) {
-        source$ = this.layoutDS.saveAnnotation(requestPayload);
-      } else if (requestPayload && this.layoutDS.state.annotation.updatePayload) {
-        source$ = of({ requestPayload, isUpdate: true });
+        source$ = of({ requestPayload: updateRequestPayload, isUpdate });
+      } else {
+        const pendingRequestPayload = this.getCommentRequestPayload(
+          this.layoutDS.state.annotation.pendingPayload,
+          this.layoutDS.state.comment
+        );
+        source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
       }
     }
     return source$;

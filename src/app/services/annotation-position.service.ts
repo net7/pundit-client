@@ -16,9 +16,9 @@ export class AnnotationPositionService {
     const bodyTop = document.body.getBoundingClientRect().top;
     // get all annotations (creation date and anchor)
     const annotations = this.annotationService.getAnnotations().map(
-      ({ _meta }) => ({
-        created: _meta.created,
-        anchor: this.anchorService.getHighlightById(_meta.id)
+      ({ ds, id }) => ({
+        created: ds.output._meta.created,
+        anchor: this.anchorService.getHighlightById(id)
       })
     );
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
