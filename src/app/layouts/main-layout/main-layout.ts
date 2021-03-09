@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import { PunditLoginService } from '@pundit/login';
 import { ReplaySubject } from 'rxjs';
-import { AppEvent } from 'src/app/events';
+import { AppEvent } from 'src/app/event-types';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';

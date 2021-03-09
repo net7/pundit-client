@@ -12,7 +12,7 @@ import {
   CommentModalEvent,
   getEventType,
   MainLayoutEvent
-} from 'src/app/events';
+} from 'src/app/event-types';
 import * as notebookModel from 'src/app/models/notebook';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';

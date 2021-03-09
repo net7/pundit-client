@@ -1,6 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { AnnotationDS } from '../data-sources';
-import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../events';
+import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../event-types';
 
 export class AnnotationEH extends EventHandler {
   public dataSource: AnnotationDS;

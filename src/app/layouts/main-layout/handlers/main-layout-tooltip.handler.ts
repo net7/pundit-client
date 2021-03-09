@@ -2,7 +2,7 @@ import { _t } from '@n7-frontend/core';
 import { AnnotationType, CommentAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
-import { AppEvent, TooltipEvent } from 'src/app/events';
+import { AppEvent, TooltipEvent } from 'src/app/event-types';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import * as annotationModel from 'src/app/models/annotation';
 import { LayoutHandler } from 'src/app/types';

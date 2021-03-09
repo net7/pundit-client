@@ -14,7 +14,7 @@ import { PunditLoginService } from '@pundit/login';
 import { ToastService } from 'src/app/services/toast.service';
 import {
   AppEvent, SidebarLayoutEvent
-} from 'src/app/events';
+} from 'src/app/event-types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {

@@ -1,6 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { CommentModalDS } from '../data-sources';
-import { CommentModalEvent, getEventType, MainLayoutEvent } from '../events';
+import { CommentModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 
 export class CommentModalEH extends EventHandler {
   public dataSource: CommentModalDS;

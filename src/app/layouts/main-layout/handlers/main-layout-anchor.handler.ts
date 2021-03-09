@@ -1,5 +1,5 @@
 import { takeUntil } from 'rxjs/operators';
-import { AnchorEvent, AppEvent } from 'src/app/events';
+import { AnchorEvent, AppEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';

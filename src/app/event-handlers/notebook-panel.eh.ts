@@ -1,5 +1,5 @@
 import { EventHandler } from '@n7-frontend/core';
-import { getEventType, NotebookPanelEvent } from '../events';
+import { getEventType, NotebookPanelEvent } from '../event-types';
 
 export class NotebookPanelEH extends EventHandler {
   public listen() {

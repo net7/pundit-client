@@ -4,7 +4,7 @@ import {
 } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
-import { AppEvent, MainLayoutEvent, } from 'src/app/events';
+import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {

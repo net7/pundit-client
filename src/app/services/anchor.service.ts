@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
-import { AnchorEvent } from '../events';
+import { AnchorEvent } from '../event-types';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';

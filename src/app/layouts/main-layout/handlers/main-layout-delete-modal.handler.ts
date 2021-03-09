@@ -2,7 +2,7 @@ import { EMPTY, from } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { _t } from '@n7-frontend/core';
 import * as annotationModel from 'src/app/models/annotation';
-import { AppEvent, DeleteModalEvent } from 'src/app/events';
+import { AppEvent, DeleteModalEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';

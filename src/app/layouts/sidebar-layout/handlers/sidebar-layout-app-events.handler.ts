@@ -1,7 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { Annotation, AnnotationAttributes } from '@pundit/communication';
 import { takeUntil } from 'rxjs/operators';
-import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/events';
+import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';

@@ -1,7 +1,7 @@
 import { LayoutHandler } from 'src/app/types';
 import {
   AnnotationEvent, AppEvent, getEventType, SidebarLayoutEvent
-} from 'src/app/events';
+} from 'src/app/event-types';
 import { _t } from '@n7-frontend/core';
 import { AnnotationAttributes, CommentAnnotation, PublicNotebook } from '@pundit/communication';
 import { from, EMPTY } from 'rxjs';

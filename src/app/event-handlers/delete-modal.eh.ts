@@ -1,6 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { DeleteModalDS } from '../data-sources';
-import { DeleteModalEvent, getEventType, MainLayoutEvent } from '../events';
+import { DeleteModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 
 export class DeleteModalEH extends EventHandler {
   public dataSource: DeleteModalDS;

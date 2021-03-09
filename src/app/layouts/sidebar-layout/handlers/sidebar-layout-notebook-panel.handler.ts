@@ -1,6 +1,6 @@
 import { _t } from '@n7-frontend/core';
 import { PublicNotebook, SharingModeType } from '@pundit/communication';
-import { NotebookPanelEvent } from 'src/app/events';
+import { NotebookPanelEvent } from 'src/app/event-types';
 import { NotebookData, NotebookUpdate } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';

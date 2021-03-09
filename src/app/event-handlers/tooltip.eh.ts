@@ -1,6 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { TooltipDS } from '../data-sources';
-import { getEventType, MainLayoutEvent, TooltipEvent } from '../events';
+import { getEventType, MainLayoutEvent, TooltipEvent } from '../event-types';
 
 export class TooltipEH extends EventHandler {
   public dataSource: TooltipDS;

@@ -1,7 +1,7 @@
 import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
-import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/events';
+import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
