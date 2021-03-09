@@ -43,4 +43,8 @@ export default {
   'toast#notebookchangecurrent_error_text': 'Pundit couldn\'t change your current notebook, please try again in 5 minutes.',
   'toast#genericerror_title': 'Sorry there was a problem',
   'toast#genericerror_text': 'The system might be too busy, please try again in 5 minutes.',
+  // annotation
+  'annotation#changenotebook': 'Change notebook',
+  'annotation#editcomment': 'Add/edit comment',
+  'annotation#delete': 'Delete',
 };
