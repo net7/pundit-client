@@ -1,4 +1,4 @@
-import { DataSource } from '@n7-frontend/core';
+import { DataSource, _t } from '@n7-frontend/core';
 import { Annotation } from '@pundit/communication';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -78,19 +78,19 @@ export class AnnotationDS extends DataSource {
           }
         },
         actions: [{
-          label: 'Change notebook',
+          label: _t('annotation#changenotebook'),
           payload: {
             id,
             source: 'action-notebooks'
           }
         }, {
-          label: 'Add/edit comment',
+          label: _t('annotation#editcomment'),
           payload: {
             id,
             source: 'action-comment'
           }
         }, {
-          label: 'Delete',
+          label: _t('annotation#delete'),
           payload: {
             id,
             source: 'action-delete'
@@ -98,7 +98,7 @@ export class AnnotationDS extends DataSource {
         }],
         notebooks: {
           header: {
-            label: 'Change notebook',
+            label: _t('annotation#changenotebook'),
             payload: {
               id,
               source: 'notebooks-header'
