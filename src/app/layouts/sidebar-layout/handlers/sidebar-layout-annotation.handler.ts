@@ -3,9 +3,9 @@ import {
   AnnotationEvent, AppEvent, getEventType, SidebarLayoutEvent
 } from 'src/app/event-types';
 import { _t } from '@n7-frontend/core';
-import { AnnotationAttributes, CommentAnnotation, PublicNotebook } from '@pundit/communication';
-import { from, EMPTY } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {
+  AnnotationAttributes, CommentAnnotation, SharingModeType
+} from '@pundit/communication';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 import * as annotation from '../../../models/annotation';
@@ -129,38 +129,64 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
   /**
    * Create a new notebook from a string
    * and assign the new notebook to the relevant annotation.
-   *
-   * TODO: Refactor into createNotebookFromString()
+   * @param payload - Data to create and assign the notebook
    */
-  private createAnnotationNotebook(payload: { notebook: string; annotation: string }) {
-    // create default data for the new notebook
-    const notebookData: PublicNotebook = {
-      label: payload.notebook, // assign the chosen name
-      sharingMode: 'public',
-      userId: this.layoutEH.userService.whoami().id, // authentication
-    };
-    // create the notebook in the backend first to generate the id
-    from(notebook.create({
-      data: notebookData
-    })).pipe(
-      catchError((e) => {
-        console.error(e);
-        return EMPTY;
+  private createAnnotationNotebook(payload: {
+    /** Label of the new notebook */
+    label: string;
+    /** ID of the annotation that created the notebook */
+    annotationID: string;
+  }) {
+    // create the notebook in the backend first to generate it's id
+    this.createNotebookFromString(payload.label)
+      .then((res) => {
+        this.cacheNewNotebook({
+          id: res.data.id,
+          label: payload.label,
+        });
+        this.layoutDS.updateNotebookPanel();
+        this.updateAnnotationNotebook(payload.annotationID, res.data.id);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationUpdateNotebook,
+          payload
+        });
       })
-    ).subscribe((res) => {
-      // use the received id to cache the new notebook
-      this.layoutEH.notebookService.create({
-        id: res.data.id,
-        ...notebookData, // use the same data for the cache
-        created: new Date(),
-        changed: new Date(),
-      });
-      this.layoutDS.updateNotebookPanel();
-      this.updateAnnotationNotebook(payload.annotation, res.data.id);
-      this.layoutEH.appEvent$.next({
-        type: AppEvent.AnnotationUpdateNotebook,
-        payload
-      });
+      .catch((err) => console.error(err));
+  }
+
+  /**
+   * Create a notebook in the backend from a label
+   * @param name label for the new notebook
+   */
+  private createNotebookFromString(name: string) {
+    const userId = this.layoutEH.userService.whoami().id;
+    return notebook.create({
+      data: {
+        label: name,
+        sharingMode: 'public',
+        userId
+      }
+    });
+  }
+
+  /**
+   * Add a notebook to the local cache.
+   * @param notebookData data for the new notebook to be cached, only id and label required.
+   */
+  private cacheNewNotebook(notebookData: {
+    id: string;
+    label: string;
+    userId?: string;
+    sharingMode?: SharingModeType;
+  }) {
+    const { id, label, userId } = notebookData;
+    this.layoutEH.notebookService.create({
+      id,
+      label,
+      userId: userId || this.layoutEH.userService.whoami().id,
+      sharingMode: 'public', // when a notebook is created it defaults to public
+      created: new Date(),
+      changed: new Date()
     });
   }
 }

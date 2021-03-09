@@ -59,6 +59,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
   /**
    * Updates the comment of an annotation
    * or changes it from a 'highlight' type to a 'comment' type.
+   *
    * @param rawAnnotation Data for the annotation that must be updated
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
@@ -71,25 +72,26 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         subject: rawAnnotation.subject,
         userId: rawAnnotation.userId,
       };
-      annotation.update(rawAnnotation.id, data).then(() => {
-        this.layoutEH.annotationService.update(rawAnnotation.id, {
-          comment: rawAnnotation.content.comment,
-          notebookId: rawAnnotation.notebookId,
+      // update the annotation on the back-end
+      annotation.update(rawAnnotation.id, data)
+        .then(() => {
+          // update the annotation in the client cache
+          this.layoutEH.annotationService.update(rawAnnotation.id, {
+            comment: rawAnnotation.content.comment,
+            notebookId: rawAnnotation.notebookId,
+          });
+        }).then(() => {
+          this.layoutEH.toastService.success({
+            title: _t('toast#annotationedit_success_title'),
+            text: _t('toast#annotationedit_success_text'),
+          });
+        }).catch((err) => {
+          this.layoutEH.toastService.error({
+            title: _t('toast#annotationedit_error_title'),
+            text: _t('toast#annotationedit_error_text'),
+          });
+          console.warn('Updated annotation error:', err);
         });
-      }).then(() => {
-        // toast
-        this.layoutEH.toastService.success({
-          title: _t('toast#annotationedit_success_title'),
-          text: _t('toast#annotationedit_success_text'),
-        });
-      }).catch((err) => {
-        // toast
-        this.layoutEH.toastService.error({
-          title: _t('toast#annotationedit_error_title'),
-          text: _t('toast#annotationedit_error_text'),
-        });
-        console.warn('Updated annotation error:', err);
-      });
     }
   }
 }

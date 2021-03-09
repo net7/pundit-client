@@ -73,6 +73,13 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     });
   }
 
+  /**
+   * Request an update of the notebook on the back-end,
+   * then update the same notebook in the client cache.
+   *
+   * @param nb original notebook
+   * @param update modifications to the original notebook
+   */
   private handleNotebookUpdate(nb: NotebookData, update: NotebookUpdate) {
     // update the backend version of the notebook
     const userId = this.layoutEH.userService.whoami().id;
