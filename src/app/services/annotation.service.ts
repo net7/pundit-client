@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnnotationDS } from '../data-sources';
+import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 
@@ -118,7 +119,8 @@ export class AnnotationService {
       userId,
       subject,
       created,
-      type
+      type,
+      serializedBy: _c('serializer')
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
