@@ -29,13 +29,13 @@ export class AnnotationEH extends EventHandler {
               this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
               break;
             case 'menu-header': // annotation update menu header
-              this.getAnnotationDatasource(id).toggleActiveMenu();
+              this.getAnnotationDatasource(id).toggleActionsMenu();
               break;
             case 'document': // annotation update menu header
-              this.getAnnotationDatasource(id).closeActiveMenu();
+              this.getAnnotationDatasource(id).closeMenu();
               break;
             case 'action-notebooks': // annotation update menu header
-              this.getAnnotationDatasource(id).updateNotebooks();
+              this.getAnnotationDatasource(id).refreshNotebookList();
               break;
             default:
               break;
@@ -57,7 +57,8 @@ export class AnnotationEH extends EventHandler {
       switch (type) {
         case SidebarLayoutEvent.AnnotationUpdateNotebook: {
           const { annotationID, notebook } = payload;
-          this.getAnnotationDatasource(annotationID).onAnnotationUpdate(notebook);
+          this.getAnnotationDatasource(annotationID).transferAnnotationToNotebook(notebook);
+          this.getAnnotationDatasource(annotationID).closeMenu();
           break;
         }
         case SidebarLayoutEvent.AnchorMouseOver:

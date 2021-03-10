@@ -72,16 +72,24 @@ export class AnnotationDS extends DataSource {
         if (!clickedElement.className
           .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field)/gi)) {
           this.onMenuFocusLost.next(true);
-          this.closeActiveMenu();
+          this.closeMenu();
         }
       });
   }
 
+  /**
+   * Collapses or expands the annotation
+   * @param collapse when set to false the full annotation will be visible
+   */
   setCollapsedState(collapse: boolean) {
     this.output.isCollapsed = collapse;
   }
 
-  updateNotebooks() {
+  /**
+   * Reset the data for the notebook-selector component
+   * to sync the notebook list.
+   */
+  refreshNotebookList() {
     const { notebookService } = this.options;
     const { notebookId, userId } = this.output._meta;
     const notebook = notebookService.getNotebookById(notebookId);
@@ -100,27 +108,41 @@ export class AnnotationDS extends DataSource {
     this.listenDocumentClicks();
   }
 
-  toggleActiveMenu() {
+  /** Open or close the actions popup */
+  toggleActionsMenu() {
     this.output.activeMenu = this.output.activeMenu ? undefined : 'actions';
     this.listenDocumentClicks();
   }
 
-  closeActiveMenu() {
+  /** Closes the annotation popup */
+  closeMenu() {
     this.output.activeMenu = undefined;
   }
 
-  onAnnotationUpdate(notebook) {
+  /**
+   * Move an existing annotation to a different notebook
+   *
+   * @param destination new parent notebook
+   */
+  transferAnnotationToNotebook(destination) {
+    // change the parent notebook in the annotation
     this.output.notebook = {
-      name: notebook.label,
-      anchor: {
-        payload: { source: 'notebook', id: notebook.id }
-      }
+      name: destination.label,
+      anchor: { payload: { source: 'notebook', id: destination.id } }
     };
-    if (this.output._meta?.notebookSelectorData) {
-      this.output._meta.notebookSelectorData.selectedNotebook = notebook;
-      this.output._meta.notebookId = notebook.id;
-      this.output._meta.isExpanded = false;
-      this.output.activeMenu = undefined;
+    // change the parent notebook in the child components
+    this.output._meta.notebookId = destination.id;
+    this.updateSelectedNotebook(destination);
+  }
+
+  /**
+   * Update the notebook selector component with the correct active notebook
+   */
+  updateSelectedNotebook(notebook: NotebookData) {
+    const nbsData: NotebookSelectorData = this.output._meta.notebookSelectorData;
+    if (nbsData) {
+      nbsData.selectedNotebook = notebook;
+      nbsData._meta.isExpanded = false;
     }
   }
 
@@ -136,6 +158,7 @@ export class AnnotationDS extends DataSource {
     this.toggleCollapse();
   }
 
+  // FIXME: Never used???
   updateNotebook(notebookId: string, notebook: NotebookData) {
     if (notebookId && isAnchorPayload(this.output.notebook.anchor)) {
       // update the notebook

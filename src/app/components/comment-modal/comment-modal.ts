@@ -18,21 +18,6 @@ export interface CommentModalData {
     comment: {
       value: string | null;
     };
-    // notebooks: {
-    //   label: string;
-    //   select: {
-    //     header: {
-    //       label: string;
-    //       icon: Icon;
-    //       payload: any;
-    //     };
-    //     items: {
-    //       label: string;
-    //       id: string;
-    //     }[];
-    //     classes?: string;
-    //   };
-    // };
     notebookSelectorData: NotebookSelectorData;
     actions: {
       label: string;
