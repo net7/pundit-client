@@ -31,32 +31,36 @@ export class AnnotationService {
 
   add(rawAnnotation: Annotation) {
     const currentUser = this.userService.whoami();
-    // if annotation exists remove first
-    if (this.getAnnotationById(rawAnnotation.id)) {
-      this.remove(rawAnnotation.id);
+    const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
+    // if annotation exists update visibility
+    if (currentAnnotation) {
+      const annotationDS = this.getAnnotationById(rawAnnotation.id).ds;
+      annotationDS.options.currentUser = currentUser;
+      annotationDS.updateUserVisibility();
+      annotationDS.updateMenuVisibility();
+    } else {
+      const { id } = rawAnnotation;
+      const data = rawAnnotation;
+      const ds = new AnnotationDS();
+      // update datasource options
+      const currentUserNotebooks = currentUser
+        ? this.notebookService.getByUserId(currentUser.id)
+        : [];
+      const annotationUser = this.userService.getUserById(rawAnnotation.userId) || {} as any;
+      const annotationNotebook = this.notebookService.getNotebookById(rawAnnotation.notebookId);
+      ds.options = {
+        currentUser,
+        currentUserNotebooks,
+        annotationUser,
+        annotationNotebook,
+        notebookService: this.notebookService,
+      };
+      this.annotations.push({
+        id, data, ds
+      });
+      // first datasource update
+      ds.update(data);
     }
-
-    const { id } = rawAnnotation;
-    const data = rawAnnotation;
-    const ds = new AnnotationDS();
-    // update datasource options
-    const currentUserNotebooks = currentUser
-      ? this.notebookService.getByUserId(currentUser.id)
-      : [];
-    const annotationUser = this.userService.getUserById(rawAnnotation.userId) || {} as any;
-    const annotationNotebook = this.notebookService.getNotebookById(rawAnnotation.notebookId);
-    ds.options = {
-      currentUser,
-      currentUserNotebooks,
-      annotationUser,
-      annotationNotebook,
-      notebookService: this.notebookService,
-    };
-    this.annotations.push({
-      id, data, ds
-    });
-    // first datasource update
-    ds.update(data);
 
     // emit signal
     this.totalChanged$.next(this.annotations.length);

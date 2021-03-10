@@ -18,15 +18,9 @@ export class AnnotationDS extends DataSource {
       subject,
       created
     } = data;
-    const {
-      annotationUser,
-      annotationNotebook,
-      currentUser,
-      currentUserNotebooks
-    } = this.options;
+    const { annotationNotebook, } = this.options;
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
-    const isCurrentUser = currentUser?.id === annotationUser.id;
     let comment;
     if (data.type === 'Commenting') {
       const { content } = data;
@@ -46,16 +40,7 @@ export class AnnotationDS extends DataSource {
         source: 'box',
         id
       },
-      user: {
-        image: annotationUser.thumb,
-        name: annotationUser.username,
-        anchor: isCurrentUser ? {
-          payload: {
-            source: 'user',
-            id: annotationUser.id
-          }
-        } : null
-      },
+      user: this.getUserData(),
       isCollapsed: true,
       date: new Date(created).toLocaleDateString(),
       notebook: {
@@ -69,52 +54,7 @@ export class AnnotationDS extends DataSource {
       },
       body: text,
       comment,
-      menu: isCurrentUser ? {
-        icon: {
-          id: 'pundit-icon-ellipsis-v',
-          payload: {
-            id,
-            source: 'menu-header',
-          }
-        },
-        actions: [{
-          label: _t('annotation#changenotebook'),
-          payload: {
-            id,
-            source: 'action-notebooks'
-          }
-        }, {
-          label: _t('annotation#editcomment'),
-          payload: {
-            id,
-            source: 'action-comment'
-          }
-        }, {
-          label: _t('annotation#delete'),
-          payload: {
-            id,
-            source: 'action-delete'
-          }
-        }],
-        notebooks: {
-          header: {
-            label: _t('annotation#changenotebook'),
-            payload: {
-              id,
-              source: 'notebooks-header'
-            }
-          },
-          items: currentUserNotebooks
-            .map(({ id: itemId, label }) => ({
-              label,
-              payload: {
-                id,
-                notebookId: itemId,
-                source: 'notebook-item'
-              }
-            }))
-        }
-      } : null,
+      menu: this.getMenuData(id),
     };
   }
 
@@ -210,7 +150,88 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  updateUserVisibility() {
+    this.output.user = this.getUserData();
+  }
+
+  updateMenuVisibility() {
+    const { id } = this.output._meta;
+    this.output.menu = this.getMenuData(id);
+  }
+
   private toggleCollapse() {
     this.output.isCollapsed = !this.output.isCollapsed;
+  }
+
+  private isCurrentUser() {
+    const {
+      annotationUser,
+      currentUser,
+    } = this.options;
+    return currentUser?.id === annotationUser.id;
+  }
+
+  private getUserData() {
+    const { annotationUser } = this.options;
+    return {
+      image: annotationUser.thumb,
+      name: annotationUser.username,
+      anchor: this.isCurrentUser() ? {
+        payload: {
+          source: 'user',
+          id: annotationUser.id
+        }
+      } : null
+    };
+  }
+
+  private getMenuData(id: string) {
+    const { currentUserNotebooks } = this.options;
+    return this.isCurrentUser() ? {
+      icon: {
+        id: 'pundit-icon-ellipsis-v',
+        payload: {
+          id,
+          source: 'menu-header',
+        }
+      },
+      actions: [{
+        label: _t('annotation#changenotebook'),
+        payload: {
+          id,
+          source: 'action-notebooks'
+        }
+      }, {
+        label: _t('annotation#editcomment'),
+        payload: {
+          id,
+          source: 'action-comment'
+        }
+      }, {
+        label: _t('annotation#delete'),
+        payload: {
+          id,
+          source: 'action-delete'
+        }
+      }],
+      notebooks: {
+        header: {
+          label: _t('annotation#changenotebook'),
+          payload: {
+            id,
+            source: 'notebooks-header'
+          }
+        },
+        items: currentUserNotebooks
+          .map(({ id: itemId, label }) => ({
+            label,
+            payload: {
+              id,
+              notebookId: itemId,
+              source: 'notebook-item'
+            }
+          }))
+      }
+    } : null;
   }
 }

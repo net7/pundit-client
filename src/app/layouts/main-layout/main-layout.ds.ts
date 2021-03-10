@@ -1,6 +1,7 @@
 import { LayoutDataSource } from '@n7-frontend/core';
 import { from, of, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
+import { difference } from 'lodash';
 import {
   Annotation,
   CommentAnnotation,
@@ -82,7 +83,11 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(annotationModel.search(uri)).pipe(
       tap((response) => {
         const { data: searchData } = response;
+        // remove private annotations
+        this.removePrivateAnnotations(searchData);
+        // handle response
         this.handleSearchResponse(searchData);
+        // emit loaded signal
         this.hasLoaded$.next(true);
       })
     );
@@ -101,30 +106,6 @@ export class MainLayoutDS extends LayoutDataSource {
         this.hasLoaded$.next(true);
       })
     );
-  }
-
-  private handleUserNotebooksResponse(notebooksData) {
-    const { notebooks } = notebooksData;
-    this.notebookService.load(notebooks);
-    if (!this.notebookService.getSelected()) {
-      // first notebook as default
-      const { id } = notebooks[0];
-      this.notebookService.setSelected(id);
-    }
-  }
-
-  private handleSearchResponse(searchData) {
-    const { users, annotations, notebooks } = searchData;
-    // update notebooks
-    this.notebookService.load(notebooks);
-    // load order matters
-    this.userService.load(users);
-    this.annotationService.load(annotations);
-    this.anchorService.load(annotations);
-    // signal
-    if (!this.annotationService.getAnnotations().length) {
-      this.annotationService.totalChanged$.next(0);
-    }
   }
 
   public saveAnnotation(payload) {
@@ -169,6 +150,40 @@ export class MainLayoutDS extends LayoutDataSource {
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
     this.one('comment-modal').update({
       textQuote, currentNotebook, notebooks, comment
+    });
+  }
+
+  private handleUserNotebooksResponse(notebooksData) {
+    const { notebooks } = notebooksData;
+    this.notebookService.load(notebooks);
+    if (!this.notebookService.getSelected()) {
+      // first notebook as default
+      const { id } = notebooks[0];
+      this.notebookService.setSelected(id);
+    }
+  }
+
+  private handleSearchResponse(searchData) {
+    const { users, annotations, notebooks } = searchData;
+    // update notebooks
+    this.notebookService.load(notebooks);
+    // load order matters
+    this.userService.load(users);
+    this.annotationService.load(annotations);
+    this.anchorService.load(annotations);
+    // signal
+    if (!this.annotationService.getAnnotations().length) {
+      this.annotationService.totalChanged$.next(0);
+    }
+  }
+
+  private removePrivateAnnotations(searchData) {
+    const { annotations }: { annotations: Annotation[] } = searchData;
+    const annotationIds = annotations.map(({ id }) => id);
+    const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);
+    difference(annotationConfigIds, annotationIds).forEach((annotationId) => {
+      this.annotationService.remove(annotationId);
+      this.anchorService.remove(annotationId);
     });
   }
 }

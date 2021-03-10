@@ -103,8 +103,6 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.tokenService.clear();
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
-    this.layoutDS.annotationService.clear();
-    this.layoutDS.anchorService.clear();
     this.layoutDS.userService.logout();
 
     // emit signals
