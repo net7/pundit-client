@@ -4,7 +4,7 @@
 
 import { Component, Input } from '@angular/core';
 import { Annotation } from '@pundit/communication';
-import { Anchor, Icon } from '../../types';
+import { AnchorPayload, Icon } from '../../types';
 
 /**
  * Interface for AnnotationComponent's "data"
@@ -30,7 +30,7 @@ export interface AnnotationData {
     /** User full name */
     name: string;
     /** Navigate to user page */
-    anchor?: Anchor;
+    anchor?: AnchorPayload;
   };
   /** Date string */
   date: string;
@@ -39,7 +39,7 @@ export interface AnnotationData {
     /** Notebook title */
     name: string;
     /** Notebook navigation */
-    anchor: Anchor;
+    anchor: AnchorPayload;
   };
   /** View the annotation in a minimal form */
   isCollapsed: boolean;

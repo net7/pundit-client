@@ -3,12 +3,12 @@ export type AppEventData = {
   payload?: any;
 }
 
-interface AnchorHref {
+export interface AnchorHref {
   href: string;
   target?: '_self' | '_blank' | '_parent' | '_top';
 }
 
-interface AnchorPayload {
+export interface AnchorPayload {
   payload: any;
 }
 

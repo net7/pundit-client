@@ -56,7 +56,7 @@ annotation {
         border-radius: $border-radius;
         
 
-        &:before { 
+        &:before {
             content: " ";
             display: block;
             position: absolute;
@@ -84,12 +84,14 @@ annotation {
         line-height: 1;
         font-weight: $font-weight-bold;
         color: $color-text;
-        cursor: pointer;
         transition: color $transition-durations;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-
+    }
+    
+    a .pnd-annotation__header-name {
+        cursor: pointer;
         &:hover {
             color: $color-text-link;
         }
