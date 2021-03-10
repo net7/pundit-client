@@ -47,7 +47,8 @@
                    name="new-notebook"
                    class="pnd-notebook-selector__create-field small"
                    placeholder="Insert new notebook's name"
-                   (input)="onInput($event.target.value)">
+                   (input)="onInput($event.target.value)"
+                   (keyup)="onKeyUp($event)">
             <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
                     (click)="onCreation('')">
                 Cancel

@@ -91,4 +91,17 @@ export class NotebookSelectorComponent {
     }
     this.data._meta.inputValue = payload;
   }
+
+  /** Listen for enter key press */
+  onKeyUp(payload: KeyboardEvent) {
+    if (!this.emit) return;
+    if (payload.key === 'Enter') {
+      // get the full input string
+      const label = this.data._meta.inputValue;
+      if (label) {
+        // create a new notebook with this label
+        this.onCreation(this.data._meta.inputValue);
+      }
+    }
+  }
 }
