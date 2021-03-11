@@ -6,10 +6,11 @@ import { _t } from '@n7-frontend/core';
 import {
   AnnotationAttributes, CommentAnnotation, SharingModeType
 } from '@pundit/communication';
+import { catchError } from 'rxjs/operators';
+import { EMPTY } from 'rxjs';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 import * as annotation from '../../../models/annotation';
-import * as notebook from '../../../models/notebook';
 
 export class SidebarLayoutAnnotationHandler implements LayoutHandler {
   constructor(
@@ -141,16 +142,19 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     annotationID: string;
   }) {
     // create the notebook in the backend first to generate it's id
-    this.createNotebookFromString(payload.label)
-      .then((res) => {
-        this.cacheNewNotebook({
-          id: res.data.id,
-          label: payload.label,
-        });
-        this.layoutDS.updateNotebookPanel();
-        this.updateAnnotationNotebook(payload.annotationID, res.data.id);
+    this.createNotebookFromString(payload.label).pipe(
+      catchError((err) => {
+        console.error(err);
+        return EMPTY;
       })
-      .catch((err) => console.error(err));
+    ).subscribe((res) => {
+      this.cacheNewNotebook({
+        id: res.data.id,
+        label: payload.label,
+      });
+      this.layoutDS.updateNotebookPanel();
+      this.updateAnnotationNotebook(payload.annotationID, res.data.id);
+    });
   }
 
   /**
@@ -158,14 +162,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
    * @param name label for the new notebook
    */
   private createNotebookFromString(name: string) {
-    const userId = this.layoutEH.userService.whoami().id;
-    return notebook.create({
-      data: {
-        label: name,
-        sharingMode: 'public',
-        userId
-      }
-    });
+    return this.layoutEH.notebookService.create(name);
   }
 
   /**

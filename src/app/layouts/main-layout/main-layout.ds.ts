@@ -16,7 +16,6 @@ import { ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
-import * as notebookModel from 'src/app/models/notebook';
 import * as annotationModel from 'src/app/models/annotation';
 
 type MainLayoutState = {
@@ -94,10 +93,8 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   getUserData() {
-    return from(notebookModel.search()).pipe(
-      switchMap(({ data: notebooksData }) => {
-        this.handleUserNotebooksResponse(notebooksData);
-
+    return this.notebookService.search().pipe(
+      switchMap(() => {
         const uri = getDocumentHref();
         return from(annotationModel.search(uri));
       }),
@@ -151,16 +148,6 @@ export class MainLayoutDS extends LayoutDataSource {
     this.one('comment-modal').update({
       textQuote, currentNotebook, notebooks, comment
     });
-  }
-
-  private handleUserNotebooksResponse(notebooksData) {
-    const { notebooks } = notebooksData;
-    this.notebookService.load(notebooks);
-    if (!this.notebookService.getSelected()) {
-      // first notebook as default
-      const { id } = notebooks[0];
-      this.notebookService.setSelected(id);
-    }
   }
 
   private handleSearchResponse(searchData) {

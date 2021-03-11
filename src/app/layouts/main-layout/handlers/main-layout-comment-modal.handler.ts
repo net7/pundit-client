@@ -1,6 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { Notebook } from '@pundit/communication';
-import { EMPTY, from, of } from 'rxjs';
+import { EMPTY, of } from 'rxjs';
 import {
   catchError,
   filter,
@@ -13,7 +12,6 @@ import {
   getEventType,
   MainLayoutEvent
 } from 'src/app/event-types';
-import * as notebookModel from 'src/app/models/notebook';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -109,23 +107,8 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
 
   private onCommentModalCreateNotebook(payload) {
     const iam = this.layoutDS.userService.whoami().id;
-    return from(notebookModel.create({
-      data: {
-        label: payload,
-        sharingMode: 'public',
-        userId: iam,
-      }
-    })).pipe(
+    return this.layoutDS.notebookService.create(payload).pipe(
       tap(({ data }) => {
-        const rawNotebook: Notebook = {
-          id: data.id,
-          changed: new Date(),
-          created: new Date(),
-          label: payload,
-          sharingMode: 'public',
-          userId: iam
-        };
-        this.layoutDS.notebookService.add(rawNotebook);
         this.layoutDS.state.comment.notebookId = data.id;
       }),
       map(({ data }) => ({

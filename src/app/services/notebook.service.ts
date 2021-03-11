@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { from, Subject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
+import * as notebookModel from 'src/app/models/notebook';
+import { tap } from 'rxjs/operators';
 import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
+import { UserService } from './user.service';
 
 export type NotebookData = {
   id: string;
@@ -24,6 +27,7 @@ export class NotebookService {
   public selectedChanged$: Subject<void> = new Subject();
 
   constructor(
+    private userService: UserService,
     private storage: StorageSyncService
   ) {
     // check storage sync
@@ -46,17 +50,26 @@ export class NotebookService {
   }
 
   /**
-   * Update the cached notebook data.
-   *
-   * Use src\app\models\notebook\update
-   * to update the online version instead.
-  */
+   * Updates notebook & notebook data.
+   */
   update(notebookID, data: NotebookUpdate) {
-    const { label, sharingMode } = data;
-    if (!this.getNotebookById(notebookID)) return;
-    const notebook = this.getNotebookById(notebookID);
-    if (label) notebook.label = label;
-    if (sharingMode) notebook.sharingMode = sharingMode;
+    const userId = this.userService.whoami().id;
+    const nb = this.getNotebookById(notebookID);
+    return from(notebookModel.update(notebookID, {
+      data: {
+        userId,
+        label: data.label ? data.label : nb.label,
+        sharingMode: data.sharingMode ? data.sharingMode : (nb.sharingMode as SharingModeType),
+        userWithReadAccess: [],
+        userWithWriteAccess: [],
+      }
+    })).pipe(
+      tap(() => {
+        const { label, sharingMode } = data;
+        if (label) nb.label = label;
+        if (sharingMode) nb.sharingMode = sharingMode;
+      })
+    );
   }
 
   load(rawNotebooks: Notebook[]) {
@@ -81,7 +94,43 @@ export class NotebookService {
     }
   }
 
-  create = this.add;
+  create(label) {
+    const userId = this.userService.whoami().id;
+    const sharingMode = 'public';
+    return from(notebookModel.create({
+      data: {
+        label,
+        userId,
+        sharingMode,
+      }
+    })).pipe(
+      tap(({ data }) => {
+        const rawNotebook: Notebook = {
+          label,
+          userId,
+          sharingMode,
+          id: data.id,
+          changed: new Date(),
+          created: new Date(),
+        };
+        this.add(rawNotebook);
+      })
+    );
+  }
+
+  search() {
+    return from(notebookModel.search()).pipe(
+      tap(({ data: notebooksData }) => {
+        const { notebooks } = notebooksData;
+        this.load(notebooks);
+        if (!this.getSelected()) {
+          // first notebook as default
+          const { id } = notebooks[0];
+          this.setSelected(id);
+        }
+      })
+    );
+  }
 
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
