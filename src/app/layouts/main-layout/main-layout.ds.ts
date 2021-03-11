@@ -168,7 +168,7 @@ export class MainLayoutDS extends LayoutDataSource {
     const annotationIds = annotations.map(({ id }) => id);
     const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);
     difference(annotationConfigIds, annotationIds).forEach((annotationId) => {
-      this.annotationService.remove(annotationId);
+      this.annotationService.removeCached(annotationId);
       this.anchorService.remove(annotationId);
     });
   }

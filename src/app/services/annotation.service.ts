@@ -127,12 +127,16 @@ export class AnnotationService {
   remove(annotationId: string) {
     return from(annotationModel.remove(annotationId)).pipe(
       tap(() => {
-        const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
-        this.annotations.splice(index, 1);
-        // emit signal
-        this.totalChanged$.next(this.annotations.length);
+        this.removeCached(annotationId);
       })
     );
+  }
+
+  removeCached(annotationId: string) {
+    const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
+    this.annotations.splice(index, 1);
+    // emit signal
+    this.totalChanged$.next(this.annotations.length);
   }
 
   getAnnotationById(annotationId: string): AnnotationConfig | null {
