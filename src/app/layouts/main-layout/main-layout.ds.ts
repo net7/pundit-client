@@ -33,19 +33,6 @@ type MainLayoutState = {
 }
 
 export class MainLayoutDS extends LayoutDataSource {
-  public state: MainLayoutState = {
-    isLogged: false,
-    comment: {
-      comment: null,
-      notebookId: null
-    },
-    annotation: {
-      pendingPayload: null,
-      updatePayload: null,
-      deleteId: null
-    }
-  };
-
   public userService: UserService;
 
   public notebookService: NotebookService;
@@ -64,6 +51,19 @@ export class MainLayoutDS extends LayoutDataSource {
   public hasLoaded$ = new BehaviorSubject(false);
 
   public pendingAnnotationId = 'pending-id';
+
+  public state: MainLayoutState = {
+    isLogged: false,
+    comment: {
+      comment: null,
+      notebookId: null
+    },
+    annotation: {
+      pendingPayload: null,
+      updatePayload: null,
+      deleteId: null
+    }
+  };
 
   onInit(payload) {
     this.userService = payload.userService;
@@ -143,6 +143,7 @@ export class MainLayoutDS extends LayoutDataSource {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
+    // update component
     const currentNotebook = notebookData || this.notebookService.getSelected();
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
     this.one('comment-modal').update({

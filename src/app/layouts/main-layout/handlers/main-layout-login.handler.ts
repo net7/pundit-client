@@ -12,7 +12,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
   ) { }
 
   public listen() {
-    // first user check
+    // user check on init
     if (this.layoutDS.userService.whoami()) {
       this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
     } else {
@@ -58,6 +58,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
       ...user,
       id: `${user.id}`
     });
+    // close login modal
     this.layoutDS.punditLoginService.stop();
   }
 
@@ -70,7 +71,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
       first(),
       delay(1000) // fix render
     ).subscribe(() => {
-      const loginToast = this.layoutDS.toastService.warn({
+      const loginAlertToast = this.layoutDS.toastService.warn({
         title: _t('toast#login_warn_title'),
         text: _t('toast#login_warn_text'),
         actions: [{
@@ -85,11 +86,11 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         }
       });
 
-      // on auth close toast
+      // on auth close login alert
       this.layoutDS.punditLoginService.onAuth().pipe(
         first()
       ).subscribe(() => {
-        loginToast.close();
+        loginAlertToast.close();
       });
     });
   }
