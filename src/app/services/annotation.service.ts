@@ -79,7 +79,7 @@ export class AnnotationService {
     const { notebookId, comment } = data;
     const notebookData = this.notebookService.getNotebookById(notebookId);
     // update the notebook
-    annotation.ds.updateNotebook(notebookId, notebookData);
+    annotation.ds.updateSelectedNotebook(notebookData);
     // update comment
     annotation.ds.updateComment(comment);
   }

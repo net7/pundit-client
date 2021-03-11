@@ -18,9 +18,17 @@ export class AnnotationDS extends DataSource {
       subject,
       created
     } = data;
-    const { annotationNotebook, } = this.options;
+    const { annotationNotebook } = this.options;
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
+    const notebookSelectorData: NotebookSelectorData = {
+      selectedNotebook: undefined,
+      notebookList: undefined,
+      mode: 'select',
+      _meta: {
+        isExpanded: false,
+      }
+    };
     let comment;
     if (data.type === 'Commenting') {
       const { content } = data;
@@ -33,7 +41,8 @@ export class AnnotationDS extends DataSource {
         created,
         startPosition,
         userId,
-        notebookId
+        notebookId,
+        notebookSelectorData
       },
       _raw: data,
       payload: {
@@ -101,6 +110,9 @@ export class AnnotationDS extends DataSource {
       createOption: {
         label: 'New notebook',
         value: 'createnotebook',
+      },
+      _meta: {
+        isExpanded: false,
       }
     };
     this.output._meta.notebookSelectorData = notebookSelectorData;
@@ -140,9 +152,12 @@ export class AnnotationDS extends DataSource {
    */
   updateSelectedNotebook(notebook: NotebookData) {
     const nbsData: NotebookSelectorData = this.output._meta.notebookSelectorData;
-    if (nbsData) {
-      nbsData.selectedNotebook = notebook;
-      nbsData._meta.isExpanded = false;
+    nbsData.selectedNotebook = notebook;
+    this.output._meta.notebookId = notebook.id;
+    if (notebook.id && isAnchorPayload(this.output.notebook.anchor)) {
+      // update the notebook
+      this.output.notebook.anchor.payload.id = notebook.id;
+      this.output.notebook.name = notebook.label;
     }
   }
 
@@ -156,15 +171,6 @@ export class AnnotationDS extends DataSource {
 
   onAnchorClick() {
     this.toggleCollapse();
-  }
-
-  // FIXME: Never used???
-  updateNotebook(notebookId: string, notebook: NotebookData) {
-    if (notebookId && isAnchorPayload(this.output.notebook.anchor)) {
-      // update the notebook
-      this.output.notebook.anchor.payload.id = notebookId;
-      this.output.notebook.name = notebook.label;
-    }
   }
 
   updateComment(comment: string) {
