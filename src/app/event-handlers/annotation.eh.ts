@@ -23,9 +23,11 @@ export class AnnotationEH extends EventHandler {
               this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
+              this.getAnnotationDatasource(id).closeMenu();
               this.emitOuter(getEventType(AnnotationEvent.Delete), id);
               break;
             case 'action-comment': // click on the "edit comment" button
+              this.getAnnotationDatasource(id).closeMenu();
               this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
               break;
             case 'menu-header': // annotation update menu header
