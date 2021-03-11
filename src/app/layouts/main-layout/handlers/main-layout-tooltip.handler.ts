@@ -1,10 +1,8 @@
 import { _t } from '@n7-frontend/core';
-import { AnnotationType, CommentAnnotation } from '@pundit/communication';
+import { CommentAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { AppEvent, TooltipEvent } from 'src/app/event-types';
-import { selectionModel } from 'src/app/models/selection/selection-model';
-import * as annotationModel from 'src/app/models/annotation';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -68,7 +66,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.getAnnotationRequestPayload();
+    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload('Highlighting');
     return this.layoutDS.saveAnnotation(requestPayload);
   }
 
@@ -79,7 +77,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       notebookId: null
     };
     this.layoutDS.state.annotation.pendingPayload = (
-      this.getAnnotationRequestPayload() as CommentAnnotation
+      this.layoutDS.annotationService.getAnnotationRequestPayload('Commenting') as CommentAnnotation
     );
     this.addPendingAnnotation();
     const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
@@ -87,21 +85,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       this.layoutDS.state.annotation.pendingPayload
     );
     this.layoutDS.openCommentModal({ textQuote: pendingAnnotation.subject.selected.text });
-  }
-
-  private getAnnotationRequestPayload() {
-    const range = selectionModel.getCurrentRange();
-    const userId = this.layoutDS.userService.whoami().id;
-    const selectedNotebookId = this.layoutDS.notebookService.getSelected().id;
-    const type: AnnotationType = 'Highlighting';
-    const options = {};
-    return annotationModel.createRequestPayload({
-      userId,
-      type,
-      options,
-      notebookId: selectedNotebookId,
-      selection: range,
-    });
   }
 
   private addPendingAnnotation() {

@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
+import {
+  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation
+} from '@pundit/communication';
 import { Subject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { selectionModel } from 'src/app/models/selection/selection-model';
 import { AnnotationDS } from '../data-sources';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
@@ -170,6 +173,20 @@ export class AnnotationService {
       (newAnnotation as CommentAnnotation).content = payload.content;
     }
     return newAnnotation;
+  }
+
+  getAnnotationRequestPayload(type: AnnotationType) {
+    const range = selectionModel.getCurrentRange();
+    const userId = this.userService.whoami().id;
+    const selectedNotebookId = this.notebookService.getSelected().id;
+    const options = {};
+    return annotationModel.createRequestPayload({
+      userId,
+      type,
+      options,
+      notebookId: selectedNotebookId,
+      selection: range,
+    });
   }
 
   clear() {
