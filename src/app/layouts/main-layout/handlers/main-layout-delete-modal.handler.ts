@@ -1,7 +1,6 @@
-import { EMPTY, from } from 'rxjs';
+import { EMPTY } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { _t } from '@n7-frontend/core';
-import * as annotationModel from 'src/app/models/annotation';
 import { AppEvent, DeleteModalEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -53,7 +52,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
 
   private onDeleteModalConfirm() {
     const { deleteId } = this.layoutDS.state.annotation;
-    return from(annotationModel.remove(deleteId)).pipe(
+    return this.layoutDS.annotationService.remove(deleteId).pipe(
       tap(() => {
         this.layoutDS.anchorService.remove(deleteId);
       }),

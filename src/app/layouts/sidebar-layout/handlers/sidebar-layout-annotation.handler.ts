@@ -10,7 +10,6 @@ import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
-import * as annotation from '../../../models/annotation';
 
 export class SidebarLayoutAnnotationHandler implements LayoutHandler {
   constructor(
@@ -105,20 +104,23 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
       (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
     }
     setTimeout(() => { // waiting for elastic-search index update
-      annotation.update(annotationID, annotationUpdate).then(() => {
-        // toast
-        this.layoutEH.toastService.success({
-          title: _t('toast#notebookchange_success_title'),
-          text: _t('toast#notebookchange_success_text'),
+      this.layoutEH.annotationService.update(annotationID, annotationUpdate)
+        .pipe(
+          catchError((err) => {
+            this.layoutEH.toastService.error({
+              title: _t('toast#notebookchange_error_title'),
+              text: _t('toast#notebookchange_error_text'),
+            });
+            console.error('Update annotation notebook error:', err);
+            return EMPTY;
+          })
+        )
+        .subscribe(() => {
+          this.layoutEH.toastService.success({
+            title: _t('toast#notebookchange_success_title'),
+            text: _t('toast#notebookchange_success_text'),
+          });
         });
-      }).catch((err) => {
-        // toast
-        this.layoutEH.toastService.error({
-          title: _t('toast#notebookchange_error_title'),
-          text: _t('toast#notebookchange_error_text'),
-        });
-        console.warn('Update annotation notebook error:', err);
-      });
     }, 1100);
     // update annotation component
     this.layoutEH.emitOuter(

@@ -16,7 +16,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
-import * as annotationModel from 'src/app/models/annotation';
+import * as annotationModel from '../../models/annotation';
 
 type MainLayoutState = {
   isLogged: boolean;
@@ -110,15 +110,13 @@ export class MainLayoutDS extends LayoutDataSource {
     selectionModel.clearSelection();
     tooltipModel.hide();
     // request
-    return from(annotationModel.create(payload)).pipe(
+    return this.annotationService.create(payload).pipe(
       switchMap(({ data }) => {
         const { id } = data;
-        const requestPayload = payload;
         const newAnnotation = this.annotationService.getAnnotationFromPayload(
-          id, requestPayload
+          id, payload
         );
         this.anchorService.add(newAnnotation);
-        // clear pending
         this.removePendingAnnotation();
         return of(newAnnotation);
       })

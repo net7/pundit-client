@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
-import { Subject } from 'rxjs';
+import { Subject, from } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { AnnotationDS } from '../data-sources';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
+import * as annotationModel from '../models/annotation';
 
 export type AnnotationConfig = {
   id: string;
@@ -29,6 +31,27 @@ export class AnnotationService {
     });
   }
 
+  /**
+   * Create a new annotation on the backend
+   * and add it to the local cache.
+   */
+  create(attributes: AnnotationAttributes) {
+    return from(annotationModel.create(attributes)).pipe(
+      tap(({ data }) => {
+        const { id } = data;
+        const requestPayload = attributes;
+        const newAnnotation = this.getAnnotationFromPayload(
+          id, requestPayload
+        );
+        this.add(newAnnotation);
+      })
+    );
+  }
+
+  /**
+   * Load an annotation that already exists into the client
+   * @param rawAnnotation
+   */
   add(rawAnnotation: Annotation) {
     const currentUser = this.userService.whoami();
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
@@ -72,24 +95,41 @@ export class AnnotationService {
    * @param annotationId id of the annotation to update
    * @param data data of the annotation that you want to change
    */
-  update(annotationId: string, data) {
-    const annotation = this.getAnnotationById(annotationId);
-    if (!annotation) return;
-
-    const { notebookId, comment } = data;
-    const notebookData = this.notebookService.getNotebookById(notebookId);
-    // update the notebook
-    annotation.ds.updateSelectedNotebook(notebookData);
-    // update comment
-    annotation.ds.updateComment(comment);
+  update(annotationId: string, data: AnnotationAttributes) {
+    return from(annotationModel.update(annotationId, data))
+      .pipe(
+        tap(() => {
+          const cachedAnnotation = this.getAnnotationById(annotationId);
+          if (!cachedAnnotation) return;
+          if (data.notebookId !== cachedAnnotation.data.notebookId) {
+            // update the notebook
+            const { notebookId } = data;
+            const notebookData = this.notebookService.getNotebookById(notebookId);
+            cachedAnnotation.ds.updateSelectedNotebook(notebookData);
+          }
+          if (data.type === 'Commenting') {
+            // update comment
+            cachedAnnotation.ds.updateComment(data.content.comment);
+          }
+        })
+      );
   }
 
+  /**
+   * Requests to delete the annotation on the backend,
+   * then updates the local cache.
+   *
+   * @param annotationId ID of the annotation to delete
+   */
   remove(annotationId: string) {
-    const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
-    this.annotations.splice(index, 1);
-
-    // emit signal
-    this.totalChanged$.next(this.annotations.length);
+    return from(annotationModel.remove(annotationId)).pipe(
+      tap(() => {
+        const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
+        this.annotations.splice(index, 1);
+        // emit signal
+        this.totalChanged$.next(this.annotations.length);
+      })
+    );
   }
 
   getAnnotationById(annotationId: string): AnnotationConfig | null {

@@ -1,11 +1,11 @@
 import { _t } from '@n7-frontend/core';
-import { Annotation, AnnotationAttributes } from '@pundit/communication';
-import { takeUntil } from 'rxjs/operators';
+import { Annotation, CommentAnnotation } from '@pundit/communication';
+import { catchError, takeUntil } from 'rxjs/operators';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
+import { EMPTY } from 'rxjs';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
-import * as annotation from '../../../models/annotation';
 
 export class SidebarLayoutAppEventsHandler implements LayoutHandler {
   constructor(
@@ -64,7 +64,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
     if (rawAnnotation.type === 'Commenting') {
-      const data: AnnotationAttributes = {
+      const data: CommentAnnotation = {
         type: rawAnnotation.type,
         content: rawAnnotation.content,
         notebookId: rawAnnotation.notebookId,
@@ -72,28 +72,22 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         subject: rawAnnotation.subject,
         userId: rawAnnotation.userId,
       };
-      // update the annotation on the back-end
-      annotation.update(rawAnnotation.id, data)
-        .then(() => {
-          // update the annotation in the client cache
-          this.layoutEH.annotationService.update(rawAnnotation.id, {
-            comment: rawAnnotation.content.comment,
-            notebookId: rawAnnotation.notebookId,
-          });
-          // toast
-          this.layoutEH.toastService.success({
-            title: _t('toast#annotationedit_success_title'),
-            text: _t('toast#annotationedit_success_text'),
-          });
-          // update sidebar annotations (re-render)
-          this.layoutDS.updateAnnotations();
-        }).catch((err) => {
+      this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
+        catchError((err) => {
           this.layoutEH.toastService.error({
             title: _t('toast#annotationedit_error_title'),
             text: _t('toast#annotationedit_error_text'),
           });
-          console.warn('Updated annotation error:', err);
+          console.error('Updated annotation error:', err);
+          return EMPTY;
+        })
+      ).subscribe(() => {
+        // annotation changed successfully
+        this.layoutEH.toastService.success({
+          title: _t('toast#annotationedit_success_title'),
+          text: _t('toast#annotationedit_success_text'),
         });
+      });
     }
   }
 }
