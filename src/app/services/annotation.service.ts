@@ -32,12 +32,12 @@ export class AnnotationService {
   add(rawAnnotation: Annotation) {
     const currentUser = this.userService.whoami();
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
-    // if annotation exists update visibility
+    // if annotation exists update auth related info
     if (currentAnnotation) {
       const annotationDS = this.getAnnotationById(rawAnnotation.id).ds;
       annotationDS.options.currentUser = currentUser;
-      annotationDS.updateUserVisibility();
-      annotationDS.updateMenuVisibility();
+      annotationDS.updateUser();
+      annotationDS.updateMenu();
     } else {
       const { id } = rawAnnotation;
       const data = rawAnnotation;

@@ -173,11 +173,11 @@ export class AnnotationDS extends DataSource {
     }
   }
 
-  updateUserVisibility() {
+  updateUser() {
     this.output.user = this.getUserData();
   }
 
-  updateMenuVisibility() {
+  updateMenu() {
     const { id } = this.output._meta;
     this.output.menu = this.getMenuData(id);
   }
