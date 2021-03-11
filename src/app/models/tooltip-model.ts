@@ -2,7 +2,7 @@ import { createPopper } from '@popperjs/core';
 import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from './range-util';
 
-class TooltipHandler {
+class TooltipModel {
   public changed$: Subject<any> = new Subject();
 
   private instance;
@@ -58,7 +58,7 @@ class TooltipHandler {
     this.changed$.next();
   }
 
-  isOpen = () => this.tooltipWrapper.getAttribute('data-show') !== null;
+  isOpen = () => this.tooltipWrapper && this.tooltipWrapper.getAttribute('data-show') !== null;
 
   /**
    * Loads the tooltip instance when pundit HTML is loaded
@@ -101,5 +101,4 @@ class TooltipHandler {
   }
 }
 
-const tooltipHandler = new TooltipHandler();
-export default tooltipHandler;
+export const tooltipModel: TooltipModel = new TooltipModel();

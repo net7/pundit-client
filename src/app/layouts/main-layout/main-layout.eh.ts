@@ -1,287 +1,55 @@
-import { EventHandler, _t } from '@n7-frontend/core';
+import { EventHandler } from '@n7-frontend/core';
 import {
-  fromEvent, Subject, ReplaySubject, EMPTY, BehaviorSubject,
-  of
+  Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
-import {
-  catchError, debounceTime, delay, filter, first, switchMap, switchMapTo, takeUntil, withLatestFrom
-} from 'rxjs/operators';
-import { Annotation, CommentAnnotation, Notebook } from '@pundit/communication';
-import { PunditLoginService } from '@pundit/login';
-import { _c } from 'src/app/models/config';
-import { selectionHandler } from 'src/app/models/selection/selection-handler';
-import { AnnotationService } from 'src/app/services/annotation.service';
-import { NotebookService } from 'src/app/services/notebook.service';
-import { UserService } from 'src/app/services/user.service';
-import { AnchorService } from 'src/app/services/anchor.service';
-import { LayoutEvent } from 'src/app/types';
-import { TokenService } from 'src/app/services/token.service';
-import { ChangeDetectorRef } from '@angular/core';
-import { ToastService } from 'src/app/services/toast.service';
+import { catchError } from 'rxjs/operators';
+import { AppEventData } from 'src/app/types';
+import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
-import * as notebook from '../../models/notebook';
-
-const PENDING_ANNOTATION_ID = 'pending-id';
-
-const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
 
 export class MainLayoutEH extends EventHandler {
-  private destroy$: Subject<void> = new Subject();
+  public destroy$: Subject<void> = new Subject();
 
-  private layoutEvent$: ReplaySubject<LayoutEvent>;
-
-  private userService: UserService;
-
-  private notebookService: NotebookService;
-
-  private annotationService: AnnotationService;
-
-  private anchorService: AnchorService;
-
-  private punditLoginService: PunditLoginService;
-
-  private tokenService: TokenService;
-
-  private toastService: ToastService;
-
-  private changeDetectorRef: ChangeDetectorRef;
-
-  private isLogged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  public appEvent$: ReplaySubject<AppEventData>;
 
   public dataSource: MainLayoutDS;
-
-  private commentState: {
-    comment: string | null;
-    notebookId: string | null;
-    isUpdate?: boolean;
-  };
-
-  private pendingAnnotationPayload: CommentAnnotation;
-
-  private annotationIdToDelete: string;
-
-  /** request payload that is used when updating an existing annotation */
-  private annotationUpdatePayload: Annotation;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'main-layout.init':
-          this.layoutEvent$ = payload.layoutEvent$;
-          this.userService = payload.userService;
-          this.notebookService = payload.notebookService;
-          this.annotationService = payload.annotationService;
-          this.anchorService = payload.anchorService;
-          this.punditLoginService = payload.punditLoginService;
-          this.tokenService = payload.tokenService;
-          this.toastService = payload.toastService;
-          this.changeDetectorRef = payload.changeDetectorRef;
+        case MainLayoutEvent.Init:
+          this.appEvent$ = payload.appEvent$;
           this.dataSource.onInit(payload);
-
-          // user logged
-          if (this.userService.whoami()) {
-            this.onLogin();
-          } else {
-            this.loginAlert();
-            this.loadPublicAnnotations();
-          }
-          this.listenSelection();
-          this.listenLayoutEvents();
-          this.listenAnchorEvents();
-          this.listenLoginEvents();
           break;
 
-        case 'main-layout.destroy':
+        case MainLayoutEvent.Destroy:
           this.destroy$.next();
           break;
-        default:
-          break;
-      }
-    });
 
-    this.outerEvents$.pipe(
-      withLatestFrom(this.isLogged$)
-    ).subscribe(([{ type, payload }, isLogged]) => {
-      switch (type) {
-        case 'tooltip.highlight': {
-          if (!isLogged) {
-            this.punditLoginService.start();
-          } else {
-            const requestPayload = this.dataSource.getAnnotationRequestPayload();
-            this.saveAnnotation(requestPayload);
-          }
-          break;
-        }
-        case 'tooltip.comment': {
-          if (!isLogged) {
-            this.punditLoginService.start();
-          } else {
-            // reset
-            this.commentState = {
-              comment: null,
-              notebookId: null
-            };
-            this.pendingAnnotationPayload = (
-              this.dataSource.getAnnotationRequestPayload() as CommentAnnotation
-            );
-            this.addPendingAnnotation();
-            const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-              PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
-            );
-            this.dataSource.onComment({ textQuote: pendingAnnotation.subject.selected.text });
-          }
-          break;
-        }
-        case 'comment-modal.change':
-          this.commentState.comment = payload;
-          break;
-        case 'comment-modal.notebook':
-          this.commentState.notebookId = payload;
-          break;
-        case 'comment-modal.createnotebook': {
-          const iam = this.userService.whoami().id;
-          notebook.create({
-            data: {
-              label: payload,
-              sharingMode: 'public',
-              userId: iam,
-            }
-          }).then((res) => {
-            const rawNotebook: Notebook = {
-              id: res.data.id,
-              changed: new Date(),
-              created: new Date(),
-              label: payload,
-              sharingMode: 'public',
-              userId: iam
-            };
-            this.notebookService.add(rawNotebook);
-            this.commentState.notebookId = res.data.id;
-            // update select
-            this.emitOuter('updatenotebookselect', {
-              notebookList: this.notebookService.getByUserId(iam),
-              selectedNotebook: this.notebookService.getNotebookById(res.data.id)
-            });
-          });
-        } break;
-        case 'comment-modal.save': {
-          const requestPayload = this.pendingAnnotationPayload
-            ? this.dataSource.getCommentRequestPayload(
-              this.pendingAnnotationPayload,
-              this.commentState
-            ) : this.dataSource.getCommentRequestPayload(
-              this.annotationUpdatePayload,
-              this.commentState
-            );
-          if (requestPayload && !this.annotationUpdatePayload) {
-            this.saveAnnotation(requestPayload);
-          } else if (requestPayload && this.annotationUpdatePayload) {
-            this.layoutEvent$.next({ type: 'commentupdate', payload: requestPayload });
-          }
-          break;
-        }
-        case 'comment-modal.close':
-          // clear pending
-          this.removePendingAnnotation();
-          break;
-        case 'delete-modal.ok':
-          this.dataSource.onAnnotationDelete(this.annotationIdToDelete).pipe(
-            catchError((e) => {
-              this.handleError(e);
-
-              // toast
-              this.toastService.error({
-                title: _t('toast#annotationdelete_error_title'),
-                text: _t('toast#annotationdelete_error_text'),
-              });
-              return EMPTY;
+        case MainLayoutEvent.GetPublicData:
+          this.dataSource.getPublicData().pipe(
+            catchError((err) => {
+              console.warn('PublicData error:', err);
+              return of(null);
             })
           ).subscribe(() => {
-            this.anchorService.remove(this.annotationIdToDelete);
             // signal
-            this.layoutEvent$.next({
-              type: 'annotationdeletesuccess',
-              payload: this.annotationIdToDelete
-            });
-
-            // toast
-            this.toastService.info({
-              title: _t('toast#annotationdelete_success_title'),
-              text: _t('toast#annotationdelete_success_text'),
+            this.appEvent$.next({
+              type: AppEvent.SearchResponse
             });
           });
           break;
-        case 'delete-modal.close':
-          this.annotationIdToDelete = null;
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  listenSelection() {
-    const mouseDown$ = fromEvent(document, 'mousedown');
-    const mouseUp$ = fromEvent(document, 'mouseup');
-    const selectionChanged$ = selectionHandler.changed$;
-
-    mouseDown$.pipe(
-      switchMapTo(selectionChanged$),
-      switchMapTo(mouseUp$),
-      debounceTime(_c('tooltipDelay')),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.dataSource.onSelectionChange();
-      this.emitOuter('selectionchange', this.dataSource.hasSelection());
-    });
-  }
-
-  private listenLayoutEvents() {
-    this.layoutEvent$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(({ type, payload }) => {
-      switch (type) {
-        case 'keyupescape':
-          this.dataSource.onKeyupEscape();
-          this.emitOuter(type);
-          break;
-        case 'annotationdeleteclick':
-          this.annotationIdToDelete = payload;
-          this.emitOuter('annotationdeleteclick');
-          break;
-        case 'annotationmouseenter':
-          this.anchorService.addHoverClass(payload.id);
-          break;
-        case 'annotationmouseleave':
-          this.anchorService.removeHoverClass(payload.id);
-          break;
-        case 'annotationeditcomment': {
-          const annotation = this.annotationService.getAnnotationById(payload);
-          const newnotebook = this.notebookService.getNotebookById(annotation._meta.notebookId);
-          this.commentState = {
-            comment: annotation.comment || null,
-            notebookId: null,
-            isUpdate: true,
-          };
-          this.annotationUpdatePayload = annotation._raw;
-          this.dataSource.onComment({
-            textQuote: annotation.body,
-            notebook: newnotebook,
-            comment: annotation.comment
+        case MainLayoutEvent.GetUserData:
+          this.dataSource.getUserData().pipe(
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            }),
+          ).subscribe(() => {
+            this.appEvent$.next({
+              type: AppEvent.SearchResponse
+            });
           });
-        } break;
-        case 'sidebarcollapse': {
-          const { isCollapsed } = payload;
-          if (isCollapsed) {
-            document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
-          } else {
-            document.body.classList.add(SIDEBAR_EXPANDED_CLASS);
-          }
-          break;
-        }
-        case 'logout':
-          this.userService.logout();
-          this.onLogout();
           break;
         default:
           break;
@@ -289,218 +57,17 @@ export class MainLayoutEH extends EventHandler {
     });
   }
 
-  private listenAnchorEvents() {
-    this.anchorService.events$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(({ type, payload }) => {
-      switch (type) {
-        case 'mouseover':
-          this.layoutEvent$.next({ type: 'anchormouseover', payload });
-          break;
-        case 'mouseleave':
-          this.layoutEvent$.next({ type: 'anchormouseleave', payload });
-          break;
-        case 'click':
-          this.layoutEvent$.next({ type: 'anchorclick', payload });
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  private listenLoginEvents() {
-    this.punditLoginService.onAuth().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((val) => {
-      if ('error' in val) {
-        const { error } = val;
-        console.warn('Login error', error);
-
-        // toast
-        this.toastService.error({
-          title: _t('toast#login_error_title'),
-          text: _t('toast#login_error_text'),
-        });
-      } else if ('user' in val) {
-        const { token, user } = val;
-
-        // set token
-        this.tokenService.set(token.access_token);
-
-        // set user
-        this.userService.iam({
-          ...user,
-          id: `${user.id}`
-        });
-        this.punditLoginService.stop();
-        this.onLogin();
-
-        // toast
-        this.toastService.success({
-          title: _t('toast#login_success_title'),
-          text: _t('toast#login_success_text'),
-        });
-      }
-    });
-
-    this.userService.logged$.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((isLogged) => {
-      this.isLogged$.next(isLogged);
-    });
-  }
-
-  private handleError(error) {
+  public handleError(error) {
     const { status } = error.response;
     switch (status) {
       // Unauthorized
       case 401:
-        this.layoutEvent$.next({ type: 'logout' });
+        this.appEvent$.next({ type: AppEvent.Logout });
         break;
       default:
         // TODO
         break;
     }
     console.warn('FIXME: error handler', error);
-  }
-
-  private saveAnnotation(payload) {
-    this.dataSource.create$(payload).pipe(
-      catchError((e) => {
-        this.handleError(e);
-
-        // toast
-        this.toastService.error({
-          title: _t('toast#annotationsave_error_title'),
-          text: _t('toast#annotationsave_error_text'),
-        });
-        return EMPTY;
-      })
-    ).subscribe(({ id, requestPayload }) => {
-      const newAnnotation = this.annotationService.getAnnotationFromPayload(
-        id, requestPayload
-      );
-      this.anchorService.add(newAnnotation);
-      // signal
-      this.layoutEvent$.next({ type: 'annotationcreatesuccess', payload: newAnnotation });
-      // clear pending
-      this.removePendingAnnotation();
-
-      // toast
-      this.toastService.success({
-        title: _t('toast#annotationsave_success_title'),
-        text: _t('toast#annotationsave_success_text'),
-      });
-    });
-  }
-
-  private addPendingAnnotation() {
-    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-      PENDING_ANNOTATION_ID, this.pendingAnnotationPayload
-    );
-    this.anchorService.add(pendingAnnotation);
-  }
-
-  private removePendingAnnotation() {
-    this.anchorService.remove(PENDING_ANNOTATION_ID);
-  }
-
-  private onLogin() {
-    // restart angular change detection
-    if (this.changeDetectorRef) {
-      this.changeDetectorRef.detectChanges();
-    }
-
-    this.dataSource.getUserNotebooks().pipe(
-      switchMap(({ data: notebooksData }) => {
-        this.dataSource.handleUserNotebooksResponse(notebooksData);
-
-        return this.dataSource.getUserAnnotations();
-      }),
-      catchError((e) => {
-        const { status } = e.response;
-        // on login error load public annotations
-        if (status === 401) {
-          this.layoutEvent$.pipe(
-            filter(({ type }) => type === 'clear'),
-            first()
-          ).subscribe(() => {
-            this.loginAlert();
-            this.loadPublicAnnotations();
-          });
-        }
-        this.handleError(e);
-        return EMPTY;
-      })
-    ).subscribe(({ data: searchData }) => {
-      this.dataSource.handleSearchResponse(searchData);
-      this.layoutEvent$.next({ type: 'searchresponse' });
-      this.dataSource.hasLoaded$.next(true);
-    });
-  }
-
-  private onLogout() {
-    // reset
-    this.tokenService.clear();
-    this.userService.clear();
-    this.notebookService.clear();
-    this.annotationService.clear();
-    this.anchorService.clear();
-
-    // emit signals
-    this.annotationService.totalChanged$.next(0);
-    this.layoutEvent$.next({ type: 'clear' });
-    this.dataSource.hasLoaded$.next(true);
-
-    // reload public annotations
-    this.loadPublicAnnotations();
-  }
-
-  private loadPublicAnnotations() {
-    this.dataSource.getPublicAnnotations()
-      .pipe(
-        catchError((err) => {
-          console.warn('PublicAnnotations error:', err);
-          return of(null);
-        })
-      )
-      .subscribe((response) => {
-        if (response) {
-          const { data: searchData } = response;
-          this.dataSource.handleSearchResponse(searchData);
-          this.layoutEvent$.next({ type: 'searchresponse' });
-        }
-        this.dataSource.hasLoaded$.next(true);
-      });
-  }
-
-  private loginAlert() {
-    this.dataSource.hasLoaded$.pipe(
-      first(),
-      delay(1000) // fix render
-    ).subscribe(() => {
-      const loginToast = this.toastService.warn({
-        title: _t('toast#login_warn_title'),
-        text: _t('toast#login_warn_text'),
-        actions: [{
-          text: _t('toast#login_warn_action'),
-          payload: 'login'
-        }],
-        autoClose: false,
-        onAction: (payload) => {
-          if (payload === 'login') {
-            this.punditLoginService.start();
-          }
-        }
-      });
-
-      // on auth close toast
-      this.punditLoginService.onAuth().pipe(
-        first()
-      ).subscribe(() => {
-        loginToast.close();
-      });
-    });
   }
 }

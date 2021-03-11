@@ -1,16 +1,25 @@
 import { Injectable } from '@angular/core';
-import { Annotation, AnnotationAttributes, CommentAnnotation } from '@pundit/communication';
-import { Subject } from 'rxjs';
-import { AnnotationData } from '../components/annotation/annotation';
-import { isAnchorPayload } from '../types';
+import {
+  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation
+} from '@pundit/communication';
+import { Subject, from } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { selectionModel } from 'src/app/models/selection/selection-model';
+import { AnnotationDS } from '../data-sources';
+import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
+import * as annotationModel from '../models/annotation';
+
+export type AnnotationConfig = {
+  id: string;
+  ds: AnnotationDS;
+  data: Annotation;
+}
 
 @Injectable()
 export class AnnotationService {
-  private annotations: AnnotationData[] = [];
-
-  private lastRemoved: AnnotationData;
+  private annotations: AnnotationConfig[] = [];
 
   public totalChanged$: Subject<number> = new Subject();
 
@@ -25,18 +34,62 @@ export class AnnotationService {
     });
   }
 
+  /**
+   * Create a new annotation on the backend
+   * and add it to the local cache.
+   */
+  create(attributes: AnnotationAttributes) {
+    return from(annotationModel.create(attributes)).pipe(
+      tap(({ data }) => {
+        const { id } = data;
+        const requestPayload = attributes;
+        const newAnnotation = this.getAnnotationFromPayload(
+          id, requestPayload
+        );
+        this.add(newAnnotation);
+      })
+    );
+  }
+
+  /**
+   * Load an annotation that already exists into the client
+   * @param rawAnnotation
+   */
   add(rawAnnotation: Annotation) {
     const currentUser = this.userService.whoami();
-    if (!this.getAnnotationById(rawAnnotation.id)) {
-      this.annotations.push(this.transform(rawAnnotation));
-
-      // emit signal
-      this.totalChanged$.next(this.annotations.length);
-    // check for user annotations
-    } else if (currentUser && currentUser.id === rawAnnotation.userId) {
-      const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(rawAnnotation.id);
-      this.annotations[index] = this.transform(rawAnnotation);
+    const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
+    // if annotation exists update auth related info
+    if (currentAnnotation) {
+      const annotationDS = this.getAnnotationById(rawAnnotation.id).ds;
+      annotationDS.options.currentUser = currentUser;
+      annotationDS.updateUser();
+      annotationDS.updateMenu();
+    } else {
+      const { id } = rawAnnotation;
+      const data = rawAnnotation;
+      const ds = new AnnotationDS();
+      // update datasource options
+      const currentUserNotebooks = currentUser
+        ? this.notebookService.getByUserId(currentUser.id)
+        : [];
+      const annotationUser = this.userService.getUserById(rawAnnotation.userId) || {} as any;
+      const annotationNotebook = this.notebookService.getNotebookById(rawAnnotation.notebookId);
+      ds.options = {
+        currentUser,
+        currentUserNotebooks,
+        annotationUser,
+        annotationNotebook,
+        notebookService: this.notebookService,
+      };
+      this.annotations.push({
+        id, data, ds
+      });
+      // first datasource update
+      ds.update(data);
     }
+
+    // emit signal
+    this.totalChanged$.next(this.annotations.length);
   }
 
   /**
@@ -45,38 +98,53 @@ export class AnnotationService {
    * @param annotationId id of the annotation to update
    * @param data data of the annotation that you want to change
    */
-  update(annotationId: string, data) {
-    const annotation = this.getAnnotationById(annotationId);
-    if (!annotation) return;
-    const { notebookId, comment } = data;
-    const notebook = this.notebookService.getNotebookById(notebookId);
-    if (notebookId && isAnchorPayload(annotation.notebook.anchor)) {
-      // update the notebook
-      annotation.notebook.anchor.payload.id = notebookId;
-      annotation.notebook.name = notebook.label;
-    }
-    if (comment) {
-      // update the comment
-      annotation.comment = comment;
-    }
+  update(annotationId: string, data: AnnotationAttributes) {
+    return from(annotationModel.update(annotationId, data))
+      .pipe(
+        tap(() => {
+          const cachedAnnotation = this.getAnnotationById(annotationId);
+          if (!cachedAnnotation) return;
+          if (data.notebookId !== cachedAnnotation.data.notebookId) {
+            // update the notebook
+            const { notebookId } = data;
+            const notebookData = this.notebookService.getNotebookById(notebookId);
+            cachedAnnotation.ds.updateSelectedNotebook(notebookData);
+          }
+          if (data.type === 'Commenting') {
+            // update comment
+            cachedAnnotation.ds.updateComment(data.content.comment);
+          }
+        })
+      );
   }
 
+  /**
+   * Requests to delete the annotation on the backend,
+   * then updates the local cache.
+   *
+   * @param annotationId ID of the annotation to delete
+   */
   remove(annotationId: string) {
-    const index = this.annotations.map(({ _meta }) => _meta.id).indexOf(annotationId);
-    [this.lastRemoved] = this.annotations.splice(index, 1);
-
-    // emit signal
-    this.totalChanged$.next(this.annotations.length);
+    return from(annotationModel.remove(annotationId)).pipe(
+      tap(() => {
+        const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
+        this.annotations.splice(index, 1);
+        // emit signal
+        this.totalChanged$.next(this.annotations.length);
+      })
+    );
   }
 
-  getAnnotationById(annotationId: string): AnnotationData | null {
-    return this.annotations.find(({ _meta }) => _meta.id === annotationId) || null;
+  getAnnotationById(annotationId: string): AnnotationConfig | null {
+    return this.annotations.find(({ id }) => id === annotationId) || null;
   }
 
   getAnnotations() {
     return this.annotations.sort((a, b) => {
-      const { created: aCreated, startPosition: aStartPosition } = a._meta;
-      const { created: bCreated, startPosition: bStartPosition } = b._meta;
+      const aMeta = a.ds.output._meta;
+      const bMeta = b.ds.output._meta;
+      const { created: aCreated, startPosition: aStartPosition } = aMeta;
+      const { created: bCreated, startPosition: bStartPosition } = bMeta;
       if (aStartPosition === bStartPosition) {
         return aCreated - bCreated;
       }
@@ -98,7 +166,8 @@ export class AnnotationService {
       userId,
       subject,
       created,
-      type
+      type,
+      serializedBy: _c('serializer')
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
@@ -106,111 +175,18 @@ export class AnnotationService {
     return newAnnotation;
   }
 
-  private transform(annotation: Annotation): AnnotationData {
-    const {
-      id,
-      notebookId,
+  getAnnotationRequestPayload(type: AnnotationType) {
+    const range = selectionModel.getCurrentRange();
+    const userId = this.userService.whoami().id;
+    const selectedNotebookId = this.notebookService.getSelected().id;
+    const options = {};
+    return annotationModel.createRequestPayload({
       userId,
-      subject,
-      created
-    } = annotation;
-    // FIXME: togliere controllo user
-    const currentUser = this.userService.whoami();
-    const user = this.userService.getUserById(userId) || {} as any;
-    const notebook = this.notebookService.getNotebookById(notebookId);
-    const notebooks = currentUser ? this.notebookService.getByUserId(currentUser.id) : [];
-    const { text } = subject.selected;
-    const startPosition = subject.selected.textPositionSelector.start;
-    const hasMenu = currentUser?.id === user.id;
-    let comment;
-    if (annotation.type === 'Commenting') {
-      const { content } = annotation;
-      comment = content.comment;
-    }
-
-    return {
-      _meta: {
-        id,
-        created,
-        startPosition,
-        userId,
-        notebookId
-      },
-      _raw: annotation,
-      payload: {
-        source: 'box',
-        id
-      },
-      user: {
-        image: user.thumb,
-        name: user.username,
-        anchor: {
-          payload: {
-            source: 'user',
-            id: user.id
-          }
-        }
-      },
-      isCollapsed: true,
-      date: new Date(created).toLocaleDateString(),
-      notebook: {
-        name: notebook.label,
-        anchor: {
-          payload: {
-            source: 'notebook',
-            id: notebook.id
-          }
-        }
-      },
-      body: text,
-      comment,
-      menu: hasMenu ? {
-        icon: {
-          id: 'pundit-icon-ellipsis-v',
-          payload: {
-            id,
-            source: 'menu-header',
-          }
-        },
-        actions: [{
-          label: 'Change notebook',
-          payload: {
-            id,
-            source: 'action-notebooks'
-          }
-        }, {
-          label: 'Add/edit comment',
-          payload: {
-            id,
-            source: 'action-comment'
-          }
-        }, {
-          label: 'Delete',
-          payload: {
-            id,
-            source: 'action-delete'
-          }
-        }],
-        notebooks: {
-          header: {
-            label: 'Change notebook',
-            payload: {
-              id,
-              source: 'notebooks-header'
-            }
-          },
-          items: notebooks
-            .map(({ id: itemId, label }) => ({
-              label,
-              payload: {
-                id,
-                notebookId: itemId,
-                source: 'notebook-item'
-              }
-            }))
-        }
-      } : null,
-    };
+      type,
+      options,
+      notebookId: selectedNotebookId,
+      selection: range,
+    });
   }
 
   clear() {

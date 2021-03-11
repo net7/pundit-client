@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
+import { AnchorEvent } from '../event-types';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
@@ -119,7 +120,7 @@ export class AnchorService {
     // signal
     this.events$.next({
       payload,
-      type: 'mouseover',
+      type: AnchorEvent.MouseOver,
     });
   }
 
@@ -129,14 +130,14 @@ export class AnchorService {
     // signal
     this.events$.next({
       payload,
-      type: 'mouseleave',
+      type: AnchorEvent.MouseLeave,
     });
   }
 
   private onClick(payload) {
     this.events$.next({
       payload,
-      type: 'click',
+      type: AnchorEvent.Click,
     });
   }
 }

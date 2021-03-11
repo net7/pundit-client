@@ -5,7 +5,7 @@ import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
-import { LayoutEvent } from 'src/app/types';
+import { AppEventData } from 'src/app/types';
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
@@ -19,7 +19,7 @@ import { SidebarLayoutConfig as config } from './sidebar-layout.config';
   templateUrl: './sidebar-layout.html'
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
-  @Input() layoutEvent$: ReplaySubject<LayoutEvent>;
+  @Input() appEvent$: ReplaySubject<AppEventData>;
 
   public logo: SafeResourceUrl;
 
@@ -44,7 +44,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       annotationService: this.annotationService,
       notebookService: this.notebookService,
       anchorService: this.anchorService,
-      layoutEvent$: this.layoutEvent$,
+      appEvent$: this.appEvent$,
       userService: this.userService,
       punditLoginService: this.punditLoginService,
       toastService: this.toastService,

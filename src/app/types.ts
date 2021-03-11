@@ -1,14 +1,14 @@
-export type LayoutEvent = {
+export type AppEventData = {
   type: string;
   payload?: any;
 }
 
-interface AnchorHref {
+export interface AnchorHref {
   href: string;
   target?: '_self' | '_blank' | '_parent' | '_top';
 }
 
-interface AnchorPayload {
+export interface AnchorPayload {
   payload: any;
 }
 
@@ -31,6 +31,10 @@ export interface NavData {
   classes?: string;
   payload?: any;
   _meta?: any;
+}
+
+export interface LayoutHandler {
+  listen: () => void;
 }
 
 // ------------------------------------ //

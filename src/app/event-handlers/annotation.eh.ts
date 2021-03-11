@@ -1,8 +1,9 @@
 import { EventHandler } from '@n7-frontend/core';
-import { AnnotationDS } from '../data-sources';
+import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../event-types';
+import { AnnotationService } from '../services/annotation.service';
 
 export class AnnotationEH extends EventHandler {
-  public dataSource: AnnotationDS;
+  public annotationService: AnnotationService;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -10,41 +11,43 @@ export class AnnotationEH extends EventHandler {
         /**
          * Handle all click events on an annotation with different "source" values
          */
-        case 'annotation.click': {
+        case AnnotationEvent.Click: {
           const { source, id } = payload;
           switch (source) {
             case 'box': // click on the annotation container (while collapsed)
-              this.dataSource.setCollapsedState(id, false);
-              this.emitOuter('togglecollapsed', { collapsed: false });
+              this.getAnnotationDatasource(id).setCollapsedState(false);
+              this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: false });
               break;
             case 'compress': // collapse the annotation
-              this.dataSource.setCollapsedState(id, true);
-              this.emitOuter('togglecollapsed', { collapsed: true });
+              this.getAnnotationDatasource(id).setCollapsedState(true);
+              this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
-              this.emitOuter('delete', id);
+              this.getAnnotationDatasource(id).closeMenu();
+              this.emitOuter(getEventType(AnnotationEvent.Delete), id);
               break;
             case 'action-comment': // click on the "edit comment" button
-              this.emitOuter('editcomment', id);
+              this.getAnnotationDatasource(id).closeMenu();
+              this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
+              break;
+            case 'menu-header': // annotation update menu header
+              this.getAnnotationDatasource(id).toggleActionsMenu();
+              break;
+            case 'document': // annotation update menu header
+              this.getAnnotationDatasource(id).closeMenu();
+              break;
+            case 'action-notebooks': // annotation update menu header
+              this.getAnnotationDatasource(id).refreshNotebookList();
               break;
             default:
-              // annotation update menu state
-              this.dataSource.updateMenuState(id, source);
               break;
           }
         } break;
-        case 'annotation.option':
-          // change the assigned notebook
-          this.emitOuter('updatenotebook', payload);
-          break;
-        case 'annotation.mouseenter':
-          this.emitOuter('mouseenter', payload);
-          break;
-        case 'annotation.mouseleave':
-          this.emitOuter('mouseleave', payload);
-          break;
-        case 'annotation.createnotebook':
-          this.emitOuter('createnotebook', payload);
+        case AnnotationEvent.UpdateNotebook:
+        case AnnotationEvent.MouseEnter:
+        case AnnotationEvent.MouseLeave:
+        case AnnotationEvent.CreateNotebook:
+          this.emitOuter(getEventType(type), payload);
           break;
         default:
           console.warn('unhandled inner event of type', type);
@@ -54,22 +57,30 @@ export class AnnotationEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'sidebar-layout.annotationupdatenb':
-          this.dataSource.onAnnotationUpdate(payload);
+        case SidebarLayoutEvent.AnnotationUpdateNotebook: {
+          const { annotationID, notebook } = payload;
+          this.getAnnotationDatasource(annotationID).transferAnnotationToNotebook(notebook);
+          this.getAnnotationDatasource(annotationID).closeMenu();
           break;
-        case 'sidebar-layout.anchormouseover':
-          this.dataSource.onAnchorMouseOver(payload);
+        }
+        case SidebarLayoutEvent.AnchorMouseOver:
+          this.getAnnotationDatasource(payload).onAnchorMouseOver();
           break;
-        case 'sidebar-layout.anchormouseleave':
-          this.dataSource.onAnchorMouseLeave(payload);
+        case SidebarLayoutEvent.AnchorMouseLeave:
+          this.getAnnotationDatasource(payload).onAnchorMouseLeave();
           break;
-        case 'sidebar-layout.anchorclick':
-          this.dataSource.onAnchorClick(payload);
+        case SidebarLayoutEvent.AnchorClick:
+          this.getAnnotationDatasource(payload).onAnchorClick();
           break;
         default:
           console.warn('unhandled inner event of type', type);
           break;
       }
     });
+  }
+
+  private getAnnotationDatasource(id: string) {
+    const annotation = this.annotationService.getAnnotationById(id);
+    return annotation.ds;
   }
 }

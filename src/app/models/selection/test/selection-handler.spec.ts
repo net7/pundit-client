@@ -1,5 +1,5 @@
 import { first } from 'rxjs/operators';
-import { selectionHandler as handler } from '../selection-handler';
+import { selectionModel as model } from '../selection-model';
 
 describe('Selection', () => {
   describe('changed$ payload', () => {
@@ -27,10 +27,10 @@ describe('Selection', () => {
         getRangeAt: fakeGetRangeAtCollapsedFalse
       } as Selection);
 
-      handler.changed$.pipe(
+      model.changed$.pipe(
         first()
       ).subscribe(() => {
-        expect(handler.getCurrentRange() instanceof Range).toBeTruthy();
+        expect(model.getCurrentRange() instanceof Range).toBeTruthy();
         done();
       });
       document.dispatchEvent(fakeEvent);

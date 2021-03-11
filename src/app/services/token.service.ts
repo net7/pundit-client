@@ -17,12 +17,10 @@ export class TokenService {
 
   set(token: string, sync = true) {
     this.token = token;
-
     // storage sync
     if (sync) {
       this.storage.set(StorageSyncKey.Token, token);
     }
-
     // add token to communication
     CommunicationSettings.token = token;
   }
@@ -31,8 +29,9 @@ export class TokenService {
 
   clear() {
     this.token = null;
-
     // storage sync
     this.storage.remove(StorageSyncKey.Token);
+    // remove token from communication
+    CommunicationSettings.token = null;
   }
 }

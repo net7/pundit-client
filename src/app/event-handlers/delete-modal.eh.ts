@@ -1,5 +1,6 @@
 import { EventHandler } from '@n7-frontend/core';
 import { DeleteModalDS } from '../data-sources';
+import { DeleteModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 
 export class DeleteModalEH extends EventHandler {
   public dataSource: DeleteModalDS;
@@ -7,20 +8,20 @@ export class DeleteModalEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'delete-modal.click': {
+        case DeleteModalEvent.Click: {
           const { source } = payload;
           if (['close-icon', 'action-cancel'].includes(source)) {
             this.dataSource.close();
-            this.emitOuter('close');
+            this.emitOuter(getEventType(DeleteModalEvent.Close));
           } else if (source === 'action-ok') {
-            this.emitOuter('ok');
+            this.emitOuter(getEventType(DeleteModalEvent.Confirm));
             this.dataSource.close();
           }
           break;
         }
-        case 'delete-modal.close':
+        case DeleteModalEvent.Close:
           this.dataSource.close();
-          this.emitOuter('close');
+          this.emitOuter(getEventType(DeleteModalEvent.Close));
           break;
         default:
           break;
@@ -29,13 +30,13 @@ export class DeleteModalEH extends EventHandler {
 
     this.outerEvents$.subscribe(({ type }) => {
       switch (type) {
-        case 'main-layout.keyupescape':
+        case MainLayoutEvent.KeyUpEscape:
           if (this.dataSource.isVisible()) {
             this.dataSource.close();
-            this.emitOuter('close');
+            this.emitOuter(getEventType(DeleteModalEvent.Close));
           }
           break;
-        case 'main-layout.annotationdeleteclick':
+        case MainLayoutEvent.AnnotationDeleteClick:
           this.dataSource.open();
           break;
         default:

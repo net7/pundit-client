@@ -28,12 +28,10 @@
         </div>
         
         <div class="pnd-annotation__header-info">
-            <ng-container *ngIf="data.user.anchor as anchor">
-                <a (click)="onClick($event, anchor.payload)">
-                    <div class="pnd-annotation__header-name">{{data.user.name}}</div>
-                </a>
-            </ng-container>
-            
+            <a *ngIf="data.user.anchor as anchor" (click)="onClick($event, anchor.payload)">
+                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
+            </a>
+            <div *ngIf="!data.user.anchor" class="pnd-annotation__header-name">{{data.user.name}}</div>
             
             <div class="pnd-annotation__header-additional-info">
                 <span class="pnd-annotation__header-date">{{data.date}}</span>
