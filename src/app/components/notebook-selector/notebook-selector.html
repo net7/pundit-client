@@ -51,11 +51,11 @@
                    (keyup)="onKeyUp($event)">
             <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
                     (click)="onCreation('')">
-                Cancel
+                {{ labels.cancel }}
             </button>
             <button class="pnd-btn pnd-btn-cta pnd-notebook-selector__create-btn-save"
                     (click)="onCreation(data._meta.inputValue)">
-                Create
+                {{ labels.create }}
             </button>
         </div>
 

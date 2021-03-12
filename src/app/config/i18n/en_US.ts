@@ -1,10 +1,13 @@
 export default {
+  // tooltip
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
+  // comment modal
   'commentmodal#label': 'Your comment',
   'commentmodal#notebook': 'Save comment in notebook',
   'commentmodal#cancel': 'Cancel',
   'commentmodal#save': 'Save comment',
+  // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text': 'Are you sure you want to delete this annotation? Please be aware that deleted annotations cannot be recovered.',
   'deletemodal#cancel': 'Cancel',
@@ -53,6 +56,9 @@ export default {
   'annotation#changenotebook': 'Change notebook',
   'annotation#editcomment': 'Add/edit comment',
   'annotation#delete': 'Delete',
+  // notebookselector
+  'notebookselector#cancel': 'Cancel',
+  'notebookselector#create': 'Create',
   // notebook panel
   'notebookpanel#current': 'Current notebook:',
   'notebookpanel#status': 'Notebook status:',

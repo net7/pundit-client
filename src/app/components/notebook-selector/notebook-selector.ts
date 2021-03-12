@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { NotebookData } from 'src/app/services/notebook.service';
 
 /**
@@ -30,6 +31,11 @@ export class NotebookSelectorComponent {
   @Input() public data: NotebookSelectorData;
 
   @Input() public emit: any;
+
+  labels = {
+    cancel: _t('notebookselector#cancel'),
+    create: _t('notebookselector#create')
+  };
 
   constructor(
     private ref: ChangeDetectorRef
