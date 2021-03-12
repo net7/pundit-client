@@ -4,6 +4,7 @@ import { catchError, takeUntil } from 'rxjs/operators';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { EMPTY } from 'rxjs';
+import { AnnotationCssClass } from 'src/app/data-sources';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -63,6 +64,16 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
     if (rawAnnotation.type === 'Commenting') {
+      // show toast update annotation "loading..."
+      const toastLoading = this.layoutEH.toastService.info({
+        title: _t('toast#annotationedit_loading_title'),
+        text: _t('toast#annotationedit_loading_text'),
+        autoClose: false
+      });
+      // update loading state
+      this.layoutEH.annotationService.updateLoadingState(rawAnnotation.id, {
+        cssClass: AnnotationCssClass.Edit
+      });
       const data: CommentAnnotation = {
         type: rawAnnotation.type,
         content: rawAnnotation.content,
@@ -73,6 +84,9 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {
+          // close toast update annotation "loading..."
+          toastLoading.close();
+
           this.layoutEH.toastService.error({
             title: _t('toast#annotationedit_error_title'),
             text: _t('toast#annotationedit_error_text'),
@@ -81,6 +95,17 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           return EMPTY;
         })
       ).subscribe(() => {
+        // close toast update annotation "loading..."
+        toastLoading.close();
+
+        // update loading state
+        this.layoutEH.annotationService.updateLoadingState(rawAnnotation.id, {
+          cssClass: AnnotationCssClass.Empty
+        });
+
+        // refresh sidedar annotations
+        this.layoutDS.updateAnnotations();
+
         // annotation changed successfully
         this.layoutEH.toastService.success({
           title: _t('toast#annotationedit_success_title'),
