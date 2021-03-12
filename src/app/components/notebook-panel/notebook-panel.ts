@@ -8,6 +8,7 @@ export interface NotebookPanelData {
     [key: string]: any;
   };
   icons: string;
+  isLoading?: boolean;
   _meta?: any;
 }
 

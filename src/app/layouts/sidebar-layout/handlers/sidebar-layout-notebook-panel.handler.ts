@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { NotebookPanelEvent } from 'src/app/event-types';
+import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from 'src/app/event-types';
 import { NotebookUpdate } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
 import { catchError } from 'rxjs/operators';
@@ -46,6 +46,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
           ).subscribe(({ data }) => {
             this.layoutEH.notebookService.setSelected(data.id); // select the new notebook
             this.layoutDS.updateNotebookPanel();
+
             // toast
             this.layoutEH.toastService.success({
               title: _t('toast#notebookchangecurrent_success_title'),
@@ -81,6 +82,9 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
         return EMPTY;
       })
     ).subscribe(() => {
+      // signal
+      this.layoutEH.emitOuter(getEventType(SidebarLayoutEvent.NotebookSharingModeUpdated));
+
       // toast
       this.layoutEH.toastService.success({
         title: _t('toast#notebookedit_success_title'),

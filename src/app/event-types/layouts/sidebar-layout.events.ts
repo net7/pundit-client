@@ -10,5 +10,6 @@ export enum SidebarLayoutEvent {
   Close = 'sidebar-layout.sidebarclose',
   Destroy = 'sidebar-layout.destroy',
   Init = 'sidebar-layout.init',
+  NotebookSharingModeUpdated = 'sidebar-layout.notebookmodeupdated',
   RequestLogin = 'sidebar-layout.requestlogin',
 }

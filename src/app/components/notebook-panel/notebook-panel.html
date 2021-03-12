@@ -14,28 +14,34 @@
             <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.statusTitle }}</div>
             <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
             <div class="pnd-notebook-panel__status-description pnd-text-small">
-                {{ data.labels.status[currentSharingMode] }}
+                {{ data.labels.statusTypes[currentSharingMode].description }}
             </div>
         </div>
         <div class="pnd-notebook-panel__change-status">
             <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeStatus }}</div>
             <div class="pnd-notebook-panel__buttons">
-                <button (click)="onClick('public', data.selected)"
-                        class="pnd-btn"
-                        *ngIf="data.selected.sharingMode !== 'public'">
-                    Public
-                </button>
-                <button (click)="onClick('private', data.selected)"
-                        class="pnd-btn"
-                        *ngIf="data.selected.sharingMode !== 'private'">
-                    Private
-                </button>
+                <ng-container *ngFor="let type of ['public', 'private']">
+                    <button (click)="onClick(type, data.selected)"
+                            class="pnd-btn"
+                            [ngClass]="{
+                                'is-loading': !!data.isLoading
+                            }"
+                            [disabled]="!!data.isLoading"
+                            *ngIf="data.selected.sharingMode !== type">
+                        <ng-container *ngIf="data.isLoading">
+                            <span class="pnd-btn-loader"></span>
+                        </ng-container>
+                        <ng-container *ngIf="!data.isLoading">
+                            {{ data.labels.statusTypes[type].title }}
+                        </ng-container>
+                    </button>
+                </ng-container>
                 <button (click)="onClick('shared', data.selected)"
                         class="pnd-btn"
                         *ngIf="data.selected.sharingMode !== 'shared'"
                         disabled
-                        title="Coming soon!">
-                    Share
+                        title="{{ data.labels.commingSoon }}">
+                    {{ data.labels.statusTypes.shared.title }}
                 </button>
                 <p class="pnd-text-small">{{ data.labels.sharedSoon }}</p>
             </div>

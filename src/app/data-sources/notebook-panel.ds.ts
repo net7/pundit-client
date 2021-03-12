@@ -7,12 +7,22 @@ export class NotebookPanelDS extends DataSource {
     changeStatus: _t('notebookpanel#changestatus'),
     sharedSoon: _t('notebookpanel#sharedsoon'),
     changeCurrent: _t('notebookpanel#changecurrent'),
-    statusTitle: _t('notebookpanel#status'),
-    status: {
-      public: _t('notebookpanel#status_public'),
-      private: _t('notebookpanel#status_private'),
-      shared: _t('notebookpanel#status_shared'),
+    status: _t('notebookpanel#status'),
+    statusTypes: {
+      public: {
+        title: _t('notebookpanel#status_public'),
+        description: _t('notebookpanel#status_public_description'),
+      },
+      private: {
+        title: _t('notebookpanel#status_private'),
+        description: _t('notebookpanel#status_private_description'),
+      },
+      shared: {
+        title: _t('notebookpanel#status_shared'),
+        description: _t('notebookpanel#status_shared_description'),
+      },
     },
+    commingSoon: _t('notebookpanel#commingsoon')
   }
 
   public iconMap = {
@@ -38,5 +48,9 @@ export class NotebookPanelDS extends DataSource {
       icons: this.iconMap,
       labels: this.labels,
     };
+  }
+
+  changeLoadingState(loading: boolean) {
+    this.output.isLoading = loading;
   }
 }

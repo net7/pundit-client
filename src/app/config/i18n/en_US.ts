@@ -56,10 +56,14 @@ export default {
   // notebook panel
   'notebookpanel#current': 'Current notebook:',
   'notebookpanel#status': 'Notebook status:',
-  'notebookpanel#status_public': 'All annotations in the notebook can be seen by all Pundit\'s users',
-  'notebookpanel#status_private': 'All annotations in the notebook are visible only to you',
-  'notebookpanel#status_shared': 'with X people',
+  'notebookpanel#status_public': 'Public',
+  'notebookpanel#status_private': 'Private',
+  'notebookpanel#status_shared': 'Share',
+  'notebookpanel#status_public_description': 'All annotations in the notebook can be seen by all Pundit\'s users',
+  'notebookpanel#status_private_description': 'All annotations in the notebook are visible only to you',
+  'notebookpanel#status_shared_description': 'with X people',
   'notebookpanel#changestatus': 'Change status:',
   'notebookpanel#sharedsoon': 'Shared notebooks will be available soon!',
   'notebookpanel#changecurrent': 'Change current notebook:',
+  'notebookpanel#commingsoon': 'Coming soon!',
 };
