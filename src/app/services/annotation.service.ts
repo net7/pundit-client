@@ -118,10 +118,14 @@ export class AnnotationService {
       );
   }
 
-  updateLoadingState(annotationId: string, { cssClass }: { cssClass: AnnotationCssClass }) {
+  updateCached(annotationId: string, updateData: {
+    cssClass: AnnotationCssClass;
+  }) {
     const cachedAnnotation = this.getAnnotationById(annotationId);
     if (!cachedAnnotation) return;
-    cachedAnnotation.ds.updateCssClass(cssClass);
+    if (updateData.cssClass) {
+      cachedAnnotation.ds.updateCssClass(updateData.cssClass);
+    }
   }
 
   /**

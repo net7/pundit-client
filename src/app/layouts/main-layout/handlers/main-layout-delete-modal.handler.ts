@@ -25,7 +25,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
             autoClose: false
           });
           // update loading state
-          this.layoutDS.annotationService.updateLoadingState(deleteId, {
+          this.layoutDS.annotationService.updateCached(deleteId, {
             cssClass: AnnotationCssClass.Delete
           });
           this.onDeleteModalConfirm().pipe(

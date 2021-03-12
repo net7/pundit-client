@@ -71,7 +71,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         autoClose: false
       });
       // update loading state
-      this.layoutEH.annotationService.updateLoadingState(rawAnnotation.id, {
+      this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
         cssClass: AnnotationCssClass.Edit
       });
       const data: CommentAnnotation = {
@@ -99,7 +99,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         toastLoading.close();
 
         // update loading state
-        this.layoutEH.annotationService.updateLoadingState(rawAnnotation.id, {
+        this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
           cssClass: AnnotationCssClass.Empty
         });
 
