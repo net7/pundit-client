@@ -23,7 +23,6 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           this.layoutDS.updateNotebookPanel();
           break;
         case AppEvent.AnnotationDeleteSuccess:
-          this.layoutEH.annotationService.remove(payload);
           this.layoutDS.updateAnnotations(true);
           break;
         case AppEvent.AnnotationCreateSuccess: {
