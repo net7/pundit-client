@@ -177,14 +177,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     userId?: string;
     sharingMode?: SharingModeType;
   }) {
-    const { id, label, userId } = notebookData;
-    this.layoutEH.notebookService.create({
-      id,
-      label,
-      userId: userId || this.layoutEH.userService.whoami().id,
-      sharingMode: 'public', // when a notebook is created it defaults to public
-      created: new Date(),
-      changed: new Date()
-    });
+    const { label } = notebookData;
+    this.layoutEH.notebookService.create(label);
   }
 }

@@ -94,7 +94,7 @@ export class NotebookService {
     }
   }
 
-  create(label) {
+  create(label: string) {
     const userId = this.userService.whoami().id;
     const sharingMode = 'public';
     return from(notebookModel.create({
@@ -110,8 +110,8 @@ export class NotebookService {
           userId,
           sharingMode,
           id: data.id,
-          changed: new Date(),
-          created: new Date(),
+          changed: new Date().toLocaleDateString(),
+          created: new Date().toLocaleDateString(),
         };
         this.add(rawNotebook);
       })

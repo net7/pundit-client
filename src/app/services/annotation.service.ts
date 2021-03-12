@@ -163,7 +163,7 @@ export class AnnotationService {
       type
     } = payload;
     const userId = this.userService.whoami().id;
-    const created = new Date();
+    const created = new Date().toLocaleDateString();
     const newAnnotation = {
       id,
       notebookId,
