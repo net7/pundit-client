@@ -12,6 +12,7 @@ import {
   getEventType,
   MainLayoutEvent
 } from 'src/app/event-types';
+import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -52,9 +53,23 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
           });
           break;
         case CommentModalEvent.Save: {
+          const { isUpdate } = this.layoutDS.state.comment;
+          let toastLoading: ToastInstance;
+          if (!isUpdate) {
+            // show toast save annotation "loading..."
+            toastLoading = this.layoutDS.toastService.info({
+              title: _t('toast#annotationsave_loading_title'),
+              text: _t('toast#annotationsave_loading_text'),
+              autoClose: false
+            });
+          }
           this.onCommentModalSave().pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
+              if (toastLoading) {
+                // close toast save annotation "loading..."
+                toastLoading.close();
+              }
 
               // toast
               this.layoutDS.toastService.error({
@@ -72,13 +87,18 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
                 payload: data.requestPayload
               });
             } else {
-              // clear
+              // clear pending
               this.layoutDS.state.annotation.pendingPayload = null;
+
               // signal
               this.layoutEH.appEvent$.next({
                 type: AppEvent.AnnotationCreateSuccess,
                 payload: data
               });
+
+              // close toast save annotation "loading..."
+              toastLoading.close();
+
               // toast
               this.layoutDS.toastService.success({
                 title: _t('toast#annotationsave_success_title'),

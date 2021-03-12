@@ -26,7 +26,7 @@ export interface ToastUpdateParams extends ToastParams {
   type?: ToastType;
 }
 
-type ToastInstance = {
+export type ToastInstance = {
   close: () => void;
   update: (newParams: ToastUpdateParams) => void;
 };
