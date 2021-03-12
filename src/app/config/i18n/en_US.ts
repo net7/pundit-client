@@ -53,4 +53,13 @@ export default {
   'annotation#changenotebook': 'Change notebook',
   'annotation#editcomment': 'Add/edit comment',
   'annotation#delete': 'Delete',
+  // notebook panel
+  'notebookpanel#current': 'Current notebook:',
+  'notebookpanel#status': 'Notebook status:',
+  'notebookpanel#status_public': 'All annotations in the notebook can be seen by all Pundit\'s users',
+  'notebookpanel#status_private': 'All annotations in the notebook are visible only to you',
+  'notebookpanel#status_shared': 'with X people',
+  'notebookpanel#changestatus': 'Change status:',
+  'notebookpanel#sharedsoon': 'Shared notebooks will be available soon!',
+  'notebookpanel#changecurrent': 'Change current notebook:',
 };

@@ -4,7 +4,9 @@ import { NotebookData } from '../../services/notebook.service';
 export interface NotebookPanelData {
   selected: NotebookData;
   list: NotebookData[];
-  descriptions: string;
+  labels: {
+    [key: string]: any;
+  };
   icons: string;
   _meta?: any;
 }

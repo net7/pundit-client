@@ -1,11 +1,18 @@
-import { DataSource } from '@n7-frontend/core';
+import { DataSource, _t } from '@n7-frontend/core';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class NotebookPanelDS extends DataSource {
-  public labelMap = {
-    public: 'All annotations in the notebook can be seen by all Pundit\'s users',
-    private: 'All annotations in the notebook are visible only to you',
-    shared: 'with X people',
+  public labels = {
+    current: _t('notebookpanel#current'),
+    changeStatus: _t('notebookpanel#changestatus'),
+    sharedSoon: _t('notebookpanel#sharedsoon'),
+    changeCurrent: _t('notebookpanel#changecurrent'),
+    statusTitle: _t('notebookpanel#status'),
+    status: {
+      public: _t('notebookpanel#status_public'),
+      private: _t('notebookpanel#status_private'),
+      shared: _t('notebookpanel#status_shared'),
+    },
   }
 
   public iconMap = {
@@ -28,8 +35,8 @@ export class NotebookPanelDS extends DataSource {
     return {
       ...data,
       _meta: { notebookSelectorData },
-      descriptions: this.labelMap,
       icons: this.iconMap,
+      labels: this.labels,
     };
   }
 }
