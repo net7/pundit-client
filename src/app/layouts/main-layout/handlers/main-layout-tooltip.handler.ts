@@ -24,20 +24,26 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       })
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        /**
-         * Tooltip Events
-         * --------------------------------------------------------------------> */
         case TooltipEvent.Click: {
           if (payload === 'highlight') {
+            // show toast save annotation "loading..."
+            const toastLoading = this.layoutDS.toastService.info({
+              title: _t('toast#annotationsave_loading_title'),
+              text: _t('toast#annotationsave_loading_text'),
+              autoClose: false
+            });
             this.onTooltipHighlight().pipe(
               catchError((e) => {
                 this.layoutEH.handleError(e);
+                // close toast save annotation "loading..."
+                toastLoading.close();
 
                 // toast
                 this.layoutDS.toastService.error({
                   title: _t('toast#annotationsave_error_title'),
                   text: _t('toast#annotationsave_error_text'),
                 });
+
                 return EMPTY;
               })
             ).subscribe((newAnnotation) => {
@@ -46,6 +52,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
                 type: AppEvent.AnnotationCreateSuccess,
                 payload: newAnnotation
               });
+
+              // close toast save annotation "loading..."
+              toastLoading.close();
 
               // toast
               this.layoutDS.toastService.success({

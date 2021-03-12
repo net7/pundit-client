@@ -5,7 +5,7 @@ import {
 import { Subject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
-import { AnnotationDS } from '../data-sources';
+import { AnnotationCssClass, AnnotationDS } from '../data-sources';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
@@ -116,6 +116,16 @@ export class AnnotationService {
           }
         })
       );
+  }
+
+  updateCached(annotationId: string, updateData: {
+    cssClass: AnnotationCssClass;
+  }) {
+    const cachedAnnotation = this.getAnnotationById(annotationId);
+    if (!cachedAnnotation) return;
+    if (updateData.cssClass) {
+      cachedAnnotation.ds.updateCssClass(updateData.cssClass);
+    }
   }
 
   /**
