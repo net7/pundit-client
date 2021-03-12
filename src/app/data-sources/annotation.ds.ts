@@ -7,6 +7,12 @@ import { NotebookSelectorData } from '../components/notebook-selector/notebook-s
 import { NotebookData } from '../services/notebook.service';
 import { isAnchorPayload } from '../types';
 
+export enum AnnotationCssClass {
+  Empty = '',
+  Delete = 'is-deleted',
+  Edit = 'is-edited'
+}
+
 export class AnnotationDS extends DataSource {
   private onMenuFocusLost = new Subject();
 
@@ -186,6 +192,10 @@ export class AnnotationDS extends DataSource {
   updateMenu() {
     const { id } = this.output._meta;
     this.output.menu = this.getMenuData(id);
+  }
+
+  updateCssClass(cssClass: AnnotationCssClass) {
+    this.output.classes = cssClass;
   }
 
   private toggleCollapse() {

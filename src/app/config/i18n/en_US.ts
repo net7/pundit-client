@@ -23,6 +23,8 @@ export default {
   'toast#annotationsave_success_text': 'Your new annotation has been correctly saved.',
   'toast#annotationsave_error_title': 'Oops! Something went wrong',
   'toast#annotationsave_error_text': 'Pundit couldn\'t save your annotation, please try again in 5 minutes.',
+  'toast#annotationdelete_loading_title': 'Working...',
+  'toast#annotationdelete_loading_text': 'Deleting your annotation.',
   'toast#annotationdelete_success_title': 'Annotation deleted',
   'toast#annotationdelete_success_text': 'Your annotation has been correctly deleted.',
   'toast#annotationdelete_error_title': 'Oops! Something went wrong',
