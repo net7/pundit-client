@@ -46,7 +46,10 @@ export class AnnotationEH extends EventHandler {
         case AnnotationEvent.UpdateNotebook:
         case AnnotationEvent.MouseEnter:
         case AnnotationEvent.MouseLeave:
+          this.emitOuter(getEventType(type), payload);
+          break;
         case AnnotationEvent.CreateNotebook:
+          this.getAnnotationDatasource(payload.annotation).changeNotebookSelectorLoadingState(true);
           this.emitOuter(getEventType(type), payload);
           break;
         default:
@@ -59,6 +62,7 @@ export class AnnotationEH extends EventHandler {
       switch (type) {
         case SidebarLayoutEvent.AnnotationUpdateNotebook: {
           const { annotationID, notebook } = payload;
+          this.getAnnotationDatasource(annotationID).changeNotebookSelectorLoadingState(false);
           this.getAnnotationDatasource(annotationID).transferAnnotationToNotebook(notebook);
           this.getAnnotationDatasource(annotationID).closeMenu();
           break;

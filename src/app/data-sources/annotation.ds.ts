@@ -85,7 +85,7 @@ export class AnnotationDS extends DataSource {
         const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
         // only act if the clicked item is NOT the notebook-selector component
         if (!clickedElement.className
-          .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field)/gi)) {
+          .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi)) {
           this.onMenuFocusLost.next(true);
           this.closeMenu();
         }
@@ -272,5 +272,9 @@ export class AnnotationDS extends DataSource {
           }))
       }
     } : null;
+  }
+
+  changeNotebookSelectorLoadingState(loading: boolean) {
+    this.output._meta.notebookSelectorData.isLoading = loading;
   }
 }
