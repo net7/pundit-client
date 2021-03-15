@@ -8,6 +8,7 @@ import {
 } from '@pundit/communication';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { _c } from 'src/app/models/config';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -91,6 +92,8 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
    * @param notebookId id of the notebook that will host the annotation
    */
   private updateAnnotationNotebook(annotationID: string, notebookId: string) {
+    // toast "working..."
+    const workingToast = this.layoutEH.toastService.working();
     // update the annotation on the back end
     const { data: rawAnnotation } = this.layoutEH.annotationService.getAnnotationById(annotationID);
     const annotationUpdate = {
@@ -110,6 +113,10 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             this.layoutEH.toastService.error({
               title: _t('toast#notebookchange_error_title'),
               text: _t('toast#notebookchange_error_text'),
+              timer: _c('toastTimer'),
+              onLoad: () => {
+                workingToast.close();
+              }
             });
             console.error('Update annotation notebook error:', err);
             return EMPTY;
@@ -119,6 +126,10 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
           this.layoutEH.toastService.success({
             title: _t('toast#notebookchange_success_title'),
             text: _t('toast#notebookchange_success_text'),
+            timer: _c('toastTimer'),
+            onLoad: () => {
+              workingToast.close();
+            }
           });
 
           // signal: update annotation component
