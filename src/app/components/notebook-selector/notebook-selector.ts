@@ -18,6 +18,7 @@ export interface NotebookSelectorData {
     label: string;
   };
   mode: 'select' | 'input';
+  isLoading?: boolean;
   /** Internal data */
   _meta?: any;
 }
@@ -80,11 +81,9 @@ export class NotebookSelectorComponent {
    */
   onCreation(payload) {
     if (!this.emit) return;
-    this.data.mode = 'select';
-    this.data._meta = {};
-    // stop the creation if empty name or cancelling the operation
-    if (!payload) return;
-    this.emit('createnotebook', payload);
+    if (typeof payload === 'string' && payload.trim().length > 0) {
+      this.emit('createnotebook', payload.trim());
+    }
   }
 
   /**
