@@ -21,6 +21,7 @@ export class CommentModalEH extends EventHandler {
           }
         } break;
         case CommentModalEvent.CreateNotebook:
+          this.dataSource.changeNotebookSelectorLoadingState(true);
           this.emitOuter(getEventType(CommentModalEvent.CreateNotebook), payload);
           break;
         case CommentModalEvent.TextChange: // the comment is edited
@@ -49,6 +50,7 @@ export class CommentModalEH extends EventHandler {
           }
           break;
         case MainLayoutEvent.UpdateNotebookSelect:
+          this.dataSource.changeNotebookSelectorLoadingState(false);
           this.dataSource.updateNotebookSelector(payload);
           break;
         default:
