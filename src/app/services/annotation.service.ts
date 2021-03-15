@@ -104,7 +104,7 @@ export class AnnotationService {
         tap(() => {
           const cachedAnnotation = this.getAnnotationById(annotationId);
           if (!cachedAnnotation) return;
-          if (data.notebookId !== cachedAnnotation.data.notebookId) {
+          if (data.notebookId) {
             // update the notebook
             const { notebookId } = data;
             const notebookData = this.notebookService.getNotebookById(notebookId);

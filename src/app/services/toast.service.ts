@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { BehaviorSubject, interval, Subject } from 'rxjs';
 import {
   filter, takeWhile, map
@@ -10,19 +11,25 @@ export enum ToastType {
   Success = 'success',
   Warn = 'warning',
   Error = 'error',
+  Working = 'working',
 }
 
-export interface ToastParams {
+export interface ToastBase {
   title?: string;
   text?: string;
   hasDismiss?: boolean;
   actions?: ToastAction[];
   onAction?: (payload: any, instance: ToastInstance) => void;
-  autoClose?: boolean;
-  autoCloseDelay?: number;
 }
 
-export interface ToastUpdateParams extends ToastParams {
+export interface ToastParams extends ToastBase {
+  timer?: number;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
+  onLoad?: (instance: ToastInstance) => void;
+}
+
+export interface ToastUpdateParams extends ToastBase {
   type?: ToastType;
 }
 
@@ -32,6 +39,8 @@ export type ToastInstance = {
 };
 
 type EmitFunction = (payload: any, instance: ToastInstance) => void;
+
+type LoadFunction = (instance: ToastInstance) => void;
 
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
@@ -70,6 +79,13 @@ export class ToastService {
 
   error(params: ToastParams) {
     return this.notify(ToastType.Error, params);
+  }
+
+  working(text: string = _t('toast#working')) {
+    return this.notify(ToastType.Working, {
+      text,
+      autoClose: false
+    });
   }
 
   componentEmit(type: string, payload: any) {
@@ -136,7 +152,14 @@ export class ToastService {
     });
 
     // update stream
-    this.updateDataStream();
+    setTimeout(() => {
+      this.updateDataStream();
+
+      // onload check
+      if (toastParams.onLoad) {
+        toastParams.onLoad(instance);
+      }
+    }, toastParams.timer || 0);
 
     // auto close
     this.onAutoClose(toastId, toastParams);

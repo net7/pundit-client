@@ -120,16 +120,17 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             title: _t('toast#notebookchange_success_title'),
             text: _t('toast#notebookchange_success_text'),
           });
+
+          // signal: update annotation component
+          this.layoutEH.emitOuter(
+            getEventType(SidebarLayoutEvent.AnnotationUpdateNotebook),
+            {
+              annotationID,
+              notebook: this.layoutEH.notebookService.getNotebookById(notebookId),
+            }
+          );
         });
     }, 1100);
-    // update annotation component
-    this.layoutEH.emitOuter(
-      getEventType(SidebarLayoutEvent.AnnotationUpdateNotebook),
-      {
-        annotationID,
-        notebook: this.layoutEH.notebookService.getNotebookById(notebookId),
-      }
-    );
   }
 
   /**

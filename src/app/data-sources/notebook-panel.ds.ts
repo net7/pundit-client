@@ -1,11 +1,28 @@
-import { DataSource } from '@n7-frontend/core';
+import { DataSource, _t } from '@n7-frontend/core';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class NotebookPanelDS extends DataSource {
-  public labelMap = {
-    public: 'All annotations in the notebook can be seen by all Pundit\'s users',
-    private: 'All annotations in the notebook are visible only to you',
-    shared: 'with X people',
+  public labels = {
+    current: _t('notebookpanel#current'),
+    changeStatus: _t('notebookpanel#changestatus'),
+    sharedSoon: _t('notebookpanel#sharedsoon'),
+    changeCurrent: _t('notebookpanel#changecurrent'),
+    status: _t('notebookpanel#status'),
+    statusTypes: {
+      public: {
+        title: _t('notebookpanel#status_public'),
+        description: _t('notebookpanel#status_public_description'),
+      },
+      private: {
+        title: _t('notebookpanel#status_private'),
+        description: _t('notebookpanel#status_private_description'),
+      },
+      shared: {
+        title: _t('notebookpanel#status_shared'),
+        description: _t('notebookpanel#status_shared_description'),
+      },
+    },
+    commingSoon: _t('notebookpanel#commingsoon')
   }
 
   public iconMap = {
@@ -28,8 +45,16 @@ export class NotebookPanelDS extends DataSource {
     return {
       ...data,
       _meta: { notebookSelectorData },
-      descriptions: this.labelMap,
       icons: this.iconMap,
+      labels: this.labels,
     };
+  }
+
+  changeLoadingState(loading: boolean) {
+    this.output.isLoading = loading;
+  }
+
+  changeNotebookSelectorLoadingState(loading: boolean) {
+    this.output._meta.notebookSelectorData.isLoading = loading;
   }
 }

@@ -2,6 +2,7 @@ import { _t } from '@n7-frontend/core';
 import { CommentAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
+import { _c } from 'src/app/models/config';
 import { AppEvent, TooltipEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -26,22 +27,20 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       switch (type) {
         case TooltipEvent.Click: {
           if (payload === 'highlight') {
-            // show toast save annotation "loading..."
-            const toastLoading = this.layoutDS.toastService.info({
-              title: _t('toast#annotationsave_loading_title'),
-              text: _t('toast#annotationsave_loading_text'),
-              autoClose: false
-            });
+            // toast "working..."
+            const workingToast = this.layoutDS.toastService.working();
             this.onTooltipHighlight().pipe(
               catchError((e) => {
                 this.layoutEH.handleError(e);
-                // close toast save annotation "loading..."
-                toastLoading.close();
 
                 // toast
                 this.layoutDS.toastService.error({
                   title: _t('toast#annotationsave_error_title'),
                   text: _t('toast#annotationsave_error_text'),
+                  timer: _c('toastTimer'),
+                  onLoad: () => {
+                    workingToast.close();
+                  }
                 });
 
                 return EMPTY;
@@ -53,13 +52,14 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
                 payload: newAnnotation
               });
 
-              // close toast save annotation "loading..."
-              toastLoading.close();
-
               // toast
               this.layoutDS.toastService.success({
                 title: _t('toast#annotationsave_success_title'),
                 text: _t('toast#annotationsave_success_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
               });
             });
           } else if (payload === 'comment') {

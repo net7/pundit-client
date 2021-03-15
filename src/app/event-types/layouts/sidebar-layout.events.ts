@@ -10,5 +10,7 @@ export enum SidebarLayoutEvent {
   Close = 'sidebar-layout.sidebarclose',
   Destroy = 'sidebar-layout.destroy',
   Init = 'sidebar-layout.init',
+  NotebookPanelNewNotebookCreated = 'sidebar-layout.notebookpanelcreated',
+  NotebookSharingModeUpdated = 'sidebar-layout.notebookmodeupdated',
   RequestLogin = 'sidebar-layout.requestlogin',
 }

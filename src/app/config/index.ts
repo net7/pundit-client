@@ -8,5 +8,6 @@ export default {
   // static config
   name: 'Pundit',
   tooltipDelay: 200,
-  highlightTag: 'pnd-mark'
+  highlightTag: 'pnd-mark',
+  toastTimer: 500,
 };

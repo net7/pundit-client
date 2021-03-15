@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { NotebookData } from 'src/app/services/notebook.service';
 
 /**
@@ -17,6 +18,7 @@ export interface NotebookSelectorData {
     label: string;
   };
   mode: 'select' | 'input';
+  isLoading?: boolean;
   /** Internal data */
   _meta?: any;
 }
@@ -30,6 +32,11 @@ export class NotebookSelectorComponent {
   @Input() public data: NotebookSelectorData;
 
   @Input() public emit: any;
+
+  labels = {
+    cancel: _t('notebookselector#cancel'),
+    create: _t('notebookselector#create')
+  };
 
   constructor(
     private ref: ChangeDetectorRef
@@ -74,11 +81,9 @@ export class NotebookSelectorComponent {
    */
   onCreation(payload) {
     if (!this.emit) return;
-    this.data.mode = 'select';
-    this.data._meta = {};
-    // stop the creation if empty name or cancelling the operation
-    if (!payload) return;
-    this.emit('createnotebook', payload);
+    if (typeof payload === 'string' && payload.trim().length > 0) {
+      this.emit('createnotebook', payload.trim());
+    }
   }
 
   /**

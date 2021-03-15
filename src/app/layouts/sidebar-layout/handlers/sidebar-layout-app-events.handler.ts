@@ -1,6 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { catchError, takeUntil } from 'rxjs/operators';
+import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { EMPTY } from 'rxjs';
@@ -64,12 +65,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
     if (rawAnnotation.type === 'Commenting') {
-      // show toast update annotation "loading..."
-      const toastLoading = this.layoutEH.toastService.info({
-        title: _t('toast#annotationedit_loading_title'),
-        text: _t('toast#annotationedit_loading_text'),
-        autoClose: false
-      });
+      // toast "working..."
+      const workingToast = this.layoutEH.toastService.working();
       // update loading state
       this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
         cssClass: AnnotationCssClass.Edit
@@ -84,19 +81,19 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {
-          // close toast update annotation "loading..."
-          toastLoading.close();
-
           this.layoutEH.toastService.error({
             title: _t('toast#annotationedit_error_title'),
             text: _t('toast#annotationedit_error_text'),
+            timer: _c('toastTimer'),
+            onLoad: () => {
+              workingToast.close();
+            }
           });
           console.error('Updated annotation error:', err);
           return EMPTY;
         })
       ).subscribe(() => {
-        // close toast update annotation "loading..."
-        toastLoading.close();
+        workingToast.close();
 
         // update loading state
         this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
@@ -110,6 +107,10 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         this.layoutEH.toastService.success({
           title: _t('toast#annotationedit_success_title'),
           text: _t('toast#annotationedit_success_text'),
+          timer: _c('toastTimer'),
+          onLoad: () => {
+            workingToast.close();
+          }
         });
       });
     }

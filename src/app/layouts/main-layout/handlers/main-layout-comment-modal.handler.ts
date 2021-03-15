@@ -12,6 +12,7 @@ import {
   getEventType,
   MainLayoutEvent
 } from 'src/app/event-types';
+import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -54,27 +55,22 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
           break;
         case CommentModalEvent.Save: {
           const { isUpdate } = this.layoutDS.state.comment;
-          let toastLoading: ToastInstance;
+          let workingToast: ToastInstance;
           if (!isUpdate) {
-            // show toast save annotation "loading..."
-            toastLoading = this.layoutDS.toastService.info({
-              title: _t('toast#annotationsave_loading_title'),
-              text: _t('toast#annotationsave_loading_text'),
-              autoClose: false
-            });
+            // toast "working..."
+            workingToast = this.layoutDS.toastService.working();
           }
           this.onCommentModalSave().pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
-              if (toastLoading) {
-                // close toast save annotation "loading..."
-                toastLoading.close();
-              }
-
               // toast
               this.layoutDS.toastService.error({
                 title: _t('toast#genericerror_error_title'),
                 text: _t('toast#genericerror_error_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
               });
               return EMPTY;
             }),
@@ -96,13 +92,14 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
                 payload: data
               });
 
-              // close toast save annotation "loading..."
-              toastLoading.close();
-
               // toast
               this.layoutDS.toastService.success({
                 title: _t('toast#annotationsave_success_title'),
                 text: _t('toast#annotationsave_success_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
               });
             }
           });

@@ -50,12 +50,22 @@
                    (input)="onInput($event.target.value)"
                    (keyup)="onKeyUp($event)">
             <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
+                    [disabled]="!!data.isLoading"
                     (click)="onCreation('')">
-                Cancel
+                {{ labels.cancel }}
             </button>
             <button class="pnd-btn pnd-btn-cta pnd-notebook-selector__create-btn-save"
+                    [ngClass]="{
+                        'is-loading': !!data.isLoading
+                    }"
+                    [disabled]="!!data.isLoading"
                     (click)="onCreation(data._meta.inputValue)">
-                Create
+                <ng-container *ngIf="data.isLoading">
+                    <span class="pnd-btn-loader"></span>
+                </ng-container>
+                <ng-container *ngIf="!data.isLoading">
+                    {{ labels.create }}
+                </ng-container>
             </button>
         </div>
 

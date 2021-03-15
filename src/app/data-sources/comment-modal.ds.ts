@@ -78,6 +78,8 @@ export class CommentModalDS extends DataSource {
   public updateNotebookSelector({ notebookList, selectedNotebook }) {
     this.output.form.notebookSelectorData.selectedNotebook = selectedNotebook;
     this.output.form.notebookSelectorData.notebookList = notebookList;
+    this.output.form.notebookSelectorData._meta = {};
+    this.output.form.notebookSelectorData.mode = 'select';
   }
 
   public close() {
@@ -107,4 +109,8 @@ export class CommentModalDS extends DataSource {
   }
 
   public isVisible = () => this.output?.visible;
+
+  changeNotebookSelectorLoadingState(loading: boolean) {
+    this.output.form.notebookSelectorData.isLoading = loading;
+  }
 }
