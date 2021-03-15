@@ -47,6 +47,11 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
             this.layoutEH.notebookService.setSelected(data.id); // select the new notebook
             this.layoutDS.updateNotebookPanel();
 
+            // signal
+            this.layoutEH.emitOuter(
+              getEventType(SidebarLayoutEvent.NotebookPanelNewNotebookCreated)
+            );
+
             // toast
             this.layoutEH.toastService.success({
               title: _t('toast#notebookchangecurrent_success_title'),

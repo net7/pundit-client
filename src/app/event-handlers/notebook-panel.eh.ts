@@ -1,7 +1,10 @@
 import { EventHandler } from '@n7-frontend/core';
+import { NotebookPanelDS } from '../data-sources';
 import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from '../event-types';
 
 export class NotebookPanelEH extends EventHandler {
+  public dataSource: NotebookPanelDS;
+
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
@@ -10,7 +13,10 @@ export class NotebookPanelEH extends EventHandler {
           this.emitOuter(getEventType(type), payload);
           break;
         case NotebookPanelEvent.ChangeSelected:
+          this.emitOuter(getEventType(type), payload);
+          break;
         case NotebookPanelEvent.CreateNotebook:
+          this.dataSource.changeNotebookSelectorLoadingState(true);
           this.emitOuter(getEventType(type), payload);
           break;
         default:
@@ -22,6 +28,9 @@ export class NotebookPanelEH extends EventHandler {
       switch (type) {
         case SidebarLayoutEvent.NotebookSharingModeUpdated:
           this.dataSource.changeLoadingState(false);
+          break;
+        case SidebarLayoutEvent.NotebookPanelNewNotebookCreated:
+          this.dataSource.changeNotebookSelectorLoadingState(false);
           break;
         default:
           break;

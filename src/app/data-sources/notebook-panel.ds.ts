@@ -53,4 +53,8 @@ export class NotebookPanelDS extends DataSource {
   changeLoadingState(loading: boolean) {
     this.output.isLoading = loading;
   }
+
+  changeNotebookSelectorLoadingState(loading: boolean) {
+    this.output._meta.notebookSelectorData.isLoading = loading;
+  }
 }
