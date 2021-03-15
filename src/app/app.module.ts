@@ -59,7 +59,6 @@ config.init(appConfig);
   ],
   imports: [
     BrowserModule,
-    PunditLoginModule,
     PunditLoginModule.forRoot(env.auth)
   ],
   providers: [

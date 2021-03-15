@@ -1,8 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { PunditLoginModule } from '@pundit/login';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
+import { PunditLoginModule } from '@pundit/login';
 import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
@@ -11,11 +11,12 @@ import { AppComponent } from './app.component';
 import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
-import { AnnotationPositionService } from './services/annotation-position.service';
 import { AnchorService } from './services/anchor.service';
-import { EmbedService } from './services/embed.service';
-import { TokenService } from './services/token.service';
+import { AnnotationPositionService } from './services/annotation-position.service';
 import { StorageSyncService } from './services/storage-sync.service';
+import { TokenService } from './services/token.service';
+import { ToastService } from './services/toast.service';
+import { EmbedService } from './services/embed.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -26,6 +27,7 @@ import { DeleteModalComponent } from './components/delete-modal/delete-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
+import { ToastComponent } from './components/toast/toast';
 
 import appConfig from './config';
 import i18n from './config/i18n';
@@ -49,11 +51,12 @@ config.init(appConfig);
     SidebarLayoutComponent,
     // COMPONENTS
     AnnotationComponent,
-    CommentModalComponent,
-    DeleteModalComponent,
+    TooltipComponent,
     NotebookPanelComponent,
     NotebookSelectorComponent,
-    TooltipComponent,
+    CommentModalComponent,
+    DeleteModalComponent,
+    ToastComponent,
   ],
   imports: [
     BrowserModule,
@@ -66,9 +69,10 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
-    EmbedService,
-    TokenService,
     StorageSyncService,
+    TokenService,
+    ToastService,
+    EmbedService,
     {
       provide: APP_INITIALIZER,
       useFactory: (
