@@ -18,12 +18,8 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
       switch (type) {
         case DeleteModalEvent.Confirm: {
           const { deleteId } = this.layoutDS.state.annotation;
-          // show toast delete annotation "loading..."
-          const toastLoading = this.layoutDS.toastService.info({
-            title: _t('toast#annotationdelete_loading_title'),
-            text: _t('toast#annotationdelete_loading_text'),
-            autoClose: false
-          });
+          // toast "working..."
+          const workingToast = this.layoutDS.toastService.working();
           // update loading state
           this.layoutDS.annotationService.updateCached(deleteId, {
             cssClass: AnnotationCssClass.Delete
@@ -32,8 +28,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
             catchError((e) => {
               this.layoutEH.handleError(e);
 
-              // close toast delete annotation "loading..."
-              toastLoading.close();
+              workingToast.close();
 
               // toast
               this.layoutDS.toastService.error({
@@ -49,8 +44,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
               payload: deleteId
             });
 
-            // close toast delete annotation "loading..."
-            toastLoading.close();
+            workingToast.close();
 
             // toast
             this.layoutDS.toastService.success({

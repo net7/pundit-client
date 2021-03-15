@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { BehaviorSubject, interval, Subject } from 'rxjs';
 import {
   filter, takeWhile, map
@@ -10,6 +11,7 @@ export enum ToastType {
   Success = 'success',
   Warn = 'warning',
   Error = 'error',
+  Working = 'working',
 }
 
 export interface ToastParams {
@@ -70,6 +72,13 @@ export class ToastService {
 
   error(params: ToastParams) {
     return this.notify(ToastType.Error, params);
+  }
+
+  working(text: string = _t('toast#working')) {
+    return this.notify(ToastType.Working, {
+      text,
+      autoClose: false
+    });
   }
 
   componentEmit(type: string, payload: any) {

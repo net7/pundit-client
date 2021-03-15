@@ -54,21 +54,16 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
           break;
         case CommentModalEvent.Save: {
           const { isUpdate } = this.layoutDS.state.comment;
-          let toastLoading: ToastInstance;
+          let workingToast: ToastInstance;
           if (!isUpdate) {
-            // show toast save annotation "loading..."
-            toastLoading = this.layoutDS.toastService.info({
-              title: _t('toast#annotationsave_loading_title'),
-              text: _t('toast#annotationsave_loading_text'),
-              autoClose: false
-            });
+            // toast "working..."
+            workingToast = this.layoutDS.toastService.working();
           }
           this.onCommentModalSave().pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
-              if (toastLoading) {
-                // close toast save annotation "loading..."
-                toastLoading.close();
+              if (workingToast) {
+                workingToast.close();
               }
 
               // toast
@@ -96,8 +91,7 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
                 payload: data
               });
 
-              // close toast save annotation "loading..."
-              toastLoading.close();
+              workingToast.close();
 
               // toast
               this.layoutDS.toastService.success({

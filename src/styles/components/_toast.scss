@@ -126,6 +126,16 @@
     }
 }
 
+.pnd-toast .is-working {
+    .pnd-toast__progress {
+        background-color: $color-gray-04;
+    }
+
+    .pnd-toast__text {
+        font-style: italic;
+    }
+}
+
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */

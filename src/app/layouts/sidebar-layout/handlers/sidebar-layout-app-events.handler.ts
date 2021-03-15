@@ -64,12 +64,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
     if (rawAnnotation.type === 'Commenting') {
-      // show toast update annotation "loading..."
-      const toastLoading = this.layoutEH.toastService.info({
-        title: _t('toast#annotationedit_loading_title'),
-        text: _t('toast#annotationedit_loading_text'),
-        autoClose: false
-      });
+      // toast "working..."
+      const workingToast = this.layoutEH.toastService.working();
       // update loading state
       this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
         cssClass: AnnotationCssClass.Edit
@@ -84,8 +80,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {
-          // close toast update annotation "loading..."
-          toastLoading.close();
+          workingToast.close();
 
           this.layoutEH.toastService.error({
             title: _t('toast#annotationedit_error_title'),
@@ -95,8 +90,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           return EMPTY;
         })
       ).subscribe(() => {
-        // close toast update annotation "loading..."
-        toastLoading.close();
+        workingToast.close();
 
         // update loading state
         this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
