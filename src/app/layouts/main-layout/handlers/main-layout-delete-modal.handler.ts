@@ -1,6 +1,7 @@
 import { EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { _t } from '@n7-frontend/core';
+import { _c } from 'src/app/models/config';
 import { AppEvent, DeleteModalEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { AnnotationCssClass } from 'src/app/data-sources';
@@ -28,12 +29,14 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
             catchError((e) => {
               this.layoutEH.handleError(e);
 
-              workingToast.close();
-
               // toast
               this.layoutDS.toastService.error({
                 title: _t('toast#annotationdelete_error_title'),
                 text: _t('toast#annotationdelete_error_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
               });
               return EMPTY;
             })
@@ -44,12 +47,14 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
               payload: deleteId
             });
 
-            workingToast.close();
-
             // toast
             this.layoutDS.toastService.success({
               title: _t('toast#annotationdelete_success_title'),
               text: _t('toast#annotationdelete_success_text'),
+              timer: _c('toastTimer'),
+              onLoad: () => {
+                workingToast.close();
+              }
             });
           });
           break;

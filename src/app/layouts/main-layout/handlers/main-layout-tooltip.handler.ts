@@ -2,6 +2,7 @@ import { _t } from '@n7-frontend/core';
 import { CommentAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
+import { _c } from 'src/app/models/config';
 import { AppEvent, TooltipEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -32,12 +33,14 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
               catchError((e) => {
                 this.layoutEH.handleError(e);
 
-                workingToast.close();
-
                 // toast
                 this.layoutDS.toastService.error({
                   title: _t('toast#annotationsave_error_title'),
                   text: _t('toast#annotationsave_error_text'),
+                  timer: _c('toastTimer'),
+                  onLoad: () => {
+                    workingToast.close();
+                  }
                 });
 
                 return EMPTY;
@@ -49,12 +52,14 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
                 payload: newAnnotation
               });
 
-              workingToast.close();
-
               // toast
               this.layoutDS.toastService.success({
                 title: _t('toast#annotationsave_success_title'),
                 text: _t('toast#annotationsave_success_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
               });
             });
           } else if (payload === 'comment') {

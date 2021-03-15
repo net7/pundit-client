@@ -14,17 +14,22 @@ export enum ToastType {
   Working = 'working',
 }
 
-export interface ToastParams {
+export interface ToastBase {
   title?: string;
   text?: string;
   hasDismiss?: boolean;
   actions?: ToastAction[];
   onAction?: (payload: any, instance: ToastInstance) => void;
-  autoClose?: boolean;
-  autoCloseDelay?: number;
 }
 
-export interface ToastUpdateParams extends ToastParams {
+export interface ToastParams extends ToastBase {
+  timer?: number;
+  autoClose?: boolean;
+  autoCloseDelay?: number;
+  onLoad?: (instance: ToastInstance) => void;
+}
+
+export interface ToastUpdateParams extends ToastBase {
   type?: ToastType;
 }
 
@@ -34,6 +39,8 @@ export type ToastInstance = {
 };
 
 type EmitFunction = (payload: any, instance: ToastInstance) => void;
+
+type LoadFunction = (instance: ToastInstance) => void;
 
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
@@ -145,7 +152,14 @@ export class ToastService {
     });
 
     // update stream
-    this.updateDataStream();
+    setTimeout(() => {
+      this.updateDataStream();
+
+      // onload check
+      if (toastParams.onLoad) {
+        toastParams.onLoad(instance);
+      }
+    }, toastParams.timer || 0);
 
     // auto close
     this.onAutoClose(toastId, toastParams);
