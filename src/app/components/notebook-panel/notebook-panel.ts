@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { NotebookData } from '../../services/notebook.service';
 
 export interface NotebookPanelData {
@@ -20,10 +20,6 @@ export class NotebookPanelComponent {
   @Input() public data: NotebookPanelData;
 
   @Input() public emit: any;
-
-  constructor(
-    private ref: ChangeDetectorRef
-  ) {}
 
   /**
    * Event emitter for the internal notebook-selector component
