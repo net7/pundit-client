@@ -14,7 +14,7 @@ export class RangeAnchor {
     public range: any
   ) {
     this.root = root;
-    this.range = RangeAnchor.sniff(range).normalize(this.root);
+    this.range = RangeAnchor.sniff(range, this.root);
   }
 
   /**
@@ -50,15 +50,28 @@ export class RangeAnchor {
   *
   * Returns a Range object or false.
   * */
-  static sniff(range) {
+  static sniff(range, root: HTMLElement): NormalizedRange {
+    // order matters
+    let serializedRange;
+    let browserRange;
+    let normalizedRange;
     if (range.commonAncestorContainer !== undefined) {
-      return new BrowserRange(range);
-    } if (typeof range.startContainer === 'string') {
-      return new SerializedRange(range);
-    } if (range.startContainer && typeof range.startContainer === 'object') {
-      return new NormalizedRange(range);
+      // return new BrowserRange(range);
+      browserRange = new BrowserRange(range).normalize();
+      normalizedRange = new NormalizedRange(browserRange);
+    } else if (typeof range.startContainer === 'string') {
+      // return new SerializedRange(range);
+      serializedRange = new SerializedRange(range).normalize(root);
+      browserRange = new BrowserRange(serializedRange).normalize();
+      normalizedRange = new NormalizedRange(browserRange);
+    } else if (range.startContainer && typeof range.startContainer === 'object') {
+      // return new NormalizedRange(range);
+      normalizedRange = new NormalizedRange(range);
     }
-    throw new Error('Could not sniff range type');
+    if (!normalizedRange) {
+      throw new Error('Could not sniff range type');
+    }
+    return normalizedRange;
   }
 
   toRange() {
@@ -69,12 +82,13 @@ export class RangeAnchor {
    * @return {RangeSelector}
    */
   toSelector(): RangeSelectorWithType {
-    const range = this.range.serialize(this.root);
+    const params = this.range.serialize(this.root);
+    const range = new SerializedRange(params);
     return {
       type: 'RangeSelector',
-      startContainer: range.startContainer,
+      startContainer: range.startContainer as string,
       startOffset: range.startOffset,
-      endContainer: range.endContainer,
+      endContainer: range.endContainer as string,
       endOffset: range.endOffset,
     };
   }

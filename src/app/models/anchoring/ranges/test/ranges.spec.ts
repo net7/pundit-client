@@ -67,33 +67,33 @@ describe('annotator/anchoring/range', () => {
   }
 
   describe('sniff', () => {
-    it('returns a BrowserRange', () => {
+    it('returns a NormalizedRange when range.commonAncestorContainer exists', () => {
       const result = sniff({
         commonAncestorContainer: container,
         startContainer: container.querySelector('#p-1').firstChild,
         startOffset: 0,
         endContainer: container.querySelector('#p-3').firstChild,
         endOffset: 1,
-      });
-      expect(result instanceof BrowserRange).toBeTruthy();
+      }, container);
+      expect(result instanceof NormalizedRange).toBeTruthy();
     });
 
-    it('returns a SerializedRange', () => {
+    it('returns a NormalizedRange when range.startContainer is a string', () => {
       const result = sniff({
         startContainer: '/section[1]/p[1]',
         startOffset: 0,
         endContainer: '/section[1]/span[1]/p[1]',
         endOffset: 6,
-      });
-      expect(result instanceof SerializedRange).toBeTruthy();
+      }, container);
+      expect(result instanceof NormalizedRange).toBeTruthy();
     });
 
-    it('returns a NormalizedRange', () => {
+    it('returns a NormalizedRange when range.startContainer is an object', () => {
       const result = sniff({
         commonAncestor: container,
         startContainer: container.querySelector('#p-1').firstChild,
         endContainer: container.querySelector('#p-3').firstChild,
-      });
+      }, container);
       expect(result instanceof NormalizedRange).toBeTruthy();
     });
 
@@ -101,7 +101,7 @@ describe('annotator/anchoring/range', () => {
       expect(() => {
         sniff({
           fake: true,
-        });
+        }, container);
       }).toThrow(Error('Could not sniff range type'));
     });
   });
@@ -146,11 +146,10 @@ describe('annotator/anchoring/range', () => {
         }).toThrow(Error('You may only call normalize() once on a BrowserRange!'));
       });
 
-      it('converts BrowserRange instance to NormalizedRange instance', () => {
+      it('return a normalized Range', () => {
         const browserRange = createBrowserRange();
-        const normalizedRange = browserRange.normalize();
+        const normalizedRange = new NormalizedRange(browserRange.normalize());
         expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
-        expect(normalizedRange).toEqual(createNormalizedRange());
       });
 
       describe('`startContainer` is ELEMENT_NODE', () => {
@@ -158,8 +157,8 @@ describe('annotator/anchoring/range', () => {
           const browserRange = createBrowserRange({
             startContainer: container.querySelector('#p-1'),
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
 
         it('handles ELEMENT_NODE start node when `startOffset` > than number of child nodes', () => {
@@ -167,8 +166,8 @@ describe('annotator/anchoring/range', () => {
             startContainer: container.querySelector('#p-1'),
             startOffset: 1,
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
       });
 
@@ -177,8 +176,8 @@ describe('annotator/anchoring/range', () => {
           const browserRange = createBrowserRange({
             endContainer: container.querySelector('#p-3'),
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
 
         it('handles ELEMENT_NODE end node with no `endOffset` and no children', () => {
@@ -186,8 +185,8 @@ describe('annotator/anchoring/range', () => {
             endContainer: container.querySelector('#p-4'),
             endOffset: 0,
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
 
         it('handles ELEMENT_NODE end nodes with no `endOffset` and children', () => {
@@ -195,8 +194,8 @@ describe('annotator/anchoring/range', () => {
             endContainer: container.querySelector('#p-3'),
             endOffset: 0,
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
 
         it('handles ELEMENT_NODE end nodes with no `endOffset` and non-TEXT_NODE children', () => {
@@ -204,8 +203,8 @@ describe('annotator/anchoring/range', () => {
             endContainer: container.querySelector('#p-5'),
             endOffset: 0,
           });
-          const normalizedRange = browserRange.normalize();
-          expect(normalizedRange).toEqual(createNormalizedRange());
+          const normalizedRange = new NormalizedRange(browserRange.normalize());
+          expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         });
       });
 
@@ -274,20 +273,6 @@ describe('annotator/anchoring/range', () => {
         });
       });
     });
-
-    describe('#serialize', () => {
-      it('converts BrowserRange to SerializedRange instance', () => {
-        const browserRange = createBrowserRange();
-        const result = browserRange.serialize(container);
-        expect(result instanceof SerializedRange).toBeTruthy();
-        expect(result.toObject()).toEqual({
-          startContainer: '/section[1]/p[1]',
-          startOffset: 0,
-          endContainer: '/section[1]/span[1]/p[1]',
-          endOffset: 1,
-        });
-      });
-    });
   });
 
   describe('NormalizedRange', () => {
@@ -345,18 +330,10 @@ describe('annotator/anchoring/range', () => {
       });
     });
 
-    describe('#normalize', () => {
-      it('returns itself', () => {
-        const initialRange = createNormalizedRange();
-        const normalizedRange = initialRange.normalize();
-        expect(initialRange).toEqual(normalizedRange);
-      });
-    });
-
     describe('#serialize', () => {
       it('serialize the range with relative parent', () => {
         const serializedRange = createNormalizedRange().serialize(container);
-        expect(serializedRange.toObject()).toEqual({
+        expect(serializedRange).toEqual({
           startContainer: '/section[1]/p[1]',
           endContainer: '/section[1]/span[1]/p[1]',
           startOffset: 0,
@@ -366,7 +343,7 @@ describe('annotator/anchoring/range', () => {
 
       it('serialize the range with no relative parent', () => {
         const serializedRange = createNormalizedRange().serialize();
-        expect(serializedRange.toObject()).toEqual({
+        expect(serializedRange).toEqual({
           startContainer: '/html[1]/body[1]/div[1]/section[1]/p[1]',
           endContainer: '/html[1]/body[1]/div[1]/section[1]/span[1]/p[1]',
           startOffset: 0,
@@ -383,7 +360,7 @@ describe('annotator/anchoring/range', () => {
           endOffset: 6,
         }).serialize();
 
-        expect(serializedRange.toObject()).toEqual({
+        expect(serializedRange).toEqual({
           startContainer: '/html[1]/body[1]/div[1]/section[1]/p[2]',
           endContainer: '/html[1]/body[1]/div[1]/section[1]/span[1]/p[1]',
           startOffset: 7,
@@ -419,12 +396,10 @@ describe('annotator/anchoring/range', () => {
     });
 
     describe('#normalize', () => {
-      it('converts a SerializedRange instance to a NormalizedRange instance', () => {
+      it('returns a normalized range', () => {
         const serializedRange = createSerializedRange();
-        const normalizedRange = serializedRange.normalize(container);
-        expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
-        expect((normalizedRange.startContainer as any).data).toEqual('text 1');
-        expect((normalizedRange.endContainer as any).data).toEqual('text 3');
+        const range = serializedRange.normalize(container);
+        expect(range.startContainer).toBeTruthy();
       });
 
       it('adjusts starting offset to second text node', () => {
@@ -434,7 +409,9 @@ describe('annotator/anchoring/range', () => {
           startOffset: 7,
           endOffset: 14,
         });
-        const normalizedRange = serializedRange.normalize(container);
+        const serialized = serializedRange.normalize(container);
+        const browserRange = new BrowserRange(serialized).normalize();
+        const normalizedRange = new NormalizedRange(browserRange);
         expect(normalizedRange instanceof NormalizedRange).toBeTruthy();
         expect((normalizedRange.startContainer as any).data).toEqual('text 2b');
         expect((normalizedRange.endContainer as any).data).toEqual('text 2b');
@@ -468,16 +445,6 @@ describe('annotator/anchoring/range', () => {
             serializedRange.normalize('fakecontainer');
           }).toThrowError();
         });
-      });
-    });
-
-    describe('#serialize', () => {
-      it('converts a SerializedRange to a new SerializedRange instance', () => {
-        const serializedRange = createSerializedRange();
-        const result = serializedRange.serialize(container);
-        expect(result instanceof SerializedRange).toBeTruthy();
-        // The copied instance shall be identical to the initial.
-        expect(result).toEqual(serializedRange);
       });
     });
   });

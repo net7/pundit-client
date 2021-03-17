@@ -1,3 +1,4 @@
+import { NormalizedRange } from '../../ranges';
 import {
   RangeAnchor,
   TextPositionAnchor,
@@ -25,7 +26,6 @@ describe('annotator/anchoring/types', () => {
   });
 
   describe('RangeAnchor', () => {
-    let fakeNormalize;
     let fakeSerialize;
     let fakeToRange;
 
@@ -37,17 +37,13 @@ describe('annotator/anchoring/types', () => {
         endOffset: 1,
       });
       fakeToRange = () => 'normalized range';
-      fakeNormalize = () => ({
+      spyOn(RangeAnchor, 'sniff').and.returnValue({
         serialize: fakeSerialize,
         toRange: fakeToRange,
-      });
-      spyOn(RangeAnchor, 'sniff').and.returnValue({
-        normalize: fakeNormalize
-      } as any);
+      } as NormalizedRange);
     });
 
     afterEach(() => {
-      fakeNormalize = null;
       fakeSerialize = null;
       fakeToRange = null;
     });
@@ -57,7 +53,7 @@ describe('annotator/anchoring/types', () => {
         const anchor = RangeAnchor.fromRange(container, new Range());
         expect(RangeAnchor.sniff).toHaveBeenCalled();
         expect(anchor instanceof RangeAnchor).toBeTruthy();
-        expect(anchor.range).toEqual(fakeNormalize());
+        expect(anchor.range).toBeTruthy();
       });
     });
 
