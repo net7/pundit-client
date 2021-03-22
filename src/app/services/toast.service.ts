@@ -84,7 +84,8 @@ export class ToastService {
   working(text: string = _t('toast#working')) {
     return this.notify(ToastType.Working, {
       text,
-      autoClose: false
+      autoClose: false,
+      hasDismiss: false,
     });
   }
 

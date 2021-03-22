@@ -129,6 +129,7 @@
 .pnd-toast .is-working {
     .pnd-toast__progress {
         background-color: $color-gray-04;
+        top: 8px;
     }
 
     .pnd-toast__text {
