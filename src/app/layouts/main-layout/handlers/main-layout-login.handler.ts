@@ -29,8 +29,11 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         // toast
         this.layoutDS.toastService.error({
           title: _t('toast#login_error_title'),
-          text: _t('toast#login_error_text'),
+          text: typeof error === 'string' ? error : _t('toast#login_error_text'),
+          autoClose: false
         });
+        // close login modal
+        this.layoutDS.punditLoginService.stop();
       } else if ('user' in val) {
         this.onAuth(val);
         // toast
