@@ -9,7 +9,8 @@ const REDIRECT_URI_FACEBOOK = '';
 const GOOGLE_URL = '';
 const FACEBOOK_URL = '';
 const EGI_URL = '';
-// const EMAIL_URL = '';
+const EMAIL_LOGIN_URL = '';
+const EMAIL_REGISTER_URL = '';
 const POPUP_ORIGIN = '';
 
 export default {
@@ -49,13 +50,14 @@ export default {
         }
       }
     ],
-    // email: {
-    //   id: 'default',
-    //   params: {
-    //     register: false,
-    //     url: EMAIL_URL
-    //   },
-    //   type: 'email'
-    // }
+    email: {
+      id: 'default',
+      params: {
+        register: true,
+        loginUrl: EMAIL_LOGIN_URL,
+        registerUrl: EMAIL_REGISTER_URL,
+      },
+      type: 'email'
+    }
   } as AuthConfig
 };
