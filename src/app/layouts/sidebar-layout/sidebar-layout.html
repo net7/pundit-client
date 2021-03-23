@@ -44,7 +44,10 @@
     <!-- END // Header -->
 
     <!-- Notebook popover -->
-    <ng-container *ngIf="lb.dataSource.notebookEditor.getValue()">
+    <ng-container *ngIf="
+        (ds.userService.logged$ | async) && 
+        (lb.dataSource.notebookEditor | async)
+    ">
         <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
     </ng-container>
     <!-- END // Notebook popover -->
