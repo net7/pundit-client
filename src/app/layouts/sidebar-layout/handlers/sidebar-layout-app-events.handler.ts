@@ -93,8 +93,6 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           return EMPTY;
         })
       ).subscribe(() => {
-        workingToast.close();
-
         // update loading state
         this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
           cssClass: AnnotationCssClass.Empty
