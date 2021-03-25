@@ -57,6 +57,9 @@ export class NotebookSelectorComponent {
     // collapse the list of notebooks
     this.data._meta.isExpanded = false;
     this.emit(type, payload);
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   onToggleExpand() {
@@ -66,6 +69,9 @@ export class NotebookSelectorComponent {
       this.data._meta.isExpanded = false;
     }
     this.data._meta.isExpanded = !this.data._meta.isExpanded;
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   /**
@@ -73,6 +79,9 @@ export class NotebookSelectorComponent {
    */
   onInputMode() {
     this.data.mode = 'input';
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   /**
@@ -87,6 +96,9 @@ export class NotebookSelectorComponent {
       this.data.mode = 'select';
       this.onToggleExpand();
     }
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   /**
@@ -98,6 +110,9 @@ export class NotebookSelectorComponent {
       this.data._meta = {};
     }
     this.data._meta.inputValue = payload;
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   /** Listen for enter key press */
@@ -110,6 +125,9 @@ export class NotebookSelectorComponent {
         // create a new notebook with this label
         this.onCreation(this.data._meta.inputValue);
       }
+
+      // trigger change detector
+      this.ref.detectChanges();
     }
   }
 }
