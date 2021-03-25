@@ -3,7 +3,7 @@ import { EventHandler } from '@n7-frontend/core';
 import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
-import { catchError, debounceTime } from 'rxjs/operators';
+import { catchError } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
@@ -62,9 +62,7 @@ export class MainLayoutEH extends EventHandler {
       this.detectChanges();
     });
 
-    this.outerEvents$.pipe(
-      debounceTime(100)
-    ).subscribe(() => {
+    this.outerEvents$.subscribe(() => {
       this.detectChanges();
     });
   }
