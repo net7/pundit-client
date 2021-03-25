@@ -63,8 +63,6 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
         default:
           break;
       }
-
-      this.layoutEH.detectChanges();
     });
   }
 
