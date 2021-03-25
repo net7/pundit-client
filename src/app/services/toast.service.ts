@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { ChangeDetectorRef, Injectable } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import { BehaviorSubject, interval, Subject } from 'rxjs';
 import {
@@ -40,8 +40,6 @@ export type ToastInstance = {
 
 type EmitFunction = (payload: any, instance: ToastInstance) => void;
 
-type LoadFunction = (instance: ToastInstance) => void;
-
 const DEFAULTS: ToastParams = {
   hasDismiss: true,
   autoClose: true,
@@ -51,6 +49,8 @@ const DEFAULTS: ToastParams = {
 @Injectable()
 export class ToastService {
   static counter = 0;
+
+  static changeDetectorRef: ChangeDetectorRef;
 
   private toasts: {
     id: string;
@@ -155,6 +155,9 @@ export class ToastService {
     // update stream
     setTimeout(() => {
       this.updateDataStream();
+
+      // trigger change detector
+      ToastService.changeDetectorRef.detectChanges();
 
       // onload check
       if (toastParams.onLoad) {
@@ -264,8 +267,14 @@ export class ToastService {
           // timeout to complete animation before close
           setTimeout(() => {
             this.close(toastId);
+
+            // trigger change detector
+            ToastService.changeDetectorRef.detectChanges();
           }, timerDelay * 2);
         }
+
+        // trigger change detector
+        ToastService.changeDetectorRef.detectChanges();
       });
     }
   }

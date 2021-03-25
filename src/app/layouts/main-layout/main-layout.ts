@@ -60,6 +60,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   }
 
   ngOnInit() {
+    // attach change detector to toast service
+    ToastService.changeDetectorRef = this.changeDetectorRef;
     this.onInit();
   }
 
