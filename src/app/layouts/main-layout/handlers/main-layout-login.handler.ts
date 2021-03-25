@@ -44,6 +44,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         // signal
         this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
       }
+
+      // trigger change detector
+      this.layoutDS.changeDetectorRef.detectChanges();
     });
 
     this.layoutDS.userService.logged$.pipe(
@@ -94,6 +97,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         first()
       ).subscribe(() => {
         loginAlertToast.close();
+
+        // trigger change detector
+        this.layoutDS.changeDetectorRef.detectChanges();
       });
     });
   }

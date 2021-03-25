@@ -58,7 +58,7 @@
                     [ngClass]="{
                         'is-loading': !!data.isLoading
                     }"
-                    [disabled]="!!data.isLoading"
+                    [disabled]="!!(data.isLoading || data._meta.inputValue?.length < 3)"
                     (click)="onCreation(data._meta.inputValue)">
                 <ng-container *ngIf="data.isLoading">
                     <span class="pnd-btn-loader"></span>

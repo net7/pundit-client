@@ -83,6 +83,9 @@ export class NotebookSelectorComponent {
     if (!this.emit) return;
     if (typeof payload === 'string' && payload.trim().length > 0) {
       this.emit('createnotebook', payload.trim());
+    } else {
+      this.data.mode = 'select';
+      this.onToggleExpand();
     }
   }
 
