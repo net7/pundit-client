@@ -49,6 +49,8 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         default:
           break;
       }
+
+      this.layoutEH.detectChanges();
     });
   }
 
