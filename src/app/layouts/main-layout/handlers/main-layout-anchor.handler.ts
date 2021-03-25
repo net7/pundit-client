@@ -1,4 +1,4 @@
-import { takeUntil } from 'rxjs/operators';
+import { filter, takeUntil } from 'rxjs/operators';
 import { AnchorEvent, AppEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -12,7 +12,8 @@ export class MainLayoutAnchorHandler implements LayoutHandler {
 
   public listen() {
     this.layoutDS.anchorService.events$.pipe(
-      takeUntil(this.layoutEH.destroy$)
+      takeUntil(this.layoutEH.destroy$),
+      filter(this.skipEvent),
     ).subscribe(({ type, payload }) => {
       switch (type) {
         case AnchorEvent.MouseOver:
@@ -37,5 +38,12 @@ export class MainLayoutAnchorHandler implements LayoutHandler {
           break;
       }
     });
+  }
+
+  private skipEvent = (data) => {
+    if (!data) return true;
+    const { payload, type } = data;
+    const isMouseOverOrLeave = (type === AnchorEvent.MouseOver || type === AnchorEvent.MouseLeave);
+    return !(payload === this.layoutDS.pendingAnnotationId && isMouseOverOrLeave);
   }
 }
