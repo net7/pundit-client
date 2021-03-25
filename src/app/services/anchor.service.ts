@@ -65,17 +65,21 @@ export class AnchorService {
   }
 
   addHoverClass(annotationId) {
-    const { highlights } = this.getHighlightById(annotationId);
-    highlights.forEach((el) => {
-      el.classList.add(HOVER_CLASS);
-    });
+    if (this.getHighlightById(annotationId)) {
+      const { highlights } = this.getHighlightById(annotationId);
+      highlights.forEach((el) => {
+        el.classList.add(HOVER_CLASS);
+      });
+    }
   }
 
   removeHoverClass(annotationId) {
-    const { highlights } = this.getHighlightById(annotationId);
-    highlights.forEach((el) => {
-      el.classList.remove(HOVER_CLASS);
-    });
+    if (this.getHighlightById(annotationId)) {
+      const { highlights } = this.getHighlightById(annotationId);
+      highlights.forEach((el) => {
+        el.classList.remove(HOVER_CLASS);
+      });
+    }
   }
 
   clear() {
