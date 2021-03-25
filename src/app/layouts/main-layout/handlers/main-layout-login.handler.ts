@@ -46,7 +46,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
       }
 
       // trigger change detector
-      this.layoutDS.changeDetectorRef.detectChanges();
+      this.layoutEH.detectChanges();
     });
 
     this.layoutDS.userService.logged$.pipe(
@@ -99,7 +99,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         loginAlertToast.close();
 
         // trigger change detector
-        this.layoutDS.changeDetectorRef.detectChanges();
+        this.layoutEH.detectChanges();
       });
     });
   }
