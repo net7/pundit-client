@@ -101,6 +101,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       this.layoutDS.pendingAnnotationId,
       this.layoutDS.state.annotation.pendingPayload
     );
+    this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
   }
 }
