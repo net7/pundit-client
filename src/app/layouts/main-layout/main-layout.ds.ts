@@ -1,4 +1,3 @@
-import { ChangeDetectorRef } from '@angular/core';
 import { LayoutDataSource } from '@n7-frontend/core';
 import { from, of, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
@@ -48,8 +47,6 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public toastService: ToastService;
 
-  public changeDetectorRef: ChangeDetectorRef;
-
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -76,7 +73,6 @@ export class MainLayoutDS extends LayoutDataSource {
     this.tokenService = payload.tokenService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
-    this.changeDetectorRef = payload.changeDetectorRef;
   }
 
   isUserLogged = () => this.state.isLogged;

@@ -1,8 +1,9 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, delay } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
@@ -14,10 +15,13 @@ export class MainLayoutEH extends EventHandler {
 
   public dataSource: MainLayoutDS;
 
+  public changeDetectorRef: ChangeDetectorRef;
+
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case MainLayoutEvent.Init:
+          this.changeDetectorRef = payload.changeDetectorRef;
           this.appEvent$ = payload.appEvent$;
           this.dataSource.onInit(payload);
           break;
@@ -54,6 +58,14 @@ export class MainLayoutEH extends EventHandler {
         default:
           break;
       }
+
+      this.detectChanges();
+    });
+
+    this.outerEvents$.pipe(
+      delay(1) // symbolic timeout
+    ).subscribe(() => {
+      this.detectChanges();
     });
   }
 
@@ -69,5 +81,16 @@ export class MainLayoutEH extends EventHandler {
         break;
     }
     console.warn('FIXME: error handler', error);
+  }
+
+  /**
+   * Forces angular's ChangeDetector to
+   * detect changes to the UI.
+   */
+  public detectChanges() {
+    // force-reload change detection
+    if (this.changeDetectorRef) {
+      this.changeDetectorRef.detectChanges();
+    }
   }
 }

@@ -98,6 +98,9 @@ export class ToastService {
           const toast = this.toasts.find(({ id }) => id === payload.id);
           if (toast.onAction) {
             toast.onAction(payload.action, toast.instance);
+
+            // trigger change detector
+            ToastService.changeDetectorRef.detectChanges();
           }
         }
         break;
@@ -155,10 +158,6 @@ export class ToastService {
     // update stream
     setTimeout(() => {
       this.updateDataStream();
-
-      // trigger change detector
-      ToastService.changeDetectorRef.detectChanges();
-
       // onload check
       if (toastParams.onLoad) {
         toastParams.onLoad(instance);
@@ -188,6 +187,9 @@ export class ToastService {
     this.data$.next({
       toasts: this.toasts.map(({ data }) => data)
     });
+
+    // trigger change detector
+    ToastService.changeDetectorRef.detectChanges();
   }
 
   private update(toastId: string, params: ToastUpdateParams) {

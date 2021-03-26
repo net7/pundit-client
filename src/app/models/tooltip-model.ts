@@ -33,15 +33,17 @@ class TooltipModel {
    * (while some text is selected)
    */
   show(selection: Selection) {
-    if (!this.instance) {
-      this.load();
-    }
-    this.updateTargetPosition(selection);
-    this.updateTooltipPlacement(selection);
-    this.tooltipWrapper.setAttribute('data-show', '');
+    if (this.hasRectPosition(selection)) {
+      if (!this.instance) {
+        this.load();
+      }
+      this.updateTargetPosition(selection);
+      this.updateTooltipPlacement(selection);
+      this.tooltipWrapper.setAttribute('data-show', '');
 
-    // emit signal
-    this.changed$.next();
+      // emit signal
+      this.changed$.next();
+    }
   }
 
   /**
@@ -86,6 +88,11 @@ class TooltipModel {
     });
     this.instance.update();
   }
+
+  /**
+   * Check if selection position can be retrieved.
+   */
+  private hasRectPosition = (selection: Selection) => !!selectionFocusRect(selection);
 
   /**
    * Update the coordinates of the tooltip after a new text selection

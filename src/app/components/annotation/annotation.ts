@@ -2,7 +2,7 @@
 // ANNOTATION.ts
 //---------------------------
 
-import { Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { AnchorPayload, Icon } from '../../types';
 
@@ -87,25 +87,41 @@ export class AnnotationComponent {
 
   @Input() emit: any;
 
+  constructor(
+    private ref: ChangeDetectorRef
+  ) {}
+
   onClick(ev: Event, payload) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
     this.emit('click', payload);
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   onContainerClick(payload) {
     if (!this.emit) return;
     this.emit('click', payload);
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   onEnter(payload) {
     if (!this.emit) return;
     this.emit('mouseenter', payload);
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   onLeave(payload) {
     if (!this.emit) return;
     this.emit('mouseleave', payload);
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 
   /**
@@ -117,5 +133,8 @@ export class AnnotationComponent {
     const notebookID = payload;
     if (!annotationID || !notebookID) return;
     this.emit(type, { annotation: annotationID, notebook: notebookID });
+
+    // trigger change detector
+    this.ref.detectChanges();
   }
 }
