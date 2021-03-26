@@ -10,6 +10,7 @@ export enum AppEvent {
   AnnotationMouseLeave = 'app.annotationmouseleave',
   AnnotationUpdateNotebook = 'app.annotationupdatenotebook',
   Clear = 'app.clear',
+  Refresh = 'app.refresh',
   CommentUpdate = 'app.commentupdate',
   KeyUpEscape = 'app.keyupescape',
   Logout = 'app.logout',

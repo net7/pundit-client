@@ -24,6 +24,9 @@ export class MainLayoutEH extends EventHandler {
           this.changeDetectorRef = payload.changeDetectorRef;
           this.appEvent$ = payload.appEvent$;
           this.dataSource.onInit(payload);
+
+          // listen javascript url navigation
+          this.listenUrlNavigation();
           break;
 
         case MainLayoutEvent.Destroy:
@@ -66,6 +69,28 @@ export class MainLayoutEH extends EventHandler {
       delay(1) // symbolic timeout
     ).subscribe(() => {
       this.detectChanges();
+    });
+  }
+
+  private listenUrlNavigation() {
+    const bodyEl = document.body;
+    let currentHref = document.location.href;
+    const navigationObserver = new MutationObserver((mutations) => {
+      mutations.forEach(() => {
+        if (currentHref !== document.location.href) {
+          currentHref = document.location.href;
+          this.appEvent$.next({ type: AppEvent.Refresh });
+        }
+      });
+    });
+    navigationObserver.observe(bodyEl, {
+      childList: true,
+      subtree: true,
+    });
+
+    // on destroy clear
+    this.destroy$.subscribe(() => {
+      navigationObserver.disconnect();
     });
   }
 
