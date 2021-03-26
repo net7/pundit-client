@@ -55,8 +55,8 @@ export class CommentModalComponent implements AfterContentChecked {
         const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
         const target = shadowRoot.getElementById(this.draggableTarget);
         const handle = shadowRoot.getElementById(this.draggableHandle);
-
-        this.draggableInstance = new Draggable(target, { handle });
+        const limit = this.getDragLimit(target);
+        this.draggableInstance = new Draggable(target, { handle, limit });
 
         this.data._setInstance(this.draggableInstance);
       });
@@ -91,5 +91,16 @@ export class CommentModalComponent implements AfterContentChecked {
   onNotebookSelection = (type, payload) => {
     if (!this.emit) return;
     this.emit(type, payload);
+  }
+
+  private getDragLimit = (target) => {
+    if (!target) {
+      return null;
+    }
+    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
+    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const tw = Math.max(target.clientWidth || 200);
+    const th = Math.max(target.clientHeight || 200);
+    return { x: [0, vw - tw], y: [0, vh - th] };
   }
 }
