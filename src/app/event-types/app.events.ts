@@ -13,6 +13,7 @@ export enum AppEvent {
   CommentUpdate = 'app.commentupdate',
   KeyUpEscape = 'app.keyupescape',
   Logout = 'app.logout',
+  NotebookCreateSuccess = 'app.notebookcreatesuccess',
   SearchResponse = 'app.searchresponse',
   SidebarCollapse = 'app.sidebarcollapse',
 }

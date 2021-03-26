@@ -51,6 +51,9 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
               notebookList,
               selectedNotebook
             });
+            this.layoutEH.appEvent$.next({
+              type: AppEvent.NotebookCreateSuccess
+            });
           });
           break;
         case CommentModalEvent.Save: {
