@@ -113,6 +113,7 @@ export class AnnotationService {
           if (data.type === 'Commenting') {
             // update comment
             cachedAnnotation.ds.updateComment(data.content.comment);
+            cachedAnnotation.ds.updateMenu();
           }
         })
       );

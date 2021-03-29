@@ -49,7 +49,8 @@ export default {
   'toast#genericerror_text': 'The system might be too busy, please try again in 5 minutes.',
   // annotation
   'annotation#changenotebook': 'Change notebook',
-  'annotation#editcomment': 'Add/edit comment',
+  'annotation#addcomment': 'Add comment',
+  'annotation#editcomment': 'Edit comment',
   'annotation#delete': 'Delete',
   // notebookselector
   'notebookselector#cancel': 'Cancel',
