@@ -1,6 +1,8 @@
 import { _t } from '@n7-frontend/core';
 import { delay, first, takeUntil } from 'rxjs/operators';
-import { getEventType, MainLayoutEvent } from 'src/app/event-types';
+import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
+import { selectionModel } from 'src/app/models/selection/selection-model';
+import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -66,6 +68,13 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     });
     // close login modal
     this.layoutDS.punditLoginService.stop();
+    // if there is an anonymous (before login) selection
+    // adds window selection manually
+    if (this.layoutDS.state.anonymousSelectionRange) {
+      const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
+      selectionModel.setSelectionFromRange(lastSelectionRange);
+      tooltipModel.show(selectionModel.getCurrentSelection());
+    }
   }
 
   private onUserLogged(isLogged: boolean) {
@@ -88,6 +97,11 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         onAction: (payload) => {
           if (payload === 'login') {
             this.layoutDS.punditLoginService.start();
+            // clear anonymous selection range
+            // only available with tooltip login click
+            this.layoutEH.appEvent$.next({
+              type: AppEvent.ClearAnonymousSelectionRange
+            });
           }
         }
       });

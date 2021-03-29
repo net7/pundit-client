@@ -18,6 +18,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     this.layoutEH.outerEvents$.pipe(
       filter(() => {
         if (!this.layoutDS.isUserLogged()) {
+          // set anonymous (before login) selection range
+          this.layoutDS.setAnonymousSelectionRange();
           this.layoutDS.punditLoginService.start();
           return false;
         }

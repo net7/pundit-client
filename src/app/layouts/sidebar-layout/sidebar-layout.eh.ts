@@ -82,6 +82,11 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case SidebarLayoutEvent.RequestLogin:
           this.punditLoginService.start();
+          // clear anonymous (before login) selection range
+          // only available with tooltip login click
+          this.appEvent$.next({
+            type: AppEvent.ClearAnonymousSelectionRange
+          });
           break;
         default:
           console.warn('unhandled inner event of type', type);

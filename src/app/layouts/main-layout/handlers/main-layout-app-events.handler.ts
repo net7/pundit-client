@@ -49,6 +49,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         case AppEvent.Refresh:
           this.onRefresh();
           break;
+        case AppEvent.ClearAnonymousSelectionRange:
+          this.layoutDS.state.anonymousSelectionRange = null;
+          break;
         default:
           break;
       }
