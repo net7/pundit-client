@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import * as notebook from './models/notebook';
 
 @Component({
@@ -8,9 +8,7 @@ import * as notebook from './models/notebook';
   encapsulation: ViewEncapsulation.ShadowDom
 })
 export class AppComponent {
-  title = 'angular-test';
-
-  constructor(private changeDetectorRef: ChangeDetectorRef) {
+  constructor() {
     // this.deleteNotebooksFromList(
     //   []
     // );

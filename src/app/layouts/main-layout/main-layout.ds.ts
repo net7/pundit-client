@@ -30,6 +30,7 @@ type MainLayoutState = {
     updatePayload: Annotation;
     deleteId: string;
   };
+  anonymousSelectionRange: Range;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -62,7 +63,8 @@ export class MainLayoutDS extends LayoutDataSource {
       pendingPayload: null,
       updatePayload: null,
       deleteId: null
-    }
+    },
+    anonymousSelectionRange: null
   };
 
   onInit(payload) {
@@ -147,6 +149,14 @@ export class MainLayoutDS extends LayoutDataSource {
     this.one('comment-modal').update({
       textQuote, currentNotebook, notebooks, comment
     });
+  }
+
+  public setAnonymousSelectionRange() {
+    // update state
+    this.state.anonymousSelectionRange = selectionModel.getCurrentRange();
+    // clear
+    selectionModel.clearSelection();
+    tooltipModel.hide();
   }
 
   private handleSearchResponse(searchData) {

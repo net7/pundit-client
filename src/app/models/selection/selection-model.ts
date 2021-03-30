@@ -43,6 +43,17 @@ class SelectionModel {
     });
   }
 
+  public setSelectionFromRange(range: Range) {
+    const newSelection = window.getSelection();
+    const newRange = document.createRange();
+    newRange.setStart(range.startContainer, range.startOffset);
+    newRange.setEnd(range.endContainer, range.endOffset);
+    newSelection.removeAllRanges();
+    newSelection.addRange(newRange);
+    // update current
+    this.onSelectionChange();
+  }
+
   private onSelectionChange() {
     this.currentSelection = null;
     this.currentRange = null;

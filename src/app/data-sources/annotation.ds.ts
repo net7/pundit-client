@@ -69,7 +69,7 @@ export class AnnotationDS extends DataSource {
       },
       body: text,
       comment,
-      menu: this.getMenuData(id),
+      menu: this.getMenuData(id, comment),
     };
   }
 
@@ -224,7 +224,10 @@ export class AnnotationDS extends DataSource {
     };
   }
 
-  private getMenuData(id: string) {
+  private getMenuData(id: string, comment?: string) {
+    const hasComment = this.output
+      ? !!this.output.comment
+      : comment;
     const { currentUserNotebooks } = this.options;
     return this.isCurrentUser() ? {
       icon: {
@@ -241,7 +244,9 @@ export class AnnotationDS extends DataSource {
           source: 'action-notebooks'
         }
       }, {
-        label: _t('annotation#editcomment'),
+        label: hasComment
+          ? _t('annotation#editcomment')
+          : _t('annotation#addcomment'),
         payload: {
           id,
           source: 'action-comment'

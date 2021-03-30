@@ -31,12 +31,16 @@ export class AnnotationPositionService {
       // default annotation position (as orphan)
       let anchorPosition = -1;
       if (anchor) {
-        const tops = anchor.highlights.map(
-          // get vertical offset of the corresponding highlight
-          (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
-        );
-        // the first highlight
-        anchorPosition = Math.min(...tops);
+        const tops = anchor.highlights
+          .filter((highlightEl) => highlightEl.offsetHeight > 0)
+          .map(
+            // get vertical offset of the corresponding highlight
+            (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
+          );
+        if (tops.length) {
+          // the first highlight
+          anchorPosition = Math.min(...tops);
+        }
       }
       // map the highlight to the corresponding annotation
       positionMap.push({

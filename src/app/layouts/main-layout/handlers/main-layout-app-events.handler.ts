@@ -46,6 +46,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           });
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
           break;
+        case AppEvent.Refresh:
+          this.onRefresh();
+          break;
+        case AppEvent.ClearAnonymousSelectionRange:
+          this.layoutDS.state.anonymousSelectionRange = null;
+          break;
         default:
           break;
       }
@@ -109,6 +115,23 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
     // emit signals
     this.layoutDS.annotationService.totalChanged$.next(0);
+    this.layoutDS.hasLoaded$.next(true);
+  }
+
+  private onRefresh() {
+    // reset
+    this.layoutDS.annotationService.clear();
+    this.layoutDS.anchorService.clear();
+
+    // emit clear signal
+    this.layoutEH.appEvent$.next({ type: AppEvent.Clear });
+
+    // refresh data
+    if (this.layoutDS.userService.whoami()) {
+      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+    } else {
+      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+    }
     this.layoutDS.hasLoaded$.next(true);
   }
 }
