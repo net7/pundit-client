@@ -4,7 +4,7 @@
 
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Annotation } from '@pundit/communication';
-import { AnchorPayload, Icon } from '../../types';
+import { Icon } from '../../types';
 
 /**
  * Interface for AnnotationComponent's "data"
@@ -30,16 +30,16 @@ export interface AnnotationData {
     /** User full name */
     name: string;
     /** Navigate to user page */
-    anchor?: AnchorPayload;
+    anchor?: string;
   };
   /** Date string */
   date: string;
   /** Parent notebook data */
-  notebook: {
+  notebook?: {
     /** Notebook title */
     name: string;
-    /** Notebook navigation */
-    anchor: AnchorPayload;
+    /** Notebook link */
+    anchor: string;
   };
   /** View the annotation in a minimal form */
   isCollapsed: boolean;

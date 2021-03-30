@@ -4,8 +4,8 @@ import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
+import { _c } from '../models/config';
 import { NotebookData } from '../services/notebook.service';
-import { isAnchorPayload } from '../types';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -60,12 +60,9 @@ export class AnnotationDS extends DataSource {
       date: new Date(created).toLocaleDateString(),
       notebook: {
         name: annotationNotebook.label,
-        anchor: {
-          payload: {
-            source: 'notebook',
-            id: annotationNotebook.id
-          }
-        }
+        anchor: this.isCurrentUser()
+          ? this.getNotebookLink(annotationNotebook.id)
+          : null
       },
       body: text,
       comment,
@@ -160,9 +157,9 @@ export class AnnotationDS extends DataSource {
     const nbsData: NotebookSelectorData = this.output._meta.notebookSelectorData;
     nbsData.selectedNotebook = notebook;
     this.output._meta.notebookId = notebook.id;
-    if (notebook.id && isAnchorPayload(this.output.notebook.anchor)) {
+    if (notebook.id) {
       // update the notebook
-      this.output.notebook.anchor.payload.id = notebook.id;
+      this.output.notebook.anchor = this.getNotebookLink(notebook.id);
       this.output.notebook.name = notebook.label;
     }
   }
@@ -198,6 +195,8 @@ export class AnnotationDS extends DataSource {
     this.output.classes = cssClass;
   }
 
+  private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`
+
   private toggleCollapse() {
     this.output.isCollapsed = !this.output.isCollapsed;
   }
@@ -215,12 +214,9 @@ export class AnnotationDS extends DataSource {
     return {
       image: annotationUser.thumb,
       name: annotationUser.username,
-      anchor: this.isCurrentUser() ? {
-        payload: {
-          source: 'user',
-          id: annotationUser.id
-        }
-      } : null
+      anchor: this.isCurrentUser()
+        ? _c('userLink')
+        : null
     };
   }
 
