@@ -13,31 +13,36 @@ export class AnnotationEH extends EventHandler {
          */
         case AnnotationEvent.Click: {
           const { source, id } = payload;
+          const annotation = this.annotationService.getAnnotationById(id);
+          if (!annotation) {
+            console.log(annotation);
+            return;
+          }
           switch (source) {
             case 'box': // click on the annotation container (while collapsed)
-              this.getAnnotationDatasource(id).setCollapsedState(false);
+              annotation.ds.setCollapsedState(false);
               this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: false });
               break;
             case 'compress': // collapse the annotation
-              this.getAnnotationDatasource(id).setCollapsedState(true);
+              annotation.ds.setCollapsedState(true);
               this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
               break;
             case 'action-delete': // click on the "delete" button
-              this.getAnnotationDatasource(id).closeMenu();
+              annotation.ds.closeMenu();
               this.emitOuter(getEventType(AnnotationEvent.Delete), id);
               break;
             case 'action-comment': // click on the "edit comment" button
-              this.getAnnotationDatasource(id).closeMenu();
+              annotation.ds.closeMenu();
               this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
               break;
             case 'menu-header': // annotation update menu header
-              this.getAnnotationDatasource(id).toggleActionsMenu();
+              annotation.ds.toggleActionsMenu();
               break;
             case 'document': // annotation update menu header
-              this.getAnnotationDatasource(id).closeMenu();
+              annotation.ds.closeMenu();
               break;
             case 'action-notebooks': // annotation update menu header
-              this.getAnnotationDatasource(id).refreshNotebookList();
+              annotation.ds.refreshNotebookList();
               break;
             default:
               break;
@@ -62,20 +67,31 @@ export class AnnotationEH extends EventHandler {
       switch (type) {
         case SidebarLayoutEvent.AnnotationUpdateNotebook: {
           const { annotationID, notebook } = payload;
-          this.getAnnotationDatasource(annotationID).changeNotebookSelectorLoadingState(false);
-          this.getAnnotationDatasource(annotationID).transferAnnotationToNotebook(notebook);
-          this.getAnnotationDatasource(annotationID).closeMenu();
+          const annotation = this.annotationService.getAnnotationById(annotationID);
+          if (!annotation) {
+            annotation.ds.changeNotebookSelectorLoadingState(false);
+            annotation.ds.transferAnnotationToNotebook(notebook);
+            annotation.ds.closeMenu();
+          }
           break;
         }
-        case SidebarLayoutEvent.AnchorMouseOver:
-          this.getAnnotationDatasource(payload).onAnchorMouseOver();
+        case SidebarLayoutEvent.AnchorMouseOver: {
+          const annotation = this.annotationService.getAnnotationById(payload);
+          if (!annotation) { return; }
+          annotation.ds.onAnchorMouseOver();
           break;
-        case SidebarLayoutEvent.AnchorMouseLeave:
-          this.getAnnotationDatasource(payload).onAnchorMouseLeave();
+        }
+        case SidebarLayoutEvent.AnchorMouseLeave: {
+          const annotation = this.annotationService.getAnnotationById(payload);
+          if (!annotation) { return; }
+          annotation.ds.onAnchorMouseLeave();
           break;
-        case SidebarLayoutEvent.AnchorClick:
-          this.getAnnotationDatasource(payload).onAnchorClick();
+        }
+        case SidebarLayoutEvent.AnchorClick: {
+          const annotation = this.annotationService.getAnnotationById(payload);
+          annotation.ds.onAnchorClick();
           break;
+        }
         default:
           console.warn('unhandled inner event of type', type);
           break;
