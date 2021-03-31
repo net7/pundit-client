@@ -22,7 +22,7 @@ export class CommentModalDS extends DataSource {
     } = data;
 
     // textarea focus
-    this.focusTextarea();
+    this.initTextArea(comment);
 
     return {
       textQuote,
@@ -65,12 +65,14 @@ export class CommentModalDS extends DataSource {
     };
   }
 
-  private focusTextarea() {
+  private initTextArea(comment: string) {
     setTimeout(() => {
       const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-      const textarea = shadowRoot.querySelector('.pnd-comment-modal textarea') as HTMLElement;
+      const textarea = shadowRoot.querySelector('.pnd-comment-modal textarea') as HTMLTextAreaElement;
       if (textarea) {
         textarea.focus();
+        textarea.value = comment;
+        this.onTextChange(textarea.value);
       }
     });
   }

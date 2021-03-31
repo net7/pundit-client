@@ -163,15 +163,16 @@ $comment-modal-width: 520px;
 // ------------------------------------ //
 $notebook-selector-height: 28px;
 
+
 // ------------------------------------ //
 // #TOAST
 // ------------------------------------ //
-$toast-background-color: $color-background-medium;
-$toast-border-size: 1px;
+$toast-background-color: $color-gray-05;
+$toast-border-size: 0;
 $toast-border-color: $color-border-normal;
-$toast-title-color: $color-text;
-$toast-text-color: $color-text;
-$toast-max-width: 300px;
+$toast-title-color: $color-text-inverse;
+$toast-text-color: $color-text-inverse;
+$toast-max-width: 420px;
 
 
 // ------------------------------------ //

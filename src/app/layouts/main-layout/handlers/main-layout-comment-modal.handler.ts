@@ -156,12 +156,22 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
         source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
       }
     }
+    this.layoutDS.state.comment = {
+      isOpen: false,
+      notebookId: null,
+      comment: null
+    };
     return source$;
   }
 
   private onCommentModalClose() {
     // clear pending
     this.layoutDS.removePendingAnnotation();
+    this.layoutDS.state.comment = {
+      isOpen: false,
+      notebookId: null,
+      comment: null
+    };
   }
 
   private getCommentRequestPayload(payload, { comment, notebookId }) {

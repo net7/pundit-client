@@ -374,6 +374,27 @@ annotation {
 
 
 /* ------------------------------------ *\
+   #STATUSES
+\* ------------------------------------ */
+.pnd-annotation.is-edited,
+.pnd-annotation.is-deleted {
+    animation: pulse 1s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.2;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 0.2;
+    }
+}
+
+
+/* ------------------------------------ *\
    #ANNOTATION-IN-COLLAPSED-SIDEBAR
 \* ------------------------------------ */
 .pnd-sidebar.is-collapsed {
