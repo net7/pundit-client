@@ -82,11 +82,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    // reset
-    this.layoutDS.state.comment = {
-      comment: null,
-      notebookId: null
-    };
+    this.setInnerState();
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload('Commenting') as CommentAnnotation
     );
@@ -96,6 +92,24 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       this.layoutDS.state.annotation.pendingPayload
     );
     this.layoutDS.openCommentModal({ textQuote: pendingAnnotation.subject.selected.text });
+  }
+
+  private setInnerState() {
+    if (this.layoutDS.state.comment.isOpen) {
+      if (this.layoutDS.state.comment.isUpdate) {
+        this.layoutDS.state.comment = {
+          comment: null,
+          notebookId: null,
+          isOpen: true
+        };
+      }
+    } else {
+      this.layoutDS.state.comment = {
+        comment: null,
+        notebookId: null,
+        isOpen: true
+      };
+    }
   }
 
   private addPendingAnnotation() {

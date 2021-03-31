@@ -24,6 +24,7 @@ type MainLayoutState = {
     comment: string;
     notebookId: string;
     isUpdate?: boolean;
+    isOpen: boolean;
   };
   annotation: {
     pendingPayload: CommentAnnotation;
@@ -57,7 +58,8 @@ export class MainLayoutDS extends LayoutDataSource {
     isLogged: false,
     comment: {
       comment: null,
-      notebookId: null
+      notebookId: null,
+      isOpen: false
     },
     annotation: {
       pendingPayload: null,
@@ -144,10 +146,14 @@ export class MainLayoutDS extends LayoutDataSource {
     selectionModel.clearSelection();
     tooltipModel.hide();
     // update component
-    const currentNotebook = notebookData || this.notebookService.getSelected();
+
+    const defaultNotebook = this.notebookService.getSelected();
+    const selectedNotebook = this.notebookService.getNotebookById(this.state.comment.notebookId);
+    const currentNotebook = notebookData || selectedNotebook || defaultNotebook;
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
+    const newComment = comment || this.state.comment.comment || null;
     this.one('comment-modal').update({
-      textQuote, currentNotebook, notebooks, comment
+      textQuote, currentNotebook, notebooks, comment: newComment
     });
   }
 
