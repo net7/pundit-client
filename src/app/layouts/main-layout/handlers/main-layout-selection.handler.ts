@@ -36,9 +36,9 @@ export class MainLayoutSelectionHandler implements LayoutHandler {
 
   private hasSelection() {
     return !!(
-      // selection has a value
+      // there is a current selection
       selectionModel.getCurrentSelection()
-      // anchoring describe method returns 3 strategies
+      // anchoring describe method must return 3 strategies
       // (RangeAnchor, TextPositionAnchor, TextQuoteAnchor)
       && describe(document.body, selectionModel.getCurrentRange()).length === 3
     );
