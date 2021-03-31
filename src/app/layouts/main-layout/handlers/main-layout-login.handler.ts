@@ -69,7 +69,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     // close login modal
     this.layoutDS.punditLoginService.stop();
     // if there is an anonymous (before login) selection
-    // adds window selection manually
+    // triggers selection manually
     if (this.layoutDS.state.anonymousSelectionRange) {
       const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
       selectionModel.setSelectionFromRange(lastSelectionRange);
