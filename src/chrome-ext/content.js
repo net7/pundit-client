@@ -2,6 +2,7 @@
 let appRoot;
 let badgeInterval;
 let badgeIntervalCount = 0;
+let rootExistMessageSended = false;
 
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   switch(type) {
@@ -22,7 +23,13 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
 function load(user, token, notebookId) {
   if (appRoot) return;
 
-  appRoot = document.createElement("pnd-root");
+  // existing embed pundit check
+  if (document.querySelector('pnd-root')) {
+    sendRootExistsMessage();
+    return;
+  }
+
+  appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);
   
   const main = document.createElement('script');
@@ -30,7 +37,7 @@ function load(user, token, notebookId) {
   (document.head||document.documentElement).appendChild(main);
   main.onload = function() {
     // emit signal
-    const signal = new CustomEvent("punditloaded", { 
+    const signal = new CustomEvent('punditloaded', { 
       detail: { 
         user,
         token,
@@ -64,7 +71,7 @@ function destroy() {
   window.removeEventListener('userlogged', onUserLogged);
 
   // emit signal
-  const signal = new CustomEvent("punditdestroy");
+  const signal = new CustomEvent('punditdestroy');
   window.dispatchEvent(signal);
 
   // clear
@@ -85,6 +92,16 @@ function badgeLoader() {
   if (badgeIntervalCount === 3) {
     badgeIntervalCount = 0;
   }
+}
+
+function sendRootExistsMessage() {
+  chrome.runtime.sendMessage({ type: 'rootelementexists' });
+  setTimeout(() => {
+    if (!rootExistMessageSended) {
+      rootExistMessageSended = true;
+      window.dispatchEvent(new CustomEvent('rootelementexists'));
+    }
+  }, 3000);
 }
 
 function onAnnotationUpdate(ev) {

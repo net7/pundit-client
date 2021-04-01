@@ -54,14 +54,7 @@ function updateExtensionIcon(active) {
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
-  const activeKey = `${StorageKeys.Active}.${tab.id}`;
-  Storage.get(activeKey)
-    .then((value) => {
-      return Storage.set(activeKey, !value)
-    })
-    .then(() => {
-      onChange(tab.id);
-    })
+  onBrowserActionClicked(tab.id);
 });
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
@@ -85,9 +78,9 @@ chrome.tabs.onRemoved.addListener((tabId) => {
 
 // content listener
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
+  const { tab } = _sender;
   switch(type) {
-    case 'annotationsupdate':
-      const { tab } = _sender; 
+    case 'annotationsupdate': 
       chrome.browserAction.setBadgeText({
         tabId: tab.id,
         text: payload ? '' + payload : null
@@ -108,6 +101,9 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
         Storage.remove(StorageKeys.Token);
         Storage.remove(StorageKeys.Notebook);
       }
+      break;
+    case 'rootelementexists':
+      onBrowserActionClicked(tab.id);
       break;
     default:
       break;
@@ -132,5 +128,16 @@ function onChange(tabId) {
         isActive, user, token, notebookId
       }});
       updateExtensionIcon(isActive);
+    })
+}
+
+function onBrowserActionClicked(tabId) {
+  const activeKey = `${StorageKeys.Active}.${tabId}`;
+  Storage.get(activeKey)
+    .then((value) => {
+      return Storage.set(activeKey, !value)
+    })
+    .then(() => {
+      onChange(tabId);
     })
 }

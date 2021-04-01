@@ -9,7 +9,8 @@ import {
   MainLayoutDeleteModalHandler,
   MainLayoutLoginHandler,
   MainLayoutSelectionHandler,
-  MainLayoutTooltipHandler
+  MainLayoutTooltipHandler,
+  MainLayoutWindowEventsHandler
 } from './handlers';
 
 export const MainLayoutConfig = {
@@ -34,7 +35,8 @@ export const MainLayoutConfig = {
     MainLayoutSelectionHandler,
     MainLayoutAppEventsHandler,
     MainLayoutAnchorHandler,
-    MainLayoutLoginHandler
+    MainLayoutLoginHandler,
+    MainLayoutWindowEventsHandler
   ],
   widgetsDataSources: DS,
   widgetsEventHandlers: EH,
