@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay } from 'rxjs/operators';
+import { SIDEBAR_EXPANDED_CLASS } from '../layouts/main-layout/handlers';
 import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
@@ -39,7 +40,10 @@ export class ChromeExtService {
   private listenExtensionEvents() {
     // destroy
     window.addEventListener('punditdestroy', async () => {
+      // remove all anchors
       this.anchorService.removeAll();
+      // remove sidebar expanded class
+      document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
     }, false);
   }
 
