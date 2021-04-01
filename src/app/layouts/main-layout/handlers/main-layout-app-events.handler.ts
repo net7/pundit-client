@@ -109,15 +109,17 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout() {
-    // reset
-    this.layoutDS.tokenService.clear();
-    this.layoutDS.userService.clear();
-    this.layoutDS.notebookService.clear();
-    this.layoutDS.userService.logout();
+    this.layoutDS.punditLogoutService.logout().then(() => {
+      // reset
+      this.layoutDS.tokenService.clear();
+      this.layoutDS.userService.clear();
+      this.layoutDS.notebookService.clear();
+      this.layoutDS.userService.logout();
 
-    // emit signals
-    this.layoutDS.annotationService.totalChanged$.next(0);
-    this.layoutDS.hasLoaded$.next(true);
+      // emit signals
+      this.layoutDS.annotationService.totalChanged$.next(0);
+      this.layoutDS.hasLoaded$.next(true);
+    });
   }
 
   private onRefresh() {

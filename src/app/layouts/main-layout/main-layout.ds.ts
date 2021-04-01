@@ -6,7 +6,7 @@ import {
   Annotation,
   CommentAnnotation,
 } from '@pundit/communication';
-import { PunditLoginService } from '@pundit/login';
+import { PunditLoginService, PunditLogoutService } from '@pundit/login';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
@@ -47,6 +47,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public punditLoginService: PunditLoginService;
 
+  public punditLogoutService: PunditLogoutService;
+
   public toastService: ToastService;
 
   /** Let other layouts know that all services are ready */
@@ -77,6 +79,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.tokenService = payload.tokenService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
+    this.punditLogoutService = payload.punditLogoutService;
   }
 
   isUserLogged = () => this.state.isLogged;
