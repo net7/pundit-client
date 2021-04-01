@@ -78,6 +78,10 @@ export class CommentModalComponent implements AfterContentChecked {
     this.emit(type, payload);
   }
 
+  onKeyEvent(ev: InputEvent) {
+    ev.stopImmediatePropagation();
+  }
+
   onClose(target?: { className: string }) {
     if (target && target.className !== 'pnd-comment-modal__overlay') {
       return;
