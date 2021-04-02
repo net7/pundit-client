@@ -110,18 +110,27 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private onLogout() {
     const token = this.layoutDS.tokenService.get();
-    const logoutOptions = { headers: { Authorization: `Bearer ${token}` } };
-    this.layoutDS.punditLogoutService.logout(logoutOptions).then(() => {
-      // reset
-      this.layoutDS.tokenService.clear();
-      this.layoutDS.userService.clear();
-      this.layoutDS.notebookService.clear();
-      this.layoutDS.userService.logout();
 
-      // emit signals
-      this.layoutDS.annotationService.totalChanged$.next(0);
-      this.layoutDS.hasLoaded$.next(true);
-    });
+    if (!token) {
+      this.resetAppDataAndEmit();
+    } else {
+      const logoutOptions = { headers: { Authorization: `Bearer ${token}` } };
+      this.layoutDS.punditLogoutService.logout(logoutOptions).then(() => {
+        this.resetAppDataAndEmit();
+      });
+    }
+  }
+
+  private resetAppDataAndEmit = () => {
+    // reset
+    this.layoutDS.tokenService.clear();
+    this.layoutDS.userService.clear();
+    this.layoutDS.notebookService.clear();
+    this.layoutDS.userService.logout();
+
+    // emit signals
+    this.layoutDS.annotationService.totalChanged$.next(0);
+    this.layoutDS.hasLoaded$.next(true);
   }
 
   private onRefresh() {
