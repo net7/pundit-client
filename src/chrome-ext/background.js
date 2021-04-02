@@ -11,10 +11,13 @@ const BADGE_COLOR_ON = [13, 133, 236, 255];
 const BADGE_COLOR_OFF = [128, 128, 128, 255];
 const StorageKeys = {
   Active: 'active',
+  Incognito: 'incognito'
+}
+const UserStorageKeys = {
   User: 'pundit-user',
   Token: 'pundit-token',
-  Notebook: 'pundit-notebook'
-}
+  Notebook: 'pundit-notebook',
+};
 
 class Storage {
   static get(key) {
@@ -90,12 +93,34 @@ chrome.tabs.onUpdated.addListener((tabId) => {
 
 chrome.tabs.onRemoved.addListener((tabId) => {
   const activeKey = `${StorageKeys.Active}.${tabId}`;
-  Storage.remove(activeKey)
+  Storage.remove(activeKey);
 });
+
+chrome.windows.onRemoved.addListener((windowId) => {
+  const incognitoKey = `${StorageKeys.Incognito}.${windowId}`;
+  Storage.get(incognitoKey)
+    .then((value) => {
+      if (value) {
+        // remove incognito key
+        Storage.remove(incognitoKey);
+        // remove user storage keys
+        Object.keys(UserStorageKeys).forEach((key) => {
+          Storage.remove(`${UserStorageKeys[key]}.${windowId}`);
+        });
+      }
+    });
+})
+
+chrome.windows.onCreated.addListener((currentWindow) => {
+  if (currentWindow.incognito) {
+    Storage.set(`${StorageKeys.Incognito}.${currentWindow.id}`, true);
+  }
+})
 
 // content listener
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   const { tab } = _sender;
+  const { incognito, windowId } = tab;
   switch(type) {
     case 'annotationsupdate': 
       updateBadgeText(tab.id, payload);
@@ -103,18 +128,33 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
       break;
     case 'notebooksupdate':
       // storage sync
-      Storage.set(StorageKeys.Notebook, payload);
+      setUserStorage({
+        incognito, 
+        windowId,
+        key: UserStorageKeys.Notebook,
+        value: payload 
+      });
       break;
     case 'userlogged':
       const { isLogged, user, token } = payload;
       // storage sync
       if (isLogged) {
-        Storage.set(StorageKeys.User, user);
-        Storage.set(StorageKeys.Token, token);
+        setUserStorage({
+          incognito, 
+          windowId,
+          key: UserStorageKeys.User,
+          value: user 
+        });
+        setUserStorage({
+          incognito, 
+          windowId,
+          key: UserStorageKeys.Token,
+          value: token 
+        });
       } else {
-        Storage.remove(StorageKeys.User);
-        Storage.remove(StorageKeys.Token);
-        Storage.remove(StorageKeys.Notebook);
+        removeUserStorage({ incognito, windowId, key: UserStorageKeys.User });
+        removeUserStorage({ incognito, windowId, key: UserStorageKeys.Token });
+        removeUserStorage({ incognito, windowId, key: UserStorageKeys.Notebook });
       }
       break;
     case 'rootelementexists':
@@ -131,28 +171,32 @@ function onChange(tabId) {
       // do nothing
     } else {
       const { windowId } = tab;
-      chrome.windows.get(windowId, ({ type }) => {
+      chrome.windows.get(windowId, ({ type, incognito }) => {
         // popup check
         if (type === 'popup') {
           return;
         }
-        const activeKey = `${StorageKeys.Active}.${tabId}`;
-        Storage.getMulti([
-            activeKey, 
-            StorageKeys.User, 
-            StorageKeys.Token, 
-            StorageKeys.Notebook
-          ])
+        const storageKeysMap = {
+          active: `${StorageKeys.Active}.${tabId}`,
+          user: UserStorageKeys.User, 
+          token: UserStorageKeys.Token, 
+          notebookId: UserStorageKeys.Notebook
+        };
+        if (incognito) {
+          ['user', 'token', 'notebookId'].forEach((key) => {
+            storageKeysMap[key] = `${storageKeysMap[key]}.${windowId}`;
+          });
+        }
+        Storage.getMulti(Object.values(storageKeysMap))
           .then((values) => {
-            const isActive = values[activeKey];
-            const user = values[StorageKeys.User];
-            const token = values[StorageKeys.Token];
-            const notebookId = values[StorageKeys.Notebook];
-      
-            chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
-              isActive, user, token, notebookId
-            }});
-            updateExtensionIcon(tabId, isActive);
+            const payload = {
+              active: values[storageKeysMap.active], 
+              user: values[storageKeysMap.user], 
+              token: values[storageKeysMap.token], 
+              notebookId: values[storageKeysMap.notebookId]
+            };
+            chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload });
+            updateExtensionIcon(tabId, payload.active);
           })
       })
     }
@@ -163,7 +207,10 @@ function onBrowserActionClicked(tabId) {
   const activeKey = `${StorageKeys.Active}.${tabId}`;
   Storage.get(activeKey)
     .then((value) => {
-      return Storage.set(activeKey, !value)
+      if (value) {
+        return Storage.remove(activeKey);
+      }
+      return Storage.set(activeKey, !value);
     })
     .then(() => {
       onChange(tabId);
@@ -194,3 +241,11 @@ function updateBadgeTitle(tabId, number, active = true) {
   }
   chrome.browserAction.setTitle({ tabId, title })
 }
+
+function setUserStorage({ key, value, incognito, windowId }) {
+  Storage.set(incognito ? `${key}.${windowId}` : key, value);
+} 
+
+function removeUserStorage({ key, incognito, windowId }) {
+  Storage.remove(incognito ? `${key}.${windowId}` : key);
+} 
