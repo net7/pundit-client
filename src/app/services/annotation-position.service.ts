@@ -13,6 +13,13 @@ export class AnnotationPositionService {
 
   /** Recalculate the position and order of each annotation present in the sidebar */
   update() {
+    const rootElement = document.getElementsByTagName('pnd-root')[0];
+    // fix cleared pnd-root
+    if (!rootElement) {
+      return;
+    }
+
+    const { shadowRoot } = rootElement;
     const bodyTop = document.body.getBoundingClientRect().top;
     // get all annotations (creation date and anchor)
     const annotations = this.annotationService.getAnnotations().map(
@@ -21,7 +28,6 @@ export class AnnotationPositionService {
         anchor: this.anchorService.getHighlightById(id)
       })
     );
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     // get all <n7-annotation> nodes present in the sidebar
     const rawElements: NodeListOf<HTMLElement> = shadowRoot.querySelectorAll('annotation');
     const positionMap = [];

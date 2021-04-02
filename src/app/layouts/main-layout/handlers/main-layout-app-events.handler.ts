@@ -6,7 +6,7 @@ import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
-const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
+export const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
 
 export class MainLayoutAppEventsHandler implements LayoutHandler {
   constructor(

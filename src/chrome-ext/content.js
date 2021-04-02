@@ -7,8 +7,8 @@ let rootExistMessageSended = false;
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   switch(type) {
     case 'statechanged': {
-      const { isActive, user, token, notebookId } = payload;
-      if (isActive) {
+      const { active, user, token, notebookId } = payload;
+      if (active) {
         load(user, token, notebookId);
       } else {
         destroy();
