@@ -126,31 +126,36 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
 });
 
 function onChange(tabId) {
-  chrome.tabs.get(tabId, ({windowId}) => {
-    chrome.windows.get(windowId, ({ type }) => {
-      // popup check
-      if (type === 'popup') {
-        return;
-      }
-      const activeKey = `${StorageKeys.Active}.${tabId}`;
-      Storage.getMulti([
-          activeKey, 
-          StorageKeys.User, 
-          StorageKeys.Token, 
-          StorageKeys.Notebook
-        ])
-        .then((values) => {
-          const isActive = values[activeKey];
-          const user = values[StorageKeys.User];
-          const token = values[StorageKeys.Token];
-          const notebookId = values[StorageKeys.Notebook];
-    
-          chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
-            isActive, user, token, notebookId
-          }});
-          updateExtensionIcon(tabId, isActive);
-        })
-    })
+  chrome.tabs.get(tabId, (tab) => {
+    if (chrome.runtime.lastError) {
+      // do nothing
+    } else {
+      const { windowId } = tab;
+      chrome.windows.get(windowId, ({ type }) => {
+        // popup check
+        if (type === 'popup') {
+          return;
+        }
+        const activeKey = `${StorageKeys.Active}.${tabId}`;
+        Storage.getMulti([
+            activeKey, 
+            StorageKeys.User, 
+            StorageKeys.Token, 
+            StorageKeys.Notebook
+          ])
+          .then((values) => {
+            const isActive = values[activeKey];
+            const user = values[StorageKeys.User];
+            const token = values[StorageKeys.Token];
+            const notebookId = values[StorageKeys.Notebook];
+      
+            chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
+              isActive, user, token, notebookId
+            }});
+            updateExtensionIcon(tabId, isActive);
+          })
+      })
+    }
   })
 }
 
