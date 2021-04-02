@@ -44,7 +44,6 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           this.layoutEH.appEvent$.next({
             type: AppEvent.Clear
           });
-          this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
           break;
         case AppEvent.Refresh:
           this.onRefresh();
@@ -110,13 +109,17 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private onLogout() {
     const token = this.layoutDS.tokenService.get();
-
     if (!token) {
       this.resetAppDataAndEmit();
     } else {
       const logoutOptions = { headers: { Authorization: `Bearer ${token}` } };
       this.layoutDS.punditLogoutService.logout(logoutOptions).then(() => {
         this.resetAppDataAndEmit();
+      }).catch((error) => {
+        console.log(error);
+        if (error && error.status === 401) {
+          this.resetAppDataAndEmit();
+        }
       });
     }
   }
@@ -131,6 +134,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     // emit signals
     this.layoutDS.annotationService.totalChanged$.next(0);
     this.layoutDS.hasLoaded$.next(true);
+    this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
   }
 
   private onRefresh() {
