@@ -4,7 +4,7 @@ import {
 } from 'src/app/event-types';
 import { _t } from '@n7-frontend/core';
 import {
-  AnnotationAttributes, CommentAnnotation, SharingModeType
+  AnnotationAttributes, CommentAnnotation
 } from '@pundit/communication';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
@@ -160,10 +160,6 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         return EMPTY;
       })
     ).subscribe((res) => {
-      this.cacheNewNotebook({
-        id: res.data.id,
-        label: payload.label,
-      });
       this.layoutDS.updateNotebookPanel();
       this.updateAnnotationNotebook(payload.annotationID, res.data.id);
     });
@@ -175,19 +171,5 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
    */
   private createNotebookFromString(name: string) {
     return this.layoutEH.notebookService.create(name);
-  }
-
-  /**
-   * Add a notebook to the local cache.
-   * @param notebookData data for the new notebook to be cached, only id and label required.
-   */
-  private cacheNewNotebook(notebookData: {
-    id: string;
-    label: string;
-    userId?: string;
-    sharingMode?: SharingModeType;
-  }) {
-    const { label } = notebookData;
-    this.layoutEH.notebookService.create(label);
   }
 }
