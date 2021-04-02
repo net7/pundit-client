@@ -1,4 +1,10 @@
 /* eslint-disable */
+const IconTitle = {
+  ActiveWithAnnotations: 'Pundit is active ($n annotations on this page)',
+  ActiveWithOneAnnotation: 'Pundit is active (1 annotation on this page)',
+  ActiveWithNoAnnotations: 'Pundit is active',
+  Inactive: 'Pundit is inactive',
+};
 const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
 const BADGE_COLOR_ON = [13, 133, 236, 255];
@@ -44,13 +50,20 @@ class Storage {
   }
 }
 
-function updateExtensionIcon(active) {
+function updateExtensionIcon(tabId, active) {
   chrome.browserAction.setIcon({
+    tabId,
     path: active ? ICON_ON : ICON_OFF
   });
   chrome.browserAction.setBadgeBackgroundColor({
+    tabId,
     color: active ? BADGE_COLOR_ON : BADGE_COLOR_OFF
   });
+
+  if (!active) {
+    updateBadgeText(tabId, 0);
+    updateBadgeTitle(tabId, 0, false);
+  }
 }
 
 chrome.browserAction.onClicked.addListener((tab) => {
@@ -59,6 +72,10 @@ chrome.browserAction.onClicked.addListener((tab) => {
 
 chrome.tabs.onActivated.addListener(({ tabId }) => {
   onChange(tabId);
+});
+
+chrome.tabs.onCreated.addListener((tab) => {
+  onChange(tab.id);
 });
 
 chrome.tabs.onUpdated.addListener((tabId) => {
@@ -81,10 +98,8 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
   const { tab } = _sender;
   switch(type) {
     case 'annotationsupdate': 
-      chrome.browserAction.setBadgeText({
-        tabId: tab.id,
-        text: payload ? '' + payload : null
-      });
+      updateBadgeText(tab.id, payload);
+      updateBadgeTitle(tab.id, payload);
       break;
     case 'notebooksupdate':
       // storage sync
@@ -111,24 +126,32 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
 });
 
 function onChange(tabId) {
-  const activeKey = `${StorageKeys.Active}.${tabId}`;
-  Storage.getMulti([
-      activeKey, 
-      StorageKeys.User, 
-      StorageKeys.Token, 
-      StorageKeys.Notebook
-    ])
-    .then((values) => {
-      const isActive = values[activeKey];
-      const user = values[StorageKeys.User];
-      const token = values[StorageKeys.Token];
-      const notebookId = values[StorageKeys.Notebook];
-
-      chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
-        isActive, user, token, notebookId
-      }});
-      updateExtensionIcon(isActive);
+  chrome.tabs.get(tabId, ({windowId}) => {
+    chrome.windows.get(windowId, ({ type }) => {
+      // popup check
+      if (type === 'popup') {
+        return;
+      }
+      const activeKey = `${StorageKeys.Active}.${tabId}`;
+      Storage.getMulti([
+          activeKey, 
+          StorageKeys.User, 
+          StorageKeys.Token, 
+          StorageKeys.Notebook
+        ])
+        .then((values) => {
+          const isActive = values[activeKey];
+          const user = values[StorageKeys.User];
+          const token = values[StorageKeys.Token];
+          const notebookId = values[StorageKeys.Notebook];
+    
+          chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload: {
+            isActive, user, token, notebookId
+          }});
+          updateExtensionIcon(tabId, isActive);
+        })
     })
+  })
 }
 
 function onBrowserActionClicked(tabId) {
@@ -140,4 +163,29 @@ function onBrowserActionClicked(tabId) {
     .then(() => {
       onChange(tabId);
     })
+}
+
+function updateBadgeText(tabId, number) {
+  chrome.browserAction.setBadgeText({
+    tabId,
+    text: number ? '' + number : null
+  });
+}
+
+function updateBadgeTitle(tabId, number, active = true) {
+  let title = IconTitle.Inactive;
+  if (active) {
+    switch(number) {
+      case 0:
+        title = IconTitle.ActiveWithNoAnnotations;
+        break;
+      case 1:
+        title = IconTitle.ActiveWithOneAnnotation;
+        break;
+      default:
+        title = IconTitle.ActiveWithAnnotations.replace('$n', number);
+        break;
+    }
+  }
+  chrome.browserAction.setTitle({ tabId, title })
 }
