@@ -102,10 +102,9 @@ export class MainLayoutEH extends EventHandler {
         this.appEvent$.next({ type: AppEvent.Logout });
         break;
       default:
-        // TODO
+        console.warn('FIXME: error handler', error);
         break;
     }
-    console.warn('FIXME: error handler', error);
   }
 
   /**
