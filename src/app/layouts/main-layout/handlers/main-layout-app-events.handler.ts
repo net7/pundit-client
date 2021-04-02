@@ -109,7 +109,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout() {
-    this.layoutDS.punditLogoutService.logout().then(() => {
+    const token = this.layoutDS.tokenService.get();
+    const logoutOptions = { headers: { Authorization: `Bearer ${token}` } };
+    this.layoutDS.punditLogoutService.logout(logoutOptions).then(() => {
       // reset
       this.layoutDS.tokenService.clear();
       this.layoutDS.userService.clear();
