@@ -1,6 +1,6 @@
 import {
   AfterContentChecked,
-  Component, Input
+  Component, ElementRef, Input, ViewChild
 } from '@angular/core';
 import * as Draggable from 'draggable';
 import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
@@ -34,6 +34,8 @@ export interface CommentModalData {
   templateUrl: './comment-modal.html'
 })
 export class CommentModalComponent implements AfterContentChecked {
+  @ViewChild('saveButton') saveButton: ElementRef;
+
   @Input() public data: CommentModalData;
 
   @Input() public emit: (type: string, payload?: any) => void;
@@ -78,8 +80,17 @@ export class CommentModalComponent implements AfterContentChecked {
     this.emit(type, payload);
   }
 
-  onKeyEvent(ev: InputEvent) {
+  onKeyEvent(ev: KeyboardEvent) {
     ev.stopImmediatePropagation();
+    const { key } = ev;
+    if (key === 'Tab') {
+      const saveButtonEl = this.saveButton.nativeElement as HTMLButtonElement;
+      if (!saveButtonEl.disabled) {
+        setTimeout(() => {
+          saveButtonEl.focus();
+        });
+      }
+    }
   }
 
   onClose(target?: { className: string }) {
