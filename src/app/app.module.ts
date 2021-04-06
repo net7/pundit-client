@@ -30,6 +30,7 @@ import { ToastComponent } from './components/toast/toast';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+import { SortByPipe } from './pipes/sortby.pipe';
 
 const LANG_CODE = 'en_US';
 
@@ -56,6 +57,7 @@ config.init(appConfig);
     CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
+    SortByPipe
   ],
   imports: [
     BrowserModule,
