@@ -25,7 +25,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
   /** dynamically update the document height on scroll */
   public height$: Subject<string> = new Subject();
 
-  public annotations: AnnotationConfig[] = [];
+  public annotations: AnnotationConfig[] = null ;
 
   onInit(payload) {
     this.annotationService = payload.annotationService;

@@ -20,8 +20,10 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       takeUntil(this.layoutEH.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case AppEvent.SearchResponse:
+        case AppEvent.SearchAnnotationResponse:
           this.layoutDS.updateAnnotations(true);
+          break;
+        case AppEvent.SearchNotebookResponse:
           this.layoutDS.updateNotebookPanel();
           break;
         case AppEvent.AnnotationDeleteSuccess:

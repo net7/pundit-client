@@ -16,6 +16,7 @@ export enum AppEvent {
   KeyUpEscape = 'app.keyupescape',
   Logout = 'app.logout',
   NotebookCreateSuccess = 'app.notebookcreatesuccess',
-  SearchResponse = 'app.searchresponse',
+  SearchNotebookResponse = 'app.searchnotebookresponse',
+  SearchAnnotationResponse = 'app.searchannotationresponse',
   SidebarCollapse = 'app.sidebarcollapse',
 }

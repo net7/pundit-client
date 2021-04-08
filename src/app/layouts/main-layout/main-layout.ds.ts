@@ -99,17 +99,18 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
-  getUserData() {
-    return this.notebookService.search().pipe(
-      switchMap(() => {
-        const uri = getDocumentHref();
-        return from(annotationModel.search(uri));
-      }),
+  getUserAnnotation() {
+    const uri = getDocumentHref();
+    return from(annotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);
       })
     );
+  }
+
+  getUserNotebook() {
+    return this.notebookService.search();
   }
 
   public saveAnnotation(payload) {

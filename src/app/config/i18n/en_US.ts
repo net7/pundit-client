@@ -49,6 +49,8 @@ export default {
   'toast#genericerror_text': 'The system might be too busy, please try again in 5 minutes.',
   'toast#rootelementexists_title': 'Pundit loaded!',
   'toast#rootelementexists_text': 'There is a version of pundit already loaded on this website.',
+  'toast#loadingdata_title': 'Loading',
+  'toast#loadingdata_text': 'Loading user data...',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
