@@ -112,8 +112,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     if (!token) {
       this.resetAppDataAndEmit();
     } else {
-      const logoutOptions = { headers: { Authorization: `Bearer ${token}` } };
-      this.layoutDS.punditLogoutService.logout(logoutOptions).then(() => {
+      this.layoutDS.punditLogoutService.logout({ withCredentials: true }).then(() => {
         this.resetAppDataAndEmit();
       }).catch((error) => {
         console.log(error);
