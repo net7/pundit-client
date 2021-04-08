@@ -37,11 +37,18 @@
             </notebook-selector>
             
             <div class="pnd-comment-modal__actions">
-                <button *ngFor="let action of data.form.actions"
-                [disabled]="action.disabled" 
-                class="pnd-btn {{ action.classes || '' }}" 
-                (click)="onClick($event, action.payload)">
-                    {{ action.label }}
+                <button *ngIf="data.form.actions[0] as cancelAction"
+                [disabled]="cancelAction.disabled" 
+                class="pnd-btn {{ cancelAction.classes || '' }}" 
+                (click)="onClick($event, cancelAction.payload)">
+                    {{ cancelAction.label }}
+                </button>
+                <button *ngIf="data.form.actions[1] as saveAction"
+                #saveButton
+                [disabled]="saveAction.disabled" 
+                class="pnd-btn {{ saveAction.classes || '' }}" 
+                (click)="onClick($event, saveAction.payload)">
+                    {{ saveAction.label }}
                 </button>
             </div>
 

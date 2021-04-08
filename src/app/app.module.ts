@@ -27,10 +27,11 @@ import { NotebookPanelComponent } from './components/notebook-panel/notebook-pan
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
+// PIPES
+import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
-import { SortByPipe } from './pipes/sortby.pipe';
 
 const LANG_CODE = 'en_US';
 
@@ -57,7 +58,8 @@ config.init(appConfig);
     CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
-    SortByPipe
+    // PIPES
+    SortByPipe,
   ],
   imports: [
     BrowserModule,

@@ -64,6 +64,10 @@
         .pnd-btn:last-child {
             margin-left: $space/2;
         }
+
+        .pnd-btn:focus {
+            height: $space*4;
+        }
     }
 }
 
@@ -75,7 +79,7 @@
     &__close {
         
         [class^="pundit-icon-"] {
-            font-size: $font-size-m;            
+            font-size: $font-size-m;
         }
     }
 }
@@ -101,7 +105,7 @@
         &:hover {
             [class^="pundit-icon-"] {
                 color: $color-text;
-            }   
+            }
         }
     }
 }

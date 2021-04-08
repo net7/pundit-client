@@ -28,6 +28,9 @@ import { NotebookPanelComponent } from './components/notebook-panel/notebook-pan
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
+// PIPES
+import { SortByPipe } from './pipes/sortby.pipe';
+
 import appConfig from './config';
 import i18n from './config/i18n';
 
@@ -56,6 +59,8 @@ config.init(appConfig);
     CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
+    // PIPES
+    SortByPipe,
   ],
   imports: [
     BrowserModule,
