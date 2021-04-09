@@ -8,11 +8,10 @@
    #RESOURCE MODAL
 \* ------------------------------------ */
 .pnd-comment-modal {
-    
     &__window {
         pointer-events: auto;
         height: auto !important;
-        overflow-y: auto;
+        overflow-y: visible;
     }
 
     &__highlight-wrapper {
@@ -42,23 +41,38 @@
         font-size: $font-size-s;
     }
 
-    .pnd-comment-modal__comment-textarea {
+    &__comment-textarea {
         width: 100%;
         height: $space*20;
         resize: none;
     }
+}
 
-    &__notebooks {
-        padding: $space*2 $space*2 0 $space*2;
-    }
 
-    &__notebooks-label {
-        margin-bottom: $space;
-        font-size: $font-size-s;
-    }
-
-    &__actions {
+/* ------------------------------------ *\
+   #FOOTER
+\* ------------------------------------ */
+.pnd-comment-modal {
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         padding: $space*2;
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
+    }
+
+    &__footer-notebook {
+        flex-grow: 2;
+        flex-shrink: 0;
+        padding-right: $space*2;
+    }
+
+    &__footer-actions {
+        flex-grow: 0;
+        flex-shrink: 0;
         text-align: right;
         
         .pnd-btn:last-child {
@@ -110,10 +124,11 @@
     }
 }
 
+
 /* ------------------------------------ *\
    #SELECT
 \* ------------------------------------ */
-.pnd-comment-modal {
+/* .pnd-comment-modal {
     &__select {
         select {
             appearance: none;
@@ -148,7 +163,7 @@
             border-left: 1px solid $color-gray-03;
         }
     }
-}
+} */
 
 
 /* ------------------------------------ *\

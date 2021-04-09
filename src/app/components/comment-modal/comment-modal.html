@@ -31,27 +31,31 @@
                     (input)="onChange('textchange', $event.target.value)">{{ data.form.comment.value || '' }}</textarea>
                 </div>
             </div>
-            <notebook-selector *ngIf="data.form.notebookSelectorData"
-                               [data]="data.form.notebookSelectorData"
-                               [emit]="onNotebookSelection">
-            </notebook-selector>
-            
-            <div class="pnd-comment-modal__actions">
-                <button *ngIf="data.form.actions[0] as cancelAction"
-                [disabled]="cancelAction.disabled" 
-                class="pnd-btn {{ cancelAction.classes || '' }}" 
-                (click)="onClick($event, cancelAction.payload)">
-                    {{ cancelAction.label }}
-                </button>
-                <button *ngIf="data.form.actions[1] as saveAction"
-                #saveButton
-                [disabled]="saveAction.disabled" 
-                class="pnd-btn {{ saveAction.classes || '' }}" 
-                (click)="onClick($event, saveAction.payload)">
-                    {{ saveAction.label }}
-                </button>
-            </div>
 
+            <div class="pnd-comment-modal__footer">
+                <div class="pnd-comment-modal__footer-notebook">
+                    <notebook-selector *ngIf="data.form.notebookSelectorData"
+                                    [data]="data.form.notebookSelectorData"
+                                    [emit]="onNotebookSelection">
+                    </notebook-selector>
+                </div>
+                
+                <div class="pnd-comment-modal__footer-actions">
+                    <button *ngIf="data.form.actions[0] as cancelAction"
+                    [disabled]="cancelAction.disabled" 
+                    class="pnd-btn {{ cancelAction.classes || '' }}" 
+                    (click)="onClick($event, cancelAction.payload)">
+                        {{ cancelAction.label }}
+                    </button>
+                    <button *ngIf="data.form.actions[1] as saveAction"
+                    #saveButton
+                    [disabled]="saveAction.disabled" 
+                    class="pnd-btn {{ saveAction.classes || '' }}" 
+                    (click)="onClick($event, saveAction.payload)">
+                        {{ saveAction.label }}
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

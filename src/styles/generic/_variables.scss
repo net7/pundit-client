@@ -113,7 +113,7 @@ $color-button-light-border-disabled: $color-gray-02;
 // Call to action button
 $color-button-cta-text: $color-text-inverse;
 $color-button-cta-text-hover: $color-text-inverse;
-$color-button-cta-text-disabled: rgba($color-text-inverse, .4);
+$color-button-cta-text-disabled: rgba($color-text-inverse, .65);
 $color-button-cta-bg: $color-main;
 $color-button-cta-bg-hover: lighten($color-main, 6);
 $color-button-cta-bg-disabled: lighten($color-main, 10);
