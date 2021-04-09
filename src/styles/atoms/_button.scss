@@ -53,11 +53,17 @@
     }
 
     /* Active */
-    &.active, &:active, &.active:hover, &:active:hover,
-    &:focus, &:focus:hover {
+    &.active, &:active, &.active:hover, &:active:hover {
         color: $color-button-text;
         background-color: $color-button-bg;
-        border-color: $color-button-border;        
+        border-color: $color-button-border;
+    }
+
+    /* Focus */
+    &:focus, &:focus:hover {
+        color: $color-button-text-hover;
+        background-color: $color-button-bg;
+        border-color: $color-button-border-hover;
     }
 
     &.pnd-btn-s {
@@ -143,10 +149,16 @@
     }
 
     /* Active */
-    &.active, &:active, &.active:hover, &:active:hover,
-    &:focus, &:focus:hover {
+    &.active, &:active, &.active:hover, &:active:hover {
         color: $color-button-cta-text;
         background-color: $color-button-cta-bg;
+        border-color: $color-button-cta-border;
+    }
+
+    /* Focus */
+    &:focus, &:focus:hover {
+        color: $color-button-cta-text;
+        background-color: $color-button-cta-bg-focus;
         border-color: $color-button-cta-border;
     }
 }
