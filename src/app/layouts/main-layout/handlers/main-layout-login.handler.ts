@@ -27,11 +27,13 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     ).subscribe((val) => {
       if ('error' in val) {
         const { error } = val;
-        console.warn('Login error', error);
+        const errorObj = JSON.parse(error);
+        const errorMsg = errorObj?.error?.error || _t('toast#login_error_text');
+        console.warn('Auth error', errorObj);
         // toast
         this.layoutDS.toastService.error({
           title: _t('toast#login_error_title'),
-          text: typeof error === 'string' ? error : _t('toast#login_error_text'),
+          text: errorMsg,
           autoClose: false
         });
         // close login modal
