@@ -124,7 +124,7 @@ export class AnnotationService {
   }) {
     const cachedAnnotation = this.getAnnotationById(annotationId);
     if (!cachedAnnotation) return;
-    if (updateData.cssClass) {
+    if (typeof updateData.cssClass === 'string') {
       cachedAnnotation.ds.updateCssClass(updateData.cssClass);
     }
   }
