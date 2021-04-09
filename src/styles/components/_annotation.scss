@@ -398,12 +398,13 @@ annotation {
    #ANNOTATION-IN-COLLAPSED-SIDEBAR
 \* ------------------------------------ */
 .pnd-sidebar.is-collapsed {
-    .pnd-annotation {
+    .pnd-annotation,
+    .pnd-annotation.is-collapsed.has-comment {
         height: $annotation-collapsed-height;
         width: $sidebar-collapsed-width - 6px;
         cursor: pointer;
 
-        &__highlight {
+        .pnd-annotation__highlight {
             display: block;
             position: absolute;
             top: 1px;
