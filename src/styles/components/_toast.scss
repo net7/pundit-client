@@ -19,6 +19,7 @@
         padding: $space*2.5 $space*2.5 $space*2.5 $space*2.5;
         background-color: $toast-background-color;
         border-top: 4px solid rgba(0,0,0,.12);
+        @include toastShadow;
     }
 
     &__title {
