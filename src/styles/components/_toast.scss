@@ -13,18 +13,17 @@
     left: $space*3;
 
     &__box {
+        position: relative;
         width: $toast-max-width;
+        margin-top: $space*2;
         padding: $space*2.5 $space*2.5 $space*2.5 $space*2.5;
         background-color: $toast-background-color;
-        // border: $toast-border-size solid $toast-border-color;
         border-top: 4px solid rgba(0,0,0,.12);
-        border-radius: $border-radius*2;
-    
     }
 
     &__title {
         display: block;
-        padding-bottom: $space;
+        margin-bottom: $space/2;
         font-size: $font-size-l;
         font-weight: $font-weight-bold;
         color: $toast-title-color;
@@ -32,7 +31,7 @@
 
     &__text {
         display: block;
-        padding-bottom: 0;
+        margin-bottom: 0;
         font-size: $font-size-m;
         color: $toast-text-color;
         line-height: 1.4;
@@ -44,7 +43,6 @@
    #WITH-ACTIONS
 \* ------------------------------------ */
 .pnd-toast__box.has-actions {
-    position: relative;
     display: flex;
 
     .pnd-toast__content {
@@ -74,9 +72,6 @@
         }
     }
 }
-
-
-
 
 
 /* ------------------------------------ *\
@@ -126,26 +121,5 @@
 .pnd-toast .is-working {
     .pnd-toast__progress {
         background-color: $color-gray-04;
-        top: 8px;
     }
-
-    .pnd-toast__text {
-        // font-style: italic;
-    }
-}
-
-/* ------------------------------------ *\
-   #MEDIA-QUERIES
-\* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
-}
-
-@media all and (max-width: $breakpoint-ipad-portrait) {
-}
-
-@media all and (max-width: $breakpoint-smartphone-landscape) {
-}
-
-/* Retina */
-@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
 }
