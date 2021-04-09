@@ -20,8 +20,7 @@
                     class="pnd-sidebar__header-login">Login</a>
             </ng-container>
             <ng-container *ngIf="ds.userService.logged$ | async"> 
-                <a (click)="lb.eventHandler.emitInner('clickusername')"
-                   class="pnd-sidebar__user-name-link">
+                <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link">
                     {{ ds.userService.whoami().username }}
                 </a>
             </ng-container>

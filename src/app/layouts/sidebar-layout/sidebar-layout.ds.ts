@@ -2,6 +2,7 @@ import { LayoutDataSource } from '@n7-frontend/core';
 import {
   BehaviorSubject, Subject
 } from 'rxjs';
+import { _c } from 'src/app/models/config';
 import { AnnotationConfig, AnnotationService } from 'src/app/services/annotation.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
@@ -26,6 +27,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
   public height$: Subject<string> = new Subject();
 
   public annotations: AnnotationConfig[] = [];
+
+  public userLink = _c('userLink');
 
   onInit(payload) {
     this.annotationService = payload.annotationService;

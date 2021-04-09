@@ -135,15 +135,16 @@
 
     &__user-name-link {
         color: $color-text;
+        text-decoration: none;
         // transition: color $transition-durations;
-
-        &:hover {
-            color: $color-text-link;
-        }
 
         &:visited,
         &:active {
             color: $color-text;
+        }
+
+        &:hover {
+            color: $color-text-link;
         }
     }
 
