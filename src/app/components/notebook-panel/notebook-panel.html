@@ -1,57 +1,59 @@
-<div class="pnd-notebook-panel"
-     *ngIf="data && data.selected.sharingMode as currentSharingMode">
-
-    <section class="pnd-notebook-panel__section">
-        <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.current }}</div>
-        <div class="pnd-notebook-panel__current-notebook-name">
-            <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}"></span>
-            {{data.selected.label}}
-        </div>
-    </section>
-
-    <section class="pnd-notebook-panel__section pnd-grid-2">
-        <div class="pnd-notebook-panel__status">
-            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.statusTitle }}</div>
-            <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
-            <div class="pnd-notebook-panel__status-description pnd-text-small">
-                {{ data.labels.statusTypes[currentSharingMode].description }}
+<div class="pnd-notebook-panel">
+    <ng-container *ngIf="data && data.selected.sharingMode as currentSharingMode; else panelloader">
+        <section class="pnd-notebook-panel__section">
+            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.current }}</div>
+            <div class="pnd-notebook-panel__current-notebook-name">
+                <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}"></span>
+                {{data.selected.label}}
             </div>
-        </div>
-        <div class="pnd-notebook-panel__change-status">
-            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeStatus }}</div>
-            <div class="pnd-notebook-panel__buttons">
-                <ng-container *ngFor="let type of ['public', 'private']">
-                    <button (click)="onClick(type, data.selected)"
+        </section>
+    
+        <section class="pnd-notebook-panel__section pnd-grid-2">
+            <div class="pnd-notebook-panel__status">
+                <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.statusTitle }}</div>
+                <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
+                <div class="pnd-notebook-panel__status-description pnd-text-small">
+                    {{ data.labels.statusTypes[currentSharingMode].description }}
+                </div>
+            </div>
+            <div class="pnd-notebook-panel__change-status">
+                <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeStatus }}</div>
+                <div class="pnd-notebook-panel__buttons">
+                    <ng-container *ngFor="let type of ['public', 'private']">
+                        <button (click)="onClick(type, data.selected)"
+                                class="pnd-btn"
+                                [ngClass]="{
+                                    'is-loading': !!data.isLoading
+                                }"
+                                [disabled]="!!data.isLoading"
+                                *ngIf="data.selected.sharingMode !== type">
+                            <ng-container *ngIf="data.isLoading">
+                                <span class="pnd-btn-loader"></span>
+                            </ng-container>
+                            <ng-container *ngIf="!data.isLoading">
+                                {{ data.labels.statusTypes[type].title }}
+                            </ng-container>
+                        </button>
+                    </ng-container>
+                    <button (click)="onClick('shared', data.selected)"
                             class="pnd-btn"
-                            [ngClass]="{
-                                'is-loading': !!data.isLoading
-                            }"
-                            [disabled]="!!data.isLoading"
-                            *ngIf="data.selected.sharingMode !== type">
-                        <ng-container *ngIf="data.isLoading">
-                            <span class="pnd-btn-loader"></span>
-                        </ng-container>
-                        <ng-container *ngIf="!data.isLoading">
-                            {{ data.labels.statusTypes[type].title }}
-                        </ng-container>
+                            *ngIf="data.selected.sharingMode !== 'shared'"
+                            disabled
+                            title="{{ data.labels.commingSoon }}">
+                        {{ data.labels.statusTypes.shared.title }}
                     </button>
-                </ng-container>
-                <button (click)="onClick('shared', data.selected)"
-                        class="pnd-btn"
-                        *ngIf="data.selected.sharingMode !== 'shared'"
-                        disabled
-                        title="{{ data.labels.commingSoon }}">
-                    {{ data.labels.statusTypes.shared.title }}
-                </button>
-                <p class="pnd-text-small">{{ data.labels.sharedSoon }}</p>
+                    <p class="pnd-text-small">{{ data.labels.sharedSoon }}</p>
+                </div>
             </div>
-        </div>
-    </section>
-
-    <section class="pnd-notebook-panel__section">
-        <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeCurrent }}</div>
-        <notebook-selector [data]="data._meta.notebookSelectorData"
-                           [emit]="onNotebookSelection">
-        </notebook-selector>
-    </section>
+        </section>
+    
+        <section class="pnd-notebook-panel__section">
+            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeCurrent }}</div>
+            <notebook-selector [data]="data._meta.notebookSelectorData"
+                               [emit]="onNotebookSelection">
+            </notebook-selector>
+        </section>
+    </ng-container>
+    <ng-template #panelloader>
+    </ng-template>  
 </div>

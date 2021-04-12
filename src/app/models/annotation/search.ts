@@ -8,7 +8,7 @@ const searchAnnotationPayload = (uri: string): SearchAnnotationParams => {
   const params = searchRequestBuilder.build();
   return params;
 };
-export function search(uri: string) {
+export async function search(uri: string) {
   const baseURL = _c('baseURL');
   const payload = searchAnnotationPayload(uri);
   return annotation.search({ baseURL, data: payload });

@@ -1,7 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { CommentAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
-import { catchError, filter } from 'rxjs/operators';
+import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, TooltipEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
@@ -15,17 +15,20 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   ) { }
 
   public listen() {
-    this.layoutEH.outerEvents$.pipe(
-      filter(() => {
+    this.layoutEH.outerEvents$.pipe(withLatestFrom(this.layoutDS.hasLoaded$),
+      filter(([, loaded]) => {
         if (!this.layoutDS.isUserLogged()) {
           // set anonymous (before login) selection range
           this.layoutDS.setAnonymousSelectionRange();
           this.layoutDS.punditLoginService.start();
           return false;
         }
+        if (!loaded) {
+          this.layoutDS.toastService.warn({ title: _t('toast#loadingdata_title'), text: _t('toast#loadingdata_text'), autoClose: true, });
+          return false;
+        }
         return true;
-      })
-    ).subscribe(({ type, payload }) => {
+      })).subscribe(([{ type, payload }]) => {
       switch (type) {
         case TooltipEvent.Click: {
           if (payload === 'highlight') {

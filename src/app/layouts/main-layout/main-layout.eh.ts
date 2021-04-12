@@ -3,7 +3,7 @@ import { EventHandler } from '@n7-frontend/core';
 import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
-import { catchError, delay } from 'rxjs/operators';
+import { catchError, delay, switchMap } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
@@ -42,26 +42,31 @@ export class MainLayoutEH extends EventHandler {
           ).subscribe(() => {
             // signal
             this.appEvent$.next({
-              type: AppEvent.SearchResponse
+              type: AppEvent.SearchAnnotationResponse
             });
           });
           break;
         case MainLayoutEvent.GetUserData:
-          this.dataSource.getUserData().pipe(
+          this.dataSource.getUserNotebook().pipe(
+            switchMap(() => {
+              this.appEvent$.next({
+                type: AppEvent.SearchNotebookResponse
+              });
+              return this.dataSource.getUserAnnotation();
+            }),
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
             }),
           ).subscribe(() => {
             this.appEvent$.next({
-              type: AppEvent.SearchResponse
+              type: AppEvent.SearchAnnotationResponse
             });
           });
           break;
         default:
           break;
       }
-
       this.detectChanges();
     });
 
