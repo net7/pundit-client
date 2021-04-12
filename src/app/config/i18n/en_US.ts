@@ -50,7 +50,7 @@ export default {
   'toast#rootelementexists_title': 'Pundit loaded!',
   'toast#rootelementexists_text': 'There is a version of pundit already loaded on this website.',
   'toast#loadingdata_title': 'Loading',
-  'toast#loadingdata_text': 'Loading user data...',
+  'toast#loadingdata_text': 'Loading your annotations...',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
