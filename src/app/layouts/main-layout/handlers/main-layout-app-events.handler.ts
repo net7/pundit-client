@@ -108,19 +108,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout() {
-    const token = this.layoutDS.tokenService.get();
-    if (!token) {
-      this.resetAppDataAndEmit();
-    } else {
-      this.layoutDS.punditLogoutService.logout({ withCredentials: true }).then(() => {
-        this.resetAppDataAndEmit();
-      }).catch((error) => {
-        console.log(error);
-        if (error && error.status === 401) {
-          this.resetAppDataAndEmit();
-        }
-      });
-    }
+    this.resetAppDataAndEmit();
   }
 
   private resetAppDataAndEmit = () => {
