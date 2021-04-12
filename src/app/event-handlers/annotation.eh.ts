@@ -15,7 +15,6 @@ export class AnnotationEH extends EventHandler {
           const { source, id } = payload;
           const annotation = this.annotationService.getAnnotationById(id);
           if (!annotation) {
-            console.log(annotation);
             return;
           }
           switch (source) {

@@ -114,6 +114,8 @@ export class NotebookService {
           created: new Date().toLocaleDateString(),
         };
         this.add(rawNotebook);
+        // set the new notebook as the default
+        this.setSelected(data.id);
       })
     );
   }
