@@ -22,7 +22,7 @@
                 <!-- list of selectable notebooks -->
                 <ng-container *ngFor="let notebook of data.notebookList | sortBy: 'asc' : 'label'">
                     <div (click)="onClick('option', notebook.id)"
-                         class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook ? 'selected' : ''}}">
+                         class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook.id ? 'is-current' : ''}}">
                         <ng-container *ngTemplateOutlet="sharingModeIcon; context: {
                              sharingMode: notebook.sharingMode
                          }"></ng-container>

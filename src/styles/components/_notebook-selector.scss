@@ -146,5 +146,10 @@
         .pnd-notebook-selector__dropdown {
             display: block;
         }
+
+        // the element of the list that represents the active notebook
+        .pnd-notebook-selector__dropdown .is-current {
+            font-weight: $font-weight-bold;
+        }
     }
 }
