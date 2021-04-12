@@ -52,10 +52,12 @@ export class AnnotationEH extends EventHandler {
         case AnnotationEvent.MouseLeave:
           this.emitOuter(getEventType(type), payload);
           break;
-        case AnnotationEvent.CreateNotebook:
-          this.getAnnotationDatasource(payload.annotation).changeNotebookSelectorLoadingState(true);
+        case AnnotationEvent.CreateNotebook: {
+          const annotationDS = this.getAnnotationDatasource(payload.annotation);
+          annotationDS.changeNotebookSelectorLoadingState(true);
+          annotationDS.closeMenu();
           this.emitOuter(getEventType(type), payload);
-          break;
+        } break;
         default:
           console.warn('unhandled inner event of type', type);
           break;
