@@ -20,6 +20,7 @@
         overflow-x: hidden;
         overflow-y: auto;
         border-top: 1px solid $annotation-border-color;
+        line-height: 20px;
     }
 
     &__highlight {
@@ -45,6 +46,10 @@
         width: 100%;
         height: $space*20;
         resize: none;
+    }
+
+    &__comment-textarea-wrapper {
+        line-height: 20px;
     }
 }
 

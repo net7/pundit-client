@@ -102,17 +102,20 @@
 
     /* Creating a new notebook */
     &__create {
-        text-align: right;
+        display: flex;
+        align-items: center;
+        // text-align: right;
+        margin-bottom: $space;
     }
 
     &__create-field {
         display: block;
         width: 100%;
-        margin-bottom: $space;
+        // margin-bottom: $space;
     }
 
     &__create-btn-cancel {
-        
+        margin-left: $space;
     }
 
     &__create-btn-save {

@@ -10,6 +10,7 @@
 .pnd-modal {
     position: relative;
     z-index: $z-index-modal;
+    text-align: left;
     
     &__window {
         position: relative;

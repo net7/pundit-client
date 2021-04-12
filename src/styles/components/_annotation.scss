@@ -235,6 +235,7 @@ annotation {
         max-height: 100px;
         overflow-y: auto;
         padding: $space $space $space $space;
+        line-height: 20px;
     }
 
     &.has-comment {
@@ -330,6 +331,7 @@ annotation {
         align-items: center;
         width: calc( 50% - 12px );
         height: $annotation-collapsed-height;
+        line-height: 20px;
     }
 
     .pnd-annotation__comment-text {
