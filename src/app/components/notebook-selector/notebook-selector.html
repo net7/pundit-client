@@ -61,7 +61,7 @@
                     [disabled]="!!(data.isLoading || data._meta.inputValue?.length < 3)"
                     (click)="onCreation(data._meta.inputValue)">
                 <ng-container *ngIf="data.isLoading">
-                    <span class="pnd-btn-loader"></span>
+                    <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
                 </ng-container>
                 <ng-container *ngIf="!data.isLoading">
                     {{ labels.create }}
