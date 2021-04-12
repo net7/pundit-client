@@ -26,7 +26,7 @@ export class NotebookPanelDS extends DataSource {
   }
 
   public iconMap = {
-    public: '',
+    public: '', // no icon
     private: 'pundit-icon-lock',
     shared: 'pundit-icon-users'
   }
@@ -50,10 +50,18 @@ export class NotebookPanelDS extends DataSource {
     };
   }
 
+  /**
+   * Toggles the loading state for the notebook panel component.
+   * @param loading boolean
+   */
   changeLoadingState(loading: boolean) {
     this.output.isLoading = loading;
   }
 
+  /**
+   * Toggles the notebook selector component loading state.
+   * @param loading boolean
+   */
   changeNotebookSelectorLoadingState(loading: boolean) {
     this.output._meta.notebookSelectorData.isLoading = loading;
   }
