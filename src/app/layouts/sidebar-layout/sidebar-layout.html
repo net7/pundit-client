@@ -61,8 +61,11 @@
                             [emit]="lb.widgets['annotation'].emit">
                 </annotation>
             </ng-container>
-         </ng-container>
-         <ng-template #annotationloader>
+        </ng-container>
+        <ng-template #annotationloader>
+            <div *ngIf="!(ds.isCollapsed | async)" class="pnd-sidebar__loader-wrapper">
+                <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+            </div>
         </ng-template>
     </div>
     <!-- END //Sidebar content -->

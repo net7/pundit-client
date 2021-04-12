@@ -208,6 +208,28 @@
     }
 }
 
+/* ------------------------------------ *\
+   #LOADER WRAPPER
+\* ------------------------------------ */
+.pnd-sidebar {
+    &__loader-wrapper {
+        position: fixed;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: $sidebar-exploded-width;
+        height: 100%;
+        top: 0;
+        right: 0;
+        z-index: 20;
+    }
+
+    .pnd-loader {
+        width: 100%;
+    }
+}
+
 
 /* ------------------------------------ *\
     ANIMATIONS
