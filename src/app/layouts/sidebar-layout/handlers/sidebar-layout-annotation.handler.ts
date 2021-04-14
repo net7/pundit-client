@@ -139,7 +139,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             }
           );
         });
-    }, 1100);
+    }, _c('indexUpdateDelay'));
   }
 
   /**

@@ -1,6 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { delay, first, takeUntil } from 'rxjs/operators';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
+import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
@@ -46,7 +47,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
           text: _t('toast#login_success_text'),
         });
         // signal
-        this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+        setTimeout(() => { // waiting for elastic-search index update
+          this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+        }, _c('indexUpdateDelay'));
       }
 
       // trigger change detector

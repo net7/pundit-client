@@ -8,4 +8,5 @@ export default {
   tooltipDelay: 200,
   highlightTag: 'pnd-mark',
   toastTimer: 500,
+  indexUpdateDelay: 1500, // elastic-search index update delay
 };
