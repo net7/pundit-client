@@ -3,6 +3,7 @@ import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
+import { HttpRequestOptions } from '@pundit/login';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -112,7 +113,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     if (!token) {
       this.resetAppDataAndEmit();
     } else {
-      this.layoutDS.punditLogoutService.logout({ withCredentials: true }).then(() => {
+      const params = {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      } as HttpRequestOptions;
+      this.layoutDS.punditLogoutService.logout(params).then(() => {
         this.resetAppDataAndEmit();
       }).catch((error) => {
         console.log(error);
