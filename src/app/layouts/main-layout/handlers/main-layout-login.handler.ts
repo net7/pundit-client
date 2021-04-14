@@ -27,10 +27,18 @@ export class MainLayoutLoginHandler implements LayoutHandler {
       takeUntil(this.layoutEH.destroy$)
     ).subscribe((val) => {
       if ('error' in val) {
+        let errorMsg = _t('toast#login_error_text');
+        let errorObj;
         const { error } = val;
-        const errorObj = JSON.parse(error);
-        const errorMsg = errorObj?.error?.error || _t('toast#login_error_text');
-        console.warn('Auth error', errorObj);
+        try {
+          errorObj = JSON.parse(error);
+          if (errorObj?.error?.error) {
+            errorMsg = errorObj?.error?.error;
+          }
+        } catch (e) {
+          console.warn(`Error parsing auth error message "${error}":`, e);
+        }
+        console.warn('Auth error:', errorMsg, errorObj);
         // toast
         this.layoutDS.toastService.error({
           title: _t('toast#login_error_title'),
