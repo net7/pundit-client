@@ -15,9 +15,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
 
     window.onfocus = () => {
-      setTimeout(() => {
-        this.checkDefaultNotebook();
-      }, 1000);
+      this.checkDefaultNotebook();
     };
 
     // on destroy remove event listeners
