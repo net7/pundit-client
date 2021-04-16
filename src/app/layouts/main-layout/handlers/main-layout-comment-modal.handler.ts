@@ -123,6 +123,12 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
 
   private onCommentModalNotebookChange(payload: string) {
     this.layoutDS.state.comment.notebookId = payload;
+
+    // set selected notebook as the default
+    this.layoutDS.notebookService.setSelected(payload);
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.SelectedNotebookChanged
+    });
   }
 
   private onCommentModalCreateNotebook(payload) {

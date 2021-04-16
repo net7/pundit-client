@@ -18,5 +18,6 @@ export enum AppEvent {
   NotebookCreateSuccess = 'app.notebookcreatesuccess',
   SearchNotebookResponse = 'app.searchnotebookresponse',
   SearchAnnotationResponse = 'app.searchannotationresponse',
+  SelectedNotebookChanged = 'app.selectednotebookchanged',
   SidebarCollapse = 'app.sidebarcollapse',
 }

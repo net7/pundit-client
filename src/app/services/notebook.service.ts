@@ -125,11 +125,6 @@ export class NotebookService {
       tap(({ data: notebooksData }) => {
         const { notebooks } = notebooksData;
         this.load(notebooks);
-        if (!this.getSelected()) {
-          // first notebook as default
-          const { id } = notebooks[0];
-          this.setSelected(id);
-        }
       })
     );
   }

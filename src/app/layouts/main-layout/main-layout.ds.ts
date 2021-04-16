@@ -1,5 +1,7 @@
 import { LayoutDataSource } from '@n7-frontend/core';
-import { from, of, BehaviorSubject } from 'rxjs';
+import {
+  from, of, BehaviorSubject, Observable
+} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
 import {
@@ -7,11 +9,13 @@ import {
   CommentAnnotation,
 } from '@pundit/communication';
 import { PunditLoginService, PunditLogoutService } from '@pundit/login';
+import { environment as env } from 'src/environments/environment';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+import { StorageSyncKey, StorageSyncService } from 'src/app/services/storage-sync.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
@@ -51,6 +55,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public toastService: ToastService;
 
+  public storageSyncService: StorageSyncService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -80,6 +86,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
     this.punditLogoutService = payload.punditLogoutService;
+    this.storageSyncService = payload.storageSyncService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -99,7 +106,7 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
-  getUserAnnotation() {
+  getUserAnnotations() {
     const uri = getDocumentHref();
     return from(annotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
@@ -109,7 +116,7 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
-  getUserNotebook() {
+  getUserNotebooks() {
     return this.notebookService.search();
   }
 
@@ -167,6 +174,41 @@ export class MainLayoutDS extends LayoutDataSource {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
+  }
+
+  public setDefaultNotebook(id: string) {
+    if (id && this.notebookService.getNotebookById(id)) {
+      this.notebookService.setSelected(id);
+    } else {
+      const { id: userId } = this.userService.whoami();
+      const firstNotebook = this.notebookService.getByUserId(userId)[0];
+      this.notebookService.setSelected(firstNotebook.id);
+    }
+  }
+
+  public getDefaultNotebookIdFromStorage$(): Observable<string> {
+    if (env.chromeExt) {
+      return this.getDefaultNotebookIdFromExtStorage$();
+    }
+    return this.getDefaultNotebookIdFromLocalStorage$();
+  }
+
+  private getDefaultNotebookIdFromExtStorage$(): Observable<string> {
+    return new Observable((subscriber) => {
+      // listen signal from chrome-ext
+      window.addEventListener('notebookid.response', (ev: CustomEvent) => {
+        const { notebookId } = ev.detail;
+        subscriber.next(notebookId);
+        subscriber.complete();
+      }, false);
+      // emit signal to chrome-ext
+      const signal = new CustomEvent('notebookid.request');
+      window.dispatchEvent(signal);
+    });
+  }
+
+  private getDefaultNotebookIdFromLocalStorage$(): Observable<string> {
+    return of(this.storageSyncService.get(StorageSyncKey.Notebook));
   }
 
   private handleSearchResponse(searchData) {

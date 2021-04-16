@@ -130,6 +130,10 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             }
           });
 
+          // set selected notebook as the default
+          this.layoutEH.notebookService.setSelected(notebookId);
+          this.layoutDS.updateNotebookPanel();
+
           // signal: update annotation component
           this.layoutEH.emitOuter(
             getEventType(SidebarLayoutEvent.AnnotationUpdateNotebook),
