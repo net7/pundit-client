@@ -51,6 +51,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         case AppEvent.Clear:
           this.layoutDS.updateAnnotations(true);
           break;
+        case AppEvent.SelectedNotebookChanged:
         case AppEvent.NotebookCreateSuccess:
           this.layoutDS.updateNotebookPanel();
           break;

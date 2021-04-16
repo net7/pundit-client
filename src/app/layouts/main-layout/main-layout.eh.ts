@@ -47,12 +47,17 @@ export class MainLayoutEH extends EventHandler {
           });
           break;
         case MainLayoutEvent.GetUserData:
-          this.dataSource.getUserNotebook().pipe(
-            switchMap(() => {
+          this.dataSource.getUserNotebooks().pipe(
+            switchMap(() => this.dataSource.getDefaultNotebookIdFromStorage$()),
+            switchMap((defaultNotebookId: string) => {
+              // set default notebook
+              this.dataSource.setDefaultNotebook(defaultNotebookId);
+              // emit signal for updates
               this.appEvent$.next({
                 type: AppEvent.SearchNotebookResponse
               });
-              return this.dataSource.getUserAnnotation();
+              // do user annotations request
+              return this.dataSource.getUserAnnotations();
             }),
             catchError((e) => {
               this.handleError(e);

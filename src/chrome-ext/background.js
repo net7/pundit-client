@@ -160,6 +160,12 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
     case 'rootelementexists':
       onBrowserActionClicked(tab.id);
       break;
+    case 'notebookid.request':
+      Storage.get(UserStorageKeys.Notebook).then((notebookId) => {
+        const payload = { notebookId };
+        chrome.tabs.sendMessage(tab.id, { type: 'notebookid.response', payload });
+      });
+      break;
     default:
       break;
   }
