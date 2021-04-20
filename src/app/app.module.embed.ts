@@ -17,6 +17,7 @@ import { StorageSyncService } from './services/storage-sync.service';
 import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
 import { EmbedService } from './services/embed.service';
+import { StorageService } from './services/storage-service/storage.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -77,6 +78,7 @@ config.init(appConfig);
     TokenService,
     ToastService,
     EmbedService,
+    StorageService,
     {
       provide: APP_INITIALIZER,
       useFactory: (

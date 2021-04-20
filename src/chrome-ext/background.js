@@ -166,6 +166,9 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
         chrome.tabs.sendMessage(tab.id, { type: 'notebookid.response', payload });
       });
       break;
+    case 'storage.request':
+      doStorageRequest(tab, payload);
+      break;
     default:
       break;
   }
@@ -255,3 +258,39 @@ function setUserStorage({ key, value, incognito, windowId }) {
 function removeUserStorage({ key, incognito, windowId }) {
   Storage.remove(incognito ? `${key}.${windowId}` : key);
 } 
+
+function doStorageRequest(tab, payload) {
+  const { id: tabId, incognito, windowId } = tab;
+  const { key, value, operation } = payload;
+  const storageKey = incognito ? `${key}.${windowId}` : key;
+  let task$;
+  switch(operation) {
+    case 'get':
+      task$ = Storage.get(storageKey);
+      break;
+    case 'set':
+      task$ = Storage.set(storageKey, value);
+      break;
+    case 'remove':
+      task$ = Storage.remove(storageKey);
+      break;
+    default:
+      break;
+  }
+
+  task$.then((value) => {
+    const payload = {
+      status: 'OK'
+    };
+    if (operation === 'get'){
+      payload.data = value;
+    }
+    chrome.tabs.sendMessage(tabId, { type: 'storage.response', payload });
+  }).catch((_e) => {
+    const payload = {
+      status: 'KO'
+    };
+    chrome.tabs.sendMessage(tabId, { type: 'storage.response', payload });
+  })
+
+}

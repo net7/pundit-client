@@ -16,6 +16,7 @@ import { AnnotationPositionService } from './services/annotation-position.servic
 import { StorageSyncService } from './services/storage-sync.service';
 import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
+import { StorageService } from './services/storage-service/storage.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -74,6 +75,7 @@ config.init(appConfig);
     StorageSyncService,
     TokenService,
     ToastService,
+    StorageService,
     { provide: APP_BASE_HREF, useValue: '/' }
   ],
   bootstrap: [AppComponent],

@@ -15,6 +15,7 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
+import { StorageService } from 'src/app/services/storage-service/storage.service';
 import { StorageSyncKey, StorageSyncService } from 'src/app/services/storage-sync.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
@@ -56,6 +57,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public toastService: ToastService;
 
   public storageSyncService: StorageSyncService;
+
+  public storageService: StorageService;
 
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
