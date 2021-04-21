@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
 import { publish, tap } from 'rxjs/operators';
-import { StorageKey, StorageProvider } from './storage.types';
+import { StorageKey, StorageProvider, StorageValue } from './storage.types';
 
 enum OperationType {
   Get = 'get',
@@ -11,7 +11,7 @@ enum OperationType {
 
 @Injectable()
 export class StorageChromeExtService implements StorageProvider {
-  private queue$: ConnectableObservable<string | null>[] = [];
+  private queue$: ConnectableObservable<StorageValue>[] = [];
 
   public set(key: StorageKey, value: string): void {
     this.message$(OperationType.Set, key, value).subscribe(() => {
@@ -19,7 +19,7 @@ export class StorageChromeExtService implements StorageProvider {
     });
   }
 
-  public get(key: StorageKey): Observable<string | null> {
+  public get(key: StorageKey): Observable<StorageValue> {
     return this.message$(OperationType.Get, key);
   }
 
@@ -33,8 +33,8 @@ export class StorageChromeExtService implements StorageProvider {
     operation: OperationType,
     key: StorageKey,
     value?: string
-  ): Observable<string | null> {
-    const task$ = new Observable<string | null>((subscriber) => {
+  ): Observable<StorageValue> {
+    const task$ = new Observable<StorageValue>((subscriber) => {
       // listen signal from chrome-ext
       window.addEventListener('storage.response', (ev: CustomEvent) => {
         const { status, data } = ev.detail;
@@ -52,7 +52,7 @@ export class StorageChromeExtService implements StorageProvider {
       window.dispatchEvent(signal);
     });
 
-    const queuedTask$ = publish<string | null>()(task$.pipe(
+    const queuedTask$ = publish<StorageValue>()(task$.pipe(
       tap(() => {
         // remove first from queue
         this.queue$.shift();

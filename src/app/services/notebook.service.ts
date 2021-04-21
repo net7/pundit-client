@@ -32,7 +32,7 @@ export class NotebookService {
     private storage: StorageService
   ) {
     // check storage
-    this.storage.get(StorageKey.Notebook).subscribe((selected) => {
+    this.storage.get(StorageKey.Notebook).subscribe((selected: string) => {
       if (selected) {
         this.selectedId = selected;
       }

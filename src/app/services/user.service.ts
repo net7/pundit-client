@@ -21,9 +21,9 @@ export class UserService {
   constructor(
     private storage: StorageService
   ) {
-    this.storage.get(StorageKey.User).subscribe((user) => {
+    this.storage.get(StorageKey.User).subscribe((user: UserData) => {
       if (user) {
-        this.iam(JSON.parse(user), false);
+        this.iam(user, false);
       }
     });
   }
@@ -34,7 +34,7 @@ export class UserService {
 
     // storage sync
     if (sync) {
-      this.storage.set(StorageKey.User, JSON.stringify(this.me));
+      this.storage.set(StorageKey.User, this.me);
     }
 
     // emit signal
