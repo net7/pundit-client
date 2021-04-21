@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { StorageChromeExtService } from './storage-chrome-ext.service';
 import { StorageEmbedService } from './storage-embed.service';
-import { StorageKey, StorageProvider } from './storage.types';
+import { StorageKey, StorageProvider, StorageValue } from './storage.types';
 import { environment as env } from '../../../environments/environment';
 
 @Injectable()
@@ -20,11 +20,11 @@ export class StorageService implements StorageProvider {
     }
   }
 
-  public set(key: StorageKey, value: string): void {
+  public set(key: StorageKey, value: StorageValue): void {
     this.provider.set(key, value);
   }
 
-  public get(key: StorageKey): Observable<string | null> {
+  public get(key: StorageKey): Observable<StorageValue> {
     return this.provider.get(key);
   }
 

@@ -21,6 +21,8 @@ export type NotebookUpdate = {
 
 @Injectable()
 export class NotebookService {
+  public ready$: Subject<void> = new Subject();
+
   private notebooks: NotebookData[] = [];
 
   private selectedId: string;
@@ -32,10 +34,12 @@ export class NotebookService {
     private storage: StorageService
   ) {
     // check storage
-    this.storage.get(StorageKey.Notebook).subscribe((selected) => {
+    this.storage.get(StorageKey.Notebook).subscribe((selected: string) => {
       if (selected) {
         this.selectedId = selected;
       }
+      // emit signal
+      this.ready$.next();
     });
   }
 

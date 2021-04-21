@@ -38,7 +38,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       return;
     }
 
-    this.layoutDS.storageService.get(StorageKey.Notebook).subscribe((notebookId) => {
+    this.layoutDS.storageService.get(StorageKey.Notebook).subscribe((notebookId: string) => {
       const defaultNotebook = this.layoutDS.notebookService.getSelected() || { id: null };
       if (notebookId !== defaultNotebook.id) {
         this.layoutDS.notebookService.setSelected(notebookId);

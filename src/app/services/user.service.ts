@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
-import { BehaviorSubject } from 'rxjs';
-import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { StorageKey } from './storage-service/storage.types';
+import { StorageService } from './storage-service/storage.service';
 
 type UserData = {
   id: string;
@@ -11,6 +12,8 @@ type UserData = {
 
 @Injectable()
 export class UserService {
+  public ready$: Subject<void> = new Subject();
+
   private me: UserData;
 
   private users: UserData[] = [];
@@ -18,12 +21,15 @@ export class UserService {
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private storage: StorageSyncService
+    private storage: StorageService
   ) {
-    const user = this.storage.get(StorageSyncKey.User);
-    if (user) {
-      this.iam(JSON.parse(user), false);
-    }
+    this.storage.get(StorageKey.User).subscribe((user: UserData) => {
+      if (user) {
+        this.iam(user, false);
+      }
+      // emit signal
+      this.ready$.next();
+    });
   }
 
   public iam({ id, username, thumb }: UserData, sync = true) {
@@ -32,7 +38,7 @@ export class UserService {
 
     // storage sync
     if (sync) {
-      this.storage.set(StorageSyncKey.User, JSON.stringify(this.me));
+      this.storage.set(StorageKey.User, this.me);
     }
 
     // emit signal
@@ -65,7 +71,7 @@ export class UserService {
     this.logged$.next(false);
 
     // storage sync
-    this.storage.remove(StorageSyncKey.User);
+    this.storage.remove(StorageKey.User);
   }
 
   clear() {
