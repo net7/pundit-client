@@ -81,7 +81,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
 
   private onAuth({ token, user }) {
     // set token
-    this.layoutDS.tokenService.set(token.access_token);
+    this.layoutDS.tokenService.set(token);
     // set user
     this.layoutDS.userService.iam({
       ...user,
