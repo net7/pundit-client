@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
 import { CommunicationSettings, retry$ } from '@pundit/communication';
 import { PunditRefreshTokenService, RefreshResponse } from '@pundit/login';
-import { of, Subject } from 'rxjs';
+import { of, ReplaySubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StorageService } from './storage-service/storage.service';
 import { StorageKey } from './storage-service/storage.types';
 
 @Injectable()
 export class TokenService {
-  public ready$: Subject<void> = new Subject();
+  public ready$: ReplaySubject<void> = new ReplaySubject();
 
   private token: any;
 

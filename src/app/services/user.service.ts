@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
-import { BehaviorSubject, Subject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { StorageKey } from './storage-service/storage.types';
 import { StorageService } from './storage-service/storage.service';
 
@@ -12,7 +12,7 @@ type UserData = {
 
 @Injectable()
 export class UserService {
-  public ready$: Subject<void> = new Subject();
+  public ready$: ReplaySubject<void> = new ReplaySubject();
 
   private me: UserData;
 

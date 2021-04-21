@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { from, Subject } from 'rxjs';
+import { from, Subject, ReplaySubject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
 import * as notebookModel from 'src/app/models/notebook';
 import { tap } from 'rxjs/operators';
@@ -21,7 +21,7 @@ export type NotebookUpdate = {
 
 @Injectable()
 export class NotebookService {
-  public ready$: Subject<void> = new Subject();
+  public ready$: ReplaySubject<void> = new ReplaySubject();
 
   private notebooks: NotebookData[] = [];
 
