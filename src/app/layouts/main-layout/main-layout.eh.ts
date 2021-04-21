@@ -108,6 +108,7 @@ export class MainLayoutEH extends EventHandler {
     const { status } = error.response;
     switch (status) {
       // Unauthorized
+      case 403:
       case 401:
         this.appEvent$.next({ type: AppEvent.Logout });
         break;

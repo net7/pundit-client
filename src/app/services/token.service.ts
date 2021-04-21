@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CommunicationSettings } from '@pundit/communication';
-import { PunditRefreshTokenService } from '@pundit/login';
+import { CommunicationSettings, retry$ } from '@pundit/communication';
+import { PunditRefreshTokenService, RefreshResponse } from '@pundit/login';
 import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
 
 @Injectable()
@@ -13,43 +13,11 @@ export class TokenService {
   ) {
     const token = this.storage.get(StorageSyncKey.Token);
     if (token) {
-      this.set(token, false);
+      this.set(JSON.parse(token), false);
     }
     CommunicationSettings.hooks = {
-      // after: (options,response: AxiosPromise)=> {
-      //   return response
-      //   .then(r => r)
-      //   .catch((error: AxiosError) =>{
-      //     const { status } = error.response;
-      //     if(status !== 401){
-      //       return error;
-      //     }
-
-      //     return this.punditRefreshToken.refresh('abc').toPromise().then(
-      //       (refreshResponse: RefreshResponse) => {
-      //         if('error' in refreshResponse ){
-      //           return error;
-      //         }else{
-      //           const newToken = refreshResponse.token;
-      //           this.set(newToken);
-      //           error.config.headers['authorization'] = `Bearer ${newToken.access_token}`;
-      //           return axios(error.config);
-      //         }
-      //       }
-      //     ).catch(
-      //       (refreshError)=>{
-      //         return error;
-      //       }
-      //     )
-      //   })
-      // },
-      before: (options) => {
-        if (this?.token?.access_token) {
-          options.headers = options.headers || {};
-          options.headers.Authorization = `Bearer ${this.token.access_token}`;
-        }
-        return options;
-      }
+      after: this.afterHook,
+      before: this.beforeHook
     };
   }
 
@@ -60,7 +28,7 @@ export class TokenService {
       this.storage.set(StorageSyncKey.Token, JSON.stringify(token));
     }
     // add token to communication
-    CommunicationSettings.token = token;
+    CommunicationSettings.token = (token && token.access_token) || null;
   }
 
   get = () => this.token;
@@ -72,4 +40,31 @@ export class TokenService {
     // remove token from communication
     CommunicationSettings.token = null;
   }
+
+  private beforeHook = (options) => {
+    this.set(this.token, false);
+    return options;
+  }
+
+  private afterHook = (response) => response
+    .then((r) => r)
+    .catch((err) => {
+      const { status } = err.response;
+      if (status !== 401) {
+        return err;
+      }
+      const token = this.get();
+      return this.punditRefreshToken.refresh(token.access_token).toPromise()
+        .then(
+          (refreshResponse: RefreshResponse) => {
+            if ('error' in refreshResponse) {
+              throw err;
+            } else {
+              const newToken = refreshResponse.token;
+              this.set(newToken);
+              return retry$(err);
+            }
+          }
+        ).catch(() => { throw err; });
+    })
 }
