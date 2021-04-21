@@ -65,17 +65,16 @@ export class TokenService {
       if (status !== 401) {
         return err;
       }
-      return this.punditRefreshToken.refresh(this.token.access_token).toPromise()
-        .then(
-          (refreshResponse: RefreshResponse) => {
-            if ('error' in refreshResponse) {
-              throw err;
-            } else {
-              const newToken = refreshResponse.token;
-              this.set(newToken);
-              return retry$(err);
-            }
-          }
-        ).catch(() => { throw err; });
+      return this.refreshTokenAndRetry(err);
     })
+
+  private refreshTokenAndRetry = (err) => this.punditRefreshToken.refresh(this.token.access_token)
+    .toPromise().then((refreshResponse: RefreshResponse) => {
+      if ('error' in refreshResponse) {
+        throw err;
+      } else {
+        this.set(refreshResponse.token);
+        return retry$(err);
+      }
+    }).catch(() => { throw err; })
 }
