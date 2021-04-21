@@ -1,4 +1,5 @@
 import { _t } from '@n7-frontend/core';
+import { zip } from 'rxjs';
 import { delay, first, takeUntil } from 'rxjs/operators';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { _c } from 'src/app/models/config';
@@ -16,12 +17,19 @@ export class MainLayoutLoginHandler implements LayoutHandler {
 
   public listen() {
     // user check on init
-    if (this.layoutDS.userService.whoami()) {
-      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
-    } else {
-      this.loginAlert();
-      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
-    }
+    const servicesReady$ = zip(
+      this.layoutDS.userService.ready$,
+      this.layoutDS.tokenService.ready$,
+      this.layoutDS.notebookService.ready$,
+    );
+    servicesReady$.subscribe(() => {
+      if (this.layoutDS.userService.whoami()) {
+        this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+      } else {
+        this.loginAlert();
+        this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+      }
+    });
 
     this.layoutDS.punditLoginService.onAuth().pipe(
       takeUntil(this.layoutEH.destroy$)

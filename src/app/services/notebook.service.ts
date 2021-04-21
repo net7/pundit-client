@@ -21,6 +21,8 @@ export type NotebookUpdate = {
 
 @Injectable()
 export class NotebookService {
+  public ready$: Subject<void> = new Subject();
+
   private notebooks: NotebookData[] = [];
 
   private selectedId: string;
@@ -36,6 +38,8 @@ export class NotebookService {
       if (selected) {
         this.selectedId = selected;
       }
+      // emit signal
+      this.ready$.next();
     });
   }
 

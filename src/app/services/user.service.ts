@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { StorageKey } from './storage-service/storage.types';
 import { StorageService } from './storage-service/storage.service';
 
@@ -12,6 +12,8 @@ type UserData = {
 
 @Injectable()
 export class UserService {
+  public ready$: Subject<void> = new Subject();
+
   private me: UserData;
 
   private users: UserData[] = [];
@@ -25,6 +27,8 @@ export class UserService {
       if (user) {
         this.iam(user, false);
       }
+      // emit signal
+      this.ready$.next();
     });
   }
 
