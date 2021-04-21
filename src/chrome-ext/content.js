@@ -43,6 +43,11 @@ function load() {
     return;
   }
 
+  // listen to annotation updates
+  window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
+  // listen storage request event
+  window.addEventListener('storage.request', onStorageRequest, false);
+
   appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);
   
@@ -61,10 +66,6 @@ function load() {
     // init loader
     badgeLoader();
 
-    // listen to annotation updates
-    window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
-    // listen storage request event
-    window.addEventListener('storage.request', onStorageRequest, false);
     main.remove();
   };
 }
