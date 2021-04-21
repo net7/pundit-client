@@ -4,6 +4,7 @@ import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
 import { catchError, delay, switchMap } from 'rxjs/operators';
+import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
@@ -48,7 +49,7 @@ export class MainLayoutEH extends EventHandler {
           break;
         case MainLayoutEvent.GetUserData:
           this.dataSource.getUserNotebooks().pipe(
-            switchMap(() => this.dataSource.getDefaultNotebookIdFromStorage$()),
+            switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
             switchMap((defaultNotebookId: string) => {
               // set default notebook
               this.dataSource.setDefaultNotebook(defaultNotebookId);

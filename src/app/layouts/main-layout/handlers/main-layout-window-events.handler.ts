@@ -1,6 +1,6 @@
 import { _t } from '@n7-frontend/core';
-import { filter } from 'rxjs/operators';
 import { AppEvent } from 'src/app/event-types';
+import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -38,9 +38,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       return;
     }
 
-    this.layoutDS.getDefaultNotebookIdFromStorage$().pipe(
-      filter((notebookId: string) => !!notebookId)
-    ).subscribe((notebookId: string) => {
+    this.layoutDS.storageService.get(StorageKey.Notebook).subscribe((notebookId) => {
       const defaultNotebook = this.layoutDS.notebookService.getSelected() || { id: null };
       if (notebookId !== defaultNotebook.id) {
         this.layoutDS.notebookService.setSelected(notebookId);

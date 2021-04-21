@@ -22,6 +22,13 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
       window.dispatchEvent(signal);
       break;
     }
+    case 'storage.response': {
+      const signal = new CustomEvent('storage.response', { 
+        detail: payload
+      });
+      window.dispatchEvent(signal);
+      break;
+    }
     default:
       break;
   }
@@ -67,6 +74,8 @@ function load(user, token, notebookId) {
     window.addEventListener('userlogged', onUserLogged, false);
     // listen notebookid request event
     window.addEventListener('notebookid.request', onNotebookIdRequest, false);
+    // listen storage request event
+    window.addEventListener('storage.request', onStorageRequest, false);
     main.remove();
   };
 }
@@ -79,6 +88,7 @@ function destroy() {
   window.removeEventListener('notebooksupdate', onNotebookUpdate);
   window.removeEventListener('userlogged', onUserLogged);
   window.removeEventListener('notebookid.request', onNotebookIdRequest);
+  window.removeEventListener('storage.request', onStorageRequest);
 
   // emit signal
   const signal = new CustomEvent('punditdestroy');
@@ -143,5 +153,12 @@ function onUserLogged(ev) {
 function onNotebookIdRequest() {
   chrome.runtime.sendMessage({
     type: 'notebookid.request'
+  });
+}
+
+function onStorageRequest(ev) {
+  chrome.runtime.sendMessage({
+    type: 'storage.request',
+    payload: ev.detail
   });
 }

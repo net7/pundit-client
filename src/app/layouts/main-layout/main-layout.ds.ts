@@ -1,21 +1,16 @@
 import { LayoutDataSource } from '@n7-frontend/core';
-import {
-  from, of, BehaviorSubject, Observable
-} from 'rxjs';
+import { from, of, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
-import {
-  Annotation,
-  CommentAnnotation,
-} from '@pundit/communication';
+import { Annotation, CommentAnnotation, } from '@pundit/communication';
 import { PunditLoginService, PunditLogoutService } from '@pundit/login';
-import { environment as env } from 'src/environments/environment';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { StorageSyncKey, StorageSyncService } from 'src/app/services/storage-sync.service';
+import { StorageService } from 'src/app/services/storage-service/storage.service';
+import { StorageSyncService } from 'src/app/services/storage-sync.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
@@ -57,6 +52,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public storageSyncService: StorageSyncService;
 
+  public storageService: StorageService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -87,6 +84,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.toastService = payload.toastService;
     this.punditLogoutService = payload.punditLogoutService;
     this.storageSyncService = payload.storageSyncService;
+    this.storageService = payload.storageService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -184,31 +182,6 @@ export class MainLayoutDS extends LayoutDataSource {
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
     }
-  }
-
-  public getDefaultNotebookIdFromStorage$(): Observable<string> {
-    if (env.chromeExt) {
-      return this.getDefaultNotebookIdFromExtStorage$();
-    }
-    return this.getDefaultNotebookIdFromLocalStorage$();
-  }
-
-  private getDefaultNotebookIdFromExtStorage$(): Observable<string> {
-    return new Observable((subscriber) => {
-      // listen signal from chrome-ext
-      window.addEventListener('notebookid.response', (ev: CustomEvent) => {
-        const { notebookId } = ev.detail;
-        subscriber.next(notebookId);
-        subscriber.complete();
-      }, false);
-      // emit signal to chrome-ext
-      const signal = new CustomEvent('notebookid.request');
-      window.dispatchEvent(signal);
-    });
-  }
-
-  private getDefaultNotebookIdFromLocalStorage$(): Observable<string> {
-    return of(this.storageSyncService.get(StorageSyncKey.Notebook));
   }
 
   private handleSearchResponse(searchData) {
