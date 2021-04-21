@@ -145,6 +145,6 @@ export class NotebookService {
     this.notebooks = [];
 
     // storage sync
-    this.storage.remove(StorageSyncKey.Notebook);
+    this.storage.remove(StorageKey.Notebook);
   }
 }
