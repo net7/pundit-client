@@ -3,7 +3,8 @@ import { from, Subject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
 import * as notebookModel from 'src/app/models/notebook';
 import { tap } from 'rxjs/operators';
-import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
+import { StorageService } from './storage-service/storage.service';
+import { StorageKey } from './storage-service/storage.types';
 import { UserService } from './user.service';
 
 export type NotebookData = {
@@ -28,13 +29,14 @@ export class NotebookService {
 
   constructor(
     private userService: UserService,
-    private storage: StorageSyncService
+    private storage: StorageService
   ) {
-    // check storage sync
-    const selected = this.storage.get(StorageSyncKey.Notebook);
-    if (selected) {
-      this.selectedId = selected;
-    }
+    // check storage
+    this.storage.get(StorageKey.Notebook).subscribe((selected) => {
+      if (selected) {
+        this.selectedId = selected;
+      }
+    });
   }
 
   public getSelected = () => this.getNotebookById(this.selectedId);
@@ -42,8 +44,8 @@ export class NotebookService {
   public setSelected(id: string) {
     this.selectedId = id;
 
-    // storage sync
-    this.storage.set(StorageSyncKey.Notebook, id);
+    // storage
+    this.storage.set(StorageKey.Notebook, id);
 
     // emit signal
     this.selectedChanged$.next();

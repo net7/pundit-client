@@ -18,6 +18,7 @@ import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
 import { ChromeExtService } from './services/chrome-ext.service';
 import { StorageService } from './services/storage-service/storage.service';
+import { StorageEmbedService } from './services/storage-service/storage-embed.service';
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
@@ -79,7 +80,9 @@ config.init(appConfig);
     TokenService,
     StorageSyncService,
     ToastService,
-    [{ provide: StorageService, useClass: StorageChromeExtService }],
+    StorageService,
+    StorageEmbedService,
+    StorageChromeExtService,
     {
       provide: APP_INITIALIZER,
       useFactory: (
