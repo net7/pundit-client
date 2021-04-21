@@ -1,4 +1,4 @@
-import { LayoutDataSource } from '@n7-frontend/core';
+import { LayoutDataSource, _t } from '@n7-frontend/core';
 import {
   BehaviorSubject, Subject
 } from 'rxjs';
@@ -29,6 +29,16 @@ export class SidebarLayoutDS extends LayoutDataSource {
   public annotations: AnnotationConfig[] = null ;
 
   public userLink = _c('userLink');
+
+  /** Data for the popover that appears when clicking on the user name */
+  public userPopover = {
+    isOpen: new BehaviorSubject(false),
+    items: [
+      { label: _t('userpopover#notebooks'), href: _c('userLink') },
+      { label: _t('userpopover#report'), href: '' },
+      { label: _t('userpopover#logout'), payload: 'clicklogout' },
+    ]
+  }
 
   onInit(payload) {
     this.annotationService = payload.annotationService;

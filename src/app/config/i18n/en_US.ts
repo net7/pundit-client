@@ -56,6 +56,10 @@ export default {
   'annotation#addcomment': 'Add comment',
   'annotation#editcomment': 'Edit comment',
   'annotation#delete': 'Delete',
+  // userpopover
+  'userpopover#notebooks': 'Your Notebooks',
+  'userpopover#report': 'Report a problem or bug',
+  'userpopover#logout': 'Log Out',
   // notebookselector
   'notebookselector#cancel': 'Cancel',
   'notebookselector#create': 'Create',
@@ -71,5 +75,5 @@ export default {
   'notebookpanel#changestatus': 'Change status:',
   'notebookpanel#sharedsoon': 'Shared notebooks will be available soon!',
   'notebookpanel#changecurrent': 'Change current notebook:',
-  'notebookpanel#commingsoon': 'Coming soon!',
+  'notebookpanel#comingsoon': 'Coming soon!',
 };

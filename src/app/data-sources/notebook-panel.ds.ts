@@ -22,7 +22,7 @@ export class NotebookPanelDS extends DataSource {
         description: _t('notebookpanel#status_shared_description'),
       },
     },
-    commingSoon: _t('notebookpanel#commingsoon')
+    commingSoon: _t('notebookpanel#comingsoon')
   }
 
   public iconMap = {

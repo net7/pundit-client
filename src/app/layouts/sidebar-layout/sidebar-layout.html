@@ -19,10 +19,12 @@
                 <a (click)="lb.eventHandler.emitInner('requestlogin')"
                     class="pnd-sidebar__header-login">Login</a>
             </ng-container>
-            <ng-container *ngIf="ds.userService.logged$ | async"> 
-                <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link">
+            <ng-container *ngIf="ds.userService.logged$ | async">
+                <span (click)="ds.userPopover.isOpen.next(!ds.userPopover.isOpen.getValue())">
+                    <!-- <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link"> -->
                     {{ ds.userService.whoami().username }}
-                </a>
+                    <!-- </a> -->
+                </span>
             </ng-container>
         </div>
         <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
@@ -41,6 +43,28 @@
         </div>
     </div>
     <!-- END // Header -->
+
+    <!-- User popover -->
+    <ng-container *ngIf="ds.userPopover.isOpen.getValue()">
+        <div class="pnd-sidebar__user-popover">
+            <ul>
+                <ng-container *ngFor="let item of ds.userPopover.items">
+                    <ng-container *ngIf="item.payload">
+                        <li (click)="lb.eventHandler.emitInner(item.payload)">
+                            <a [href]="item.href">
+                                {{ item.label }}
+                            </a>
+                        </li>
+                    </ng-container>
+                    <ng-container *ngIf="item.href">
+                        <li (click)="lb.eventHandler.emitInner(item.payload)">
+                            {{ item.label }}
+                        </li>
+                    </ng-container>
+                </ng-container>
+            </ul>
+        </div>
+    </ng-container>
 
     <!-- Notebook popover -->
     <ng-container *ngIf="
