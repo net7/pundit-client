@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
-import { StorageSyncKey, StorageSyncService } from './storage-sync.service';
+import { StorageKey } from './storage-service/storage.types';
+import { StorageService } from './storage-service/storage.service';
 
 type UserData = {
   id: string;
@@ -18,12 +19,13 @@ export class UserService {
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private storage: StorageSyncService
+    private storage: StorageService
   ) {
-    const user = this.storage.get(StorageSyncKey.User);
-    if (user) {
-      this.iam(JSON.parse(user), false);
-    }
+    this.storage.get(StorageKey.User).subscribe((user) => {
+      if (user) {
+        this.iam(JSON.parse(user), false);
+      }
+    });
   }
 
   public iam({ id, username, thumb }: UserData, sync = true) {
@@ -32,7 +34,7 @@ export class UserService {
 
     // storage sync
     if (sync) {
-      this.storage.set(StorageSyncKey.User, JSON.stringify(this.me));
+      this.storage.set(StorageKey.User, JSON.stringify(this.me));
     }
 
     // emit signal
@@ -65,7 +67,7 @@ export class UserService {
     this.logged$.next(false);
 
     // storage sync
-    this.storage.remove(StorageSyncKey.User);
+    this.storage.remove(StorageKey.User);
   }
 
   clear() {

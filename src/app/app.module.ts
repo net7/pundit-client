@@ -13,7 +13,6 @@ import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
-import { StorageSyncService } from './services/storage-sync.service';
 import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
 import { StorageService } from './services/storage-service/storage.service';
@@ -74,7 +73,6 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
-    StorageSyncService,
     TokenService,
     ToastService,
     StorageService,
