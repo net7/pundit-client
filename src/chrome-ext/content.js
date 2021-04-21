@@ -4,12 +4,12 @@ let badgeInterval;
 let badgeIntervalCount = 0;
 let rootExistMessageSended = false;
 
-chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(({ type, payload }, _sender, _sendResponse) => {
   switch(type) {
     case 'statechanged': {
-      const { active, user, token, notebookId } = payload;
+      const { active } = payload;
       if (active) {
-        load(user, token, notebookId);
+        load();
       } else {
         destroy();
       }
@@ -34,7 +34,7 @@ chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) 
   }
 });
 
-function load(user, token, notebookId) {
+function load() {
   if (appRoot) return;
 
   // existing embed pundit check
@@ -52,12 +52,7 @@ function load(user, token, notebookId) {
   main.onload = function() {
     // emit signal
     const signal = new CustomEvent('punditloaded', { 
-      detail: { 
-        user,
-        token,
-        notebookId,
-        id: chrome.runtime.id 
-      }
+      detail: { id: chrome.runtime.id }
     });
     window.dispatchEvent(signal);
 
@@ -68,12 +63,6 @@ function load(user, token, notebookId) {
 
     // listen to annotation updates
     window.addEventListener('annotationsupdate', onAnnotationUpdate, false);
-    // listen to notebook updates
-    window.addEventListener('notebooksupdate', onNotebookUpdate, false);
-    // listen login events
-    window.addEventListener('userlogged', onUserLogged, false);
-    // listen notebookid request event
-    window.addEventListener('notebookid.request', onNotebookIdRequest, false);
     // listen storage request event
     window.addEventListener('storage.request', onStorageRequest, false);
     main.remove();
@@ -85,9 +74,6 @@ function destroy() {
   
   // remove listeners
   window.removeEventListener('annotationsupdate', onAnnotationUpdate);
-  window.removeEventListener('notebooksupdate', onNotebookUpdate);
-  window.removeEventListener('userlogged', onUserLogged);
-  window.removeEventListener('notebookid.request', onNotebookIdRequest);
   window.removeEventListener('storage.request', onStorageRequest);
 
   // emit signal
@@ -133,27 +119,6 @@ function onAnnotationUpdate(ev) {
 
   // clear loader
   clearInterval(badgeInterval);
-}
-
-function onNotebookUpdate(ev) {
-  const { selectedId } = ev.detail;
-  chrome.runtime.sendMessage({
-    type: 'notebooksupdate',
-    payload: selectedId
-  });
-}
-
-function onUserLogged(ev) {
-  chrome.runtime.sendMessage({
-    type: 'userlogged',
-    payload: ev.detail
-  });
-}
-
-function onNotebookIdRequest() {
-  chrome.runtime.sendMessage({
-    type: 'notebookid.request'
-  });
 }
 
 function onStorageRequest(ev) {

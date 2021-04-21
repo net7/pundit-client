@@ -13,11 +13,6 @@ const StorageKeys = {
   Active: 'active',
   Incognito: 'incognito'
 }
-const UserStorageKeys = {
-  User: 'pundit-user',
-  Token: 'pundit-token',
-  Notebook: 'pundit-notebook',
-};
 
 class Storage {
   static get(key) {
@@ -103,9 +98,13 @@ chrome.windows.onRemoved.addListener((windowId) => {
       if (value) {
         // remove incognito key
         Storage.remove(incognitoKey);
-        // remove user storage keys
-        Object.keys(UserStorageKeys).forEach((key) => {
-          Storage.remove(`${UserStorageKeys[key]}.${windowId}`);
+        // remove incognito window storage keys
+        chrome.storage.local.get(null, (items) => {
+          Object.keys(items)
+            .filter((key) => key.indexOf(windowId) !== -1)
+            .forEach((key) => {
+              Storage.remove(key);
+            })
         });
       }
     });
@@ -120,51 +119,13 @@ chrome.windows.onCreated.addListener((currentWindow) => {
 // content listener
 chrome.runtime.onMessage.addListener(({ type, payload }, _sender, sendResponse) => {
   const { tab } = _sender;
-  const { incognito, windowId } = tab;
   switch(type) {
     case 'annotationsupdate': 
       updateBadgeText(tab.id, payload);
       updateBadgeTitle(tab.id, payload);
       break;
-    case 'notebooksupdate':
-      // storage sync
-      setUserStorage({
-        incognito, 
-        windowId,
-        key: UserStorageKeys.Notebook,
-        value: payload 
-      });
-      break;
-    case 'userlogged':
-      const { isLogged, user, token } = payload;
-      // storage sync
-      if (isLogged) {
-        setUserStorage({
-          incognito, 
-          windowId,
-          key: UserStorageKeys.User,
-          value: user 
-        });
-        setUserStorage({
-          incognito, 
-          windowId,
-          key: UserStorageKeys.Token,
-          value: token 
-        });
-      } else {
-        removeUserStorage({ incognito, windowId, key: UserStorageKeys.User });
-        removeUserStorage({ incognito, windowId, key: UserStorageKeys.Token });
-        removeUserStorage({ incognito, windowId, key: UserStorageKeys.Notebook });
-      }
-      break;
     case 'rootelementexists':
       onBrowserActionClicked(tab.id);
-      break;
-    case 'notebookid.request':
-      Storage.get(UserStorageKeys.Notebook).then((notebookId) => {
-        const payload = { notebookId };
-        chrome.tabs.sendMessage(tab.id, { type: 'notebookid.response', payload });
-      });
       break;
     case 'storage.request':
       doStorageRequest(tab, payload);
@@ -180,32 +141,17 @@ function onChange(tabId) {
       // do nothing
     } else {
       const { windowId } = tab;
-      chrome.windows.get(windowId, ({ type, incognito }) => {
+      chrome.windows.get(windowId, ({ type }) => {
         // popup check
         if (type === 'popup') {
           return;
         }
-        const storageKeysMap = {
-          active: `${StorageKeys.Active}.${tabId}`,
-          user: UserStorageKeys.User, 
-          token: UserStorageKeys.Token, 
-          notebookId: UserStorageKeys.Notebook
-        };
-        if (incognito) {
-          ['user', 'token', 'notebookId'].forEach((key) => {
-            storageKeysMap[key] = `${storageKeysMap[key]}.${windowId}`;
-          });
-        }
-        Storage.getMulti(Object.values(storageKeysMap))
-          .then((values) => {
-            const payload = {
-              active: values[storageKeysMap.active], 
-              user: values[storageKeysMap.user], 
-              token: values[storageKeysMap.token], 
-              notebookId: values[storageKeysMap.notebookId]
-            };
+        const activeKey = `${StorageKeys.Active}.${tabId}`;
+        Storage.get(activeKey)
+          .then((active) => {
+            const payload = { active };
             chrome.tabs.sendMessage(tabId, { type: 'statechanged', payload });
-            updateExtensionIcon(tabId, payload.active);
+            updateExtensionIcon(tabId, active);
           })
       })
     }
@@ -250,14 +196,6 @@ function updateBadgeTitle(tabId, number, active = true) {
   }
   chrome.browserAction.setTitle({ tabId, title })
 }
-
-function setUserStorage({ key, value, incognito, windowId }) {
-  Storage.set(incognito ? `${key}.${windowId}` : key, value);
-} 
-
-function removeUserStorage({ key, incognito, windowId }) {
-  Storage.remove(incognito ? `${key}.${windowId}` : key);
-} 
 
 function doStorageRequest(tab, payload) {
   const { id: tabId, incognito, windowId } = tab;
