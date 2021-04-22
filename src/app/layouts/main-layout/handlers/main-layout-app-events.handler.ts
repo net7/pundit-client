@@ -41,7 +41,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           this.onSidebarCollapse(payload);
           break;
         case AppEvent.Logout:
-          this.onLogout();
+          this.onLogout(payload);
           this.layoutEH.appEvent$.next({
             type: AppEvent.Clear
           });
@@ -108,10 +108,10 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onLogout() {
+  private onLogout(doRequest = true) {
     const token = this.layoutDS.tokenService.get();
     this.resetAppDataAndEmit();
-    if (token?.access_token) {
+    if (doRequest && token?.access_token) {
       const params = {
         withCredentials: true,
         headers: {

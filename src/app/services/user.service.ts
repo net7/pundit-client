@@ -4,7 +4,7 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { StorageKey } from './storage-service/storage.types';
 import { StorageService } from './storage-service/storage.service';
 
-type UserData = {
+export type UserData = {
   id: string;
   username: string;
   thumb: string;
