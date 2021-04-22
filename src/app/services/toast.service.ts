@@ -116,6 +116,12 @@ export class ToastService {
     }
   }
 
+  clear() {
+    this.toasts.forEach((toast) => {
+      this.close(toast.id);
+    });
+  }
+
   private notify(toastType: ToastType, params: ToastParams) {
     // updated class counter
     ToastService.counter += 1;

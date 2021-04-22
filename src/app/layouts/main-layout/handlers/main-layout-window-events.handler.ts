@@ -68,6 +68,8 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
           type: AppEvent.Logout,
           payload: false
         });
+        // clear toasts
+        this.layoutDS.toastService.clear();
         // trigger auto-login
         this.layoutDS.tokenService.set(token);
         this.layoutDS.userService.iam(user);
