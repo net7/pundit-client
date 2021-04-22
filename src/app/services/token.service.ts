@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CommunicationSettings, retry$ } from '@pundit/communication';
-import { PunditRefreshTokenService, RefreshResponse } from '@pundit/login';
+import { AuthToken, PunditRefreshTokenService, RefreshResponse } from '@pundit/login';
 import { of, ReplaySubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StorageService } from './storage-service/storage.service';
@@ -10,13 +10,13 @@ import { StorageKey } from './storage-service/storage.types';
 export class TokenService {
   public ready$: ReplaySubject<void> = new ReplaySubject();
 
-  private token: any;
+  private token: AuthToken;
 
   constructor(
     private storage: StorageService,
     private punditRefreshToken: PunditRefreshTokenService
   ) {
-    this.storage.get(StorageKey.Token).subscribe((token: object) => {
+    this.storage.get(StorageKey.Token).subscribe((token: AuthToken) => {
       if (token) {
         this.set(token, false);
       }
@@ -29,7 +29,7 @@ export class TokenService {
     };
   }
 
-  set(token: any, sync = true) {
+  set(token: AuthToken, sync = true) {
     this.token = token;
     // storage sync
     if (sync) {
@@ -50,8 +50,8 @@ export class TokenService {
   }
 
   private beforeHook = (options) => this.storage.get(StorageKey.Token).pipe(
-    switchMap((token) => {
-      if (token !== this.token) {
+    switchMap((token: AuthToken) => {
+      if (!this.equals(token)) {
         this.set(token, false);
       }
       return of(options);
@@ -77,4 +77,8 @@ export class TokenService {
         return retry$(err);
       }
     }).catch(() => { throw err; })
+
+  private equals(token: AuthToken): boolean {
+    return token?.access_token === this.token?.access_token;
+  }
 }

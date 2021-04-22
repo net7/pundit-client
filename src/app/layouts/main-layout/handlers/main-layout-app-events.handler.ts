@@ -110,6 +110,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private onLogout() {
     const token = this.layoutDS.tokenService.get();
+    this.resetAppDataAndEmit();
     if (token?.access_token) {
       const params = {
         withCredentials: true,
@@ -117,16 +118,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           Authorization: `Bearer ${token.access_token}`
         }
       } as HttpRequestOptions;
-      this.layoutDS.punditLogoutService.logout(params).then(() => {
-        this.resetAppDataAndEmit();
-      }).catch((error) => {
-        console.log(error);
-        if (error && error.status === 401) {
-          this.resetAppDataAndEmit();
-        }
+      this.layoutDS.punditLogoutService.logout(params).catch((error) => {
+        console.warn(error);
       });
-    } else {
-      this.resetAppDataAndEmit();
     }
   }
 
