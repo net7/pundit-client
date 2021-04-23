@@ -24,7 +24,6 @@ export class AnnotationDS extends DataSource {
       subject,
       created
     } = data;
-    const { annotationNotebook } = this.options;
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
     const notebookSelectorData: NotebookSelectorData = {
@@ -58,12 +57,7 @@ export class AnnotationDS extends DataSource {
       user: this.getUserData(),
       isCollapsed: true,
       date: new Date(created).toLocaleDateString(),
-      notebook: {
-        name: annotationNotebook.label,
-        anchor: this.isCurrentUser()
-          ? this.getNotebookLink(annotationNotebook.id)
-          : null
-      },
+      notebook: this.getNotebookData(),
       body: text,
       comment,
       menu: this.getMenuData(id, comment),
@@ -191,6 +185,10 @@ export class AnnotationDS extends DataSource {
     this.output.menu = this.getMenuData(id);
   }
 
+  updateNotebook() {
+    this.output.notebook = this.getNotebookData();
+  }
+
   updateCssClass(cssClass: AnnotationCssClass) {
     this.output.classes = cssClass;
   }
@@ -273,6 +271,16 @@ export class AnnotationDS extends DataSource {
           }))
       }
     } : null;
+  }
+
+  private getNotebookData() {
+    const { annotationNotebook } = this.options;
+    return {
+      name: annotationNotebook.label,
+      anchor: this.isCurrentUser()
+        ? this.getNotebookLink(annotationNotebook.id)
+        : null
+    };
   }
 
   changeNotebookSelectorLoadingState(loading: boolean) {

@@ -64,6 +64,7 @@ export class AnnotationService {
       annotationDS.options.currentUser = currentUser;
       annotationDS.updateUser();
       annotationDS.updateMenu();
+      annotationDS.updateNotebook();
     } else {
       const { id } = rawAnnotation;
       const data = rawAnnotation;
