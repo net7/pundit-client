@@ -8,14 +8,15 @@ const path = require('path');
 const concat = require('concat');
 
 const context = argv.c;
+const isChromeExt = ['chrome-ext-stage', 'chrome-ext-prod'].includes(context);
 const distPath = path.join(path.dirname(fs.realpathSync(__filename)), '../dist');
 const basePath = `${distPath}/${context}`;
 const filesToMerge = ['main.js', 'styles.js'];
-const outputFile = `pundit.${context}.js`;
+const outputFile = isChromeExt ? 'pundit.chrome-ext.js' : 'pundit.embed.js';
 const outputFilePath = `${basePath}/${outputFile}`;
 let allowedFiles = [outputFile];
 
-if (argv.c === 'chrome-ext') {
+if (['chrome-ext-stage', 'chrome-ext-prod'].includes(argv.c)) {
   allowedFiles = [
     ...allowedFiles,
     'assets',

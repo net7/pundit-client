@@ -88,8 +88,8 @@
                 }
               ]
             },
-            "chrome-ext": {
-              "outputPath": "dist/chrome-ext",
+            "chrome-ext-prod": {
+              "outputPath": "dist/chrome-ext-prod",
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
@@ -100,7 +100,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.chrome-ext.ts"
+                  "with": "src/environments/environment.chrome-ext.prod.ts"
                 },
                 {
                   "replace": "src/app/app.module.ts",
@@ -122,8 +122,8 @@
                 }
               ]
             },
-            "embed": {
-              "outputPath": "dist/embed",
+            "chrome-ext-stage": {
+              "outputPath": "dist/chrome-ext-stage",
               "optimization": true,
               "sourceMap": false,
               "namedChunks": false,
@@ -134,7 +134,65 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.embed.ts"
+                  "with": "src/environments/environment.chrome-ext.stage.ts"
+                },
+                {
+                  "replace": "src/app/app.module.ts",
+                  "with": "src/app/app.module.chrome-ext.ts"
+                }
+              ],
+              "assets": [
+                "src/favicon.ico",
+                "src/assets",
+                { 
+                  "glob": "**/*", 
+                  "input": "src/chrome-ext/", 
+                  "output": "/" 
+                },
+                { 
+                  "glob": "**/*", 
+                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
+                  "output": "/" 
+                }
+              ]
+            },
+            "embed-prod": {
+              "outputPath": "dist/embed-prod",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.prod.ts"
+                },
+                {
+                  "replace": "src/app/app.module.ts",
+                  "with": "src/app/app.module.embed.ts"
+                },
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/embed.html"
+                }
+              ]
+            },
+            "embed-stage": {
+              "outputPath": "dist/embed-stage",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.stage.ts"
                 },
                 {
                   "replace": "src/app/app.module.ts",
@@ -163,11 +221,17 @@
             "scroll": {
               "browserTarget": "pnd:build:scroll"
             },
-            "chrome-ext": {
-              "browserTarget": "pnd:build:chrome-ext"
+            "chrome-ext-prod": {
+              "browserTarget": "pnd:build:chrome-ext-prod"
             },
-            "embed": {
-              "browserTarget": "pnd:build:embed"
+            "chrome-ext-stage": {
+              "browserTarget": "pnd:build:chrome-ext-stage"
+            },
+            "embed-prod": {
+              "browserTarget": "pnd:build:embed-prod"
+            },
+            "embed-stage": {
+              "browserTarget": "pnd:build:embed-stage"
             }
           }
         },

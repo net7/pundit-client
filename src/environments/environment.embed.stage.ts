@@ -1,7 +1,7 @@
 import local from './local.stage';
 
 export const environment = {
-  production: false,
+  production: true,
   chromeExt: false,
   ...local
 };
