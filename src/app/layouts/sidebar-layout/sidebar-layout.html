@@ -27,44 +27,45 @@
                 </span>
             </ng-container>
         </div>
+        <!-- User popover -->
+        <ng-container *ngIf="ds.userPopover.isOpen.getValue()">
+            <div class="pnd-sidebar__user-popover">
+                <ul class="pnd-sidebar__user-popover-list">
+                    <ng-container *ngFor="let item of ds.userPopover.items">
+                        <ng-container *ngIf="item.payload">
+                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
+                                <a [href]="item.href">
+                                    {{ item.label }}
+                                </a>
+                            </li>
+                        </ng-container>
+                        <ng-container *ngIf="item.href">
+                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
+                                {{ item.label }}
+                            </li>
+                        </ng-container>
+                    </ng-container>
+                </ul>
+            </div>
+        </ng-container>
         <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
             <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <span class="pundit-icon-book"></span>
             </a>
+            <!--
             <a class="pnd-sidebar__action pnd-sidebar__logout-button"
                (click)="lb.eventHandler.emitInner('clicklogout')">
                 <span class="pundit-icon-signout"></span>
             </a>
+            -->
             <a class="pnd-sidebar__action pnd-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <span class="pundit-icon-times"></span>
+                <span class="pundit-icon-angle-right"></span>
             </a>
         </div>
     </div>
     <!-- END // Header -->
-
-    <!-- User popover -->
-    <ng-container *ngIf="ds.userPopover.isOpen.getValue()">
-        <div class="pnd-sidebar__user-popover">
-            <ul>
-                <ng-container *ngFor="let item of ds.userPopover.items">
-                    <ng-container *ngIf="item.payload">
-                        <li (click)="lb.eventHandler.emitInner(item.payload)">
-                            <a [href]="item.href">
-                                {{ item.label }}
-                            </a>
-                        </li>
-                    </ng-container>
-                    <ng-container *ngIf="item.href">
-                        <li (click)="lb.eventHandler.emitInner(item.payload)">
-                            {{ item.label }}
-                        </li>
-                    </ng-container>
-                </ng-container>
-            </ul>
-        </div>
-    </ng-container>
 
     <!-- Notebook popover -->
     <ng-container *ngIf="
