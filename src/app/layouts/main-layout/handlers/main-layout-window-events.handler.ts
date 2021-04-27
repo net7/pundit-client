@@ -19,6 +19,8 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
 
     window.onfocus = () => {
+      // FIXME: abilitare identity
+      // e togilere checkStateFromStorage da qui
       // this.identitySync();
       this.checkStateFromStorage();
     };
