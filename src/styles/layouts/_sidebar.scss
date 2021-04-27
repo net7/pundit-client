@@ -209,6 +209,50 @@
 }
 
 /* ------------------------------------ *\
+   #USER-POPOVER
+\* ------------------------------------ */
+.pnd-sidebar {
+    &__user-popover {
+        position: absolute;
+        background-color: $color-background-base;
+        z-index: 40;
+        top: $sidebar-header-height;
+        border: 1px solid $color-border-normal;
+        padding: 0;
+        border-radius: $border-radius;
+        @include cardShadow-1;
+    }
+
+    &__user-popover-list {
+        list-style: none;
+        margin: 0;
+        padding: $space 0;
+    }
+
+    &__user-popover-item {
+        padding: $space $space*2;
+        font-size: $font-size-s;
+        color: $color-text;
+        cursor: pointer;
+        transition: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
+
+        a {
+            text-decoration: none;
+            color: $color-text;
+
+            &:hover {
+                color: $color-text-link;
+            }
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
    #LOADER WRAPPER
 \* ------------------------------------ */
 .pnd-sidebar {

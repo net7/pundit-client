@@ -54,9 +54,19 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   ngOnInit() {
     this.onInit();
+
+    // add host click listener
+    document.addEventListener('click', this.onDocumentClick);
   }
 
   ngOnDestroy() {
     this.onDestroy();
+
+    // remove host click listener
+    document.removeEventListener('click', this.onDocumentClick);
+  }
+
+  onDocumentClick = () => {
+    this.lb.dataSource.userPopover.isOpen.next(false);
   }
 }

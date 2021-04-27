@@ -19,24 +19,49 @@
                 <a (click)="lb.eventHandler.emitInner('requestlogin')"
                     class="pnd-sidebar__header-login">Login</a>
             </ng-container>
-            <ng-container *ngIf="ds.userService.logged$ | async"> 
-                <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link">
+            <ng-container *ngIf="ds.userService.logged$ | async">
+                <span (click)="ds.onUsernameClick($event)">
+                    <!-- <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link"> -->
                     {{ ds.userService.whoami().username }}
-                </a>
+                    <!-- </a> -->
+                </span>
             </ng-container>
         </div>
+        <!-- User popover -->
+        <ng-container *ngIf="ds.userPopover.isOpen | async">
+            <div class="pnd-sidebar__user-popover">
+                <ul class="pnd-sidebar__user-popover-list">
+                    <ng-container *ngFor="let item of ds.userPopover.items">
+                        <ng-container *ngIf="item.href">
+                            <li class="pnd-sidebar__user-popover-item">
+                                <a [href]="item.href" target="_blank">
+                                    {{ item.label }}
+                                </a>
+                            </li>
+                        </ng-container>
+                        <ng-container *ngIf="item.payload">
+                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
+                                {{ item.label }}
+                            </li>
+                        </ng-container>
+                    </ng-container>
+                </ul>
+            </div>
+        </ng-container>
         <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
             <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
                 <span class="pundit-icon-book"></span>
             </a>
+            <!--
             <a class="pnd-sidebar__action pnd-sidebar__logout-button"
                (click)="lb.eventHandler.emitInner('clicklogout')">
                 <span class="pundit-icon-signout"></span>
             </a>
+            -->
             <a class="pnd-sidebar__action pnd-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <span class="pundit-icon-times"></span>
+                <span class="pundit-icon-angle-right"></span>
             </a>
         </div>
     </div>
