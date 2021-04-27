@@ -1,7 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { AuthToken } from '@pundit/login';
-import { forkJoin } from 'rxjs';
-import { filter, finalize } from 'rxjs/operators';
+import { EMPTY, forkJoin } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { UserData } from 'src/app/services/user.service';
@@ -41,15 +41,19 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
   private identitySync() {
     const currentUser = this.layoutDS.userService.whoami();
     // FIXME: togliere as any
-    (this.layoutDS.punditLoginService as any).getIdentity().pipe(
+    (this.layoutDS.punditLoginService as any).sso().pipe(
       filter(({ user }) => user.id !== currentUser?.id),
-      finalize(() => {
+      catchError(() => {
+        // check storage state
         this.checkStateFromStorage();
+        return EMPTY;
       })
     ).subscribe(({ user, token }) => {
       // update cached & storage data
       this.layoutDS.tokenService.set(token);
       this.layoutDS.userService.iam(user);
+      // check storage state
+      this.checkStateFromStorage();
     });
   }
 
