@@ -13,5 +13,4 @@ export enum SidebarLayoutEvent {
   NotebookPanelNewNotebookCreated = 'sidebar-layout.notebookpanelcreated',
   NotebookSharingModeUpdated = 'sidebar-layout.notebookmodeupdated',
   RequestLogin = 'sidebar-layout.requestlogin',
-  UserPopoverClose = 'sidebar-layout.userpopoverclose',
 }

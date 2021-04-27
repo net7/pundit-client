@@ -76,13 +76,9 @@ export class SidebarLayoutEH extends EventHandler {
           console.warn('FIXME: gestire username click');
           break;
         case SidebarLayoutEvent.ClickLogout:
-          this.dataSource.userPopover.isOpen.next(false);
           this.appEvent$.next({
             type: AppEvent.Logout
           });
-          break;
-        case SidebarLayoutEvent.UserPopoverClose:
-          this.dataSource.userPopover.isOpen.next(false);
           break;
         case SidebarLayoutEvent.RequestLogin:
           this.punditLoginService.start();

@@ -20,7 +20,7 @@
                     class="pnd-sidebar__header-login">Login</a>
             </ng-container>
             <ng-container *ngIf="ds.userService.logged$ | async">
-                <span (click)="ds.userPopover.isOpen.next(!ds.userPopover.isOpen.getValue())">
+                <span (click)="ds.onUsernameClick($event)">
                     <!-- <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link"> -->
                     {{ ds.userService.whoami().username }}
                     <!-- </a> -->
@@ -33,7 +33,7 @@
                 <ul class="pnd-sidebar__user-popover-list">
                     <ng-container *ngFor="let item of ds.userPopover.items">
                         <ng-container *ngIf="item.href">
-                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner('userpopoverclose')">
+                            <li class="pnd-sidebar__user-popover-item">
                                 <a [href]="item.href" target="_blank">
                                     {{ item.label }}
                                 </a>

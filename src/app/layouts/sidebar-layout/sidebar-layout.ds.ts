@@ -75,4 +75,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
       this.annotationPositionService.update();
     });
   }
+
+  onUsernameClick(ev: MouseEvent) {
+    ev.stopImmediatePropagation();
+    this.userPopover.isOpen.next(!this.userPopover.isOpen.getValue());
+  }
 }
