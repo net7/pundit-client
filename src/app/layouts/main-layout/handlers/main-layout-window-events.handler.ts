@@ -1,6 +1,7 @@
 import { _t } from '@n7-frontend/core';
 import { AuthToken } from '@pundit/login';
 import { forkJoin } from 'rxjs';
+import { filter, finalize } from 'rxjs/operators';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { UserData } from 'src/app/services/user.service';
@@ -18,6 +19,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
 
     window.onfocus = () => {
+      // this.identitySync();
       this.checkStateFromStorage();
     };
 
@@ -33,6 +35,21 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       title: _t('toast#rootelementexists_title'),
       text: _t('toast#rootelementexists_text'),
       autoClose: false
+    });
+  }
+
+  private identitySync() {
+    const currentUser = this.layoutDS.userService.whoami();
+    // FIXME: togliere as any
+    (this.layoutDS.punditLoginService as any).getIdentity().pipe(
+      filter(({ user }) => user.id !== currentUser?.id),
+      finalize(() => {
+        this.checkStateFromStorage();
+      })
+    ).subscribe(({ user, token }) => {
+      // update cached & storage data
+      this.layoutDS.tokenService.set(token);
+      this.layoutDS.userService.iam(user);
     });
   }
 
