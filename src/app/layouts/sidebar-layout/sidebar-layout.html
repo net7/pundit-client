@@ -28,18 +28,18 @@
             </ng-container>
         </div>
         <!-- User popover -->
-        <ng-container *ngIf="ds.userPopover.isOpen.getValue()">
+        <ng-container *ngIf="ds.userPopover.isOpen | async">
             <div class="pnd-sidebar__user-popover">
                 <ul class="pnd-sidebar__user-popover-list">
                     <ng-container *ngFor="let item of ds.userPopover.items">
-                        <ng-container *ngIf="item.payload">
-                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
-                                <a [href]="item.href">
+                        <ng-container *ngIf="item.href">
+                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner('userpopoverclose')">
+                                <a [href]="item.href" target="_blank">
                                     {{ item.label }}
                                 </a>
                             </li>
                         </ng-container>
-                        <ng-container *ngIf="item.href">
+                        <ng-container *ngIf="item.payload">
                             <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
                                 {{ item.label }}
                             </li>

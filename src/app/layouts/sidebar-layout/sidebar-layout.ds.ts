@@ -6,7 +6,10 @@ import { _c } from 'src/app/models/config';
 import { AnnotationConfig, AnnotationService } from 'src/app/services/annotation.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
+import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { NotebookService } from '../../services/notebook.service';
+
+const REPORT_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSfC-bkKWVOa52BP05FWwyZW446KlVnEv2w5gmZhs1BMvZn0Rg/viewform?usp=pp_url&entry.1925380618';
 
 export class SidebarLayoutDS extends LayoutDataSource {
   private annotationService: AnnotationService;
@@ -35,7 +38,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     isOpen: new BehaviorSubject(false),
     items: [
       { label: _t('userpopover#notebooks'), href: _c('userLink') },
-      { label: _t('userpopover#report'), href: '' },
+      { label: _t('userpopover#report'), href: `${REPORT_LINK}=${getDocumentHref()}` },
       { label: _t('userpopover#logout'), payload: 'clicklogout' },
     ]
   }
