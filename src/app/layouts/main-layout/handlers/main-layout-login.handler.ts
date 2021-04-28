@@ -37,23 +37,22 @@ export class MainLayoutLoginHandler implements LayoutHandler {
       // clear toasts
       this.layoutDS.toastService.clear();
       if ('error' in val) {
-        let errorMsg = _t('toast#login_error_text');
-        let errorObj;
         const { error } = val;
-        try {
-          errorObj = JSON.parse(error);
-          if (errorObj?.error?.error) {
-            errorMsg = errorObj?.error?.error;
-          }
-        } catch (e) {
-          console.warn(`Error parsing auth error message "${error}":`, e);
-        }
-        console.warn('Auth error:', errorMsg, errorObj);
+        const errorMsg = error || _t('toast#login_error_text');
         // toast
         this.layoutDS.toastService.error({
           title: _t('toast#login_error_title'),
           text: errorMsg,
-          autoClose: false
+          autoClose: false,
+          actions: [{
+            text: _t('toast#login_retry_action'),
+            payload: 'retry'
+          }],
+          onAction: (payload) => {
+            if (payload === 'retry') {
+              this.layoutDS.punditLoginService.start();
+            }
+          }
         });
         // close login modal
         this.layoutDS.punditLoginService.stop();

@@ -13,6 +13,7 @@ export default {
   'deletemodal#cancel': 'Cancel',
   'deletemodal#ok': 'Confirm',
   // toast
+  'toast#login_retry_action': 'RETRY',
   'toast#login_warn_title': 'Please log in',
   'toast#login_warn_text': 'Log in or register to Pundit to save your annotations and see your private notebooks.',
   'toast#login_warn_action': 'LOGIN',
