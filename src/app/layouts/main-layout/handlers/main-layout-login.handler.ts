@@ -34,6 +34,8 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     this.layoutDS.punditLoginService.onAuth().pipe(
       takeUntil(this.layoutEH.destroy$)
     ).subscribe((val) => {
+      // clear toasts
+      this.layoutDS.toastService.clear();
       if ('error' in val) {
         let errorMsg = _t('toast#login_error_text');
         let errorObj;
