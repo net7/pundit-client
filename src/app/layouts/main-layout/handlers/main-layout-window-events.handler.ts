@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { AuthToken } from '@pundit/login';
+import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/login';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { StorageKey } from 'src/app/services/storage-service/storage.types';
@@ -18,6 +18,9 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
 
     window.onfocus = () => {
+      // FIXME: abilitare identity
+      // e togilere checkStateFromStorage da qui
+      this.identitySync();
       this.checkStateFromStorage();
     };
 
@@ -34,6 +37,25 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       text: _t('toast#rootelementexists_text'),
       autoClose: false
     });
+  }
+
+  private identitySync() {
+    const currentUser = this.layoutDS.userService.whoami();
+    // FIXME: togliere as any
+    this.layoutDS.punditSsoService.sso({ withCredentials: true })
+      .subscribe((resp: LoginResponse) => {
+        if ('user' in resp && resp.user.id !== currentUser?.id) {
+          const { user, token } = resp as SuccessLoginResponse;
+          // update cached & storage data
+          this.layoutDS.storageService.set(StorageKey.User, user);
+          this.layoutDS.storageService.set(StorageKey.Token, token);
+        } else if ('error' in resp && resp.error === 'Unauthorized') {
+          this.layoutDS.storageService.remove(StorageKey.User);
+          this.layoutDS.storageService.remove(StorageKey.Token);
+        }
+        // check storage state
+        this.checkStateFromStorage();
+      });
   }
 
   private checkStateFromStorage() {

@@ -1,7 +1,7 @@
 import {
   Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener
 } from '@angular/core';
-import { PunditLoginService, PunditLogoutService } from '@pundit/login';
+import { PunditLoginService, PunditLogoutService, PunditSsoService } from '@pundit/login';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
@@ -39,10 +39,11 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private notebookService: NotebookService,
     private punditLoginService: PunditLoginService,
     private punditLogoutService: PunditLogoutService,
+    private punditSsoService: PunditSsoService,
     private tokenService: TokenService,
     private userService: UserService,
     private storageService: StorageService,
-    public toastService: ToastService,
+    public toastService: ToastService
   ) {
     super(config);
   }
@@ -61,6 +62,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       userService: this.userService,
       storageService: this.storageService,
       toastService: this.toastService,
+      punditSsoService: this.punditSsoService
     };
   }
 

@@ -3,7 +3,7 @@ import { from, of, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
 import { Annotation, CommentAnnotation, } from '@pundit/communication';
-import { PunditLoginService, PunditLogoutService } from '@pundit/login';
+import { PunditLoginService, PunditLogoutService, PunditSsoService } from '@pundit/login';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
@@ -47,6 +47,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public punditLogoutService: PunditLogoutService;
 
+  public punditSsoService: PunditSsoService;
+
   public toastService: ToastService;
 
   public storageService: StorageService;
@@ -81,6 +83,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.toastService = payload.toastService;
     this.punditLogoutService = payload.punditLogoutService;
     this.storageService = payload.storageService;
+    this.punditSsoService = payload.punditSsoService;
   }
 
   isUserLogged = () => this.state.isLogged;
