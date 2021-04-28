@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CommunicationSettings, retry$ } from '@pundit/communication';
-import { AuthToken, PunditRefreshTokenService, RefreshResponse } from '@pundit/login';
+import { AuthToken, PunditRefreshTokenService, LoginResponse } from '@pundit/login';
 import { of, ReplaySubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StorageService } from './storage-service/storage.service';
@@ -68,15 +68,23 @@ export class TokenService {
       return this.refreshTokenAndRetry(err);
     })
 
-  private refreshTokenAndRetry = (err) => this.punditRefreshToken.refresh(this.token.access_token)
-    .toPromise().then((refreshResponse: RefreshResponse) => {
-      if ('error' in refreshResponse) {
-        throw err;
-      } else {
-        this.set(refreshResponse.token);
-        return retry$(err);
+  private refreshTokenAndRetry = (err) => {
+    const options = {
+      wihtCredentials: true,
+      headers: {
+        Authorization: `Bearer ${this.token?.access_token}`
       }
-    }).catch(() => { throw err; })
+    };
+    return this.punditRefreshToken.refresh(options).toPromise()
+      .then((refreshResponse: LoginResponse) => {
+        if ('error' in refreshResponse) {
+          throw err;
+        } else {
+          this.set(refreshResponse.token);
+          return retry$(err);
+        }
+      }).catch(() => { throw err; });
+  }
 
   private equals(token: AuthToken): boolean {
     return token?.access_token === this.token?.access_token;
