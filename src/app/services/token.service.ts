@@ -70,7 +70,7 @@ export class TokenService {
 
   private refreshTokenAndRetry = (err) => {
     const options = {
-      wihtCredentials: true,
+      withCredentials: true,
       headers: {
         Authorization: `Bearer ${this.token?.access_token}`
       }
