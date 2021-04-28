@@ -3,6 +3,7 @@ import { User } from '@pundit/communication';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import { StorageKey } from './storage-service/storage.types';
 import { StorageService } from './storage-service/storage.service';
+import { _c } from '../models/config';
 
 export type UserData = {
   id: string;
@@ -52,7 +53,7 @@ export class UserService {
       this.add({
         id,
         username,
-        thumb: thumb || 'https://static.thepund.it/assets/img/user-thumb-default.png'
+        thumb: thumb || _c('userDefaultThumb')
       });
     });
   }

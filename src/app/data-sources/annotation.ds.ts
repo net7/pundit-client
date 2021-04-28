@@ -210,7 +210,7 @@ export class AnnotationDS extends DataSource {
   private getUserData() {
     const { annotationUser } = this.options;
     return {
-      image: annotationUser.thumb,
+      image: annotationUser.thumb || _c('userDefaultThumb'),
       name: annotationUser.username,
       anchor: this.isCurrentUser()
         ? _c('userLink')
