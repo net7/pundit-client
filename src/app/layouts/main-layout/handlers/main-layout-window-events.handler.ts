@@ -18,10 +18,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
 
     window.onfocus = () => {
-      // FIXME: abilitare identity
-      // e togilere checkStateFromStorage da qui
       this.identitySync();
-      this.checkStateFromStorage();
     };
 
     // on destroy remove event listeners
@@ -41,7 +38,6 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
   private identitySync() {
     const currentUser = this.layoutDS.userService.whoami();
-    // FIXME: togliere as any
     this.layoutDS.punditSsoService.sso({ withCredentials: true })
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp && resp.user.id !== currentUser?.id) {
