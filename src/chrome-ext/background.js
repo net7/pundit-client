@@ -5,7 +5,7 @@ const IconTitle = {
   ActiveWithNoAnnotations: 'Pundit is active',
   Inactive: 'Pundit is inactive',
 };
-const ICON_ON = 'assets/icons/pundit-icon-red-38.png';
+const ICON_ON = 'assets/icons/pundit-icon-38-close.png';
 const ICON_OFF = 'assets/icons/pundit-icon-38.png';
 const BADGE_COLOR_ON = [13, 133, 236, 255];
 const BADGE_COLOR_OFF = [128, 128, 128, 255];

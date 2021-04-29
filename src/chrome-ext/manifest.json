@@ -1,7 +1,7 @@
 {
   "name": "Pundit Annotator",
-  "version": "1.0",
-  "description": "Pundit Annotator allows you to create semantic annotations on web pages.",
+  "version": "1.0.0",
+  "description": "Annotate the web using Pundit Annotator: highlight and comment text on any page and manage your annotations in the Pundit Dashboard.",
   "manifest_version": 2,
   "icons": {
     "16": "assets/icons/icon16.png",
@@ -19,7 +19,8 @@
     }
   ],
   "browser_action": {
-    "default_icon": "assets/icons/pundit-icon-red-38.png"
+    "default_icon": "assets/icons/pundit-icon-38.png",
+    "default_title": "Launch Pundit Annotator"
   },
   "web_accessible_resources": [
     "pundit.chrome-ext.js",
