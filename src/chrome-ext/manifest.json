@@ -1,6 +1,6 @@
 {
   "name": "Pundit Annotator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Annotate the web using Pundit Annotator: highlight and comment text on any page and manage your annotations in the Pundit Dashboard.",
   "manifest_version": 2,
   "icons": {
