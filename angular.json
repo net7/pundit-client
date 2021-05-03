@@ -109,17 +109,7 @@
               ],
               "assets": [
                 "src/favicon.ico",
-                "src/assets",
-                { 
-                  "glob": "**/*", 
-                  "input": "src/chrome-ext/", 
-                  "output": "/" 
-                },
-                { 
-                  "glob": "**/*", 
-                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
-                  "output": "/" 
-                }
+                "src/assets"
               ]
             },
             "chrome-ext-stage": {
@@ -143,17 +133,7 @@
               ],
               "assets": [
                 "src/favicon.ico",
-                "src/assets",
-                { 
-                  "glob": "**/*", 
-                  "input": "src/chrome-ext/", 
-                  "output": "/" 
-                },
-                { 
-                  "glob": "**/*", 
-                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
-                  "output": "/" 
-                }
+                "src/assets"
               ]
             },
             "embed-prod": {
