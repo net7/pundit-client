@@ -1,5 +1,5 @@
-import { ChromeExtStorage } from 'src/chrome-ext/storage';
-import { StorageKeys } from 'src/chrome-ext/types';
+import { ChromeExtStorage } from '../storage';
+import { StorageKeys } from '../../types';
 import * as helpers from '../helpers';
 
 export const onBrowserActionClicked = ({ id }: chrome.tabs.Tab) => {

@@ -1,4 +1,4 @@
-import { EventType } from 'src/chrome-ext/types';
+import { EventType } from '../../types';
 import { state } from '../state';
 
 export const onAnnotationUpdate = (ev: CustomEvent) => {

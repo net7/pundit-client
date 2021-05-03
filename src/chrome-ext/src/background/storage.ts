@@ -1,4 +1,4 @@
-import { ChromeExtStorageData, ChromeExtStorageValue } from './types';
+import { ChromeExtStorageData, ChromeExtStorageValue } from '../types';
 
 export class ChromeExtStorage {
   static get(key: string): Promise<ChromeExtStorageValue> {

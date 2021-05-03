@@ -1,5 +1,5 @@
-import { ChromeExtStorage } from 'src/chrome-ext/storage';
-import { ChromeExtStorageData, EventType } from 'src/chrome-ext/types';
+import { ChromeExtStorage } from '../storage';
+import { ChromeExtStorageData, EventType } from '../../types';
 
 export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   const { id: tabId, incognito, windowId } = tab;

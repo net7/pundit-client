@@ -1,5 +1,5 @@
-import { ChromeExtStorage } from 'src/chrome-ext/storage';
-import { EventType, StorageKeys } from 'src/chrome-ext/types';
+import { ChromeExtStorage } from '../storage';
+import { EventType, StorageKeys } from '../../types';
 import { updateExtensionIcon } from '.';
 
 export const checkActiveState = (tabId: number) => {

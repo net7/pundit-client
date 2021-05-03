@@ -1,5 +1,5 @@
-import { state } from 'src/chrome-ext/content/state';
-import { EventType } from 'src/chrome-ext/types';
+import { state } from '../state';
+import { EventType } from '../../types';
 
 export const sendRootExistsMessage = () => {
   chrome.runtime.sendMessage({ type: EventType.RootElementExists });

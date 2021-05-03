@@ -1,4 +1,4 @@
-import { EventType } from 'src/chrome-ext/types';
+import { EventType } from '../../types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
 

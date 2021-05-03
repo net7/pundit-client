@@ -1,5 +1,5 @@
-import { ChromeExtStorage } from 'src/chrome-ext/storage';
-import { StorageKeys } from 'src/chrome-ext/types';
+import { ChromeExtStorage } from '../storage';
+import { StorageKeys } from '../../types';
 
 export const onWindowRemoved = (windowId: number) => {
   const incognitoKey = `${StorageKeys.Incognito}.${windowId}`;

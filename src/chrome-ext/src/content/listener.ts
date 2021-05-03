@@ -1,4 +1,4 @@
-import { EventType, RuntimeMessage } from 'src/chrome-ext/types';
+import { EventType, RuntimeMessage } from '../types';
 import { destroyExtension } from './destroyExtension';
 import { loadExtension } from './loadExtension';
 
