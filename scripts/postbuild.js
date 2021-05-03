@@ -6,6 +6,7 @@ const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs-extra');
 const path = require('path');
 const concat = require('concat');
+const { buildExt } = require('./chrome-ext-build');
 
 const context = argv.c;
 const isChromeExt = ['chrome-ext-stage', 'chrome-ext-prod'].includes(context);
@@ -16,15 +17,15 @@ const outputFile = isChromeExt ? 'pundit.chrome-ext.js' : 'pundit.embed.js';
 const outputFilePath = `${basePath}/${outputFile}`;
 let allowedFiles = [outputFile];
 
-if (['chrome-ext-stage', 'chrome-ext-prod'].includes(argv.c)) {
+// chrome extension check
+if (['chrome-ext-stage', 'chrome-ext-prod'].includes(context)) {
   allowedFiles = [
     ...allowedFiles,
     'assets',
-    'pundit-icon',
-    'background.js',
-    'content.js',
-    'manifest.json',
+    'background.bundle.js',
+    'content.bundle.js',
   ];
+  buildExt(context, basePath);
 }
 
 // merge in one file
