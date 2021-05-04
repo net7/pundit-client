@@ -12,9 +12,9 @@
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
     "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
     "build:chrome-ext-stage": "ng build -c chrome-ext-stage --single-bundle",
-    "postbuild:chrome-ext-stage": "npx webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-stage",
+    "postbuild:chrome-ext-stage": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-stage",
     "build:chrome-ext-prod": "ng build -c chrome-ext-prod --single-bundle",
-    "postbuild:chrome-ext-prod": "node ./scripts/postbuild.js -c chrome-ext-prod",
+    "postbuild:chrome-ext-prod": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-prod",
     "build:embed-stage": "ng build -c embed-stage --single-bundle",
     "watch:embed-stage": "npm run build:embed-stage -- --watch",
     "postbuild:embed-stage": "node ./scripts/postbuild.js -c embed-stage",
@@ -91,6 +91,7 @@
     "ts-node": "~7.0.0",
     "tslint": "~5.15.0",
     "typescript": "~3.8.3",
+    "webpack": "4.42.0",
     "webpack-cli": "^4.6.0"
   },
   "husky": {
