@@ -1,2 +1,2 @@
-export * from './onAnnotationUpdate';
+export * from './onAnnotationsUpdate';
 export * from './onStorageRequest';

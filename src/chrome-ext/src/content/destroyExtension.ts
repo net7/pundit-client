@@ -6,7 +6,7 @@ export const destroyExtension = () => {
   if (!state.get('appRoot')) return;
 
   // remove listeners
-  window.removeEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationUpdate);
+  window.removeEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationsUpdate);
   window.removeEventListener(EventType.StorageRequest, handlers.onStorageRequest);
 
   // emit signal

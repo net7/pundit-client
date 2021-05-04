@@ -13,7 +13,7 @@ export const loadExtension = () => {
   }
 
   // listen to annotation updates
-  window.addEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationUpdate, false);
+  window.addEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationsUpdate, false);
   // listen storage request event
   window.addEventListener(EventType.StorageRequest, handlers.onStorageRequest, false);
 
