@@ -22,7 +22,6 @@ export const loadExtension = () => {
   state.set({ appRoot });
 
   const main = document.createElement('script');
-  main.type = 'module';
   main.src = chrome.extension.getURL('pundit.chrome-ext.js');
   (document.head || document.documentElement).appendChild(main);
   main.onload = () => {
