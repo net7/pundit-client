@@ -108,8 +108,16 @@
                 }
               ],
               "assets": [
-                "src/favicon.ico",
-                "src/assets"
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/img",
+                  "output": "/assets/img"
+                }, 
+                {
+                "glob": "**/*",
+                "input": "src/chrome-ext/assets/icons/prod",
+                "output": "/assets/icons"
+                }
               ]
             },
             "chrome-ext-stage": {
@@ -132,8 +140,16 @@
                 }
               ],
               "assets": [
-                "src/favicon.ico",
-                "src/assets"
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/img",
+                  "output": "/assets/img"
+                }, 
+                {
+                "glob": "**/*",
+                "input": "src/chrome-ext/assets/icons/stage",
+                "output": "/assets/icons"
+                }
               ]
             },
             "embed-prod": {

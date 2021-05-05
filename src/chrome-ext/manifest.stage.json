@@ -1,6 +1,3 @@
 {
-  "name": "Pundit Annotator (STAGE)",
-  "browser_action": {
-    "default_icon": "assets/icons/pundit-icon-red-38.png"
-  }
+  "name": "Pundit Annotator (STAGE)"
 }
