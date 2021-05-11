@@ -29,6 +29,7 @@ import { NotebookPanelComponent } from './components/notebook-panel/notebook-pan
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
+import { SvgIconComponent } from './components/svg-icon/svg-icon';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -60,6 +61,7 @@ config.init(appConfig);
     CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
+    SvgIconComponent,
     // PIPES
     SortByPipe,
   ],
