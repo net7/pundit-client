@@ -108,17 +108,15 @@
                 }
               ],
               "assets": [
-                "src/favicon.ico",
-                "src/assets",
-                { 
-                  "glob": "**/*", 
-                  "input": "src/chrome-ext/", 
-                  "output": "/" 
-                },
-                { 
-                  "glob": "**/*", 
-                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
-                  "output": "/" 
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/img",
+                  "output": "/assets/img"
+                }, 
+                {
+                "glob": "**/*",
+                "input": "src/chrome-ext/assets/icons/prod",
+                "output": "/assets/icons"
                 }
               ]
             },
@@ -142,17 +140,15 @@
                 }
               ],
               "assets": [
-                "src/favicon.ico",
-                "src/assets",
-                { 
-                  "glob": "**/*", 
-                  "input": "src/chrome-ext/", 
-                  "output": "/" 
-                },
-                { 
-                  "glob": "**/*", 
-                  "input": "node_modules/@n7-frontend/icon-font/Font/", 
-                  "output": "/" 
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/img",
+                  "output": "/assets/img"
+                }, 
+                {
+                "glob": "**/*",
+                "input": "src/chrome-ext/assets/icons/stage",
+                "output": "/assets/icons"
                 }
               ]
             },
