@@ -76,6 +76,6 @@
 
 <ng-template #sharingModeIcon
              let-icon="sharingMode">
-    <pnd-svg-icon *ngIf="icon === 'private'" data="{ id: 'lock' }"></pnd-svg-icon>
-    <pnd-svg-icon *ngIf="icon === 'shared'" data="{ id: 'users' }"></pnd-svg-icon>
+    <pnd-svg-icon *ngIf="icon === 'private'" [data]="{ id: 'lock' }"></pnd-svg-icon>
+    <pnd-svg-icon *ngIf="icon === 'shared'" [data]="{ id: 'users' }"></pnd-svg-icon>
 </ng-template>
