@@ -92,14 +92,9 @@
 \* ------------------------------------ */
 .pnd-modal {
     &__close {
-        
-        [class^="pnd-svg-icon-"] {
-            width: $font-size-m;
-            height: $font-size-m;
-            svg {
-                width: $font-size-m;
-                height: $font-size-m;
-            }
+        .pnd-svg-icon svg {
+            width: 18px;
+            height: auto;
         }
     }
 }

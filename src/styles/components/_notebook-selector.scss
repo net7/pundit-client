@@ -36,18 +36,20 @@
                 color: $color-text-link;
             }
 
-            &:after {
+            .pnd-notebook-selector__selected-right-icon {
                 color: $color-text-link;
             }
         }
 
-        &:after {
-            content: "\e900";
-            color: $color-text;
-            font-family: 'pundit-icon-font' !important;
-            margin-left: $space;
-            font-size: $font-size-s;
+        .pnd-svg-icon svg {
+            width: 14px;
+            height: auto;
         }
+    }
+
+    &__selected-right-icon {
+        width: 14px;
+        height: auto;
     }
 
     &__selected-label {
@@ -86,6 +88,17 @@
         &:not(:last-child) {
             border-bottom: 1px solid $color-border-normal;
         }
+
+        .pnd-svg-icon svg {
+            width: 14px;
+            height: auto;
+        }
+    }
+
+    &__dropdown-list {
+        max-height: $notebook-selector-list-max-height;
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     &__dropdown-new {
@@ -93,10 +106,14 @@
         font-weight: $font-weight-bold;
         color: $color-text;
         font-size: $font-size-s;
+        border-top: 1px solid $color-border-normal;
+        background-color: $color-background-light;
         cursor: pointer;
+        transition: all $transition-durations;
 
         &:hover {
             color: $color-text-link;
+            background-color: $color-background-medium;
         }
     }
 
@@ -136,16 +153,6 @@
 \* ------------------------------------ */
 .pnd-notebook-selector {
     &.is-expanded {
-        .pnd-notebook-selector__selected {
-            &:after {
-                content: "\e90c";
-                color: $color-text;
-                font-family: 'pundit-icon-font' !important;
-                margin-left: $space;
-                font-size: $font-size-s;
-            }
-        }
-
         .pnd-notebook-selector__dropdown {
             display: block;
         }

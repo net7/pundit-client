@@ -35,6 +35,11 @@
         font-size: $font-size-s;
         border-radius: $border-radius;
         // background-color: $color-background-medium;
+
+        .pnd-svg-icon svg {
+            width: 14px;
+            height: auto;
+        }
     }
 
     /* Utilities */

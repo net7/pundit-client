@@ -180,6 +180,11 @@
             color: $color-text-link;
             border-bottom: 3px solid $color-main;
         }
+
+        .pnd-svg-icon svg {
+            width: 18px;
+            height: auto;
+        }
     }
 }
 
