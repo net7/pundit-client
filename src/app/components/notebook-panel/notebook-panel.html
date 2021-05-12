@@ -3,7 +3,11 @@
         <section class="pnd-notebook-panel__section">
             <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.current }}</div>
             <div class="pnd-notebook-panel__current-notebook-name">
-                <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}"></span>
+                <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}">
+                    <pnd-svg-icon *ngIf="data.icons[currentSharingMode]" 
+                        [data]="{ id: data.icons[currentSharingMode] }">
+                    </pnd-svg-icon>
+                </span>
                 {{data.selected.label}}
             </div>
         </section>

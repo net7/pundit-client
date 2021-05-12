@@ -45,6 +45,11 @@
         cursor: pointer;
         z-index: 30;
         // transition: right $transition-durations ease-out;
+
+        .pnd-svg-icon, .pnd-svg-icon svg {
+            width: $font-size-xl;
+            height: $font-size-xl;
+        }
     }
 
     &.is-expanded {
@@ -174,6 +179,11 @@
         &.is-active {
             color: $color-text-link;
             border-bottom: 3px solid $color-main;
+        }
+
+        .pnd-svg-icon svg {
+            width: 18px;
+            height: auto;
         }
     }
 }

@@ -27,8 +27,8 @@ export class NotebookPanelDS extends DataSource {
 
   public iconMap = {
     public: '', // no icon
-    private: 'pundit-icon-lock',
-    shared: 'pundit-icon-users'
+    private: 'lock',
+    shared: 'users'
   }
 
   transform(data) {

@@ -238,7 +238,7 @@ export class ToastService {
 
   private getDataCloseIcon(toastId: string): { icon: string; payload: any } {
     return {
-      icon: 'pundit-icon-times',
+      icon: 'times',
       payload: {
         id: toastId,
         action: 'close'

@@ -49,10 +49,11 @@
                    *ngIf="data.menu"
                   [ngClass]="data.menu.icon['id']"
                   (click)="onClick($event, data.menu.icon['payload'])">
+                  <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
             </button>
             <button class="pnd-annotation__header-menu-button"
                     (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
-                <span class="pundit-icon-compress"></span>
+                <pnd-svg-icon [data]="{ id: 'compress' }"></pnd-svg-icon> 
             </button>
 
             <div *ngIf="data.activeMenu" 

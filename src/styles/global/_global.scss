@@ -21,6 +21,14 @@
     line-height: 1.3;
 }
 
+[class^="pnd-svg-icon-"], [class*=" pnd-svg-icon-"] {
+    svg {
+        display: inline-block;
+        vertical-align: -.125em;
+        fill: currentColor;
+    }
+}
+
 :focus {
     outline: 0;
 }

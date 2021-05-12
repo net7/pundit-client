@@ -7,8 +7,9 @@
     }">
     
     <!-- Pundit Logo toggle -->
-    <div class="pundit-icon-pundit pnd-sidebar__logo"
-         (click)="lb.eventHandler.emitInner('clicklogo')">
+    <div class="pnd-sidebar__logo"
+        (click)="lb.eventHandler.emitInner('clicklogo')">
+        <pnd-svg-icon [data]="{ id: 'pundit' }"></pnd-svg-icon>
     </div>
     <!-- END // Pundit Logo toggle -->
 
@@ -51,17 +52,11 @@
         <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
             <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
                (click)="lb.eventHandler.emitInner('notebookpanel')">
-                <span class="pundit-icon-book"></span>
+                <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
             </a>
-            <!--
-            <a class="pnd-sidebar__action pnd-sidebar__logout-button"
-               (click)="lb.eventHandler.emitInner('clicklogout')">
-                <span class="pundit-icon-signout"></span>
-            </a>
-            -->
             <a class="pnd-sidebar__action pnd-sidebar__close-button"
                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <span class="pundit-icon-angle-right"></span>
+                <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
             </a>
         </div>
     </div>

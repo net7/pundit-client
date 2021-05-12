@@ -12,6 +12,10 @@
                     </ng-container>
                     {{data.selectedNotebook.label}}
                 </div>
+                <div class="pnd-notebook-selector__selected-right-icon">
+                    <pnd-svg-icon *ngIf="!data._meta?.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+                    <pnd-svg-icon *ngIf="data._meta?.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+                </div>                
             </button>
 
             <!-- Dropdown -->
@@ -20,15 +24,17 @@
                  id="current-notebook">
 
                 <!-- list of selectable notebooks -->
-                <ng-container *ngFor="let notebook of data.notebookList | sortBy: 'asc' : 'label'">
-                    <div (click)="onClick('option', notebook.id)"
-                         class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook.id ? 'is-current' : ''}}">
-                        <ng-container *ngTemplateOutlet="sharingModeIcon; context: {
-                             sharingMode: notebook.sharingMode
-                         }"></ng-container>
-                        {{ notebook.label }}
-                    </div>
-                </ng-container>
+                <div class="pnd-notebook-selector__dropdown-list">
+                    <ng-container *ngFor="let notebook of data.notebookList | sortBy: 'asc' : 'label'">
+                        <div (click)="onClick('option', notebook.id)"
+                             class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook.id ? 'is-current' : ''}}">
+                            <ng-container *ngTemplateOutlet="sharingModeIcon; context: {
+                                 sharingMode: notebook.sharingMode
+                             }"></ng-container>
+                            {{ notebook.label }}
+                        </div>
+                    </ng-container>
+                </div>
 
                 <!-- create new notebook option -->
                 <ng-container *ngIf="data.createOption as create">
@@ -76,10 +82,6 @@
 
 <ng-template #sharingModeIcon
              let-icon="sharingMode">
-    <span class="pundit-icon-lock"
-          *ngIf="icon === 'private'">
-    </span>
-    <span class="pundit-icon-users"
-          *ngIf="icon === 'shared'">
-    </span>
+    <pnd-svg-icon *ngIf="icon === 'private'" [data]="{ id: 'lock' }"></pnd-svg-icon>
+    <pnd-svg-icon *ngIf="icon === 'shared'" [data]="{ id: 'users' }"></pnd-svg-icon>
 </ng-template>

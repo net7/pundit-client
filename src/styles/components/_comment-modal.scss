@@ -92,9 +92,9 @@
 \* ------------------------------------ */
 .pnd-modal {
     &__close {
-        
-        [class^="pundit-icon-"] {
-            font-size: $font-size-m;
+        .pnd-svg-icon svg {
+            width: 18px;
+            height: auto;
         }
     }
 }
@@ -111,60 +111,24 @@
         align-items: center;
         justify-content: center;
 
-        [class^="pundit-icon-"] {
-            font-size: $font-size-l;
+        [class^="pnd-svg-icon-"] {
+            width: $font-size-l;
+            height: $font-size-l;
             color: $color-text-light;
             transition: color $transition-durations;
+            svg {
+                width: $font-size-l;
+                height: $font-size-l;
+            }
         }
 
         &:hover {
-            [class^="pundit-icon-"] {
+            [class^="pnd-svg-icon-"] {
                 color: $color-text;
             }
         }
     }
 }
-
-
-/* ------------------------------------ *\
-   #SELECT
-\* ------------------------------------ */
-/* .pnd-comment-modal {
-    &__select {
-        select {
-            appearance: none;
-            background-color: transparent;
-            border: 0;
-            margin: 0;
-            width: 100%;
-            font-family: inherit;
-            font-size: inherit;
-            cursor: inherit;
-            line-height: inherit;
-            outline: none;
-            height: $space * 3;
-        }
-        border: 1px solid $color-gray-03;
-        background-color: $color-gray-02;
-        border-radius: 3px;
-        display: flex;
-        position: relative;
-
-        &::after {
-            content: "\e900";
-            font-family: "pundit-icon-font";
-            position: absolute;
-            padding: 0px 4px;
-            right: 0px;
-            top: 0px;
-            display: flex;
-            height: 100%;
-            background: $color-gray-02;
-            align-items: center;
-            border-left: 1px solid $color-gray-03;
-        }
-    }
-} */
 
 
 /* ------------------------------------ *\
