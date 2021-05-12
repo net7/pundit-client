@@ -2,7 +2,7 @@
     <div class="pnd-modal__overlay" (click)="onClose($event.target)">
         <div class="pnd-modal__window">
             <div class="pnd-modal__close">
-                <a class="pundit-icon-times" (click)="onClose()"></a>
+                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
             </div>
             
             <div class="pnd-modal__header">

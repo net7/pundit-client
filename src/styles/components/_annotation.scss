@@ -150,6 +150,11 @@ annotation {
         color: $color-text-light;
         font-size: $font-size-s;
         transition: color $transition-durations;
+        
+        .pnd-svg-icon, .pnd-svg-icon svg {
+            width: $font-size-s;
+            height: $font-size-s;
+        }
 
         &:hover {
             color: $color-text-link;

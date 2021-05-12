@@ -22,11 +22,9 @@
 }
 
 [class^="pnd-svg-icon-"], [class*=" pnd-svg-icon-"] {
-    width: 20px;
-    height: 20px;
     svg {
-        width: 20px;
-        height: 20px;
+        display: inline-block;
+        vertical-align: -.125em;
         fill: currentColor;
     }
 }

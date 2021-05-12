@@ -67,14 +67,20 @@
         right: $space*2;
         cursor: pointer;
 
-        [class^="pundit-icon-"] {
-            font-size: $font-size-l;
-            color: $color-text-light;
-            transition: color $transition-durations;
-
-            &:hover {
-                color: $color-text-link;
+        .pnd-svg-icon {
+            width: $font-size-l;
+            height: $font-size-l;
+            
+            svg {
+                width: $font-size-l;
+                height: $font-size-l;
+                color: $color-text-light;
+                transition: color $transition-durations;
+                &:hover {
+                    color: $color-text-link;
+                }
             }
+
         }
     }
 }

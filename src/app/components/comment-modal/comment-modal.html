@@ -3,11 +3,11 @@
         <div class="pnd-modal__window pnd-comment-modal__window" [attr.id]="draggableTarget">
             
             <div class="pnd-comment-modal__handle" [attr.id]="draggableHandle">
-                <span class="pundit-icon-drag"></span>
+                <pnd-svg-icon [data]="{ id: 'drag' }"></pnd-svg-icon>  
             </div>
 
             <div class="pnd-modal__close">
-                <a class="pundit-icon-times" (click)="onClose()"></a>
+                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
             </div>
             
             <div class="pnd-comment-modal__highlight-wrapper">

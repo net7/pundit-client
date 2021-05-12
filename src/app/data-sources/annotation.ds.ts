@@ -225,7 +225,7 @@ export class AnnotationDS extends DataSource {
     const { currentUserNotebooks } = this.options;
     return this.isCurrentUser() ? {
       icon: {
-        id: 'pundit-icon-ellipsis-v',
+        id: 'ellipsis-v',
         payload: {
           id,
           source: 'menu-header',
