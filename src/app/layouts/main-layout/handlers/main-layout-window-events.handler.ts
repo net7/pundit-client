@@ -40,11 +40,15 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
     const currentUser = this.layoutDS.userService.whoami();
     this.layoutDS.punditSsoService.sso({ withCredentials: true })
       .subscribe((resp: LoginResponse) => {
-        if ('user' in resp && resp.user.id !== currentUser?.id) {
+        if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
-          // update cached & storage data
-          this.layoutDS.storageService.set(StorageKey.User, user);
-          this.layoutDS.storageService.set(StorageKey.Token, token);
+          if (resp.user.id !== currentUser?.id) {
+            // update cached & storage data
+            this.layoutDS.storageService.set(StorageKey.User, user);
+            this.layoutDS.storageService.set(StorageKey.Token, token);
+          }
+          // check user verify
+          this.layoutDS.checkUserVerified(user);
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           this.layoutDS.storageService.remove(StorageKey.User);
           this.layoutDS.storageService.remove(StorageKey.Token);

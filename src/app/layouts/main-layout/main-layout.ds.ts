@@ -1,4 +1,4 @@
-import { LayoutDataSource } from '@n7-frontend/core';
+import { LayoutDataSource, _t } from '@n7-frontend/core';
 import { from, of, BehaviorSubject } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
@@ -10,7 +10,7 @@ import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
@@ -30,6 +30,7 @@ type MainLayoutState = {
     deleteId: string;
   };
   anonymousSelectionRange: Range;
+  emailVerifiedToast: ToastInstance;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -70,7 +71,8 @@ export class MainLayoutDS extends LayoutDataSource {
       updatePayload: null,
       deleteId: null
     },
-    anonymousSelectionRange: null
+    anonymousSelectionRange: null,
+    emailVerifiedToast: null
   };
 
   onInit(payload) {
@@ -181,6 +183,45 @@ export class MainLayoutDS extends LayoutDataSource {
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
     }
+  }
+
+  public checkUserVerified(user) {
+    if (!user.is_verified) {
+      this.openEmailVerifiedToast();
+    } else {
+      this.closeEmailVerifiedToast();
+    }
+  }
+
+  private openEmailVerifiedToast() {
+    if (!this.state.emailVerifiedToast) {
+      this.state.emailVerifiedToast = this.toastService.warn({
+        title: _t('toast#verify_email_title'),
+        text: _t('toast#verify_email_text'),
+        autoClose: false,
+        hasDismiss: false,
+        actions: [{
+          text: _t('toast#verify_email_action'),
+          payload: 'mailverify'
+        }],
+        onAction: (payload) => {
+          if (payload === 'mailverify') {
+            this.doEmailVerifyRequest();
+          }
+        }
+      });
+    }
+  }
+
+  private closeEmailVerifiedToast() {
+    if (this.state.emailVerifiedToast) {
+      this.state.emailVerifiedToast.close();
+      this.state.emailVerifiedToast = null;
+    }
+  }
+
+  private doEmailVerifyRequest() {
+    console.log('mail verify request----->');
   }
 
   private handleSearchResponse(searchData) {

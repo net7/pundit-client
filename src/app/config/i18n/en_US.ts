@@ -52,6 +52,9 @@ export default {
   'toast#rootelementexists_text': 'There is a version of pundit already loaded on this website.',
   'toast#loadingdata_title': 'Loading',
   'toast#loadingdata_text': 'Loading your annotations...',
+  'toast#verify_email_title': 'Please verify your email',
+  'toast#verify_email_text': 'Verifying your email address will ensure continued access to your account',
+  'toast#verify_email_action': 'RESEND',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
