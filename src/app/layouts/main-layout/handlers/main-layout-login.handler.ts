@@ -69,7 +69,11 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         }, _c('indexUpdateDelay'));
 
         // user verified check
-        this.layoutDS.checkUserVerified(val.user);
+        setTimeout(() => {
+          this.layoutDS.checkUserVerified(val.user);
+          // trigger change detector
+          this.layoutEH.detectChanges();
+        });
       }
 
       // trigger change detector
