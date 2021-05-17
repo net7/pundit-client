@@ -1,16 +1,20 @@
-import { LayoutDataSource } from '@n7-frontend/core';
-import { from, of, BehaviorSubject } from 'rxjs';
+import { LayoutDataSource, _t } from '@n7-frontend/core';
+import {
+  from, of, BehaviorSubject
+} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
 import { Annotation, CommentAnnotation, } from '@pundit/communication';
-import { PunditLoginService, PunditLogoutService, PunditSsoService } from '@pundit/login';
+import {
+  PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
+} from '@pundit/login';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
-import { ToastService } from 'src/app/services/toast.service';
+import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
@@ -30,6 +34,7 @@ type MainLayoutState = {
     deleteId: string;
   };
   anonymousSelectionRange: Range;
+  emailVerifiedToast: ToastInstance;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -48,6 +53,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public punditLogoutService: PunditLogoutService;
 
   public punditSsoService: PunditSsoService;
+
+  public punditVerifyEmailService: PunditVerifyEmailService;
 
   public toastService: ToastService;
 
@@ -70,7 +77,8 @@ export class MainLayoutDS extends LayoutDataSource {
       updatePayload: null,
       deleteId: null
     },
-    anonymousSelectionRange: null
+    anonymousSelectionRange: null,
+    emailVerifiedToast: null
   };
 
   onInit(payload) {
@@ -84,6 +92,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.punditLogoutService = payload.punditLogoutService;
     this.storageService = payload.storageService;
     this.punditSsoService = payload.punditSsoService;
+    this.punditVerifyEmailService = payload.punditVerifyEmailService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -181,6 +190,73 @@ export class MainLayoutDS extends LayoutDataSource {
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
     }
+  }
+
+  public checkUserVerified(user) {
+    if (!user.is_verified) {
+      this.openEmailVerifiedToast();
+    } else {
+      this.closeEmailVerifiedToast();
+    }
+  }
+
+  private openEmailVerifiedToast() {
+    if (!this.state.emailVerifiedToast) {
+      this.state.emailVerifiedToast = this.toastService.warn({
+        title: _t('toast#verify_email_title'),
+        text: _t('toast#verify_email_text'),
+        autoClose: false,
+        hasDismiss: false,
+        actions: [{
+          text: _t('toast#verify_email_action'),
+          payload: 'mailverify'
+        }],
+        onAction: (payload) => {
+          if (payload === 'mailverify') {
+            this.doEmailVerifyRequest();
+          }
+        }
+      });
+    }
+  }
+
+  private closeEmailVerifiedToast() {
+    if (this.state.emailVerifiedToast) {
+      this.state.emailVerifiedToast.close();
+      this.state.emailVerifiedToast = null;
+    }
+  }
+
+  private doEmailVerifyRequest() {
+    this.state.emailVerifiedToast.close();
+    // working toast
+    const workingToast = this.toastService.working();
+    const token = this.tokenService.get();
+    this.punditVerifyEmailService.verify({
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token.access_token}`
+      }
+    }).subscribe((response) => {
+      workingToast.close();
+      if ('mail' in response) {
+        this.toastService.success({
+          title: _t('toast#verify_email_success_title'),
+          text: _t('toast#verify_email_success_text', {
+            mail: response.mail
+          }),
+          autoClose: false,
+          hasDismiss: false
+        });
+      } else {
+        console.warn('Email verify response error', response);
+        this.toastService.error({
+          title: _t('toast#genericerror_title'),
+          text: _t('toast#genericerror_text'),
+          autoClose: false
+        });
+      }
+    });
   }
 
   private handleSearchResponse(searchData) {

@@ -58,7 +58,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         this.layoutDS.punditLoginService.stop();
       } else if ('user' in val) {
         this.onAuth(val);
-        // toast
+        // login toast
         this.layoutDS.toastService.success({
           title: _t('toast#login_success_title'),
           text: _t('toast#login_success_text'),
@@ -67,6 +67,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         setTimeout(() => { // waiting for elastic-search index update
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
         }, _c('indexUpdateDelay'));
+
+        // user verified check
+        this.layoutDS.checkUserVerified(val.user);
       }
 
       // trigger change detector
