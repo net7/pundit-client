@@ -1,9 +1,13 @@
 import { LayoutDataSource, _t } from '@n7-frontend/core';
-import { from, of, BehaviorSubject } from 'rxjs';
+import {
+  from, of, BehaviorSubject
+} from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
 import { Annotation, CommentAnnotation, } from '@pundit/communication';
-import { PunditLoginService, PunditLogoutService, PunditSsoService } from '@pundit/login';
+import {
+  PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
+} from '@pundit/login';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
@@ -50,6 +54,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public punditSsoService: PunditSsoService;
 
+  public punditVerifyEmailService: PunditVerifyEmailService;
+
   public toastService: ToastService;
 
   public storageService: StorageService;
@@ -86,6 +92,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.punditLogoutService = payload.punditLogoutService;
     this.storageService = payload.storageService;
     this.punditSsoService = payload.punditSsoService;
+    this.punditVerifyEmailService = payload.punditVerifyEmailService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -221,7 +228,35 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private doEmailVerifyRequest() {
-    console.log('mail verify request----->');
+    this.state.emailVerifiedToast.close();
+    // working toast
+    const workingToast = this.toastService.working();
+    const token = this.tokenService.get();
+    this.punditVerifyEmailService.verify({
+      withCredentials: true,
+      headers: {
+        Authorization: `Bearer ${token.access_token}`
+      }
+    }).subscribe((response) => {
+      workingToast.close();
+      if ('mail' in response) {
+        this.toastService.success({
+          title: _t('toast#verify_email_success_title'),
+          text: _t('toast#verify_email_success_text', {
+            mail: response.mail
+          }),
+          autoClose: false,
+          hasDismiss: false
+        });
+      } else {
+        console.warn('Email verify response error', response);
+        this.toastService.error({
+          title: _t('toast#genericerror_title'),
+          text: _t('toast#genericerror_text'),
+          autoClose: false
+        });
+      }
+    });
   }
 
   private handleSearchResponse(searchData) {

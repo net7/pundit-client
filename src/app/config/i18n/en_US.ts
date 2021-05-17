@@ -55,6 +55,8 @@ export default {
   'toast#verify_email_title': 'Please verify your email',
   'toast#verify_email_text': 'Verifying your email address will ensure continued access to your account',
   'toast#verify_email_action': 'RESEND',
+  'toast#verify_email_success_title': 'Email sent!',
+  'toast#verify_email_success_text': 'We have sent a verification email to { mail }',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
