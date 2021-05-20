@@ -1,12 +1,17 @@
-export type CrossMessage = {
+export type CrossMsgData = {
   messageId: string; // message id
-  data?: any; // message data
+  response?: any; // message response
   error?: any; // message error
 }
 
-export enum CrossMessageRequestId {
+export enum CrossMsgRequestId {
   TestGet = 'test.get',
-  TestCreate = 'test.create'
+  TestCreate = 'test.create',
+  // notebook
+  NotebookCreate = 'notebook.create',
+  NotebookRemove = 'notebook.remove',
+  NotebookSearch = 'notebook.search',
+  NotebookUpdate = 'notebook.update',
 }
 
 export enum CommonEventType {

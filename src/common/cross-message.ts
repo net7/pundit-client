@@ -1,6 +1,6 @@
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
-import { CrossMessage, CommonEventType } from './types';
+import { CrossMsgData, CommonEventType } from './types';
 
 const crossMessageEnabled = () => !!(
   env.chromeExt && document.location.protocol !== 'chrome-extension:'
@@ -14,13 +14,13 @@ const handlers: {
 } = {};
 
 window.addEventListener(CommonEventType.CrossMsgResponse, (ev: CustomEvent) => {
-  const { detail }: { detail: CrossMessage } = ev;
-  const { messageId, data, error } = detail;
+  const { detail }: { detail: CrossMsgData } = ev;
+  const { messageId, response, error } = detail;
   if (handlers[messageId]) {
     if (error) {
       handlers[messageId].reject(error);
     } else {
-      handlers[messageId].resolve(data);
+      handlers[messageId].resolve(response);
     }
     // clear
     handlers[messageId] = null;

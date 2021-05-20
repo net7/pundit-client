@@ -1,14 +1,30 @@
-import { CommonEventType, CrossMessageRequestId } from '../../../../common/types';
-import { TestModel } from '../../../../common/models/test-model';
+import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
+import { TestModel, NotebookModel } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
   let request$;
   switch (requestId) {
-    case CrossMessageRequestId.TestGet:
+    // NOTEBOOK REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.NotebookCreate:
+      request$ = NotebookModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.NotebookRemove:
+      request$ = NotebookModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.NotebookSearch:
+      request$ = NotebookModel.search.apply(null, args);
+      break;
+    case CrossMsgRequestId.NotebookUpdate:
+      request$ = NotebookModel.update.apply(null, args);
+      break;
+    // TEST REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.TestGet:
       request$ = TestModel.get.apply(null, args);
       break;
-    case CrossMessageRequestId.TestCreate:
+    case CrossMsgRequestId.TestCreate:
       request$ = TestModel.create.apply(null, args);
       break;
     default:
@@ -22,11 +38,11 @@ export const doCrossMessageRequest = (tab, payload) => {
         }
         return data;
       })
-      .then((data) => {
+      .then((response) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
           payload: {
-            data,
+            response,
             messageId,
           }
         });
