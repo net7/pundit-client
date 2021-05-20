@@ -51,7 +51,9 @@ export const doCrossMessageRequest = (tab, payload) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
           payload: {
-            error,
+            error: {
+              response: error.response
+            },
             messageId,
           }
         });
