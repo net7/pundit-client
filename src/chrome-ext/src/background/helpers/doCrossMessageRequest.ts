@@ -1,5 +1,5 @@
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { TestModel, NotebookModel } from '../../../../common/models';
+import { NotebookModel } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -19,14 +19,8 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.NotebookUpdate:
       request$ = NotebookModel.update.apply(null, args);
       break;
-    // TEST REQUEST
+    // ANNOTATION REQUEST
     // --------------------------------------------------->
-    case CrossMsgRequestId.TestGet:
-      request$ = TestModel.get.apply(null, args);
-      break;
-    case CrossMsgRequestId.TestCreate:
-      request$ = TestModel.create.apply(null, args);
-      break;
     default:
       break;
   }
