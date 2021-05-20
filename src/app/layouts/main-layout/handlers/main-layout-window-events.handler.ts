@@ -5,6 +5,7 @@ import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
+import { CommonEventType } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -15,7 +16,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
   ) {}
 
   public listen() {
-    window.addEventListener('rootelementexists', this.rootElExistsHandler, false);
+    window.addEventListener(CommonEventType.RootElementExists, this.rootElExistsHandler, false);
 
     window.onfocus = () => {
       this.identitySync();
@@ -23,7 +24,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
     // on destroy remove event listeners
     this.layoutEH.destroy$.subscribe(() => {
-      window.removeEventListener('rootelementexists', this.rootElExistsHandler);
+      window.removeEventListener(CommonEventType.RootElementExists, this.rootElExistsHandler);
     });
   }
 

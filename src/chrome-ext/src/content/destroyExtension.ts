@@ -1,16 +1,17 @@
 import { state } from './state';
 import * as handlers from './handlers';
-import { EventType } from '../types';
+import { CommonEventType } from '../../../common/types';
 
 export const destroyExtension = () => {
   if (!state.get('appRoot')) return;
 
   // remove listeners
-  window.removeEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationsUpdate);
-  window.removeEventListener(EventType.StorageRequest, handlers.onStorageRequest);
+  window.removeEventListener(CommonEventType.AnnotationsUpdate, handlers.onAnnotationsUpdate);
+  window.removeEventListener(CommonEventType.StorageRequest, handlers.onStorageRequest);
+  window.removeEventListener(CommonEventType.CrossMsgRequest, handlers.onCrossMessageRequest);
 
   // emit signal
-  const signal = new CustomEvent('punditdestroy');
+  const signal = new CustomEvent(CommonEventType.PunditDestroy);
   window.dispatchEvent(signal);
 
   // clear

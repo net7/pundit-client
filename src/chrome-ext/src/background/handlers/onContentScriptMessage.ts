@@ -1,4 +1,4 @@
-import { EventType } from '../../types';
+import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
 
@@ -14,15 +14,18 @@ export const onContentScriptMessage = (
   const { tab } = sender;
   const { type, payload } = message;
   switch (type) {
-    case EventType.AnnotationsUpdate:
+    case CommonEventType.AnnotationsUpdate:
       helpers.updateBadgeText(tab.id, payload);
       helpers.updateBadgeTitle(tab.id, payload);
       break;
-    case EventType.RootElementExists:
+    case CommonEventType.RootElementExists:
       onBrowserActionClicked(tab);
       break;
-    case EventType.StorageRequest:
+    case CommonEventType.StorageRequest:
       helpers.doStorageRequest(tab, payload);
+      break;
+    case CommonEventType.CrossMsgRequest:
+      helpers.doCrossMessageRequest(tab, payload);
       break;
     default:
       break;

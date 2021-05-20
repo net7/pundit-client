@@ -1,7 +1,7 @@
 import { badgeLoader, sendRootExistsMessage } from './helpers';
 import { state } from './state';
 import * as handlers from './handlers';
-import { EventType } from '../types';
+import { CommonEventType } from '../../../common/types';
 
 export const loadExtension = () => {
   if (state.get('appRoot')) return;
@@ -13,9 +13,15 @@ export const loadExtension = () => {
   }
 
   // listen to annotation updates
-  window.addEventListener(EventType.AnnotationsUpdate, handlers.onAnnotationsUpdate, false);
+  window.addEventListener(CommonEventType.AnnotationsUpdate, handlers.onAnnotationsUpdate, false);
   // listen storage request event
-  window.addEventListener(EventType.StorageRequest, handlers.onStorageRequest, false);
+  window.addEventListener(CommonEventType.StorageRequest, handlers.onStorageRequest, false);
+  // listen cross message event
+  window.addEventListener(
+    CommonEventType.CrossMsgRequest,
+    handlers.onCrossMessageRequest,
+    false
+  );
 
   const appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);
@@ -26,7 +32,7 @@ export const loadExtension = () => {
   (document.head || document.documentElement).appendChild(main);
   main.onload = () => {
     // emit signal
-    const signal = new CustomEvent('punditloaded', {
+    const signal = new CustomEvent(CommonEventType.PunditLoaded, {
       detail: { id: chrome.runtime.id }
     });
     window.dispatchEvent(signal);

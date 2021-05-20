@@ -1,10 +1,11 @@
+import { CommonEventType } from '../../../../common/types';
 import { state } from '../state';
 
 export const badgeLoader = () => {
   const badgeIntervalCount = state.get('badgeIntervalCount');
   let newCountValue = badgeIntervalCount + 1;
   chrome.runtime.sendMessage({
-    type: 'annotationsupdate',
+    type: CommonEventType.AnnotationsUpdate,
     payload: new Array(newCountValue).fill('·').join('')
   });
 

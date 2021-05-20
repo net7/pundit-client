@@ -1,5 +1,7 @@
+import { CommunicationSettings } from '@pundit/communication';
 import { ChromeExtStorage } from '../storage';
-import { ChromeExtStorageData, EventType } from '../../types';
+import { ChromeExtStorageData } from '../../types';
+import { CommonEventType } from '../../../../common/types';
 
 export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   const { id: tabId, incognito, windowId } = tab;
@@ -21,8 +23,13 @@ export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   }
 
   task$.then((storageData: ChromeExtStorageData) => {
+    if (operation === 'get') {
+      if (storageData?.access_token) {
+        CommunicationSettings.token = storageData.access_token as string;
+      }
+    }
     chrome.tabs.sendMessage(tabId, {
-      type: EventType.StorageResponse,
+      type: CommonEventType.StorageResponse,
       payload: {
         status: 'OK',
         data: operation === 'get' ? storageData : undefined
@@ -31,7 +38,7 @@ export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   }).catch((err) => {
     console.warn('StorageRequest error', err);
     chrome.tabs.sendMessage(tabId, {
-      type: EventType.StorageResponse,
+      type: CommonEventType.StorageResponse,
       payload: {
         status: 'KO'
       }

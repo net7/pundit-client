@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
 import { publish, tap } from 'rxjs/operators';
+import { CommonEventType } from '../../../common/types';
 import { StorageKey, StorageProvider, StorageValue } from './storage.types';
 
 enum OperationType {
@@ -36,7 +37,7 @@ export class StorageChromeExtService implements StorageProvider {
   ): Observable<StorageValue> {
     const task$ = new Observable<StorageValue>((subscriber) => {
       // listen signal from chrome-ext
-      window.addEventListener('storage.response', (ev: CustomEvent) => {
+      window.addEventListener(CommonEventType.StorageResponse, (ev: CustomEvent) => {
         const { status, data } = ev.detail;
         if (status === 'KO') {
           subscriber.error(`Storage error: operation ${operation} - key: ${key}`);
@@ -46,7 +47,7 @@ export class StorageChromeExtService implements StorageProvider {
       }, { once: true });
 
       // emit signal to chrome-ext
-      const signal = new CustomEvent('storage.request', {
+      const signal = new CustomEvent(CommonEventType.StorageRequest, {
         detail: { operation, key, value }
       });
       window.dispatchEvent(signal);

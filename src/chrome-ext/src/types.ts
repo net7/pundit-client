@@ -23,14 +23,6 @@ export type ChromeExtStateData = {
   rootExistMessageSended: boolean;
 };
 
-export enum EventType {
-  AnnotationsUpdate = 'annotationsupdate',
-  RootElementExists = 'rootelementexists',
-  StorageRequest = 'storage.request',
-  StorageResponse = 'storage.response',
-  StateChanged = 'statechanged',
-}
-
 export type RuntimeMessage = {
   type: string;
   payload: any;
