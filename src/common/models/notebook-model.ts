@@ -29,7 +29,7 @@ export class NotebookModel {
     });
   }
 
-  @CrossMessage(CrossMsgRequestId.NotebookRemove)
+  @CrossMessage(CrossMsgRequestId.NotebookUpdate)
   static update(id: string, { data }: { data: NotebookAttributes }) {
     // change the notebook data on the backend
     const baseURL = NotebookModel.baseUrl;
