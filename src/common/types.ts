@@ -5,13 +5,17 @@ export type CrossMsgData = {
 }
 
 export enum CrossMsgRequestId {
-  TestGet = 'test.get',
-  TestCreate = 'test.create',
   // notebook
   NotebookCreate = 'notebook.create',
   NotebookRemove = 'notebook.remove',
   NotebookSearch = 'notebook.search',
   NotebookUpdate = 'notebook.update',
+  // annotation
+  AnnotationCreate = 'annotation.create',
+  AnnotationGet = 'annotation.get',
+  AnnotationRemove = 'annotation.remove',
+  AnnotationSearch = 'annotation.search',
+  AnnotationUpdate = 'annotation.update',
 }
 
 export enum CommonEventType {

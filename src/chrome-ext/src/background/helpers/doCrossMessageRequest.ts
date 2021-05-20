@@ -1,5 +1,5 @@
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { NotebookModel } from '../../../../common/models';
+import { AnnotationModel, NotebookModel } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -21,6 +21,21 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     // ANNOTATION REQUEST
     // --------------------------------------------------->
+    case CrossMsgRequestId.AnnotationCreate:
+      request$ = AnnotationModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.AnnotationGet:
+      request$ = AnnotationModel.get.apply(null, args);
+      break;
+    case CrossMsgRequestId.AnnotationRemove:
+      request$ = AnnotationModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.AnnotationSearch:
+      request$ = AnnotationModel.search.apply(null, args);
+      break;
+    case CrossMsgRequestId.AnnotationUpdate:
+      request$ = AnnotationModel.update.apply(null, args);
+      break;
     default:
       break;
   }
