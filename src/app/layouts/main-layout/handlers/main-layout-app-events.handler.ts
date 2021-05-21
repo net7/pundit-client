@@ -131,6 +131,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.notebookService.clear();
     this.layoutDS.userService.logout();
 
+    // close verify toast
+    this.layoutDS.closeEmailVerifiedToast();
+
     // emit signals
     this.layoutDS.annotationService.totalChanged$.next(0);
     this.layoutDS.hasLoaded$.next(true);

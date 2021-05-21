@@ -200,6 +200,13 @@ export class MainLayoutDS extends LayoutDataSource {
     }
   }
 
+  public closeEmailVerifiedToast() {
+    if (this.state.emailVerifiedToast) {
+      this.state.emailVerifiedToast.close();
+      this.state.emailVerifiedToast = null;
+    }
+  }
+
   private openEmailVerifiedToast() {
     if (!this.state.emailVerifiedToast) {
       this.state.emailVerifiedToast = this.toastService.warn({
@@ -217,13 +224,6 @@ export class MainLayoutDS extends LayoutDataSource {
           }
         }
       });
-    }
-  }
-
-  private closeEmailVerifiedToast() {
-    if (this.state.emailVerifiedToast) {
-      this.state.emailVerifiedToast.close();
-      this.state.emailVerifiedToast = null;
     }
   }
 
