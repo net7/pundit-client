@@ -18,7 +18,7 @@ import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
-import * as annotationModel from '../../models/annotation';
+import { AnnotationModel } from '../../../common/models';
 
 type MainLayoutState = {
   isLogged: boolean;
@@ -99,7 +99,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   getPublicData() {
     const uri = getDocumentHref();
-    return from(annotationModel.search(uri)).pipe(
+    return from(AnnotationModel.search(uri)).pipe(
       tap((response) => {
         const { data: searchData } = response;
         // remove private annotations
@@ -114,7 +114,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   getUserAnnotations() {
     const uri = getDocumentHref();
-    return from(annotationModel.search(uri)).pipe(
+    return from(AnnotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);

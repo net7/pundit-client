@@ -9,7 +9,8 @@ import { AnnotationCssClass, AnnotationDS } from '../data-sources';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
-import * as annotationModel from '../models/annotation';
+import { AnnotationModel } from '../../common/models';
+import { createRequestPayload } from '../models/annotation';
 
 export type AnnotationConfig = {
   id: string;
@@ -39,7 +40,7 @@ export class AnnotationService {
    * and add it to the local cache.
    */
   create(attributes: AnnotationAttributes) {
-    return from(annotationModel.create(attributes)).pipe(
+    return from(AnnotationModel.create(attributes)).pipe(
       tap(({ data }) => {
         const { id } = data;
         const requestPayload = attributes;
@@ -100,7 +101,7 @@ export class AnnotationService {
    * @param data data of the annotation that you want to change
    */
   update(annotationId: string, data: AnnotationAttributes) {
-    return from(annotationModel.update(annotationId, data))
+    return from(AnnotationModel.update(annotationId, data))
       .pipe(
         tap(() => {
           const cachedAnnotation = this.getAnnotationById(annotationId);
@@ -137,7 +138,7 @@ export class AnnotationService {
    * @param annotationId ID of the annotation to delete
    */
   remove(annotationId: string) {
-    return from(annotationModel.remove(annotationId)).pipe(
+    return from(AnnotationModel.remove(annotationId)).pipe(
       tap(() => {
         this.removeCached(annotationId);
       })
@@ -196,7 +197,7 @@ export class AnnotationService {
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;
     const options = {};
-    return annotationModel.createRequestPayload({
+    return createRequestPayload({
       userId,
       type,
       options,
