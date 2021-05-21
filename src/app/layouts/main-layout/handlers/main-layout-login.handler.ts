@@ -1,6 +1,11 @@
 import { _t } from '@n7-frontend/core';
 import { zip } from 'rxjs';
-import { delay, first, takeUntil } from 'rxjs/operators';
+import {
+  delay,
+  filter,
+  first,
+  takeUntil
+} from 'rxjs/operators';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
@@ -112,6 +117,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
 
   private loginAlert() {
     this.layoutDS.hasLoaded$.pipe(
+      filter(() => _c('showLoginToast')),
       first(),
       delay(1000) // fix render
     ).subscribe(() => {
