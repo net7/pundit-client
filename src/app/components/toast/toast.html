@@ -23,6 +23,7 @@
                 class="pnd-toast__close-icon {{ box.closeIcon.icon }}" 
                 *ngIf="box.closeIcon" 
                 (click)="onClick(box.closeIcon.payload)">
+                    <pnd-svg-icon [data]="{ id: 'times' }"></pnd-svg-icon>
                 </span>
                 <span class="pnd-toast__action-wrapper" *ngIf="box.actions">
                     <span class="pnd-toast__action-content" *ngFor="let action of box.actions">
