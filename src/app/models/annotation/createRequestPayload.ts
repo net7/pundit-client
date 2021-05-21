@@ -1,7 +1,6 @@
 import {
   HighlightAnnotation,
   HighlightAnnotationBuilder,
-  annotation,
   RangeSelector,
   RangeSelectorBuilder,
   TextPositionSelector,
@@ -14,7 +13,6 @@ import {
   SemanticTripleType,
   CommentAnnotation,
   CommentAnnotationBuilder,
-  AnnotationAttributes
 } from '@pundit/communication';
 import { describe } from '../anchoring/html';
 import { _c } from '../config';
@@ -129,12 +127,4 @@ const annotationPayload = (
 
 export function createRequestPayload(payload: AnnotationPayload) {
   return annotationPayload(payload);
-}
-/**
- * Creates a new annotation that is associated with the selected region of
- * the current document.
- */
-export function create(requestPayload: AnnotationAttributes) {
-  const baseURL = _c('baseURL');
-  return annotation.create({ baseURL, data: requestPayload });
 }
