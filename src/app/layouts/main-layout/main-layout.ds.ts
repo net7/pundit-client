@@ -245,8 +245,7 @@ export class MainLayoutDS extends LayoutDataSource {
           text: _t('toast#verify_email_success_text', {
             mail: response.mail
           }),
-          autoClose: false,
-          hasDismiss: false
+          autoClose: false
         });
       } else {
         console.warn('Email verify response error', response);
