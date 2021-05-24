@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
-import { PunditLoginModule } from '@pundit/login';
 import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
@@ -35,6 +34,7 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+import { PunditLoginModule } from './login-module/public-api';
 
 const LANG_CODE = 'en_US';
 

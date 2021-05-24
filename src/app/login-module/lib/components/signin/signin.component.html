@@ -1,0 +1,69 @@
+<div class="pnd-login-modal__header">
+    <div class="pnd-login-modal__header-logo">
+        <lib-svg-icon [data]="{ id: 'pundit' }"></lib-svg-icon>
+    </div>
+    <h1 class="pnd-login-modal__header-small-title">Log In to your Pundit account</h1>
+</div>
+
+<ng-container *ngIf="email">
+    <form id="loginForm" class="pnd-login-modal__form" [formGroup]="loginForm" (ngSubmit)="loginEmail()">
+        
+        <div *ngIf="serviceErrorMessage" class="pnd-login-modal__form-row">
+            <div class="pnd-login-modal__form-error">
+                {{ serviceErrorMessage }}
+            </div>
+        </div>
+        
+        <div class="pnd-login-modal__form-row">
+            <label for="email" class="pnd-login-modal__form-label required">Email</label>
+            <input class="pnd-login-modal__form-input"
+                [ngClass]="{ 'has-error': !!getErrorMessage('email') }" 
+                type="email" 
+                id="email" 
+                [formControlName]="'email'" 
+                placeholder="Insert your email...">
+            <div *ngIf="getErrorMessage('email')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('email') }}
+            </div>
+        </div>
+        
+        <div class="pnd-login-modal__form-row">
+            <label for="password" class="pnd-login-modal__form-label required">Password</label>
+            <input class="pnd-login-modal__form-input" 
+                [ngClass]="{ 'has-error': !!getErrorMessage('password') }" 
+                type="password" 
+                id="password" 
+                [formControlName]="'password'" 
+                placeholder="..and your password">
+            <div *ngIf="getErrorMessage('password')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('password') }}
+            </div>
+        </div>
+        
+        <div class="pnd-login-modal__form-row">
+            <button type="submit" [disabled]="!loginForm.valid || isLoading"
+                class="pnd-login-modal__form-button pnd-btn pnd-btn-cta pnd-btn-l" id="_submit">
+                Log In
+            </button>
+        </div>
+        
+        <div class="pnd-login-modal__form-secondary-link">
+            <p class="pnd-login-modal__form-secondary-link-text">
+                <a href="/app/home/resetting/request">Lost your password? No panic :)</a>
+            </p>
+        </div>
+
+    </form>
+</ng-container>
+
+<section class="pnd-login-modal__social-buttons">
+    <div id="gplusButton" class="pnd-btn pnd-btn-l pnd-btn-google" (click)="loginGoogle()" *ngIf="google">
+        <span>Log in with Google</span>
+    </div>
+    <div id="fbButton" class="pnd-btn pnd-btn-l pnd-btn-facebook" (click)="loginFacebook()" *ngIf="facebook">
+        <span>Log in with Facebook</span>
+    </div>
+    <div id="egiButton" class="pnd-btn pnd-btn-l pnd-btn-egi" (click)="loginEgi()" *ngIf="egi">
+        <span (click)="loginEgi()">Log in with EGI</span>
+    </div>
+</section>

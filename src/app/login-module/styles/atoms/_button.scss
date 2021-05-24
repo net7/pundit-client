@@ -1,0 +1,233 @@
+/**
+ * BUTTONS
+ *
+ * Style for all types of buttons
+ */
+
+/* ------------------------------------ *\
+   #STANDARD-BUTTON
+\* ------------------------------------ */
+.pnd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-sizing: border-box;
+    height: $button-normal-height;
+    padding: 0 $space*1.5;
+    margin: 0;
+    border: $button-border-width solid $color-button-border;
+    border-radius: $button-border-radius;
+    background-color: $color-button-bg;
+    color: $color-button-text;
+    font-size: $font-size-s;
+    font-weight: $font-weight-bold;
+    font-family: $font-family-main;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all $transition-durations;
+    text-transform: capitalize;
+
+    &:hover {
+        color: $color-button-text-hover;
+        background-color: $color-button-bg-hover;
+        border-color: $color-button-border-hover;
+        text-decoration: none;
+    }
+
+    /* Disabled */
+    &.disabled, &:disabled, &.disabled:hover, &:disabled:hover,
+    &.disabled:active, &:disabled:active, &.disabled:active:hover, &:disabled:active:hover {
+        color: $color-button-text-disabled;
+        border-color: $color-button-border-disabled;
+        background-color: $color-button-bg-disabled;
+        text-shadow: none;
+        cursor: not-allowed;
+    }
+
+    /* With loader inside */
+    &.is-loading {
+        position: relative;
+        text-indent: -9999px;
+    }
+
+    /* Active */
+    &.active, &:active, &.active:hover, &:active:hover,
+    &:focus, &:focus:hover {
+        color: $color-button-text;
+        background-color: $color-button-bg;
+        border-color: $color-button-border;        
+    }
+
+    &.pnd-btn-s {
+        padding: 0 $space*1;
+        height: $button-small-height;
+        font-size: $font-size-xs;
+    }
+
+    /* Mostly used into bars */
+    &.pnd-btn-l {
+        padding: 0 $space*2.5;
+        height: $button-large-height;
+        font-size: $font-size-m;
+    }
+
+    /* Same height as .cs-btn-l but with bigger contents */
+    &.pnd-btn-xl {
+        padding: 0 $space*3.5;
+        height: $button-xlarge-height;
+        font-size: $font-size-l;
+    }
+
+    /* Full width */
+    &.pnd-btn-full {
+        width: 100%;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #LIGHT-BUTTON
+\* ------------------------------------ */
+/* No background */
+.pnd-btn-light {
+    color: $color-button-light-text;
+    background-color: $color-button-light-bg;
+    border-color: $color-button-light-border;
+    
+    &:hover {
+        color: $color-button-light-text-hover;
+        background-color: $color-button-light-bg-hover;
+        border-color: $color-button-light-border-hover;
+    }
+
+    /* Disabled */
+    &.disabled, &:disabled, &.disabled:hover, &:disabled:hover,
+    &.disabled:active, &:disabled:active, &.disabled:active:hover, &:disabled:active:hover {
+        color: $color-button-light-text-disabled;
+        background-color: $color-button-light-bg-disabled;
+        border-color: $color-button-light-border-disabled;
+    }
+
+    /* Active */
+    &.active, &:active, &.active:hover, &:active:hover,
+    &:focus, &:focus:hover {
+        color: $color-button-light-text;
+        background-color: $color-button-light-bg;
+        border-color: $color-button-light-border;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #CALL-TO-ACTION-BUTTON
+\* ------------------------------------ */
+.pnd-btn-cta {
+    color: $color-button-cta-text;
+    background-color: $color-button-cta-bg;
+    border-color: $color-button-cta-border;
+    
+    &:hover {
+        color: $color-button-cta-text-hover;
+        background-color: $color-button-cta-bg-hover;
+        border-color: $color-button-cta-border-hover;
+    }
+
+    /* Disabled */
+    &.disabled, &:disabled, &.disabled:hover, &:disabled:hover,
+    &.disabled:active, &:disabled:active, &.disabled:active:hover, &:disabled:active:hover {
+        color: $color-button-cta-text-disabled;
+        background-color: $color-button-cta-bg-disabled;
+        border-color: $color-button-cta-border-disabled;
+    }
+
+    /* Active */
+    &.active, &:active, &.active:hover, &:active:hover,
+    &:focus, &:focus:hover {
+        color: $color-button-cta-text;
+        background-color: $color-button-cta-bg;
+        border-color: $color-button-cta-border;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #ICONS
+\* ------------------------------------ */
+.pnd-btn {
+    svg {
+        height: 18px;
+        width: auto;
+        margin-left: $space/2;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #SOCIAL-BUTTONS
+\* ------------------------------------ */
+.pnd-btn {
+    &.pnd-btn-google {
+        color: $color-text-inverse;
+        border-width: 0;
+        background-color: $color-google;
+
+        background-color: $color-background-base;
+        border: 2px solid $color-border-normal;
+        color: $color-google;
+
+        &:hover {
+            // background-color: darken( $color-google, 10);
+            border-color: $color-google;
+        }
+
+        /* Active */
+        &.active, &:active, &.active:hover, &:active:hover,
+        &:focus, &:focus:hover {
+            background-color: darken( $color-google, 10);
+        }
+    }
+    
+    &.pnd-btn-facebook {
+        color: $color-text-inverse;
+        border-width: 0;
+        background-color: $color-facebook;
+
+        background-color: $color-background-base;
+        border: 2px solid $color-border-normal;
+        color: $color-facebook;
+
+        &:hover {
+            // background-color: darken( $color-facebook, 10);
+            border-color: $color-facebook;
+        }
+    
+        /* Active */
+        &.active, &:active, &.active:hover, &:active:hover,
+        &:focus, &:focus:hover {
+            background-color: darken( $color-facebook, 10);
+        }
+    }
+
+    &.pnd-btn-egi {
+        color: $color-text-inverse;
+        border-width: 0;
+        background-color: $color-egi;
+
+        background-color: $color-background-base;
+        border: 2px solid $color-border-normal;
+        color: $color-egi;
+
+        &:hover {
+            // background-color: darken( $color-egi, 10);
+            border-color: $color-egi;
+        }
+    
+        /* Active */
+        &.active, &:active, &.active:hover, &:active:hover,
+        &:focus, &:focus:hover {
+            background-color: darken( $color-egi, 10);
+        }
+    }
+}

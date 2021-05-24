@@ -1,0 +1,131 @@
+<div class="pnd-login-modal__header">
+    <div class="pnd-login-modal__header-logo"></div>
+    <h1 class="pnd-login-modal__header-title">Welcome!</h1>
+    <h2 class="pnd-login-modal__header-text">Register to Pundit and save your annotations</h2>
+</div>
+
+<ng-container *ngIf="email?.params.register">
+    <form name="fos_user_registration_form" [formGroup]="registerForm" (ngSubmit)="registerEmail()" class="pnd-login-modal__form" >
+
+        <div *ngIf="serviceErrorMessage" class="pnd-login-modal__form-row">
+            <div class="pnd-login-modal__form-error">
+                {{ serviceErrorMessage }}
+            </div>
+        </div>
+
+        <div class="pnd-grid-2">
+            <div class="pnd-login-modal__form-row">
+                <label for="firstname" class="pnd-login-modal__form-label required">First name</label>
+                <input class="pnd-login-modal__form-input" 
+                    [ngClass]="{ 'has-error': !!getErrorMessage('firstname') }"
+                    type="text" 
+                    id="firstname" 
+                    [formControlName]="'firstname'" 
+                    placeholder="Your name...">
+                <div *ngIf="getErrorMessage('firstname')" class="pnd-login-modal__form-error">
+                    {{ getErrorMessage('firstname') }}
+                </div>
+            </div>
+            <div class="pnd-login-modal__form-row">
+                <label for="text" class="pnd-login-modal__form-label required">Last name</label>
+                <input class="pnd-login-modal__form-input" 
+                    [ngClass]="{ 'has-error': !!getErrorMessage('lastname') }"
+                    type="text" 
+                    id="lastname" 
+                    [formControlName]="'lastname'" 
+                    placeholder="...and last name">
+                <div *ngIf="getErrorMessage('lastname')" class="pnd-login-modal__form-error">
+                    {{ getErrorMessage('lastname') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="pnd-login-modal__form-row">
+            <label for="email" class="pnd-login-modal__form-label required">Email</label>
+            <input class="pnd-login-modal__form-input"     
+                [ngClass]="{ 'has-error': !!getErrorMessage('email') }"
+                type="email" 
+                id="email" 
+                [formControlName]="'email'" 
+                placeholder="Insert your email">
+            <div *ngIf="getErrorMessage('email')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('email') }}
+            </div>
+        </div>
+
+        <div class="pnd-login-modal__form-row">
+            <label for="password" class="pnd-login-modal__form-label required">Password</label>
+            <input class="pnd-login-modal__form-input has-error" 
+                [ngClass]="{ 'has-error': !!getErrorMessage('password') }"
+                type="password" 
+                id="password" 
+                [formControlName]="'password'" 
+                placeholder="Choose a password">
+            <div *ngIf="getErrorMessage('password')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('password') }}
+            </div>
+        </div>
+
+        <div class="pnd-login-modal__form-row">
+            <div class="pnd-login-modal__form-checkbox-wrapper">
+                <input class="pnd-login-modal__form-checkbox" 
+                    [ngClass]="{ 'has-error': !!getErrorMessage('termsconditions') }"
+                    type="checkbox" 
+                    id="termsconditions" 
+                    [formControlName]="'termsconditions'">
+                <label for="termsconditions" class="pnd-login-modal__form-label required">
+                    I agree to the <a href="https://www.iubenda.com/terms-and-conditions/69930136" target="_blank">Terms and Conditions</a> 
+                    and <a href="https://www.iubenda.com/privacy-policy/69930136" target="_blank">Privacy Policy</a> of Pundit.
+                </label>
+            </div>
+            <div *ngIf="getErrorMessage('termsconditions')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('termsconditions') }}
+            </div>
+        </div>
+        
+        <div class="pnd-login-modal__form-row">
+            <div class="pnd-login-modal__form-checkbox-wrapper">
+                <input class="pnd-login-modal__form-checkbox" 
+                    [ngClass]="{ 'has-error': !!getErrorMessage('tracking') }"
+                    type="checkbox" 
+                    id="check_tracking" 
+                    [formControlName]="'tracking'">
+                <label for="check_tracking" class="pnd-login-modal__form-label required">
+                    I agree to be contacted by the Pundit team as part of targeted initiatives related to the service.
+                </label>
+            </div>
+            <div *ngIf="getErrorMessage('tracking')" class="pnd-login-modal__form-error">
+                {{ getErrorMessage('tracking') }}
+            </div>
+        </div>
+
+        <!--
+        <div class="pnd-form-block pnd-text-align-left ">
+            <label for="confirmpassword" class="required">Repeat password</label>
+            <input type="password" id="confirmpassword" [formControlName]="'confirmpassword'" placeholder="Confirm the password">
+            <div *ngIf="registerForm.get('confirmpassword').touched && registerForm.hasError('notSame')" class="pnd-error">
+                Password don't match
+            </div>
+        </div>
+        -->
+
+        <div class="pnd-login-modal__form-row">
+            <button [disabled]="!registerForm.valid || isLoading" class="pnd-login-modal__form-button pnd-btn pnd-btn-cta pnd-btn-l" type="submit">
+                Register now
+            </button>
+        </div>
+
+    </form>
+</ng-container>
+
+<section class="pnd-login-modal__social-buttons">
+    <div id="gplusButton" class="pnd-btn pnd-btn-l pnd-btn-google" (click)="registerGoogle()" *ngIf="google">
+        <span>Register with Google</span>
+    </div>
+    <div id="fbButton" class="pnd-btn pnd-btn-l pnd-btn-facebook" (click)="registerFacebook()" *ngIf="facebook">
+        <span>Register with Facebook</span>
+    </div>
+    <div id="egiButton" class="pnd-btn pnd-btn-l pnd-btn-egi" (click)="registerEgi()" *ngIf="egi">
+        <span>Register with EGI</span>
+    </div>
+</section>

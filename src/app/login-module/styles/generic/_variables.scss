@@ -1,0 +1,152 @@
+//
+// VARIABLES
+//
+// Definition of all variables used by the components library
+//
+
+// ------------------------------------ //
+// #SPACING-UNIT
+// ------------------------------------ //
+$space: 8px;
+
+
+// ------------------------------------ //
+// #GRID
+// ------------------------------------ //
+$grid-gutter-h: $space;
+$grid-gutter-v: $space;
+
+
+// ------------------------------------ //
+// FONTS
+// ------------------------------------ //
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+
+
+// ------------------------------------ //
+// TYPOGRAPHY
+// ------------------------------------ //
+$font-family-main: 'Source Sans Pro', sans-serif;
+$font-family-headings: $font-family-main;
+
+$font-size-xxxl: 38px;
+$font-size-xxl: 30px;
+$font-size-xl: 24px;
+$font-size-l: 20px;
+$font-size-m: 16px;
+$font-size-s: 14px;
+$font-size-xs: 13px;
+
+// Font weight
+$font-weight-normal: 300;
+$font-weight-bold: 500;
+
+
+// ------------------------------------ //
+// COLORS
+// ------------------------------------ //
+// Text Colors
+$color-text: $color-gray-05;
+$color-text-inverse: $color-gray-00;
+$color-text-light: $color-gray-04;
+$color-text-link: $color-main;
+$color-text-link-hover: $color-text-hover;
+$color-text-link-visited: $color-text-hover;
+$color-text-form-placeholder: $color-gray-04;
+
+// Borders
+$color-border-light: $color-gray-02;
+$color-border-normal: $color-gray-03;
+
+// Backgrounds
+$color-background-base: $color-gray-00;
+$color-background-light: $color-gray-01;
+$color-background-medium: $color-gray-02;
+$color-background-dark: $color-gray-03;
+
+
+// ------------------------------------ //
+// #BORDER-RADIUS
+// ------------------------------------ //
+$border-radius: 3px;
+$border-radius-hard: 8px;
+
+
+// ------------------------------------ //
+// #TRANSITIONS
+// ------------------------------------ //
+$transition-durations: 0.2s;
+
+
+// ------------------------------------ //
+// #BUTTONS
+// ------------------------------------ //
+$button-border-width: 1px;
+$button-border-radius: $border-radius;
+$button-small-height: 22px;
+$button-normal-height: 26px;
+$button-large-height: 34px;
+$button-xlarge-height: 36px;
+
+// Normal button
+$color-button-text: $color-text;
+$color-button-text-hover: $color-text-link;
+$color-button-text-disabled: rgba($color-text, .4);
+$color-button-bg: $color-gray-01;
+$color-button-bg-hover: $color-gray-02;
+$color-button-bg-disabled: $color-gray-02;
+$color-button-border: $color-gray-05;
+$color-button-border-hover: $color-text-link;
+$color-button-border-disabled: $color-gray-04;
+
+// Light button (no background or border, only text)
+$color-button-light-text: $color-text;
+$color-button-light-text-hover: $color-text-link-hover;
+$color-button-light-text-disabled: rgba($color-text, .4);
+$color-button-light-bg: $color-gray-01;
+$color-button-light-bg-hover: $color-gray-02;
+$color-button-light-bg-disabled: $color-gray-01;
+$color-button-light-border: $color-gray-03;
+$color-button-light-border-hover: $color-gray-03;
+$color-button-light-border-disabled: $color-gray-02;
+
+// Call to action button
+$color-button-cta-text: $color-text-inverse;
+$color-button-cta-text-hover: $color-text-inverse;
+$color-button-cta-text-disabled: rgba($color-text-inverse, .4);
+$color-button-cta-bg: $color-main;
+$color-button-cta-bg-hover: lighten($color-main, 6);
+$color-button-cta-bg-disabled: lighten($color-main, 10);
+$color-button-cta-border: darken($color-main, 5);
+$color-button-cta-border-hover: darken($color-main, 5);
+$color-button-cta-border-disabled: darken($color-main, 5);
+
+
+// ------------------------------------ //
+// #LOADER
+// ------------------------------------ //
+$loader-color-front: $color-gray-03;
+$loader-color-back: $color-gray-02;
+
+
+// ------------------------------------ //
+// #MODAL
+// ------------------------------------ //
+$modal-width: 560px;
+
+
+// ------------------------------------ //
+// #FORMS
+// ------------------------------------ //
+$form-input-height: 34px;
+$form-input-small-height: 28px;
+$form-input-placeholder-color: $color-gray-04;
+$form-border-radius: $border-radius;
+$form-dropdown-height: 30px;
+
+
+// ------------------------------------ //
+// Z-INDEX
+// ------------------------------------ //
+$z-index-max: 2147483647;
+$z-index-modal: $z-index-max - 0;

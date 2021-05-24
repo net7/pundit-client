@@ -3,7 +3,7 @@ import {
 } from '@angular/core';
 import {
   PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
-} from '@pundit/login';
+} from 'src/app/login-module/public-api';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
