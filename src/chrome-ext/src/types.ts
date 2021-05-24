@@ -4,7 +4,7 @@ export type ChromeExtStorageData = {
 
 export type ChromeExtStorageValue = string | object | boolean | null;
 
-export enum StorageKeys {
+export enum ChromeExtStorageKey {
   Active = 'active',
   Incognito = 'incognito'
 }
