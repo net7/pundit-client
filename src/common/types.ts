@@ -36,6 +36,7 @@ export enum CommonEventType {
   PunditLoaded = 'punditloaded',
   PunditDestroy = 'punditdestroy',
   SetTokenFromStorage = 'settokenfromstorage',
+  InitCommunicationSettings = 'initcommunicationsettings',
 }
 
 export enum StorageKey {

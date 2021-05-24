@@ -3,6 +3,7 @@ import { CommonEventType, StorageKey } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
 import { ChromeExtStorage } from '../storage';
+import { environment as env } from '../../../../environments/environment';
 
 type RuntimeMessage = {
   type: string;
@@ -34,6 +35,10 @@ export const onContentScriptMessage = (
         // FIXME: controllare communication token type
         CommunicationSettings.token = storageToken as string | null;
       });
+      break;
+    case CommonEventType.InitCommunicationSettings:
+      CommunicationSettings.apiBaseURL = env.apiBaseURL;
+      CommunicationSettings.authBaseURL = env.authBaseURL;
       break;
     default:
       break;

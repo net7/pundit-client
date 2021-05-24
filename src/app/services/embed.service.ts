@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { setTokenFromStorage } from '../../common/helpers';
+import { initCommunicationSettings, setTokenFromStorage } from '../../common/helpers';
 
 @Injectable()
 export class EmbedService {
@@ -10,6 +10,8 @@ export class EmbedService {
 
       // set token from storage on init
       setTokenFromStorage();
+      // init communication settings
+      initCommunicationSettings();
       resolve();
     });
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { delay } from 'rxjs/operators';
-import { setTokenFromStorage } from '../../common/helpers';
+import { initCommunicationSettings, setTokenFromStorage } from '../../common/helpers';
 import { CommonEventType } from '../../common/types';
 import { SIDEBAR_EXPANDED_CLASS } from '../layouts/main-layout/handlers';
 import { config } from '../models/config';
@@ -25,6 +25,8 @@ export class ChromeExtService {
 
         // set token from storage on init
         setTokenFromStorage();
+        // init communication settings
+        initCommunicationSettings();
         res();
       }, false);
     });
