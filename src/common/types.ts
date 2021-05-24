@@ -16,6 +16,13 @@ export enum CrossMsgRequestId {
   AnnotationRemove = 'annotation.remove',
   AnnotationSearch = 'annotation.search',
   AnnotationUpdate = 'annotation.update',
+  // auth
+  AuthLogin = 'auth.login',
+  AuthLogout = 'auth.logout',
+  AuthVerifyMail = 'auth.verifyMail',
+  AuthSso = 'auth.sso',
+  AuthRefresh = 'auth.refresh',
+  AuthRetry = 'auth.retry'
 }
 
 export enum CommonEventType {
