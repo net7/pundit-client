@@ -5,7 +5,7 @@ import { CrossMessage } from '../cross-message';
 export class AuthModel {
   @CrossMessage(CrossMsgRequestId.AuthLogin)
   static login(requestPayload: UserLoginRequestParams) {
-    return auth.login({ data: requestPayload });
+    return auth.login(requestPayload);
   }
 
   @CrossMessage(CrossMsgRequestId.AuthLogout)
@@ -20,6 +20,6 @@ export class AuthModel {
 
   @CrossMessage(CrossMsgRequestId.AuthSso)
   static sso() {
-    return auth.sso({ data: null });
+    return auth.sso();
   }
 }

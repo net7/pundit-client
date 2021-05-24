@@ -10,7 +10,7 @@ import { CrossMessage } from '../cross-message';
 export class AnnotationModel {
   @CrossMessage(CrossMsgRequestId.AnnotationCreate)
   static create(requestPayload: AnnotationAttributes) {
-    return annotation.create({ data: requestPayload });
+    return annotation.create(requestPayload);
   }
 
   @CrossMessage(CrossMsgRequestId.AnnotationGet)
@@ -26,12 +26,12 @@ export class AnnotationModel {
   @CrossMessage(CrossMsgRequestId.AnnotationSearch)
   static search(uri: string) {
     const payload = AnnotationModel.searchAnnotationPayload(uri);
-    return annotation.search({ data: payload });
+    return annotation.search(payload);
   }
 
   @CrossMessage(CrossMsgRequestId.AnnotationUpdate)
   static update(id: string, data: AnnotationAttributes) {
-    return annotation.update(id, { data });
+    return annotation.update(id, data);
   }
 
   static searchAnnotationPayload = (uri: string): SearchAnnotationParams => {
