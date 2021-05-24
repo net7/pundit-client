@@ -25,7 +25,7 @@ export class AuthModel {
     }
 
     @CrossMessage(CrossMsgRequestId.AuthVerifyMail)
-    private static varifyEmail() {
+    public static varifyEmail() {
       const baseURL = AuthModel.baseUrl;
       return auth.verifyMail({ baseURL });
     }
