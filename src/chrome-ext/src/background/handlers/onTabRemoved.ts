@@ -1,7 +1,7 @@
 import { ChromeExtStorage } from '../storage';
-import { StorageKeys } from '../../types';
+import { ChromeExtStorageKey } from '../../types';
 
 export const onTabRemoved = (tabId: number) => {
-  const activeKey = `${StorageKeys.Active}.${tabId}`;
+  const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
   ChromeExtStorage.remove(activeKey);
 };

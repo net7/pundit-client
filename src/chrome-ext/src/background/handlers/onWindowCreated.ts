@@ -1,8 +1,8 @@
 import { ChromeExtStorage } from '../storage';
-import { StorageKeys } from '../../types';
+import { ChromeExtStorageKey } from '../../types';
 
 export const onWindowCreated = (currentWindow: chrome.windows.Window) => {
   if (currentWindow.incognito) {
-    ChromeExtStorage.set(`${StorageKeys.Incognito}.${currentWindow.id}`, true);
+    ChromeExtStorage.set(`${ChromeExtStorageKey.Incognito}.${currentWindow.id}`, true);
   }
 };
