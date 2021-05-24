@@ -3,8 +3,8 @@ import { from, Subject, ReplaySubject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
 import { tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
+import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
-import { StorageKey } from './storage-service/storage.types';
 import { UserService } from './user.service';
 
 export type NotebookData = {

@@ -4,7 +4,7 @@ import { AuthToken, PunditRefreshTokenService, LoginResponse } from '@pundit/log
 import { of, ReplaySubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StorageService } from './storage-service/storage.service';
-import { StorageKey } from './storage-service/storage.types';
+import { StorageKey } from '../../common/types';
 
 @Injectable()
 export class TokenService {

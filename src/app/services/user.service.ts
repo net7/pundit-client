@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
 import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { StorageKey } from './storage-service/storage.types';
+import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
 import { _c } from '../models/config';
 

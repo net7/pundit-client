@@ -29,3 +29,9 @@ export enum CommonEventType {
   PunditLoaded = 'punditloaded',
   PunditDestroy = 'punditdestroy'
 }
+
+export enum StorageKey {
+  User = 'pundit-user',
+  Token = 'pundit-token',
+  Notebook = 'pundit-notebook'
+}

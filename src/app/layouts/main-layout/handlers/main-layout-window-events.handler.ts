@@ -2,10 +2,9 @@ import { _t } from '@n7-frontend/core';
 import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/login';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
-import { CommonEventType } from '../../../../common/types';
+import { CommonEventType, StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 

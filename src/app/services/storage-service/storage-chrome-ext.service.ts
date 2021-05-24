@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
 import { publish, tap } from 'rxjs/operators';
-import { CommonEventType } from '../../../common/types';
-import { StorageKey, StorageProvider, StorageValue } from './storage.types';
+import { CommonEventType, StorageKey } from '../../../common/types';
+import { StorageProvider, StorageValue } from './storage.types';
 
 enum OperationType {
   Get = 'get',

@@ -1,10 +1,23 @@
+import { CommunicationSettings } from '@pundit/communication';
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
-import { CrossMsgData, CommonEventType } from './types';
+import { CrossMsgData, CommonEventType, StorageKey } from './types';
 
 const crossMessageEnabled = () => !!(
   env.chromeExt && document.location.protocol !== 'chrome-extension:'
 );
+
+const tokenSync = (): Promise<void> => new Promise<void>((resolve) => {
+  const { token } = CommunicationSettings;
+  if (env.chromeExt) {
+    chrome.storage.local.set({ [StorageKey.Token]: token }, () => {
+      resolve();
+    });
+  } else {
+    localStorage.setItem(StorageKey.Token, token);
+    resolve();
+  }
+});
 
 const handlers: {
   [x: string]: {
@@ -54,7 +67,7 @@ export function CrossMessage(requestId: string) {
       } else {
         result = originalMethod.apply(this, args);
       }
-      return result;
+      return tokenSync().then(() => result);
     };
   };
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { StorageKey, StorageProvider, StorageValue } from './storage.types';
+import { StorageProvider, StorageValue } from './storage.types';
+import { StorageKey } from '../../../common/types';
 
 @Injectable()
 export class StorageEmbedService implements StorageProvider {
