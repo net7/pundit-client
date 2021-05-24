@@ -34,7 +34,8 @@ export enum CommonEventType {
   CrossMsgRequest = 'crossmessage.request',
   CrossMsgResponse = 'crossmessage.response',
   PunditLoaded = 'punditloaded',
-  PunditDestroy = 'punditdestroy'
+  PunditDestroy = 'punditdestroy',
+  SetTokenFromStorage = 'settokenfromstorage',
 }
 
 export enum StorageKey {

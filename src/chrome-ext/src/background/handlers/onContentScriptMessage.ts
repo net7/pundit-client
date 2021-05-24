@@ -1,6 +1,8 @@
-import { CommonEventType } from '../../../../common/types';
+import { CommunicationSettings } from '@pundit/communication';
+import { CommonEventType, StorageKey } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
+import { ChromeExtStorage } from '../storage';
 
 type RuntimeMessage = {
   type: string;
@@ -26,6 +28,12 @@ export const onContentScriptMessage = (
       break;
     case CommonEventType.CrossMsgRequest:
       helpers.doCrossMessageRequest(tab, payload);
+      break;
+    case CommonEventType.SetTokenFromStorage:
+      ChromeExtStorage.get(StorageKey.Token).then((storageToken) => {
+        // FIXME: controllare communication token type
+        CommunicationSettings.token = storageToken as string | null;
+      });
       break;
     default:
       break;

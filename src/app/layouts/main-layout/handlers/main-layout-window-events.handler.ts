@@ -4,6 +4,7 @@ import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
+import { setTokenFromStorage } from 'src/common/helpers';
 import { CommonEventType, StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -92,6 +93,8 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         });
         // clear toasts
         this.layoutDS.toastService.clear();
+        // set token from storage when user changed
+        setTokenFromStorage();
         // trigger auto-login
         this.layoutDS.tokenService.set(token);
         this.layoutDS.userService.iam(user);
