@@ -1,0 +1,62 @@
+//
+// MIXINS
+//
+// Muruca mixins
+//
+
+// ------------------------------------ //
+// #MIXINS
+// ------------------------------------ //
+@mixin cardShadow-1 {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.04), 0 2px 10px rgba(0,0,0,0.04);
+}
+
+@mixin cardShadow-2 {
+    box-shadow: 0 2px 1px rgba(0,0,0,0.08), 0 4px 20px rgba(0,0,0,0.08);
+}
+
+@mixin cardShadow-left {
+    box-shadow: -2px 0px 15px rgba(0,0,0,0.05);
+}
+
+@mixin punditGradient-1 {
+    background: linear-gradient(55deg, #0d85ec 0%, #516eee 50%, #7c53ea 100%);
+}
+
+@mixin consistent {
+    &:after {
+        content: ' ';
+        clear: both;
+        display: block;
+    }
+}
+
+
+// ------------------------------------ //
+// #INPUT PLACEHOLDER STYLE
+// ------------------------------------ //
+@mixin placeholder {
+    &::-webkit-input-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &:-moz-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &::-moz-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+
+    &:-ms-input-placeholder {
+        color: $form-input-placeholder-color;
+        font-weight: $font-weight-normal;
+        font-family: $font-family-main;
+    }
+}

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CommunicationSettings, retry$ } from '@pundit/communication';
-import { AuthToken, PunditRefreshTokenService, LoginResponse } from '@pundit/login';
+import { AuthToken, PunditRefreshTokenService, LoginResponse } from 'src/app/login-module/public-api';
 import { of, ReplaySubject } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { StorageService } from './storage-service/storage.service';

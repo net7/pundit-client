@@ -11,12 +11,12 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { AppEventData } from 'src/app/types';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { PunditLoginService } from '@pundit/login';
 import { ToastService } from 'src/app/services/toast.service';
 import {
   AppEvent, SidebarLayoutEvent
 } from 'src/app/event-types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
+import { PunditLoginService } from 'src/app/login-module/public-api';
 
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();

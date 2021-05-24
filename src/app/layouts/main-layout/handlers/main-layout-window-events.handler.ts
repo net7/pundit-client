@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/login';
+import { AuthToken, LoginResponse, SuccessLoginResponse } from 'src/app/login-module/public-api';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';

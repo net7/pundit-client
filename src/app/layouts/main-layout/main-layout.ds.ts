@@ -7,7 +7,7 @@ import { difference } from 'lodash';
 import { Annotation, CommentAnnotation, } from '@pundit/communication';
 import {
   PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
-} from '@pundit/login';
+} from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { TokenService } from 'src/app/services/token.service';
