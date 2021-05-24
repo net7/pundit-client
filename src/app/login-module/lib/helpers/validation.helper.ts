@@ -41,11 +41,12 @@ export default {
   getErrorMessage(input, errors) {
     let error = null;
     Object.keys(ERRORS_MAP[input]).forEach((errorType) => {
-      const hasError = errors ?
-        ['minlength', 'maxlength'].includes(errorType)
+      let hasError = null;
+      if (errors) {
+        hasError = ['minlength', 'maxlength'].includes(errorType)
           ? !!errors[errorType]?.requiredLength
-          : !!errors[errorType]
-        : null;
+          : !!errors[errorType];
+      }
 
       if (hasError) {
         error = ERRORS_MAP[input][errorType];

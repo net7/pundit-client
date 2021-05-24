@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'lib-pundit-login-error',
@@ -6,5 +6,6 @@ import { Component, HostListener, OnInit } from '@angular/core';
 })
 export class ErrorComponent {
   errorTitle: string;
+
   errorDescription: string;
 }
