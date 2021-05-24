@@ -23,6 +23,7 @@ export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   }
 
   task$.then((storageData: ChromeExtStorageData) => {
+    // FIXME: togliere e fare tramite token service
     if (operation === 'get') {
       if (storageData?.access_token) {
         CommunicationSettings.token = storageData.access_token as string;
