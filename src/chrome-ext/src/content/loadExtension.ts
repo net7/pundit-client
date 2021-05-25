@@ -22,6 +22,18 @@ export const loadExtension = () => {
     handlers.onCrossMessageRequest,
     false
   );
+  // listen init communication settings event
+  window.addEventListener(
+    CommonEventType.InitCommunicationSettings,
+    handlers.onInitCommunicationSettings,
+    false
+  );
+  // listen set token from storage event
+  window.addEventListener(
+    CommonEventType.SetTokenFromStorage,
+    handlers.onSetTokenFromStorage,
+    false
+  );
 
   const appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);

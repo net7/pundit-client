@@ -10,40 +10,26 @@ const crossMessageEnabled = () => !!(
 );
 
 const tokenSyncChromeExt = (token: AuthToken) => {
-  let signal;
-  if (token) {
-    signal = new CustomEvent(CommonEventType.StorageRequest, {
-      detail: {
-        operation: StorageOperationType.Set,
-        key: StorageKey.Token,
-        token
-      }
-    });
-  } else {
-    signal = new CustomEvent(CommonEventType.StorageRequest, {
-      detail: {
-        operation: StorageOperationType.Remove,
-        key: StorageKey.Token
-      }
-    });
-  }
+  const signal = new CustomEvent(CommonEventType.StorageRequest, {
+    detail: {
+      operation: StorageOperationType.Set,
+      key: StorageKey.Token,
+      token
+    }
+  });
   window.dispatchEvent(signal);
 };
 
 const tokenSyncEmbed = (token: AuthToken) => {
-  if (token) {
-    localStorage.setItem(StorageKey.Token, JSON.stringify(token));
-  } else {
-    localStorage.removeItem(StorageKey.Token);
-  }
+  localStorage.setItem(StorageKey.Token, JSON.stringify(token));
 };
 
 const tokenSync = (): Promise<void> => new Promise<void>((resolve) => {
   const { token } = CommunicationSettings;
-  if (env.chromeExt) {
+  if (env.chromeExt && token) {
     // emit signal to chrome-ext
     tokenSyncChromeExt(token);
-  } else {
+  } else if (token) {
     tokenSyncEmbed(token);
   }
   resolve();

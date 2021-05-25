@@ -9,6 +9,14 @@ export const destroyExtension = () => {
   window.removeEventListener(CommonEventType.AnnotationsUpdate, handlers.onAnnotationsUpdate);
   window.removeEventListener(CommonEventType.StorageRequest, handlers.onStorageRequest);
   window.removeEventListener(CommonEventType.CrossMsgRequest, handlers.onCrossMessageRequest);
+  window.removeEventListener(
+    CommonEventType.InitCommunicationSettings,
+    handlers.onInitCommunicationSettings
+  );
+  window.removeEventListener(
+    CommonEventType.SetTokenFromStorage,
+    handlers.onSetTokenFromStorage
+  );
 
   // emit signal
   const signal = new CustomEvent(CommonEventType.PunditDestroy);
