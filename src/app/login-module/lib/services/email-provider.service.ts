@@ -8,7 +8,7 @@ import {
 import {
   catchError, map, take, takeUntil
 } from 'rxjs/operators';
-import { AuthModel } from 'src/common/models';
+import { AuthModel } from '../../../../common/models';
 import { fromEvent, transformFromHttpError, transformFromHttpSuccess } from '../helpers/transformer.helper';
 import { TermsParameters } from '../interfaces/terms.interface';
 import { AuthEventService } from './auth-event.service';
