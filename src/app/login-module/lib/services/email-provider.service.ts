@@ -8,7 +8,7 @@ import {
 import {
   catchError, map, take, takeUntil
 } from 'rxjs/operators';
-import { AuthModel } from 'src/common/models';
+import { AuthModel } from '../../../../common/models';
 import { fromEvent, transformFromHttpError, transformFromHttpSuccess } from '../helpers/transformer.helper';
 import { TermsParameters } from '../interfaces/terms.interface';
 import { AuthEventService } from './auth-event.service';
@@ -52,11 +52,11 @@ export class EmailProviderService implements OnDestroy {
           this.error$.next(err);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
-          if (authResp && !('error' in authResp)) {
-            this.authEventService.set(authResp);
-          }
-          this.isLoading$.next(false);
-        });
+        if (authResp && !('error' in authResp)) {
+          this.authEventService.set(authResp);
+        }
+        this.isLoading$.next(false);
+      });
   }
 
   register(data: UserSignupRequestParams) {
@@ -77,11 +77,11 @@ export class EmailProviderService implements OnDestroy {
           this.error$.next(err);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
-          if (authResp && !('error' in authResp)) {
-            this.authEventService.set(authResp);
-          }
-          this.isLoading$.next(false);
-        });
+        if (authResp && !('error' in authResp)) {
+          this.authEventService.set(authResp);
+        }
+        this.isLoading$.next(false);
+      });
   }
 
   private openTermsPopup = (params: TermsParameters) => {

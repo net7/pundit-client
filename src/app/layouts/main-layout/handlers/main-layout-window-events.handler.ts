@@ -4,7 +4,7 @@ import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
-import { setTokenFromStorage } from 'src/common/helpers';
+import { setTokenFromStorage } from '../../../../common/helpers';
 import { CommonEventType, StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
