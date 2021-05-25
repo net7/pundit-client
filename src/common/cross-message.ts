@@ -14,7 +14,7 @@ const tokenSync = (): Promise<void> => new Promise<void>((resolve) => {
       resolve();
     });
   } else {
-    localStorage.setItem(StorageKey.Token, token);
+    localStorage.setItem(StorageKey.Token, token ? JSON.stringify(token) : null);
     resolve();
   }
 });

@@ -8,7 +8,7 @@ export const initCommunicationSettings = () => {
     const signal = new CustomEvent(CommonEventType.InitCommunicationSettings);
     window.dispatchEvent(signal);
   } else {
-    CommunicationSettings.apiBaseURL = env.apiBaseURL;
-    CommunicationSettings.authBaseURL = env.authBaseURL;
+    CommunicationSettings.apiBaseUrl  = env.apiBaseURL;
+    CommunicationSettings.authBaseUrl = env.authBaseURL;
   }
 };

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { LoginResponse } from '../interfaces';
 import { ModalService, AuthEventService } from '../services';
 import { AuthModel } from '../../../../common/models';
-import { transformer } from '../helpers/transformer.helper';
+import { responseTransformer } from '../helpers/transformer.helper';
+import { LoginResponse } from '@pundit/communication';
 
 @Injectable({
   providedIn: 'root'
@@ -30,10 +30,10 @@ export class PunditLoginService {
   }
 
   verifyEmail() {
-    return transformer(AuthModel.verifyEmail(), 'verify');
+    return responseTransformer(AuthModel.verifyEmail(), 'verify');
   }
 
   sso() {
-    return transformer(AuthModel.sso(), 'sso');
+    return responseTransformer(AuthModel.sso(), 'sso');
   }
 }

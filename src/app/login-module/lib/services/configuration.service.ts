@@ -35,7 +35,7 @@ export class LoginConfigurationService {
             popup: { origin: '' }
           }
         ],
-        email: { id: 'default', params: { register: true, loginUrl: '', registerUrl: '' }, type: 'email' },
+        email: { id: 'default',register: true , type: 'email' },
         terms: { url: 'a', popup: { origin: '' } }
       };
     }
@@ -49,23 +49,7 @@ export class LoginConfigurationService {
     return this.authConfig.email;
   }
 
-  getLogoutParams() {
-    return this.authConfig.logout;
-  }
-
-  getRefreshParams() {
-    return this.authConfig.refresh;
-  }
-
   getTermsParams() {
     return this.authConfig.terms;
-  }
-
-  getSsoParams() {
-    return this.authConfig.sso;
-  }
-
-  getVerifyEmailParams() {
-    return this.authConfig.verify;
   }
 }

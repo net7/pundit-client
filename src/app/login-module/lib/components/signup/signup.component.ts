@@ -47,7 +47,7 @@ export class SignUpComponent {
     this.google = oauthProviders.find((provider) => provider.id === 'google');
     this.egi = oauthProviders.find((provider) => provider.id === 'egi');
     this.facebook = oauthProviders.find((provider) => provider.id === 'facebook');
-    if (emailProvider && emailProvider.params.register) {
+    if (emailProvider && emailProvider.register) {
       this.registerForm = this.formBuilder.group({
         firstname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(64)]],
         lastname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(64)]],
@@ -55,11 +55,6 @@ export class SignUpComponent {
         password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(32)]],
         termsconditions: [false, Validators.requiredTrue],
         tracking: [false]
-        // confirmpassword: ['', Validators.required],
-        // }
-        // {
-        //   validators: this.checkPasswords
-        // }
       });
 
       // on form change clear service error
@@ -68,12 +63,6 @@ export class SignUpComponent {
       });
     }
   }
-
-  // checkPasswords(group: FormGroup) { // here we have the 'passwords' group
-  //     const password = group.get('password').value;
-  //     const confirmPassword = group.get('confirmpassword').value;
-  //     return password === confirmPassword ? null : { notSame: true };
-  // }
   registerGoogle() {
     if (!this.google || this.isLoading) { return; }
     this.oauthProviders.login(this.google);
@@ -98,7 +87,7 @@ export class SignUpComponent {
     ).subscribe((errorMessage) => {
       this.serviceErrorMessage = errorMessage;
     });
-    this.emailProvider.register(this.email.params, this.registerForm.value);
+    this.emailProvider.register(this.registerForm.value);
   }
 
   getErrorMessage = (input) => {

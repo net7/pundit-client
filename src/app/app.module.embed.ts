@@ -2,7 +2,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
-import { PunditLoginModule } from '@pundit/login';
 import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
@@ -13,7 +12,6 @@ import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
-import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
 import { EmbedService } from './services/embed.service';
 import { StorageService } from './services/storage-service/storage.service';
@@ -36,6 +34,7 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+import { PunditLoginModule } from './login-module/public-api';
 
 const LANG_CODE = 'en_US';
 
@@ -77,7 +76,6 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
-    TokenService,
     ToastService,
     EmbedService,
     StorageService,

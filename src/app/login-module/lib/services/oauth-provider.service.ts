@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { LoginResponse } from '@pundit/communication';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
-import { LoginResponse, OAuthProvider } from '../interfaces';
+import { fromEvent } from '../helpers/transformer.helper';
+import { OAuthProvider } from '../interfaces';
 import { AuthEventService } from './auth-event.service';
 import { PopupService } from './popup.service';
-import { ResponseTransformerService } from './response-transformer.service';
 @Injectable({
     providedIn: 'root'
 })
@@ -12,7 +13,6 @@ export class OauthProviderService {
     private destroy$: Subject<boolean> = new Subject<boolean>();
     constructor(
         private authEventService: AuthEventService,
-        private responseTransformer: ResponseTransformerService,
         private popupService: PopupService
     ) { }
 
@@ -25,7 +25,7 @@ export class OauthProviderService {
     private listenEvent(event$: Observable<MessageEvent>) {
         event$.pipe(
             takeUntil(this.destroy$),
-            map(this.responseTransformer.fromEvent),
+            map(fromEvent),
             catchError((err) => {
                 return of({ error: JSON.stringify(err) });
             })

@@ -4,7 +4,7 @@
     <h2 class="pnd-login-modal__header-text">Register to Pundit and save your annotations</h2>
 </div>
 
-<ng-container *ngIf="email?.params.register">
+<ng-container *ngIf="email?.register">
     <form name="fos_user_registration_form" [formGroup]="registerForm" (ngSubmit)="registerEmail()" class="pnd-login-modal__form" >
 
         <div *ngIf="serviceErrorMessage" class="pnd-login-modal__form-row">

@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { AuthToken, LoginResponse, SuccessLoginResponse } from 'src/app/login-module/public-api';
+import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/communication';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
@@ -39,7 +39,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
   private identitySync() {
     const currentUser = this.layoutDS.userService.whoami();
-    this.layoutDS.punditSsoService.sso({ withCredentials: true })
+    this.layoutDS.punditLoginService.sso()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
@@ -96,7 +96,6 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         // set token from storage when user changed
         setTokenFromStorage();
         // trigger auto-login
-        this.layoutDS.tokenService.set(token);
         this.layoutDS.userService.iam(user);
         this.layoutDS.notebookService.setSelected(notebookId);
         this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));

@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { translate } from '@n7-frontend/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { environment as env } from 'src/environments/environment';
@@ -12,7 +12,6 @@ import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
-import { TokenService } from './services/token.service';
 import { ToastService } from './services/toast.service';
 import { StorageService } from './services/storage-service/storage.service';
 import { StorageEmbedService } from './services/storage-service/storage-embed.service';
@@ -35,6 +34,7 @@ import { SortByPipe } from './pipes/sortby.pipe';
 import appConfig from './config';
 import i18n from './config/i18n';
 import { PunditLoginModule } from './login-module/public-api';
+import { EmbedService } from './services/embed.service';
 
 const LANG_CODE = 'en_US';
 
@@ -75,12 +75,20 @@ config.init(appConfig);
     NotebookService,
     AnchorService,
     AnnotationPositionService,
-    TokenService,
     ToastService,
     StorageService,
     StorageEmbedService,
+    EmbedService,
     StorageChromeExtService,
-    { provide: APP_BASE_HREF, useValue: '/' }
+    { provide: APP_BASE_HREF, useValue: '/' },
+    {
+      provide: APP_INITIALIZER,
+      useFactory: (
+        embedService: EmbedService
+      ) => () => embedService.load(),
+      deps: [EmbedService],
+      multi: true
+    }
   ],
   bootstrap: [AppComponent],
   entryComponents: [AppComponent]

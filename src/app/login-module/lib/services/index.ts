@@ -4,4 +4,3 @@ export * from './oauth-provider.service';
 export * from './modal.service';
 export * from './auth-event.service';
 export * from './popup.service';
-export * from './response-transformer.service';

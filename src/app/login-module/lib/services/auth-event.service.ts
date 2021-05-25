@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
+import { LoginResponse } from '@pundit/communication';
 import { Subject } from 'rxjs';
-import { LoginResponse } from '../interfaces';
 @Injectable({
   providedIn: 'root'
 })

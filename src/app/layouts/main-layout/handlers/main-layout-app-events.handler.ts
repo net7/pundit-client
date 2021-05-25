@@ -3,7 +3,6 @@ import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
-import { HttpRequestOptions } from 'src/app/login-module/public-api';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -109,16 +108,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout(doRequest = true) {
-    const token = this.layoutDS.tokenService.get();
+    //TODO check storage
+    // const token = this.layoutDS.tokenService.get();
     this.resetAppDataAndEmit();
-    if (doRequest && token?.access_token) {
-      const params = {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`
-        }
-      } as HttpRequestOptions;
-      this.layoutDS.punditLogoutService.logout(params).catch((error) => {
+    // if (doRequest && token?.access_token) {
+    if (doRequest) {
+      this.layoutDS.punditLoginService.logout().catch((error) => {
         console.warn(error);
       });
     }
@@ -126,7 +121,8 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private resetAppDataAndEmit = () => {
     // reset
-    this.layoutDS.tokenService.clear();
+    //TODO check storage
+    // this.layoutDS.tokenService.clear();
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
     this.layoutDS.userService.logout();

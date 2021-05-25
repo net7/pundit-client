@@ -21,8 +21,7 @@ export enum CrossMsgRequestId {
   AuthLogout = 'auth.logout',
   AuthVerifyMail = 'auth.verifyMail',
   AuthSso = 'auth.sso',
-  AuthRefresh = 'auth.refresh',
-  AuthRetry = 'auth.retry'
+  AuthSignup = 'auth.signup'
 }
 
 export enum CommonEventType {

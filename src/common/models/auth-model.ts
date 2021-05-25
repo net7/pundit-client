@@ -1,8 +1,13 @@
-import { auth, UserLoginRequestParams } from '@pundit/communication';
+import { auth, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
 export class AuthModel {
+  @CrossMessage(CrossMsgRequestId.AuthSignup)
+  static signup(requestPayload: UserSignupRequestParams) {
+    return auth.signup(requestPayload);
+  }
+
   @CrossMessage(CrossMsgRequestId.AuthLogin)
   static login(requestPayload: UserLoginRequestParams) {
     return auth.login(requestPayload);

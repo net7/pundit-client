@@ -91,7 +91,7 @@ export class SignInComponent {
     ).subscribe((errorMessage) => {
       this.serviceErrorMessage = errorMessage;
     });
-    this.emailProviderService.login(this.email.params, this.loginForm.value, this.terms);
+    this.emailProviderService.login(this.loginForm.value, this.terms);
   }
 
   getErrorMessage = (input) => {

@@ -1,18 +1,15 @@
 import {
   Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener
 } from '@angular/core';
-import {
-  PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
-} from 'src/app/login-module/public-api';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
+import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
 import { ToastService } from 'src/app/services/toast.service';
-import { TokenService } from 'src/app/services/token.service';
 import { UserService } from 'src/app/services/user.service';
 import { AppEventData } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
@@ -40,10 +37,6 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private loginService: PunditLoginService,
     private notebookService: NotebookService,
     private punditLoginService: PunditLoginService,
-    private punditLogoutService: PunditLogoutService,
-    private punditSsoService: PunditSsoService,
-    private punditVerifyEmailService: PunditVerifyEmailService,
-    private tokenService: TokenService,
     private userService: UserService,
     private storageService: StorageService,
     public toastService: ToastService
@@ -60,13 +53,9 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       loginService: this.loginService,
       notebookService: this.notebookService,
       punditLoginService: this.punditLoginService,
-      punditLogoutService: this.punditLogoutService,
-      punditVerifyEmailService: this.punditVerifyEmailService,
-      tokenService: this.tokenService,
       userService: this.userService,
       storageService: this.storageService,
       toastService: this.toastService,
-      punditSsoService: this.punditSsoService
     };
   }
 

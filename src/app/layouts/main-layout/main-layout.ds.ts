@@ -4,13 +4,10 @@ import {
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
-import { Annotation, CommentAnnotation, } from '@pundit/communication';
-import {
-  PunditLoginService, PunditLogoutService, PunditSsoService, PunditVerifyEmailService
-} from 'src/app/login-module/public-api';
+import { Annotation, CommentAnnotation, VerifyEmailResponse, } from '@pundit/communication';
+import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
-import { TokenService } from 'src/app/services/token.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
@@ -46,15 +43,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public anchorService: AnchorService;
 
-  public tokenService: TokenService;
-
   public punditLoginService: PunditLoginService;
-
-  public punditLogoutService: PunditLogoutService;
-
-  public punditSsoService: PunditSsoService;
-
-  public punditVerifyEmailService: PunditVerifyEmailService;
 
   public toastService: ToastService;
 
@@ -86,13 +75,9 @@ export class MainLayoutDS extends LayoutDataSource {
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
     this.anchorService = payload.anchorService;
-    this.tokenService = payload.tokenService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
-    this.punditLogoutService = payload.punditLogoutService;
     this.storageService = payload.storageService;
-    this.punditSsoService = payload.punditSsoService;
-    this.punditVerifyEmailService = payload.punditVerifyEmailService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -231,13 +216,8 @@ export class MainLayoutDS extends LayoutDataSource {
     this.state.emailVerifiedToast.close();
     // working toast
     const workingToast = this.toastService.working();
-    const token = this.tokenService.get();
-    this.punditVerifyEmailService.verify({
-      withCredentials: true,
-      headers: {
-        Authorization: `Bearer ${token.access_token}`
-      }
-    }).subscribe((response) => {
+    //TODO Vedere verify
+    this.punditLoginService.verifyEmail().subscribe((response: any) => {
       workingToast.close();
       if ('mail' in response) {
         this.toastService.success({

@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { from, of } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, map } from 'rxjs/operators';
 import { getDateFromTimestamp } from './date.helper';
-import { AuthToken, LoginResponse, SourceType } from '../interfaces';
+import { AuthToken, LoginResponse, SourceType } from '@pundit/communication';
+import axios, { AxiosError } from 'axios';
 
 export const fromEvent = (message: MessageEvent): LoginResponse => {
   if (message.data.error) {
@@ -15,13 +15,14 @@ export const fromEvent = (message: MessageEvent): LoginResponse => {
       token_type: 'bearer',
       expire_date: getDateFromTimestamp(message.data.expires_in)
     },
-    user: typeof message.data.userinfo === 'string' ? JSON.parse(message.data.userinfo) : message.data.userinfo,
+    user: typeof message.data.userinfo === 'string' ?
+       JSON.parse(message.data.userinfo) : message.data.userinfo,
     source: 'login'
   };
 };
 
 export const transformFromHttpSuccess = (response, source: SourceType) => {
-  if (response && response.error) {
+  if (response?.error) {
     return { error: response.error as string, source };
   }
   return {
@@ -35,14 +36,14 @@ export const transformFromHttpSuccess = (response, source: SourceType) => {
   };
 };
 
-export const transformFromHttpError = (error, source: SourceType) => {
-  if (error instanceof HttpErrorResponse) {
-    return { error: error?.error?.error, source };
+export const transformFromHttpError = (error:AxiosError, source: SourceType) => {
+  if (axios.isAxiosError(error)) {
+    return { error: error?.response?.data?.error, source };
   }
   return { error: 'Internal server error', source };
 };
 
-export const transformer = (request$: Promise<any>, source: SourceType) => from(request$).pipe(
-  map((resp) => transformFromHttpSuccess(resp, source)),
+export const responseTransformer = (request$: Promise<any>, source: SourceType) => from(request$).pipe(
+  map((resp) => transformFromHttpSuccess(resp.data, source)),
   catchError((err) => of(transformFromHttpError(err, source)))
 );

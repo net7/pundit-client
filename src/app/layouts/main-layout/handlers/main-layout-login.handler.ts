@@ -19,7 +19,6 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     // user check on init
     const servicesReady$ = zip(
       this.layoutDS.userService.ready$,
-      this.layoutDS.tokenService.ready$,
       this.layoutDS.notebookService.ready$,
     );
     servicesReady$.subscribe(() => {
@@ -88,8 +87,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
   }
 
   private onAuth({ token, user }) {
-    // set token
-    this.layoutDS.tokenService.set(token);
+    //TODO check token storage
     // set user
     this.layoutDS.userService.iam({
       ...user,

@@ -8,7 +8,8 @@ export const setTokenFromStorage = () => {
     const signal = new CustomEvent(CommonEventType.SetTokenFromStorage);
     window.dispatchEvent(signal);
   } else {
-    const storageToken = localStorage.getItem(StorageKey.Token);
+    const stringToken = localStorage.getItem(StorageKey.Token);
+    const storageToken = typeof stringToken == 'string' ? JSON.parse(stringToken) : null;
     CommunicationSettings.token = storageToken;
   }
 };
