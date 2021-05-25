@@ -6,6 +6,8 @@ import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
+// MODULES
+import { PunditLoginModule } from './login-module/public-api';
 // SERVICES
 import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
@@ -34,7 +36,6 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
-import { PunditLoginModule } from './login-module/public-api';
 
 const LANG_CODE = 'en_US';
 

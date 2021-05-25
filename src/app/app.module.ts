@@ -6,6 +6,8 @@ import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';
 
 import { AppComponent } from './app.component';
+// MODULES
+import { PunditLoginModule } from './login-module/public-api';
 // SERVICES
 import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
@@ -16,6 +18,7 @@ import { ToastService } from './services/toast.service';
 import { StorageService } from './services/storage-service/storage.service';
 import { StorageEmbedService } from './services/storage-service/storage-embed.service';
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
+import { EmbedService } from './services/embed.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -33,8 +36,6 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
-import { PunditLoginModule } from './login-module/public-api';
-import { EmbedService } from './services/embed.service';
 
 const LANG_CODE = 'en_US';
 
