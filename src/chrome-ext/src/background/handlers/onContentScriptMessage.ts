@@ -37,8 +37,8 @@ export const onContentScriptMessage = (
       });
       break;
     case CommonEventType.InitCommunicationSettings:
-      CommunicationSettings.apiBaseUrl = env.apiBaseURL;
-      CommunicationSettings.authBaseUrl = env.authBaseURL;
+      CommunicationSettings.apiBaseUrl = env.apiBaseUrl;
+      CommunicationSettings.authBaseUrl = env.authBaseUrl;
       break;
     default:
       break;
