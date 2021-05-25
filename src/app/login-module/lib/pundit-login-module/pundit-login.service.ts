@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
+import { LoginResponse } from '@pundit/communication';
+import { catchError, map } from 'rxjs/operators';
 import { ModalService, AuthEventService } from '../services';
 import { AuthModel } from '../../../../common/models';
-import { responseTransformer } from '../helpers/transformer.helper';
-import { LoginResponse } from '@pundit/communication';
+import { responseTransformer, transformFromHttpError } from '../helpers/transformer.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,10 @@ export class PunditLoginService {
   }
 
   verifyEmail() {
-    return responseTransformer(AuthModel.verifyEmail(), 'verify');
+    return from(AuthModel.verifyEmail()).pipe(
+      map((resp) => resp.data),
+      catchError((err) => of(transformFromHttpError(err, 'verify')))
+    );
   }
 
   sso() {
