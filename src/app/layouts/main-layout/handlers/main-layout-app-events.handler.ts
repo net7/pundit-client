@@ -1,8 +1,10 @@
+import { AuthToken } from '@pundit/communication';
 import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
+import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -108,21 +110,19 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout(doRequest = true) {
-    //TODO check storage
-    // const token = this.layoutDS.tokenService.get();
-    this.resetAppDataAndEmit();
-    // if (doRequest && token?.access_token) {
-    if (doRequest) {
-      this.layoutDS.punditLoginService.logout().catch((error) => {
-        console.warn(error);
-      });
-    }
+    this.layoutDS.storageService.get(StorageKey.Token).subscribe((token: AuthToken) => {
+      this.resetAppDataAndEmit();
+      if (doRequest && token?.access_token) {
+        this.layoutDS.punditLoginService.logout().catch((error) => {
+          console.warn(error);
+        });
+      }
+    });
   }
 
   private resetAppDataAndEmit = () => {
     // reset
-    //TODO check storage
-    // this.layoutDS.tokenService.clear();
+    this.layoutDS.storageService.remove(StorageKey.Token);
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
     this.layoutDS.userService.logout();

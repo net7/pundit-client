@@ -9,7 +9,7 @@ export const setTokenFromStorage = () => {
     window.dispatchEvent(signal);
   } else {
     const stringToken = localStorage.getItem(StorageKey.Token);
-    const storageToken = typeof stringToken == 'string' ? JSON.parse(stringToken) : null;
+    const storageToken = typeof stringToken === 'string' ? JSON.parse(stringToken) : null;
     CommunicationSettings.token = storageToken;
   }
 };

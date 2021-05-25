@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/communication';
+import { LoginResponse, SuccessLoginResponse } from '@pundit/communication';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
@@ -61,18 +61,15 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
   private checkStateFromStorage() {
     const user$ = this.layoutDS.storageService.get(StorageKey.User);
-    const token$ = this.layoutDS.storageService.get(StorageKey.Token);
     const notebookId$ = this.layoutDS.storageService.get(StorageKey.Notebook);
     const currentUser = this.layoutDS.userService.whoami();
     const currentNotebook = this.layoutDS.notebookService.getSelected();
 
     forkJoin({
       user: user$,
-      token: token$,
       notebookId: notebookId$,
-    }).subscribe(({ user, token, notebookId }: {
+    }).subscribe(({ user, notebookId }: {
       user: UserData;
-      token: AuthToken;
       notebookId: string;
     }) => {
       // no user from storage check

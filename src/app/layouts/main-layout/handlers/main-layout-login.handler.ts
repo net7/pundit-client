@@ -6,6 +6,8 @@ import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
+import { setTokenFromStorage } from '../../../../common/helpers';
+import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -87,7 +89,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
   }
 
   private onAuth({ token, user }) {
-    //TODO check token storage
+    // set token
+    this.layoutDS.storageService.set(StorageKey.Token, token);
+    setTokenFromStorage();
     // set user
     this.layoutDS.userService.iam({
       ...user,
