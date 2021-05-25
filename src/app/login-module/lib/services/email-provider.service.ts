@@ -39,7 +39,6 @@ export class EmailProviderService implements OnDestroy {
     terms: TermsParameters
   ) {
     this.isLoading$.next(true);
-    // this.http.post<any>(params.loginUrl, data, { withCredentials: true })
     from(AuthModel.login(data))
       .pipe(take(1),
         takeUntil(this.destroy$),
@@ -52,23 +51,15 @@ export class EmailProviderService implements OnDestroy {
           this.error$.next(err);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
-          if (authResp && !('error' in authResp)) {
-            this.authEventService.set(authResp);
-          }
-          this.isLoading$.next(false);
-        });
+        if (authResp && !('error' in authResp)) {
+          this.authEventService.set(authResp);
+        }
+        this.isLoading$.next(false);
+      });
   }
 
   register(data: UserSignupRequestParams) {
     this.isLoading$.next(true);
-    // this.http.post<any>(options.registerUrl, {
-    //   first_name: data.firstname,
-    //   last_name: data.lastname,
-    //   email: data.email,
-    //   password: data.password,
-    //   terms: data.termsconditions,
-    //   tracking: data.tracking
-    // })
     from(AuthModel.signup(data))
       .pipe(take(1),
         takeUntil(this.destroy$),
@@ -77,11 +68,15 @@ export class EmailProviderService implements OnDestroy {
           this.error$.next(err);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
-          if (authResp && !('error' in authResp)) {
-            this.authEventService.set(authResp);
-          }
-          this.isLoading$.next(false);
-        });
+        if (authResp && !('error' in authResp)) {
+          this.authEventService.set(authResp);
+        }
+        this.isLoading$.next(false);
+      });
+  }
+
+  private mustAcceptTerms(err: HttpErrorResponse) {
+    return err instanceof HttpErrorResponse && err.status === 422 && err?.error?.error === 'must_accept_terms';
   }
 
   private openTermsPopup = (params: TermsParameters) => {
@@ -99,9 +94,5 @@ export class EmailProviderService implements OnDestroy {
         this.authEventService.set(authResp);
       }
     });
-  }
-
-  private mustAcceptTerms(err: HttpErrorResponse) {
-    return err instanceof HttpErrorResponse && err.status === 422 && err?.error?.error === 'must_accept_terms';
   }
 }
