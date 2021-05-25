@@ -1,6 +1,6 @@
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageData } from '../../types';
-import { CommonEventType } from '../../../../common/types';
+import { CommonEventType, StorageOperationType } from '../../../../common/types';
 
 export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   const { id: tabId, incognito, windowId } = tab;
@@ -8,13 +8,13 @@ export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
   const storageKey = incognito ? `${key}.${windowId}` : key;
   let task$;
   switch (operation) {
-    case 'get':
+    case StorageOperationType.Get:
       task$ = ChromeExtStorage.get(storageKey);
       break;
-    case 'set':
+    case StorageOperationType.Set:
       task$ = ChromeExtStorage.set(storageKey, value);
       break;
-    case 'remove':
+    case StorageOperationType.Remove:
       task$ = ChromeExtStorage.remove(storageKey);
       break;
     default:
@@ -26,7 +26,7 @@ export const doStorageRequest = (tab: chrome.tabs.Tab, payload) => {
       type: CommonEventType.StorageResponse,
       payload: {
         status: 'OK',
-        data: operation === 'get' ? storageData : undefined
+        data: operation === StorageOperationType.Get ? storageData : undefined
       }
     });
   }).catch((err) => {

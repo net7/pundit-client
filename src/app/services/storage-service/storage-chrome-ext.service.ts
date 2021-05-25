@@ -1,37 +1,31 @@
 import { Injectable } from '@angular/core';
 import { ConnectableObservable, Observable } from 'rxjs';
 import { publish, tap } from 'rxjs/operators';
-import { CommonEventType, StorageKey } from '../../../common/types';
+import { CommonEventType, StorageKey, StorageOperationType } from '../../../common/types';
 import { StorageProvider, StorageValue } from './storage.types';
-
-enum OperationType {
-  Get = 'get',
-  Set = 'set',
-  Remove = 'remove'
-}
 
 @Injectable()
 export class StorageChromeExtService implements StorageProvider {
   private queue$: ConnectableObservable<StorageValue>[] = [];
 
   public set(key: StorageKey, value: string): void {
-    this.message$(OperationType.Set, key, value).subscribe(() => {
+    this.message$(StorageOperationType.Set, key, value).subscribe(() => {
       // do nothing
     });
   }
 
   public get(key: StorageKey): Observable<StorageValue> {
-    return this.message$(OperationType.Get, key);
+    return this.message$(StorageOperationType.Get, key);
   }
 
   public remove(key: StorageKey) {
-    this.message$(OperationType.Remove, key).subscribe(() => {
+    this.message$(StorageOperationType.Remove, key).subscribe(() => {
       // do nothing
     });
   }
 
   private message$(
-    operation: OperationType,
+    operation: StorageOperationType,
     key: StorageKey,
     value?: string
   ): Observable<StorageValue> {

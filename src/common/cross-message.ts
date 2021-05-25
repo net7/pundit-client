@@ -1,22 +1,52 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { AuthToken, CommunicationSettings } from '@pundit/communication';
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
-import { CrossMsgData, CommonEventType, StorageKey } from './types';
+import {
+  CrossMsgData, CommonEventType, StorageKey, StorageOperationType
+} from './types';
 
 const crossMessageEnabled = () => !!(
   env.chromeExt && document.location.protocol !== 'chrome-extension:'
 );
 
+const tokenSyncChromeExt = (token: AuthToken) => {
+  let signal;
+  if (token) {
+    signal = new CustomEvent(CommonEventType.StorageRequest, {
+      detail: {
+        operation: StorageOperationType.Set,
+        key: StorageKey.Token,
+        token
+      }
+    });
+  } else {
+    signal = new CustomEvent(CommonEventType.StorageRequest, {
+      detail: {
+        operation: StorageOperationType.Remove,
+        key: StorageKey.Token
+      }
+    });
+  }
+  window.dispatchEvent(signal);
+};
+
+const tokenSyncEmbed = (token: AuthToken) => {
+  if (token) {
+    localStorage.setItem(StorageKey.Token, JSON.stringify(token));
+  } else {
+    localStorage.removeItem(StorageKey.Token);
+  }
+};
+
 const tokenSync = (): Promise<void> => new Promise<void>((resolve) => {
   const { token } = CommunicationSettings;
   if (env.chromeExt) {
-    chrome.storage.local.set({ [StorageKey.Token]: token }, () => {
-      resolve();
-    });
+    // emit signal to chrome-ext
+    tokenSyncChromeExt(token);
   } else {
-    localStorage.setItem(StorageKey.Token, token ? JSON.stringify(token) : null);
-    resolve();
+    tokenSyncEmbed(token);
   }
+  resolve();
 });
 
 const handlers: {

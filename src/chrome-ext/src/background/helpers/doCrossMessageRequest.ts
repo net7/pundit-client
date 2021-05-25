@@ -1,5 +1,5 @@
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { AnnotationModel, NotebookModel } from '../../../../common/models';
+import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -35,6 +35,23 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.AnnotationUpdate:
       request$ = AnnotationModel.update.apply(null, args);
+      break;
+    // AUTH REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.AuthSignup:
+      request$ = AuthModel.signup.apply(null, args);
+      break;
+    case CrossMsgRequestId.AuthLogin:
+      request$ = AuthModel.login.apply(null, args);
+      break;
+    case CrossMsgRequestId.AuthLogout:
+      request$ = AuthModel.logout.apply(null, args);
+      break;
+    case CrossMsgRequestId.AuthVerifyMail:
+      request$ = AuthModel.verifyEmail.apply(null, args);
+      break;
+    case CrossMsgRequestId.AuthSso:
+      request$ = AuthModel.sso.apply(null, args);
       break;
     default:
       break;

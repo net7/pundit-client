@@ -43,3 +43,9 @@ export enum StorageKey {
   Token = 'pundit-token',
   Notebook = 'pundit-notebook'
 }
+
+export enum StorageOperationType {
+  Get = 'get',
+  Set = 'set',
+  Remove = 'remove'
+}
