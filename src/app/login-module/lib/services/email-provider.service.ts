@@ -58,9 +58,24 @@ export class EmailProviderService implements OnDestroy {
       });
   }
 
-  register(data: UserSignupRequestParams) {
+  register(data: {
+    firstname: string;
+    lastname: string;
+    email: string;
+    password: string;
+    termsconditions: boolean;
+    tracking: boolean;
+  }) {
+    const request: UserSignupRequestParams = {
+      first_name: data.firstname,
+      last_name: data.lastname,
+      email: data.email,
+      password: data.password,
+      terms: data.termsconditions,
+      tracking: data.tracking
+    };
     this.isLoading$.next(true);
-    from(AuthModel.signup(data))
+    from(AuthModel.signup(request))
       .pipe(take(1),
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
