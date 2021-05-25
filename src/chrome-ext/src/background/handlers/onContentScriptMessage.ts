@@ -1,4 +1,4 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { AuthToken, CommunicationSettings } from '@pundit/communication';
 import { CommonEventType, StorageKey } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
@@ -33,12 +33,12 @@ export const onContentScriptMessage = (
     case CommonEventType.SetTokenFromStorage:
       ChromeExtStorage.get(StorageKey.Token).then((storageToken) => {
         // FIXME: controllare communication token type
-        CommunicationSettings.token = storageToken as string | null;
+        CommunicationSettings.token = storageToken as AuthToken | null;
       });
       break;
     case CommonEventType.InitCommunicationSettings:
-      CommunicationSettings.apiBaseURL = env.apiBaseURL;
-      CommunicationSettings.authBaseURL = env.authBaseURL;
+      CommunicationSettings.apiBaseUrl = env.apiBaseURL;
+      CommunicationSettings.authBaseUrl = env.authBaseURL;
       break;
     default:
       break;

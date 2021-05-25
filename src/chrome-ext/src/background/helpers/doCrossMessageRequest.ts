@@ -41,12 +41,6 @@ export const doCrossMessageRequest = (tab, payload) => {
   }
   if (request$) {
     request$
-      .then((data) => {
-        if (data.json) {
-          return data.json();
-        }
-        return data;
-      })
       .then((response) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
