@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { LoginResponse, SuccessLoginResponse } from '@pundit/communication';
+import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/communication';
 import { forkJoin } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
@@ -60,15 +60,18 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
   }
 
   private checkStateFromStorage() {
+    const token$ = this.layoutDS.storageService.get(StorageKey.Token);
     const user$ = this.layoutDS.storageService.get(StorageKey.User);
     const notebookId$ = this.layoutDS.storageService.get(StorageKey.Notebook);
     const currentUser = this.layoutDS.userService.whoami();
     const currentNotebook = this.layoutDS.notebookService.getSelected();
 
     forkJoin({
+      token: token$,
       user: user$,
       notebookId: notebookId$,
-    }).subscribe(({ user, notebookId }: {
+    }).subscribe(({ token, user, notebookId }: {
+      token: AuthToken;
       user: UserData;
       notebookId: string;
     }) => {
@@ -91,6 +94,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         // clear toasts
         this.layoutDS.toastService.clear();
         // set token from storage when user changed
+        this.layoutDS.storageService.set(StorageKey.Token, token);
         setTokenFromStorage();
         // trigger auto-login
         this.layoutDS.userService.iam(user);

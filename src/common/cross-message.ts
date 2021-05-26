@@ -2,35 +2,52 @@ import { AuthToken, CommunicationSettings } from '@pundit/communication';
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import {
-  CrossMsgData, CommonEventType, StorageKey, StorageOperationType
+  CrossMsgData, CommonEventType, StorageKey, StorageOperationType, CrossMsgRequestId
 } from './types';
 
 const crossMessageEnabled = () => !!(
   env.chromeExt && document.location.protocol !== 'chrome-extension:'
 );
 
-const tokenSyncChromeExt = (token: AuthToken) => {
-  const signal = new CustomEvent(CommonEventType.StorageRequest, {
-    detail: {
-      operation: StorageOperationType.Set,
-      key: StorageKey.Token,
-      token
-    }
-  });
-  window.dispatchEvent(signal);
-};
-
-const tokenSyncEmbed = (token: AuthToken) => {
-  localStorage.setItem(StorageKey.Token, JSON.stringify(token));
-};
-
-const tokenSync = (): Promise<void> => new Promise<void>((resolve) => {
-  const { token } = CommunicationSettings;
-  if (env.chromeExt && token) {
-    // emit signal to chrome-ext
-    tokenSyncChromeExt(token);
+const tokenSyncChromeExt = (token: AuthToken, forceRemove: boolean) => {
+  let signal;
+  if (forceRemove) {
+    signal = new CustomEvent(CommonEventType.StorageRequest, {
+      detail: {
+        operation: StorageOperationType.Remove,
+        key: StorageKey.Token
+      }
+    });
   } else if (token) {
-    tokenSyncEmbed(token);
+    signal = new CustomEvent(CommonEventType.StorageRequest, {
+      detail: {
+        operation: StorageOperationType.Set,
+        key: StorageKey.Token,
+        token
+      }
+    });
+  }
+
+  if (signal) {
+    window.dispatchEvent(signal);
+  }
+};
+
+const tokenSyncEmbed = (token: AuthToken, forceRemove: boolean) => {
+  if (forceRemove) {
+    localStorage.removeItem(StorageKey.Token);
+  } else if (token) {
+    localStorage.setItem(StorageKey.Token, JSON.stringify(token));
+  }
+};
+
+const tokenSync = (forceRemove = false): Promise<void> => new Promise<void>((resolve) => {
+  const { token } = CommunicationSettings;
+  if (env.chromeExt) {
+    // emit signal to chrome-ext
+    tokenSyncChromeExt(token, forceRemove);
+  } else {
+    tokenSyncEmbed(token, forceRemove);
   }
   resolve();
 });
@@ -82,6 +99,10 @@ export function CrossMessage(requestId: string) {
         window.dispatchEvent(signal);
       } else {
         result = originalMethod.apply(this, args);
+      }
+
+      if (requestId === CrossMsgRequestId.AuthLogout) {
+        return tokenSync(true).then(() => result);
       }
       return tokenSync().then(() => result);
     };
