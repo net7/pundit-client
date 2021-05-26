@@ -122,7 +122,6 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private resetAppDataAndEmit = () => {
     // reset
-    this.layoutDS.storageService.remove(StorageKey.Token);
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
     this.layoutDS.userService.logout();
