@@ -4,7 +4,7 @@ export type ChromeExtStorageData = {
 
 export type ChromeExtStorageValue = string | object | boolean | null;
 
-export enum StorageKeys {
+export enum ChromeExtStorageKey {
   Active = 'active',
   Incognito = 'incognito'
 }
@@ -22,14 +22,6 @@ export type ChromeExtStateData = {
   badgeIntervalCount: number;
   rootExistMessageSended: boolean;
 };
-
-export enum EventType {
-  AnnotationsUpdate = 'annotationsupdate',
-  RootElementExists = 'rootelementexists',
-  StorageRequest = 'storage.request',
-  StorageResponse = 'storage.response',
-  StateChanged = 'statechanged',
-}
 
 export type RuntimeMessage = {
   type: string;

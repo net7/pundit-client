@@ -1,14 +1,9 @@
 import { Observable } from 'rxjs';
-
-export enum StorageKey {
-  User = 'pundit-user',
-  Token = 'pundit-token',
-  Notebook = 'pundit-notebook'
-}
+import { StorageKey } from '../../../common/types';
 
 export type StorageValue = string | object | null;
 export interface StorageProvider {
   get: (key: StorageKey) => Observable<StorageValue>;
-  set: (key: StorageKey, value: StorageValue) => void;
-  remove: (key: StorageKey) => void;
+  set: (key: StorageKey, value: StorageValue) => Observable<boolean>;
+  remove: (key: StorageKey) => Observable<boolean>;
 }

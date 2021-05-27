@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { StorageKey, StorageProvider, StorageValue } from './storage.types';
+import { StorageProvider, StorageValue } from './storage.types';
+import { StorageKey } from '../../../common/types';
 
 @Injectable()
 export class StorageEmbedService implements StorageProvider {
-  public set(key: StorageKey, value: StorageValue): void {
+  public set(key: StorageKey, value: StorageValue): Observable<boolean> {
     localStorage.setItem(key, value !== null ? JSON.stringify(value) : null);
+    return of(true);
   }
 
   public get(key: StorageKey): Observable<StorageValue> {
@@ -19,7 +21,8 @@ export class StorageEmbedService implements StorageProvider {
     return of(storageValue);
   }
 
-  public remove(key: StorageKey) {
+  public remove(key: StorageKey): Observable<boolean> {
     localStorage.removeItem(key);
+    return of(true);
   }
 }

@@ -1,6 +1,9 @@
-import { EventType } from '../../types';
+import { AuthToken, CommunicationSettings } from '@pundit/communication';
+import { CommonEventType, StorageKey } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
+import { ChromeExtStorage } from '../storage';
+import { environment as env } from '../../../../environments/environment';
 
 type RuntimeMessage = {
   type: string;
@@ -14,15 +17,28 @@ export const onContentScriptMessage = (
   const { tab } = sender;
   const { type, payload } = message;
   switch (type) {
-    case EventType.AnnotationsUpdate:
+    case CommonEventType.AnnotationsUpdate:
       helpers.updateBadgeText(tab.id, payload);
       helpers.updateBadgeTitle(tab.id, payload);
       break;
-    case EventType.RootElementExists:
+    case CommonEventType.RootElementExists:
       onBrowserActionClicked(tab);
       break;
-    case EventType.StorageRequest:
+    case CommonEventType.StorageRequest:
       helpers.doStorageRequest(tab, payload);
+      break;
+    case CommonEventType.CrossMsgRequest:
+      helpers.doCrossMessageRequest(tab, payload);
+      break;
+    case CommonEventType.SetTokenFromStorage:
+      ChromeExtStorage.get(StorageKey.Token).then((storageToken) => {
+        // FIXME: controllare communication token type
+        CommunicationSettings.token = storageToken as AuthToken | null;
+      });
+      break;
+    case CommonEventType.InitCommunicationSettings:
+      CommunicationSettings.apiBaseUrl = env.apiBaseUrl;
+      CommunicationSettings.authBaseUrl = env.authBaseUrl;
       break;
     default:
       break;

@@ -1,5 +1,5 @@
 import { Component, ViewEncapsulation } from '@angular/core';
-import * as notebook from './models/notebook';
+import { NotebookModel } from '../common/models';
 
 @Component({
   selector: 'pnd-root',
@@ -24,7 +24,7 @@ export class AppComponent {
    */
   deleteNotebooksFromList(notebooks: string[]) {
     Promise.all(
-      notebooks.map((id) => notebook.remove(id))
+      notebooks.map((id) => NotebookModel.remove(id))
     ).then((res) => {
       // eslint-disable-next-line no-console
       console.log('notebooks deleted', res);

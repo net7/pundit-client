@@ -1,4 +1,5 @@
-import { EventType, RuntimeMessage } from '../types';
+import { CommonEventType } from '../../../common/types';
+import { RuntimeMessage } from '../types';
 import { destroyExtension } from './destroyExtension';
 import { loadExtension } from './loadExtension';
 
@@ -9,7 +10,7 @@ export const listen = () => {
   ) => {
     const { type, payload } = message;
     switch (type) {
-      case EventType.StateChanged: {
+      case CommonEventType.StateChanged: {
         const { active } = payload;
         if (active) {
           loadExtension();
@@ -18,8 +19,15 @@ export const listen = () => {
         }
         break;
       }
-      case EventType.StorageResponse: {
-        const signal = new CustomEvent(EventType.StorageResponse, {
+      case CommonEventType.StorageResponse: {
+        const signal = new CustomEvent(CommonEventType.StorageResponse, {
+          detail: payload
+        });
+        window.dispatchEvent(signal);
+        break;
+      }
+      case CommonEventType.CrossMsgResponse: {
+        const signal = new CustomEvent(CommonEventType.CrossMsgResponse, {
           detail: payload
         });
         window.dispatchEvent(signal);

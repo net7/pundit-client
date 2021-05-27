@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
-import { StorageKey } from './storage-service/storage.types';
+import {
+  BehaviorSubject, Observable, of, ReplaySubject
+} from 'rxjs';
+import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
 import { _c } from '../models/config';
 
@@ -22,9 +24,9 @@ export class UserService {
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private storage: StorageService
+    private storageService: StorageService
   ) {
-    this.storage.get(StorageKey.User).subscribe((user: UserData) => {
+    this.storageService.get(StorageKey.User).subscribe((user: UserData) => {
       if (user) {
         this.iam(user, false);
       }
@@ -36,14 +38,16 @@ export class UserService {
   public iam({ id, username, thumb }: UserData, sync = true) {
     this.add({ id, username, thumb });
     this.me = this.getUserById(id);
-
+    let source$: Observable<boolean> = of(true);
     // storage sync
     if (sync) {
-      this.storage.set(StorageKey.User, this.me);
+      source$ = this.storageService.set(StorageKey.User, this.me);
     }
 
-    // emit signal
-    this.logged$.next(true);
+    source$.subscribe(() => {
+      // emit signal
+      this.logged$.next(true);
+    });
   }
 
   public whoami = () => this.me;
@@ -72,7 +76,9 @@ export class UserService {
     this.logged$.next(false);
 
     // storage sync
-    this.storage.remove(StorageKey.User);
+    this.storageService.remove(StorageKey.User).subscribe(() => {
+      // do nothing
+    });
   }
 
   clear() {

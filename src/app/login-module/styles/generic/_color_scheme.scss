@@ -1,0 +1,37 @@
+//
+// COLOR SCHEME
+//
+// Here we define all colors used in components and project
+//
+
+// ------------------------------------ //
+// #COLOR-SCHEME
+// ------------------------------------ //
+// Grayscale (background, borders, text)
+$color-gray-00: #ffffff;
+$color-gray-01: #f7f7f7;
+$color-gray-02: #f0f0f0; // $color-gray-02: #f7f7f7;
+$color-gray-03: #dddddd;
+$color-gray-04: #ababab;
+$color-gray-05: #262216;
+
+// Brand colors
+$color-main: #2e5bff;
+$color-second: #8c54ff;
+$color-third: #f5a623;
+$color-text-hover: rgb(26, 64, 204); /* Used for text link in hover state */
+
+// Status colors
+$color-error: #ff643f;
+$color-warning: #febe53;
+$color-success: #39b54a;
+
+// Social colors
+$color-facebook: #4267b2;
+$color-google: #db4437;
+$color-egi: #007cba;
+
+
+// Annotations colors
+$color-highlight: rgba($color: #fcfc05, $alpha: 0.2);
+$color-highlight-hover: rgba(#2ee6e6, .4);

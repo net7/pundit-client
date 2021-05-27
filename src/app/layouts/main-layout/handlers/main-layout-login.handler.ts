@@ -11,6 +11,8 @@ import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
+import { setTokenFromStorage } from '../../../../common/helpers';
+import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -24,7 +26,6 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     // user check on init
     const servicesReady$ = zip(
       this.layoutDS.userService.ready$,
-      this.layoutDS.tokenService.ready$,
       this.layoutDS.notebookService.ready$,
     );
     servicesReady$.subscribe(() => {
@@ -94,21 +95,23 @@ export class MainLayoutLoginHandler implements LayoutHandler {
 
   private onAuth({ token, user }) {
     // set token
-    this.layoutDS.tokenService.set(token);
-    // set user
-    this.layoutDS.userService.iam({
-      ...user,
-      id: `${user.id}`
+    this.layoutDS.storageService.set(StorageKey.Token, token).subscribe(() => {
+      setTokenFromStorage();
+      // set user
+      this.layoutDS.userService.iam({
+        ...user,
+        id: `${user.id}`
+      });
+      // close login modal
+      this.layoutDS.punditLoginService.stop();
+      // if there is an anonymous (before login) selection
+      // triggers selection manually
+      if (this.layoutDS.state.anonymousSelectionRange) {
+        const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
+        selectionModel.setSelectionFromRange(lastSelectionRange);
+        tooltipModel.show(selectionModel.getCurrentSelection());
+      }
     });
-    // close login modal
-    this.layoutDS.punditLoginService.stop();
-    // if there is an anonymous (before login) selection
-    // triggers selection manually
-    if (this.layoutDS.state.anonymousSelectionRange) {
-      const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
-      selectionModel.setSelectionFromRange(lastSelectionRange);
-      tooltipModel.show(selectionModel.getCurrentSelection());
-    }
   }
 
   private onUserLogged(isLogged: boolean) {

@@ -1,0 +1,45 @@
+<ng-container *ngIf="show">
+    <div class="pnd-login-modal"
+    [ngClass]="{'is-error': status === 'ERROR'}">
+        <div class="pnd-login-modal__overlay" (click)="onClose($event.target)">
+            <div class="pnd-login-modal__window">
+                
+                <!-- Close -->
+                <div class="pnd-login-modal__close">
+                    <a class="pnd-login-modal__close-link" 
+                    (click)="onClose()">
+                        <lib-svg-icon [data]="{ id: 'times' }"></lib-svg-icon>
+                    </a>
+                </div>
+
+                <!-- Modal content -->
+                <ng-container [ngSwitch]="status">
+
+                    <!-- Error -->
+                    <ng-container *ngSwitchCase="'ERROR'">
+                        <lib-pundit-login-error></lib-pundit-login-error>
+                    </ng-container>
+
+                    <!-- Success -->
+                    <ng-container *ngSwitchCase="'SIGNIN'">
+                        <lib-pundit-login-signin></lib-pundit-login-signin>
+                        <section class="pnd-login-modal__footer">
+                            <p class="pnd-login-modal__footer-text">Don't have a Pundit account yet?</p>
+                            <a class="pnd-login-modal__footer-link" href="#" (click)="signup($event)">Register here</a>
+                        </section>                        
+                    </ng-container>
+
+                    <!-- success -->
+                    <ng-container *ngSwitchCase="'SIGNUP'">
+                        <lib-pundit-login-signup></lib-pundit-login-signup>
+                        <section class="pnd-login-modal__footer">
+                            <p class="pnd-login-modal__footer-text">Already have a Pundit account?</p>
+                            <a class="pnd-login-modal__footer-link" href="#" (click)="signin($event)">Log in here</a>
+                        </section>
+                    </ng-container>
+                </ng-container>
+                
+            </div>
+        </div>
+    </div>
+</ng-container>

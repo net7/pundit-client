@@ -1,6 +1,7 @@
 import { ChromeExtStorage } from '../storage';
-import { EventType, StorageKeys } from '../../types';
+import { ChromeExtStorageKey } from '../../types';
 import { updateExtensionIcon } from '.';
+import { CommonEventType } from '../../../../common/types';
 
 export const checkActiveState = (tabId: number) => {
   chrome.tabs.get(tabId, (tab) => {
@@ -13,13 +14,13 @@ export const checkActiveState = (tabId: number) => {
         if (type === 'popup') {
           return;
         }
-        const activeKey = `${StorageKeys.Active}.${tabId}`;
+        const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
             const payload = { active };
             chrome.tabs.sendMessage(tabId, {
               payload,
-              type: EventType.StateChanged,
+              type: CommonEventType.StateChanged,
             });
             updateExtensionIcon(tabId, active);
           });

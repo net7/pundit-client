@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { from, Subject, ReplaySubject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
-import * as notebookModel from 'src/app/models/notebook';
 import { tap } from 'rxjs/operators';
+import { NotebookModel } from '../../common/models';
+import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
-import { StorageKey } from './storage-service/storage.types';
 import { UserService } from './user.service';
 
 export type NotebookData = {
@@ -31,10 +31,10 @@ export class NotebookService {
 
   constructor(
     private userService: UserService,
-    private storage: StorageService
+    private storageService: StorageService
   ) {
     // check storage
-    this.storage.get(StorageKey.Notebook).subscribe((selected: string) => {
+    this.storageService.get(StorageKey.Notebook).subscribe((selected: string) => {
       if (selected) {
         this.selectedId = selected;
       }
@@ -49,10 +49,10 @@ export class NotebookService {
     this.selectedId = id;
 
     // storage
-    this.storage.set(StorageKey.Notebook, id);
-
-    // emit signal
-    this.selectedChanged$.next();
+    this.storageService.set(StorageKey.Notebook, id).subscribe(() => {
+      // emit signal
+      this.selectedChanged$.next();
+    });
   }
 
   /**
@@ -61,7 +61,7 @@ export class NotebookService {
   update(notebookID, data: NotebookUpdate) {
     const userId = this.userService.whoami().id;
     const nb = this.getNotebookById(notebookID);
-    return from(notebookModel.update(notebookID, {
+    return from(NotebookModel.update(notebookID, {
       data: {
         userId,
         label: data.label ? data.label : nb.label,
@@ -103,7 +103,7 @@ export class NotebookService {
   create(label: string) {
     const userId = this.userService.whoami().id;
     const sharingMode = 'public';
-    return from(notebookModel.create({
+    return from(NotebookModel.create({
       data: {
         label,
         userId,
@@ -127,7 +127,7 @@ export class NotebookService {
   }
 
   search() {
-    return from(notebookModel.search()).pipe(
+    return from(NotebookModel.search()).pipe(
       tap(({ data: notebooksData }) => {
         const { notebooks } = notebooksData;
         this.load(notebooks);
@@ -149,6 +149,8 @@ export class NotebookService {
     this.notebooks = [];
 
     // storage sync
-    this.storage.remove(StorageKey.Notebook);
+    this.storageService.remove(StorageKey.Notebook).subscribe(() => {
+      // do nothing
+    });
   }
 }

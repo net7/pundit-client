@@ -1,0 +1,92 @@
+/**
+ * TYPOGRAPHY
+ *
+ * Definition of typographic styles
+ */
+
+/* ------------------------------------ *\
+   #HEADINGS
+\* ------------------------------------ */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: $font-weight-bold;
+    font-family: $font-family-headings;
+    margin: 0;
+    padding: 0;
+    color: $color-text;
+}
+
+h1 {
+    font-size: $font-size-xl;
+    line-height: 1.2;
+    margin-bottom: .3em;
+}
+
+h2 {
+    font-size: $font-size-l;
+    line-height: 1.2;
+    margin-bottom: .3em;
+}
+
+h3 {
+    font-size: $font-size-m;
+    line-height: 1.2;
+    margin-bottom: .3em;
+}
+
+h4 {
+    font-size: $font-size-m;
+    line-height: 1.2;
+    margin-bottom: .3em;
+}
+
+h5 {
+    font-size: $font-size-s;
+    line-height: 1.2;
+    margin-bottom: .3em;
+}
+
+p, .single-content p {
+    margin: 0 0 $space/2 0;
+    padding: 0;
+    color: $color-text;
+    font-size: $font-size-m;
+    font-weight: $font-weight-normal;
+    line-height: 1.5;
+}
+
+b, strong {
+    font-weight: $font-weight-bold;
+}
+
+
+/* ------------------------------------ *\
+   #LINKS
+\* ------------------------------------ */
+a {
+    font-size: $font-size-s;
+    color: $color-text;
+    transition: all $transition-durations;
+    text-decoration: underline;
+    text-decoration-color: rgba($color-text, .3);
+    text-underline-offset: 5px;
+
+    h1, h2, h3, h4, h5, h6 {
+        color: inherit;
+    }
+
+    &:hover, &:focus {
+        color: $color-text-link;
+        text-decoration-color: rgba($color-text-link, .7);
+    }
+}
+
+
+/* ------------------------------------ *\
+   #HR
+\* ------------------------------------ */
+hr {
+    margin: 0;
+    padding: 0;
+    border: none;
+    border-top: 1px solid $color-border-normal;
+}

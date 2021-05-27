@@ -3,7 +3,7 @@ import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
-import { HttpRequestOptions } from '@pundit/login';
+import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -108,36 +108,35 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onLogout(doRequest = true) {
-    const token = this.layoutDS.tokenService.get();
-    this.resetAppDataAndEmit();
-    if (doRequest && token?.access_token) {
-      const params = {
-        withCredentials: true,
-        headers: {
-          Authorization: `Bearer ${token.access_token}`
-        }
-      } as HttpRequestOptions;
-      this.layoutDS.punditLogoutService.logout(params).catch((error) => {
+  private onLogout(payload) {
+    this.resetAppDataAndEmit(payload);
+    if (!payload?.skipRequest) {
+      this.layoutDS.punditLoginService.logout().catch((error) => {
         console.warn(error);
       });
     }
   }
 
-  private resetAppDataAndEmit = () => {
+  private resetAppDataAndEmit = (payload) => {
     // reset
-    this.layoutDS.tokenService.clear();
-    this.layoutDS.userService.clear();
-    this.layoutDS.notebookService.clear();
-    this.layoutDS.userService.logout();
+    this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
+      this.layoutDS.userService.clear();
+      this.layoutDS.notebookService.clear();
+      this.layoutDS.userService.logout();
 
-    // close verify toast
-    this.layoutDS.closeEmailVerifiedToast();
+      // close verify toast
+      this.layoutDS.closeEmailVerifiedToast();
 
-    // emit signals
-    this.layoutDS.annotationService.totalChanged$.next(0);
-    this.layoutDS.hasLoaded$.next(true);
-    this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+      // emit signals
+      this.layoutDS.annotationService.totalChanged$.next(0);
+      this.layoutDS.hasLoaded$.next(true);
+      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+
+      // callback check
+      if (payload?.callback) {
+        payload.callback();
+      }
+    });
   }
 
   private onRefresh() {

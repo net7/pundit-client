@@ -1,8 +1,8 @@
-import { EventType } from '../../types';
+import { CommonEventType } from '../../../../common/types';
 
 export const onStorageRequest = (ev: CustomEvent) => {
   chrome.runtime.sendMessage({
-    type: EventType.StorageRequest,
+    type: CommonEventType.StorageRequest,
     payload: ev.detail
   });
 };

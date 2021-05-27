@@ -7,11 +7,11 @@ import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { AppEventData } from 'src/app/types';
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { PunditLoginService } from '@pundit/login';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { ToastService } from 'src/app/services/toast.service';
+import { PunditLoginService } from 'src/app/login-module/public-api';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
 @Component({

@@ -4,10 +4,10 @@ import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
 import { catchError, delay, switchMap } from 'rxjs/operators';
-import { StorageKey } from 'src/app/services/storage-service/storage.types';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
+import { StorageKey } from '../../../common/types';
 
 export class MainLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
