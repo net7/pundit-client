@@ -15,8 +15,8 @@ import { ToastService } from 'src/app/services/toast.service';
 import {
   AppEvent, SidebarLayoutEvent
 } from 'src/app/event-types';
-import { SidebarLayoutDS } from './sidebar-layout.ds';
 import { PunditLoginService } from 'src/app/login-module/public-api';
+import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
