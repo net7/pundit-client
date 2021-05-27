@@ -1,6 +1,6 @@
 import { _t } from '@n7-frontend/core';
 import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/communication';
-import { forkJoin } from 'rxjs';
+import { forkJoin, Observable, of } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
@@ -43,19 +43,29 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
+          let source$: Observable<unknown> = of(true);
           if (resp.user.id !== currentUser?.id) {
             // update cached & storage data
-            this.layoutDS.storageService.set(StorageKey.User, user);
-            this.layoutDS.storageService.set(StorageKey.Token, token);
+            source$ = forkJoin({
+              user: this.layoutDS.storageService.set(StorageKey.User, user),
+              token: this.layoutDS.storageService.set(StorageKey.Token, token)
+            });
           }
-          // check user verify
-          this.layoutDS.checkUserVerified(user);
+          source$.subscribe(() => {
+            // check user verify
+            this.layoutDS.checkUserVerified(user);
+            // check storage state
+            this.checkStateFromStorage();
+          });
         } else if ('error' in resp && resp.error === 'Unauthorized') {
-          this.layoutDS.storageService.remove(StorageKey.User);
-          this.layoutDS.storageService.remove(StorageKey.Token);
+          forkJoin({
+            user: this.layoutDS.storageService.remove(StorageKey.User),
+            token: this.layoutDS.storageService.remove(StorageKey.Token)
+          }).subscribe(() => {
+            // check storage state
+            this.checkStateFromStorage();
+          });
         }
-        // check storage state
-        this.checkStateFromStorage();
       });
   }
 
@@ -94,12 +104,13 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         // clear toasts
         this.layoutDS.toastService.clear();
         // set token from storage when user changed
-        this.layoutDS.storageService.set(StorageKey.Token, token);
-        setTokenFromStorage();
-        // trigger auto-login
-        this.layoutDS.userService.iam(user);
-        this.layoutDS.notebookService.setSelected(notebookId);
-        this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+        this.layoutDS.storageService.set(StorageKey.Token, token).subscribe(() => {
+          setTokenFromStorage();
+          // trigger auto-login
+          this.layoutDS.userService.iam(user);
+          this.layoutDS.notebookService.setSelected(notebookId);
+          this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+        });
         return;
       }
 

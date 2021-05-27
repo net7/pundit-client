@@ -31,10 +31,10 @@ export class NotebookService {
 
   constructor(
     private userService: UserService,
-    private storage: StorageService
+    private storageService: StorageService
   ) {
     // check storage
-    this.storage.get(StorageKey.Notebook).subscribe((selected: string) => {
+    this.storageService.get(StorageKey.Notebook).subscribe((selected: string) => {
       if (selected) {
         this.selectedId = selected;
       }
@@ -49,10 +49,10 @@ export class NotebookService {
     this.selectedId = id;
 
     // storage
-    this.storage.set(StorageKey.Notebook, id);
-
-    // emit signal
-    this.selectedChanged$.next();
+    this.storageService.set(StorageKey.Notebook, id).subscribe(() => {
+      // emit signal
+      this.selectedChanged$.next();
+    });
   }
 
   /**
@@ -149,6 +149,8 @@ export class NotebookService {
     this.notebooks = [];
 
     // storage sync
-    this.storage.remove(StorageKey.Notebook);
+    this.storageService.remove(StorageKey.Notebook).subscribe(() => {
+      // do nothing
+    });
   }
 }

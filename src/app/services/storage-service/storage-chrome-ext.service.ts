@@ -6,37 +6,37 @@ import { StorageProvider, StorageValue } from './storage.types';
 
 @Injectable()
 export class StorageChromeExtService implements StorageProvider {
-  private queue$: ConnectableObservable<StorageValue>[] = [];
+  private queue$: ConnectableObservable<StorageValue | boolean>[] = [];
 
-  public set(key: StorageKey, value: string): void {
-    this.message$(StorageOperationType.Set, key, value).subscribe(() => {
-      // do nothing
-    });
+  public set(key: StorageKey, value: string): Observable<boolean> {
+    return this.message$(StorageOperationType.Set, key, value) as Observable<boolean>;
   }
 
   public get(key: StorageKey): Observable<StorageValue> {
-    return this.message$(StorageOperationType.Get, key);
+    return this.message$(StorageOperationType.Get, key) as Observable<StorageValue>;
   }
 
-  public remove(key: StorageKey) {
-    this.message$(StorageOperationType.Remove, key).subscribe(() => {
-      // do nothing
-    });
+  public remove(key: StorageKey): Observable<boolean> {
+    return this.message$(StorageOperationType.Remove, key) as Observable<boolean>;
   }
 
   private message$(
     operation: StorageOperationType,
     key: StorageKey,
     value?: string
-  ): Observable<StorageValue> {
-    const task$ = new Observable<StorageValue>((subscriber) => {
+  ): Observable<StorageValue | boolean> {
+    const task$ = new Observable<StorageValue | boolean>((subscriber) => {
       // listen signal from chrome-ext
       window.addEventListener(CommonEventType.StorageResponse, (ev: CustomEvent) => {
         const { status, data } = ev.detail;
         if (status === 'KO') {
           subscriber.error(`Storage error: operation ${operation} - key: ${key}`);
         }
-        subscriber.next(data);
+        if (operation === StorageOperationType.Get) {
+          subscriber.next(data);
+        } else {
+          subscriber.next(true);
+        }
         subscriber.complete();
       }, { once: true });
 
@@ -47,7 +47,7 @@ export class StorageChromeExtService implements StorageProvider {
       window.dispatchEvent(signal);
     });
 
-    const queuedTask$ = publish<StorageValue>()(task$.pipe(
+    const queuedTask$ = publish<StorageValue | boolean>()(task$.pipe(
       tap(() => {
         // remove first from queue
         this.queue$.shift();

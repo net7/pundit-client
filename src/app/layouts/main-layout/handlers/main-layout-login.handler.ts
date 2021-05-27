@@ -90,22 +90,23 @@ export class MainLayoutLoginHandler implements LayoutHandler {
 
   private onAuth({ token, user }) {
     // set token
-    this.layoutDS.storageService.set(StorageKey.Token, token);
-    setTokenFromStorage();
-    // set user
-    this.layoutDS.userService.iam({
-      ...user,
-      id: `${user.id}`
+    this.layoutDS.storageService.set(StorageKey.Token, token).subscribe(() => {
+      setTokenFromStorage();
+      // set user
+      this.layoutDS.userService.iam({
+        ...user,
+        id: `${user.id}`
+      });
+      // close login modal
+      this.layoutDS.punditLoginService.stop();
+      // if there is an anonymous (before login) selection
+      // triggers selection manually
+      if (this.layoutDS.state.anonymousSelectionRange) {
+        const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
+        selectionModel.setSelectionFromRange(lastSelectionRange);
+        tooltipModel.show(selectionModel.getCurrentSelection());
+      }
     });
-    // close login modal
-    this.layoutDS.punditLoginService.stop();
-    // if there is an anonymous (before login) selection
-    // triggers selection manually
-    if (this.layoutDS.state.anonymousSelectionRange) {
-      const { anonymousSelectionRange: lastSelectionRange } = this.layoutDS.state;
-      selectionModel.setSelectionFromRange(lastSelectionRange);
-      tooltipModel.show(selectionModel.getCurrentSelection());
-    }
   }
 
   private onUserLogged(isLogged: boolean) {

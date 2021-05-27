@@ -21,15 +21,15 @@ export class StorageService implements StorageProvider {
     }
   }
 
-  public set(key: StorageKey, value: StorageValue): void {
-    this.provider.set(key, value);
+  public set(key: StorageKey, value: StorageValue): Observable<boolean> {
+    return this.provider.set(key, value);
   }
 
   public get(key: StorageKey): Observable<StorageValue> {
     return this.provider.get(key);
   }
 
-  public remove(key: StorageKey) {
-    this.provider.remove(key);
+  public remove(key: StorageKey): Observable<boolean> {
+    return this.provider.remove(key);
   }
 }

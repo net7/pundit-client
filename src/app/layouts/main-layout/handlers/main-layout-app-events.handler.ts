@@ -122,15 +122,16 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private resetAppDataAndEmit = () => {
     // reset
-    this.layoutDS.storageService.remove(StorageKey.Token);
-    this.layoutDS.userService.clear();
-    this.layoutDS.notebookService.clear();
-    this.layoutDS.userService.logout();
+    this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
+      this.layoutDS.userService.clear();
+      this.layoutDS.notebookService.clear();
+      this.layoutDS.userService.logout();
 
-    // emit signals
-    this.layoutDS.annotationService.totalChanged$.next(0);
-    this.layoutDS.hasLoaded$.next(true);
-    this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+      // emit signals
+      this.layoutDS.annotationService.totalChanged$.next(0);
+      this.layoutDS.hasLoaded$.next(true);
+      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+    });
   }
 
   private onRefresh() {
