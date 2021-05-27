@@ -2,7 +2,7 @@
 import { from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthToken, LoginResponse, SourceType } from '@pundit/communication';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 
 export const fromEvent = (message: MessageEvent): LoginResponse => {
   if (message.data.error) {
@@ -37,8 +37,9 @@ export const transformFromHttpSuccess = (response, source: SourceType) => {
 };
 
 export const transformFromHttpError = (error: AxiosError, source: SourceType) => {
-  if (axios.isAxiosError(error)) {
-    return { error: error?.response?.data?.error, source };
+  const errorData = error?.response?.data;
+  if (errorData) {
+    return { error: errorData?.error, source };
   }
   return { error: 'Internal server error', source };
 };
