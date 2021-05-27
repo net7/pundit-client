@@ -1,4 +1,3 @@
-import { AuthToken } from '@pundit/communication';
 import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
@@ -109,18 +108,16 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onLogout(doRequest = true) {
-    this.layoutDS.storageService.get(StorageKey.Token).subscribe((token: AuthToken) => {
-      this.resetAppDataAndEmit();
-      if (doRequest && token?.access_token) {
-        this.layoutDS.punditLoginService.logout().catch((error) => {
-          console.warn(error);
-        });
-      }
-    });
+  private onLogout(payload) {
+    this.resetAppDataAndEmit(payload);
+    if (!payload?.skipRequest) {
+      this.layoutDS.punditLoginService.logout().catch((error) => {
+        console.warn(error);
+      });
+    }
   }
 
-  private resetAppDataAndEmit = () => {
+  private resetAppDataAndEmit = (payload) => {
     // reset
     this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
       this.layoutDS.userService.clear();
@@ -131,6 +128,11 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       this.layoutDS.annotationService.totalChanged$.next(0);
       this.layoutDS.hasLoaded$.next(true);
       this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+
+      // callback check
+      if (payload?.callback) {
+        payload.callback();
+      }
     });
   }
 

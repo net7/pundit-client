@@ -89,7 +89,9 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       if (!user && currentUser) {
         this.layoutEH.appEvent$.next({
           type: AppEvent.Logout,
-          payload: false
+          payload: {
+            skipRequest: true
+          }
         });
         return;
       }
@@ -99,17 +101,21 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         // trigger logout
         this.layoutEH.appEvent$.next({
           type: AppEvent.Logout,
-          payload: false
-        });
-        // clear toasts
-        this.layoutDS.toastService.clear();
-        // set token from storage when user changed
-        this.layoutDS.storageService.set(StorageKey.Token, token).subscribe(() => {
-          setTokenFromStorage();
-          // trigger auto-login
-          this.layoutDS.userService.iam(user);
-          this.layoutDS.notebookService.setSelected(notebookId);
-          this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+          payload: {
+            skipRequest: true,
+            callback: () => {
+              // clear toasts
+              this.layoutDS.toastService.clear();
+              // set token from storage when user changed
+              this.layoutDS.storageService.set(StorageKey.Token, token).subscribe(() => {
+                setTokenFromStorage();
+                // trigger auto-login
+                this.layoutDS.userService.iam(user);
+                this.layoutDS.notebookService.setSelected(notebookId);
+                this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+              });
+            }
+          }
         });
         return;
       }
