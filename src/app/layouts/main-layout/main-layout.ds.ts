@@ -4,7 +4,7 @@ import {
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
-import { Annotation, CommentAnnotation, VerifyEmailResponse, } from '@pundit/communication';
+import { Annotation, CommentAnnotation } from '@pundit/communication';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -84,7 +84,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   getPublicData() {
     const uri = getDocumentHref();
-    return from(AnnotationModel.search(uri)).pipe(
+    return from(AnnotationModel.search(uri, true)).pipe(
       tap((response) => {
         const { data: searchData } = response;
         // remove private annotations
@@ -216,7 +216,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.state.emailVerifiedToast.close();
     // working toast
     const workingToast = this.toastService.working();
-    //TODO Vedere verify
+    // TODO Vedere verify
     this.punditLoginService.verifyEmail().subscribe((response: any) => {
       workingToast.close();
       if ('mail' in response) {
