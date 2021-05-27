@@ -2,7 +2,7 @@ import { AuthToken, CommunicationSettings } from '@pundit/communication';
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import {
-  CrossMsgData, CommonEventType, StorageKey, StorageOperationType, CrossMsgRequestId
+  CrossMsgData, CommonEventType, StorageKey, CrossMsgRequestId
 } from './types';
 
 const crossMessageEnabled = () => !!(
@@ -10,26 +10,12 @@ const crossMessageEnabled = () => !!(
 );
 
 const tokenSyncChromeExt = (token: AuthToken, forceRemove: boolean) => {
-  let signal;
-  if (forceRemove) {
-    signal = new CustomEvent(CommonEventType.StorageRequest, {
-      detail: {
-        operation: StorageOperationType.Remove,
-        key: StorageKey.Token
-      }
-    });
-  } else if (token) {
-    signal = new CustomEvent(CommonEventType.StorageRequest, {
-      detail: {
-        operation: StorageOperationType.Set,
-        key: StorageKey.Token,
-        token
-      }
-    });
-  }
-
-  if (signal) {
-    window.dispatchEvent(signal);
+  if (chrome?.storage?.local) {
+    if (forceRemove) {
+      chrome.storage.local.remove(StorageKey.Token);
+    } else if (token) {
+      chrome.storage.local.set({ [StorageKey.Token]: token });
+    }
   }
 };
 
@@ -41,15 +27,15 @@ const tokenSyncEmbed = (token: AuthToken, forceRemove: boolean) => {
   }
 };
 
-const tokenSync = (forceRemove = false): Promise<void> => new Promise<void>((resolve) => {
+const tokenSync = (forceRemove = false): Promise<boolean> => new Promise<boolean>((resolve) => {
   const { token } = CommunicationSettings;
-  if (env.chromeExt) {
+  if (document.location.protocol === 'chrome-extension:') {
     // emit signal to chrome-ext
     tokenSyncChromeExt(token, forceRemove);
   } else {
     tokenSyncEmbed(token, forceRemove);
   }
-  resolve();
+  resolve(true);
 });
 
 const handlers: {
@@ -101,10 +87,13 @@ export function CrossMessage(requestId: string) {
         result = originalMethod.apply(this, args);
       }
 
-      if (requestId === CrossMsgRequestId.AuthLogout) {
-        return tokenSync(true).then(() => result);
-      }
-      return tokenSync().then(() => result);
+      const forceRemove = requestId === CrossMsgRequestId.AuthLogout;
+      return tokenSync(!!forceRemove)
+        .then(() => result.finally(() => {
+          tokenSync(!!forceRemove).then(() => {
+            // do nothing
+          });
+        }));
     };
   };
 }
