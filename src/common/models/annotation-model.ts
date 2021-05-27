@@ -24,8 +24,11 @@ export class AnnotationModel {
   }
 
   @CrossMessage(CrossMsgRequestId.AnnotationSearch)
-  static search(uri: string) {
+  static search(uri: string, publicSearch?: boolean) {
     const payload = AnnotationModel.searchAnnotationPayload(uri);
+    if (publicSearch) {
+      return annotation.publicSearch(payload);
+    }
     return annotation.search(payload);
   }
 
