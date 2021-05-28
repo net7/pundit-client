@@ -48,7 +48,7 @@ export class EmailProviderService implements OnDestroy {
             this.openTermsPopup(terms);
             return EMPTY;
           }
-          this.error$.next(err);
+          this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
@@ -80,7 +80,7 @@ export class EmailProviderService implements OnDestroy {
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
-          this.error$.next(err);
+          this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
         })).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
