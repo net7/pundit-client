@@ -88,12 +88,11 @@ export function CrossMessage(requestId: string) {
       }
 
       const forceRemove = requestId === CrossMsgRequestId.AuthLogout;
-      return tokenSync(!!forceRemove)
-        .then(() => result.finally(() => {
-          tokenSync(!!forceRemove).then(() => {
-            // do nothing
-          });
-        }));
+      return result.finally(() => {
+        tokenSync(!!forceRemove).then(() => {
+          // do nothing
+        });
+      });
     };
   };
 }
