@@ -40,6 +40,9 @@ export const onContentScriptMessage = (
       CommunicationSettings.apiBaseUrl = env.apiBaseUrl;
       CommunicationSettings.authBaseUrl = env.authBaseUrl;
       break;
+    case CommonEventType.ImageDataRequest:
+      helpers.doImageDataRequest(tab, payload);
+      break;
     default:
       break;
   }

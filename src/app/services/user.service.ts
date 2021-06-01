@@ -6,6 +6,7 @@ import {
 import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
 import { _c } from '../models/config';
+import { ImageDataService } from './image-data.service';
 
 export type UserData = {
   id: string;
@@ -24,7 +25,8 @@ export class UserService {
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(
-    private storageService: StorageService
+    private storageService: StorageService,
+    private imageDataService: ImageDataService,
   ) {
     this.storageService.get(StorageKey.User).subscribe((user: UserData) => {
       if (user) {
@@ -65,6 +67,9 @@ export class UserService {
   add(user: UserData) {
     if (!this.getUserById(user.id)) {
       this.users.push(user);
+
+      // add to image service
+      this.imageDataService.add(user.thumb || _c('userDefaultThumb'));
     }
   }
 

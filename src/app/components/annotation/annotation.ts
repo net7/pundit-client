@@ -4,6 +4,7 @@
 
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Annotation } from '@pundit/communication';
+import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon } from '../../types';
 
 /**
@@ -29,6 +30,8 @@ export interface AnnotationData {
     image: string;
     /** User full name */
     name: string;
+    /** User initials: image fallback */
+    initials: string;
     /** Navigate to user page */
     anchor?: string;
   };
@@ -88,7 +91,8 @@ export class AnnotationComponent {
   @Input() emit: any;
 
   constructor(
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    public imageDataService: ImageDataService,
   ) {}
 
   onClick(ev: Event, payload) {

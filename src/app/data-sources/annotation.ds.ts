@@ -209,7 +209,20 @@ export class AnnotationDS extends DataSource {
 
   private getUserData() {
     const { annotationUser } = this.options;
+    let separator = ' ';
+    // is email check
+    if (annotationUser.username.includes('@')) {
+      separator = '@';
+    }
+    const initials = (annotationUser.username as string)
+      .split(separator)
+      .map((word: string) => word.charAt(0))
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
+
     return {
+      initials,
       image: annotationUser.thumb || _c('userDefaultThumb'),
       name: annotationUser.username,
       anchor: this.isCurrentUser()

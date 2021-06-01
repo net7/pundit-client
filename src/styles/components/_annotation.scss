@@ -41,18 +41,44 @@ annotation {
 
     /* Image */
     &__header-thumb-wrapper {
+        position: relative;
         flex-grow: 0;
         flex-shrink: 0;
+        height: 30px;
+        width: 30px;
+        margin-right: $space;
+        border-radius: $border-radius;
+    }
+
+    &__header-initials {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 30px;
+        width: 30px;
+        border-radius: $border-radius;
+        background: $color-gray-03;
+        text-align: center;
+        line-height: 30px;
+        font-size: $font-size-s;
+        font-weight: $font-weight-bold;
+        // max-width: 30px;
+        // overflow: hidden;
+        // width: auto;
+        // margin-right: $space;
     }
 
     &__header-thumb-image {
         display: block;
-        position: relative;
+        position: absolute;
+        top: 0;
+        left: 0;
         height: 30px;
         max-width: 30px;
         overflow: hidden;
         width: auto;
-        margin-right: $space;
+        // margin-right: $space;
         border-radius: $border-radius;
         
 
