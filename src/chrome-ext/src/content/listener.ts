@@ -33,6 +33,13 @@ export const listen = () => {
         window.dispatchEvent(signal);
         break;
       }
+      case CommonEventType.ImageDataResponse: {
+        const signal = new CustomEvent(CommonEventType.ImageDataResponse, {
+          detail: payload
+        });
+        window.dispatchEvent(signal);
+        break;
+      }
       default:
         break;
     }

@@ -19,6 +19,7 @@ import { StorageService } from './services/storage-service/storage.service';
 import { StorageEmbedService } from './services/storage-service/storage-embed.service';
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
 import { EmbedService } from './services/embed.service';
+import { ImageDataService } from './services/image-data.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -81,6 +82,7 @@ config.init(appConfig);
     StorageEmbedService,
     EmbedService,
     StorageChromeExtService,
+    ImageDataService,
     { provide: APP_BASE_HREF, useValue: '/' },
     {
       provide: APP_INITIALIZER,

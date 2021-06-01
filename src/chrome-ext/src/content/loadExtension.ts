@@ -34,6 +34,12 @@ export const loadExtension = () => {
     handlers.onSetTokenFromStorage,
     false
   );
+  // listen image data request event
+  window.addEventListener(
+    CommonEventType.ImageDataRequest,
+    handlers.onImageDataRequest,
+    false
+  );
 
   const appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);

@@ -20,11 +20,13 @@
 <ng-template #expanded>
     <!-- Header -->
     <div class="pnd-annotation__header">
-        
+
         <div class="pnd-annotation__header-thumb-wrapper">
-            <img [src]="data.user.image"
-                 alt="{{data.user.name}}"
-                 class="pnd-annotation__header-thumb-image">
+            <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
+            <img [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
+                onerror="this.style.display='none'"
+                alt="{{data.user.name}}"
+                class="pnd-annotation__header-thumb-image">
         </div>
         
         <div class="pnd-annotation__header-info">

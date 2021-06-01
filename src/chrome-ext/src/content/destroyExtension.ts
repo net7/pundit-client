@@ -17,6 +17,10 @@ export const destroyExtension = () => {
     CommonEventType.SetTokenFromStorage,
     handlers.onSetTokenFromStorage
   );
+  window.removeEventListener(
+    CommonEventType.ImageDataRequest,
+    handlers.onImageDataRequest
+  );
 
   // emit signal
   const signal = new CustomEvent(CommonEventType.PunditDestroy);

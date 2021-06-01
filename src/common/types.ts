@@ -36,6 +36,8 @@ export enum CommonEventType {
   PunditDestroy = 'punditdestroy',
   SetTokenFromStorage = 'settokenfromstorage',
   InitCommunicationSettings = 'initcommunicationsettings',
+  ImageDataRequest = 'imagedata.request',
+  ImageDataResponse = 'imagedata.response',
 }
 
 export enum StorageKey {
