@@ -1,5 +1,7 @@
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
+import {
+  AnnotationModel, AuthModel, NotebookModel, SocialModel
+} from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -35,6 +37,17 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.AnnotationUpdate:
       request$ = AnnotationModel.update.apply(null, args);
+      break;
+    // SOCIAL REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SocialCreate:
+      request$ = SocialModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.SocialRemove:
+      request$ = SocialModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.SocialUpdate:
+      request$ = SocialModel.update.apply(null, args);
       break;
     // AUTH REQUEST
     // --------------------------------------------------->
