@@ -3,6 +3,15 @@ import { state } from './state';
 import * as handlers from './handlers';
 import { CommonEventType } from '../../../common/types';
 
+export const listenersMap = {
+  [CommonEventType.AnnotationsUpdate]: handlers.onAnnotationsUpdate,
+  [CommonEventType.StorageRequest]: handlers.onStorageRequest,
+  [CommonEventType.CrossMsgRequest]: handlers.onCrossMessageRequest,
+  [CommonEventType.InitCommunicationSettings]: handlers.onInitCommunicationSettings,
+  [CommonEventType.SetTokenFromStorage]: handlers.onSetTokenFromStorage,
+  [CommonEventType.ImageDataRequest]: handlers.onImageDataRequest
+};
+
 export const loadExtension = () => {
   if (state.get('appRoot')) return;
 
@@ -12,34 +21,11 @@ export const loadExtension = () => {
     return;
   }
 
-  // listen to annotation updates
-  window.addEventListener(CommonEventType.AnnotationsUpdate, handlers.onAnnotationsUpdate, false);
-  // listen storage request event
-  window.addEventListener(CommonEventType.StorageRequest, handlers.onStorageRequest, false);
-  // listen cross message event
-  window.addEventListener(
-    CommonEventType.CrossMsgRequest,
-    handlers.onCrossMessageRequest,
-    false
-  );
-  // listen init communication settings event
-  window.addEventListener(
-    CommonEventType.InitCommunicationSettings,
-    handlers.onInitCommunicationSettings,
-    false
-  );
-  // listen set token from storage event
-  window.addEventListener(
-    CommonEventType.SetTokenFromStorage,
-    handlers.onSetTokenFromStorage,
-    false
-  );
-  // listen image data request event
-  window.addEventListener(
-    CommonEventType.ImageDataRequest,
-    handlers.onImageDataRequest,
-    false
-  );
+  // add listeners
+  Object.keys(listenersMap).forEach((type) => {
+    const handler = listenersMap[type];
+    window.addEventListener(type, handler, false);
+  });
 
   const appRoot = document.createElement('pnd-root');
   document.body.appendChild(appRoot);
