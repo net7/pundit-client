@@ -1,26 +1,15 @@
 import { state } from './state';
-import * as handlers from './handlers';
 import { CommonEventType } from '../../../common/types';
+import { listenersMap } from './loadExtension';
 
 export const destroyExtension = () => {
   if (!state.get('appRoot')) return;
 
   // remove listeners
-  window.removeEventListener(CommonEventType.AnnotationsUpdate, handlers.onAnnotationsUpdate);
-  window.removeEventListener(CommonEventType.StorageRequest, handlers.onStorageRequest);
-  window.removeEventListener(CommonEventType.CrossMsgRequest, handlers.onCrossMessageRequest);
-  window.removeEventListener(
-    CommonEventType.InitCommunicationSettings,
-    handlers.onInitCommunicationSettings
-  );
-  window.removeEventListener(
-    CommonEventType.SetTokenFromStorage,
-    handlers.onSetTokenFromStorage
-  );
-  window.removeEventListener(
-    CommonEventType.ImageDataRequest,
-    handlers.onImageDataRequest
-  );
+  Object.keys(listenersMap).forEach((type) => {
+    const handler = listenersMap[type];
+    window.removeEventListener(type, handler);
+  });
 
   // emit signal
   const signal = new CustomEvent(CommonEventType.PunditDestroy);
