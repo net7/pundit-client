@@ -15,6 +15,8 @@ import {
 import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -53,6 +55,14 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
             });
             this.layoutEH.appEvent$.next({
               type: AppEvent.NotebookCreateSuccess
+            });
+
+            // analytics
+            AnalyticsModel.track({
+              action: AnalyticsAction.NotebookCreated,
+              payload: {
+                location: 'modal'
+              }
             });
           });
           break;
@@ -104,6 +114,14 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
                   workingToast.close();
                 }
               });
+
+              // analytics
+              AnalyticsModel.track({
+                action: AnalyticsAction.CommentCreated,
+                payload: {
+                  scope: 'fragment'
+                }
+              });
             }
           });
           break;
@@ -128,6 +146,14 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     this.layoutDS.notebookService.setSelected(payload);
     this.layoutEH.appEvent$.next({
       type: AppEvent.SelectedNotebookChanged
+    });
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.NotebookCurrentChanged,
+      payload: {
+        location: 'modal'
+      }
     });
   }
 

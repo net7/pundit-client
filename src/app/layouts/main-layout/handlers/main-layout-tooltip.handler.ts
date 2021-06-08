@@ -5,6 +5,8 @@ import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, TooltipEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -65,6 +67,11 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
                 onLoad: () => {
                   workingToast.close();
                 }
+              });
+
+              // analytics
+              AnalyticsModel.track({
+                action: AnalyticsAction.HighlightCreated,
               });
             });
           } else if (payload === 'comment') {
