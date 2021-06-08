@@ -1,3 +1,4 @@
+import { TagModel } from 'src/common/models/tag-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
 
@@ -52,6 +53,11 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.AuthSso:
       request$ = AuthModel.sso.apply(null, args);
+      break;
+    // TAG REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.TagGet:
+      request$ = TagModel.get.apply(null, args);
       break;
     default:
       break;
