@@ -76,6 +76,6 @@ export enum AnalyticsAction {
   RegisterWithFacebookClicked = 'register-with-facebook-click',
   RegisterWithEgiClicked = 'register-with-egi-click',
   RegistrationCompleted = 'register-completed',
-  AnnotationAnchoringSuccess = 'anchor-ok',
-  AnnotationAnchoringError = 'anchor-ko',
+  AnnotationAnchoringSuccess = 'anchoring-success',
+  AnnotationAnchoringError = 'anchoring-error',
 }
