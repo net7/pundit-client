@@ -18,6 +18,7 @@ analytics.init([
       mixpanel.track(type, payload);
     },
     actions: [
+      AnalyticsAction.Bootstrap,
       AnalyticsAction.HighlightCreated,
       AnalyticsAction.CommentCreated,
       AnalyticsAction.NotebookCreated,
