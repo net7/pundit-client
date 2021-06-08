@@ -61,27 +61,41 @@ export async function anchor(
 
   // From a default of failure, we build up catch clauses to try selectors in
   // order, from simple to complex.
-  /** @type {Promise<Range>} */
-  let promise: Promise<Range> | Promise<never> = Promise.reject(Error('unable to anchor'));
+  /** @type {Promise<{ type: string; range: Range }>} */
+  let promise: Promise<{ type: string; range: Range }> | Promise<never> = Promise.reject(Error('unable to anchor'));
 
   if (rangeSelector) {
     promise = promise.catch(() => {
       const selectedAnchor = RangeAnchor.fromSelector(root, rangeSelector);
-      return querySelector(selectedAnchor, options).then(maybeAssertQuote);
+      return querySelector(selectedAnchor, options)
+        .then(maybeAssertQuote)
+        .then((range) => Promise.resolve({
+          range,
+          type: 'range',
+        }));
     });
   }
 
   if (textPositionSelector) {
     promise = promise.catch(() => {
       const selectedAnchor = TextPositionAnchor.fromSelector(root, textPositionSelector);
-      return querySelector(selectedAnchor, options).then(maybeAssertQuote);
+      return querySelector(selectedAnchor, options)
+        .then(maybeAssertQuote)
+        .then((range) => Promise.resolve({
+          range,
+          type: 'text-position',
+        }));
     });
   }
 
   if (textQuoteSelector) {
     promise = promise.catch(() => {
       const selectedAnchor = TextQuoteAnchor.fromSelector(root, textQuoteSelector);
-      return querySelector(selectedAnchor, options);
+      return querySelector(selectedAnchor, options)
+        .then((range) => Promise.resolve({
+          range,
+          type: 'text-quote',
+        }));
     });
   }
 

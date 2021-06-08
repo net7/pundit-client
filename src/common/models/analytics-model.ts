@@ -33,6 +33,8 @@ analytics.init([
       AnalyticsAction.RegisterWithFacebookClicked,
       AnalyticsAction.RegisterWithEgiClicked,
       AnalyticsAction.RegistrationCompleted,
+      AnalyticsAction.AnnotationAnchoringSuccess,
+      AnalyticsAction.AnnotationAnchoringError,
     ]
   }
 ]);
