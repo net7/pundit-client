@@ -21,7 +21,9 @@ export enum CrossMsgRequestId {
   AuthLogout = 'auth.logout',
   AuthVerifyMail = 'auth.verifyMail',
   AuthSso = 'auth.sso',
-  AuthSignup = 'auth.signup'
+  AuthSignup = 'auth.signup',
+  // analytics
+  AnalyticsTrigger = 'analytics.trigger'
 }
 
 export enum CommonEventType {
@@ -50,4 +52,27 @@ export enum StorageOperationType {
   Get = 'get',
   Set = 'set',
   Remove = 'remove'
+}
+
+export type AnalyticsData = {
+  action: AnalyticsAction;
+  payload?: object;
+}
+
+export enum AnalyticsAction {
+  HighlightCreated = 'new-highlight',
+  CommentCreated = 'new-comment',
+  NotebookCreated = 'notebook-new-created',
+  NotebookCurrentChanged = 'notebook-switch-current',
+  NotebookVisibilityChanged = 'notebook-switch-visibility',
+  LoginButtonClicked = 'login-button-click',
+  LoginSubmitted = 'login-submit',
+  RegisterButtonClicked = 'register-button-click',
+  RegisterFormFieldsCompleted = 'register-text-fields-filled',
+  RegisterCheck1Filled = 'register-check-1-filled',
+  RegisterCheck2Filled = 'register-check-2-filled',
+  RegisterWithGoogleClicked = 'register-with-google-click',
+  RegisterWithFacebookClicked = 'register-with-facebook-click',
+  RegisterWithEgiClicked = 'register-with-egi-click',
+  RegistrationCompleted = 'register-completed',
 }
