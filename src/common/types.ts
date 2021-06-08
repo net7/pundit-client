@@ -60,6 +60,7 @@ export type AnalyticsData = {
 }
 
 export enum AnalyticsAction {
+  Bootstrap = 'bootstrap',
   HighlightCreated = 'new-highlight',
   CommentCreated = 'new-comment',
   NotebookCreated = 'notebook-new-created',

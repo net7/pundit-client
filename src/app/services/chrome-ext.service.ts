@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { delay } from 'rxjs/operators';
+import { AnalyticsModel } from 'src/common/models';
 import { initCommunicationSettings, setTokenFromStorage } from '../../common/helpers';
-import { CommonEventType } from '../../common/types';
+import { AnalyticsAction, CommonEventType } from '../../common/types';
 import { SIDEBAR_EXPANDED_CLASS } from '../layouts/main-layout/handlers';
 import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
@@ -27,6 +28,10 @@ export class ChromeExtService {
         setTokenFromStorage();
         // init communication settings
         initCommunicationSettings();
+        // analytics
+        AnalyticsModel.track({
+          action: AnalyticsAction.Bootstrap
+        });
         res();
       }, false);
     });
