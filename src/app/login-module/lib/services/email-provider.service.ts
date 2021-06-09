@@ -8,7 +8,8 @@ import {
 import {
   catchError, map, take, takeUntil
 } from 'rxjs/operators';
-import { AuthModel } from '../../../../common/models';
+import { AnalyticsAction } from 'src/common/types';
+import { AnalyticsModel, AuthModel } from '../../../../common/models';
 import { fromEvent, transformFromHttpError, transformFromHttpSuccess } from '../helpers/transformer.helper';
 import { TermsParameters } from '../interfaces/terms.interface';
 import { AuthEventService } from './auth-event.service';
@@ -53,6 +54,14 @@ export class EmailProviderService implements OnDestroy {
         })).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
+
+          // analytics
+          AnalyticsModel.track({
+            action: AnalyticsAction.LoginSubmitted,
+            payload: {
+              'user-id': authResp.user.id
+            }
+          });
         }
         this.isLoading$.next(false);
       });
@@ -85,6 +94,14 @@ export class EmailProviderService implements OnDestroy {
         })).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
+
+          // analytics
+          AnalyticsModel.track({
+            action: AnalyticsAction.RegistrationCompleted,
+            payload: {
+              'user-id': authResp.user.id
+            }
+          });
         }
         this.isLoading$.next(false);
       });

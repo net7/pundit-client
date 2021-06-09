@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
-import { first, switchMap } from 'rxjs/operators';
+import { filter, first, switchMap } from 'rxjs/operators';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { EmailAuthProvider, OAuthProvider } from '../../interfaces';
 import { LoginConfigurationService } from '../../services/configuration.service';
 import { EmailProviderService } from '../../services/email-provider.service';
@@ -27,6 +29,15 @@ export class SignUpComponent {
   isLoading = false;
 
   serviceErrorMessage: string;
+
+  private inputTextValues: {
+    [key: string]: string;
+  } = {
+    firstname: null,
+    lastname: null,
+    email: null,
+    password: null
+  };
 
   constructor(
     private configService: LoginConfigurationService,
@@ -60,6 +71,45 @@ export class SignUpComponent {
       // on form change clear service error
       this.registerForm.valueChanges.subscribe(() => {
         this.serviceErrorMessage = null;
+      });
+
+      // on checkbox change (for analytics)
+      this.registerForm.get('termsconditions').valueChanges.pipe(
+        filter((value) => value)
+      ).subscribe(() => {
+        // analytics
+        AnalyticsModel.track({
+          action: AnalyticsAction.RegisterCheck1Filled,
+        });
+      });
+      this.registerForm.get('tracking').valueChanges.pipe(
+        filter((value) => value)
+      ).subscribe(() => {
+        // analytics
+        AnalyticsModel.track({
+          action: AnalyticsAction.RegisterCheck2Filled,
+        });
+      });
+    }
+  }
+
+  onBlur() {
+    let inputsFilled = true;
+    let hasChanged = false;
+    ['firstname', 'lastname', 'email', 'password'].forEach((input) => {
+      const formInput = this.registerForm.get(input);
+      if (!(formInput.value && formInput.valid)) {
+        inputsFilled = false;
+      }
+      if (formInput.value !== this.inputTextValues[input]) {
+        this.inputTextValues[input] = formInput.value;
+        hasChanged = true;
+      }
+    });
+    if (inputsFilled && hasChanged) {
+      // analytics
+      AnalyticsModel.track({
+        action: AnalyticsAction.RegisterFormFieldsCompleted,
       });
     }
   }

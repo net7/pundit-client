@@ -11,6 +11,8 @@ import { UserService } from 'src/app/services/user.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { AppEvent, SidebarLayoutEvent } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
@@ -87,6 +89,16 @@ export class SidebarLayoutEH extends EventHandler {
           // only available with tooltip login click
           this.appEvent$.next({
             type: AppEvent.ClearAnonymousSelectionRange,
+          });
+
+          // analytics
+          AnalyticsModel.track({
+            action: isRegister
+              ? AnalyticsAction.RegisterButtonClicked
+              : AnalyticsAction.LoginButtonClicked,
+            payload: {
+              location: 'header',
+            },
           });
           break;
         }

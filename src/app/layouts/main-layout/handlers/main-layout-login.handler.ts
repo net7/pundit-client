@@ -8,8 +8,9 @@ import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
+import { AnalyticsModel } from 'src/common/models';
 import { setTokenFromStorage } from '../../../../common/helpers';
-import { StorageKey } from '../../../../common/types';
+import { AnalyticsAction, StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -148,6 +149,16 @@ export class MainLayoutLoginHandler implements LayoutHandler {
               // only available with tooltip login click
               this.layoutEH.appEvent$.next({
                 type: AppEvent.ClearAnonymousSelectionRange,
+              });
+
+              // analytics
+              AnalyticsModel.track({
+                action: isRegister
+                  ? AnalyticsAction.RegisterButtonClicked
+                  : AnalyticsAction.LoginButtonClicked,
+                payload: {
+                  location: 'toast',
+                },
               });
             }
           },

@@ -15,8 +15,12 @@ analytics.init([
   // mixpanel config
   {
     track({ type, payload }) {
-      if (env.analytics.mixpanel.disabled) return;
-      mixpanel.track(type, payload);
+      if (env.analytics.mixpanel.debug) {
+        // eslint-disable-next-line no-console
+        console.log('MIXPANEL DEBUG:', type, payload);
+      } else {
+        mixpanel.track(type, payload);
+      }
     },
     actions: [
       AnalyticsAction.Bootstrap,
