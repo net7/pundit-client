@@ -2,6 +2,7 @@ export default {
   // tooltip
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
+  'tooltip#tag': 'Tag',
   // comment modal
   'commentmodal#label': 'Your comment',
   'commentmodal#notebook': 'Save comment in notebook',

@@ -50,7 +50,6 @@ export class MainLayoutEH extends EventHandler {
         case MainLayoutEvent.GetUserData: {
           const tags = this.dataSource.getUserTags();
           const notebooks = this.dataSource.getUserNotebooks();
-
           forkJoin({ tags, notebooks }).pipe(
             switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
             switchMap((defaultNotebookId: string) => {
