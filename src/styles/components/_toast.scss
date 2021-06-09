@@ -3,22 +3,22 @@
  *
  * Component used to display alerts on the bottom left of the application.
  */
- 
+
 /* ------------------------------------ *\
    #TOAST
 \* ------------------------------------ */
 .pnd-toast {
     position: fixed;
-    bottom: $space*3;
-    left: $space*3;
+    bottom: $space * 3;
+    left: $space * 3;
 
     &__box {
         position: relative;
         width: $toast-max-width;
-        margin-top: $space*2;
-        padding: $space*2.5 $space*2.5 $space*2.5 $space*2.5;
+        margin-top: $space * 2;
+        padding: $space * 2.5 $space * 2.5 $space * 2.5 $space * 2.5;
         background-color: $toast-background-color;
-        border-top: 4px solid rgba(0,0,0,.12);
+        border-top: 4px solid rgba(0, 0, 0, 0.12);
         @include toastShadow;
     }
 
@@ -39,7 +39,6 @@
     }
 }
 
-
 /* ------------------------------------ *\
    #WITH-ACTIONS
 \* ------------------------------------ */
@@ -47,7 +46,7 @@
     display: flex;
 
     .pnd-toast__content {
-        margin-right: $space*2;
+        margin-right: $space * 2;
     }
 
     .pnd-toast__actions {
@@ -59,21 +58,28 @@
     .pnd-toast__action-button:not(:last-child) {
         margin-right: $space/2;
     }
-    
+
     .pnd-toast__close-icon {
         position: absolute;
         top: $space;
         right: $space;
         cursor: pointer;
-        color: rgba( $color-text-inverse, .75);
+        color: rgba($color-text-inverse, 0.75);
         transition: color $transition-durations;
-    
+
         &:hover {
             color: $color-text-inverse;
         }
     }
-}
 
+    .pnd-toast__action-content {
+        margin-left: $space;
+    }
+
+    .pnd-toast__action-content:nth-child(1) {
+        margin-left: 0;
+    }
+}
 
 /* ------------------------------------ *\
    #PROGRESS BAR
@@ -90,7 +96,6 @@
     -o-transition: width 0.2s linear;
     transition: width 0.2s linear;
 }
-
 
 /* ------------------------------------ *\
    #COLORS
