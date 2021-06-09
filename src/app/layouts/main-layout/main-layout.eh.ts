@@ -1,7 +1,7 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import {
-  Subject, ReplaySubject, EMPTY, of
+  Subject, ReplaySubject, EMPTY, of, forkJoin
 } from 'rxjs';
 import { catchError, delay, switchMap } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
@@ -47,8 +47,11 @@ export class MainLayoutEH extends EventHandler {
             });
           });
           break;
-        case MainLayoutEvent.GetUserData:
-          this.dataSource.getUserNotebooks().pipe(
+        case MainLayoutEvent.GetUserData: {
+          const tags = this.dataSource.getUserTags();
+          const notebooks = this.dataSource.getUserNotebooks();
+
+          forkJoin({ tags, notebooks }).pipe(
             switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
             switchMap((defaultNotebookId: string) => {
               // set default notebook
@@ -70,6 +73,7 @@ export class MainLayoutEH extends EventHandler {
             });
           });
           break;
+        }
         default:
           break;
       }

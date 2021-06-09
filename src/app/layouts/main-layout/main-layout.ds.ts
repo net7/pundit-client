@@ -15,6 +15,8 @@ import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
+import { TagModel } from 'src/common/models/tag-model';
+import { TagService } from 'src/app/services/tag.service';
 import { AnnotationModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -40,6 +42,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public notebookService: NotebookService;
 
   public annotationService: AnnotationService;
+
+  public tagService: TagService;
 
   public anchorService: AnchorService;
 
@@ -74,6 +78,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
+    this.tagService = payload.tagService;
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
@@ -103,6 +108,14 @@ export class MainLayoutDS extends LayoutDataSource {
       tap(({ data: searchData }) => {
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);
+      })
+    );
+  }
+
+  getUserTags() {
+    return from(TagModel.get()).pipe(
+      tap(({ data: tags }) => {
+        this.tagService.load(tags);
       })
     );
   }

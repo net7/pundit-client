@@ -37,6 +37,7 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+import { TagService } from './services/tag.service';
 
 const LANG_CODE = 'en_US';
 
@@ -76,6 +77,7 @@ config.init(appConfig);
     UserService,
     AnnotationService,
     NotebookService,
+    TagService,
     AnchorService,
     AnnotationPositionService,
     ChromeExtService,

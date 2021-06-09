@@ -122,6 +122,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
       this.layoutDS.userService.clear();
       this.layoutDS.notebookService.clear();
+      this.layoutDS.tagService.clear();
       this.layoutDS.userService.logout();
 
       // close verify toast

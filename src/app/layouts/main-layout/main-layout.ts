@@ -9,6 +9,7 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
+import { TagService } from 'src/app/services/tag.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
 import { AppEventData } from 'src/app/types';
@@ -39,7 +40,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private punditLoginService: PunditLoginService,
     private userService: UserService,
     private storageService: StorageService,
-    public toastService: ToastService
+    public toastService: ToastService,
+    public tagService: TagService
   ) {
     super(config);
   }
@@ -56,6 +58,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       userService: this.userService,
       storageService: this.storageService,
       toastService: this.toastService,
+      tagService: this.tagService
     };
   }
 
