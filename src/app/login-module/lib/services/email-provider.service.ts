@@ -56,11 +56,9 @@ export class EmailProviderService implements OnDestroy {
           this.authEventService.set(authResp);
 
           // analytics
+          AnalyticsModel.userId = authResp.user.id;
           AnalyticsModel.track({
-            action: AnalyticsAction.LoginSubmitted,
-            payload: {
-              'user-id': authResp.user.id
-            }
+            action: AnalyticsAction.LoginSubmitted
           });
         }
         this.isLoading$.next(false);
@@ -96,11 +94,9 @@ export class EmailProviderService implements OnDestroy {
           this.authEventService.set(authResp);
 
           // analytics
+          AnalyticsModel.userId = authResp.user.id;
           AnalyticsModel.track({
-            action: AnalyticsAction.RegistrationCompleted,
-            payload: {
-              'user-id': authResp.user.id
-            }
+            action: AnalyticsAction.RegistrationCompleted
           });
         }
         this.isLoading$.next(false);

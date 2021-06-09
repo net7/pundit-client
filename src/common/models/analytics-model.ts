@@ -46,6 +46,8 @@ analytics.init([
 ]);
 
 export class AnalyticsModel {
+  static userId: string = null;
+
   @CrossMessage(CrossMsgRequestId.AnalyticsTrigger)
   static trigger({ action, payload }: AnalyticsData) {
     return new Promise((resolve, reject) => {
@@ -77,7 +79,8 @@ export class AnalyticsModel {
       canonicalUrl: AnalyticsModel.getCanonicalUrl(),
       documentUrl: AnalyticsModel.getDocumentUrl(),
       'annotator-type': env.chromeExt ? 'extension' : 'embed',
-      'annotator-version': version
+      'annotator-version': version,
+      'user-id': AnalyticsModel.userId || null
     };
   }
 

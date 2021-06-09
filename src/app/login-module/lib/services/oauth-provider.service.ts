@@ -49,12 +49,8 @@ export class OauthProviderService {
           } else if (this.selectedProvider.id === 'egi') {
             action = AnalyticsAction.RegisterWithEgiClicked;
           }
-          AnalyticsModel.track({
-            action,
-            payload: {
-              'user-id': authResp.user.id
-            }
-          });
+          AnalyticsModel.userId = authResp.user.id;
+          AnalyticsModel.track({ action });
         }
       });
     }
