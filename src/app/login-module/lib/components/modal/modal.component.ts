@@ -6,7 +6,7 @@ import { ModalService } from '../../services/modal.service';
 @Component({
   selector: 'lib-pundit-login-modal',
   templateUrl: './modal.component.html',
-  styleUrls: []
+  styleUrls: [],
 })
 export class ModalComponent implements OnDestroy {
   show: boolean;
@@ -17,11 +17,13 @@ export class ModalComponent implements OnDestroy {
 
   constructor(private modalService: ModalService) {
     this.status = 'SIGNIN';
-    this.modalService.isOpen().pipe(
-      takeUntil(this.destroyed$)
-    ).subscribe((value) => {
-      this.show = value;
-    });
+    this.modalService
+      .isOpen()
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe((value) => {
+        this.status = this.modalService.isRegister ? 'SIGNUP' : 'SIGNIN';
+        this.show = value;
+      });
   }
 
   ngOnDestroy(): void {

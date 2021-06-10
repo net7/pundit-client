@@ -3,6 +3,7 @@ import { User } from '@pundit/communication';
 import {
   BehaviorSubject, Observable, of, ReplaySubject
 } from 'rxjs';
+import { AnalyticsModel } from 'src/common/models';
 import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
 import { _c } from '../models/config';
@@ -45,6 +46,9 @@ export class UserService {
     if (sync) {
       source$ = this.storageService.set(StorageKey.User, this.me);
     }
+
+    // set analytics user
+    AnalyticsModel.userId = id;
 
     source$.subscribe(() => {
       // emit signal
@@ -89,5 +93,8 @@ export class UserService {
   clear() {
     this.users = [];
     this.me = null;
+
+    // remove analytics user
+    AnalyticsModel.userId = null;
   }
 }

@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { EmailAuthProvider, OAuthProvider, TermsParameters } from '../../interfaces';
 import { LoginConfigurationService } from '../../services/configuration.service';
 import { EmailProviderService } from '../../services/email-provider.service';
@@ -70,16 +72,31 @@ export class SignInComponent {
   loginGoogle() {
     if (!this.google || this.isLoading) { return; }
     this.oauthProviderService.login(this.google);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.LoginGoogleClick
+    });
   }
 
   loginEgi() {
     if (!this.egi || this.isLoading) { return; }
     this.oauthProviderService.login(this.egi);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.LoginEgiClick
+    });
   }
 
   loginFacebook() {
     if (!this.facebook || this.isLoading) { return; }
     this.oauthProviderService.login(this.facebook);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.LoginFacebookClick
+    });
   }
 
   loginEmail() {
@@ -92,6 +109,11 @@ export class SignInComponent {
       this.serviceErrorMessage = errorMessage;
     });
     this.emailProviderService.login(this.loginForm.value, this.terms);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.LoginEmailClick
+    });
   }
 
   getErrorMessage = (input) => {

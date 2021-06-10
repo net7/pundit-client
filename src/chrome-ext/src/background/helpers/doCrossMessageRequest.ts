@@ -1,3 +1,4 @@
+import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
 
@@ -52,6 +53,11 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.AuthSso:
       request$ = AuthModel.sso.apply(null, args);
+      break;
+    // ANALYTICS REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.AnalyticsTrigger:
+      request$ = AnalyticsModel.trigger.apply(null, args);
       break;
     default:
       break;

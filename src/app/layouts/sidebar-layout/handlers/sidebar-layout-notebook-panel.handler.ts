@@ -4,6 +4,8 @@ import { NotebookUpdate } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -23,6 +25,13 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
           this.layoutEH.toastService.success({
             title: _t('toast#notebookchangecurrent_success_title'),
             text: _t('toast#notebookchangecurrent_success_text'),
+          });
+          // analytics
+          AnalyticsModel.track({
+            action: AnalyticsAction.NotebookCurrentChanged,
+            payload: {
+              location: 'panel'
+            }
           });
           break;
 
@@ -56,6 +65,14 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
             this.layoutEH.toastService.success({
               title: _t('toast#notebookchangecurrent_success_title'),
               text: _t('toast#notebookchangecurrent_success_text'),
+            });
+
+            // analytics
+            AnalyticsModel.track({
+              action: AnalyticsAction.NotebookCreated,
+              payload: {
+                location: 'panel'
+              }
             });
           });
           break;
@@ -92,6 +109,14 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
       this.layoutEH.toastService.success({
         title: _t('toast#notebookedit_success_title'),
         text: _t('toast#notebookedit_success_text'),
+      });
+
+      // analytics
+      AnalyticsModel.track({
+        action: AnalyticsAction.NotebookVisibilityChanged,
+        payload: {
+          visibility: updateData.sharingMode
+        }
       });
     });
   }

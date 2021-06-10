@@ -21,6 +21,7 @@
                     type="text" 
                     id="firstname" 
                     [formControlName]="'firstname'" 
+                    (blur)="onBlur()"
                     placeholder="Your name...">
                 <div *ngIf="getErrorMessage('firstname')" class="pnd-login-modal__form-error">
                     {{ getErrorMessage('firstname') }}
@@ -33,6 +34,7 @@
                     type="text" 
                     id="lastname" 
                     [formControlName]="'lastname'" 
+                    (blur)="onBlur()"
                     placeholder="...and last name">
                 <div *ngIf="getErrorMessage('lastname')" class="pnd-login-modal__form-error">
                     {{ getErrorMessage('lastname') }}
@@ -47,6 +49,7 @@
                 type="email" 
                 id="email" 
                 [formControlName]="'email'" 
+                (blur)="onBlur()"
                 placeholder="Insert your email">
             <div *ngIf="getErrorMessage('email')" class="pnd-login-modal__form-error">
                 {{ getErrorMessage('email') }}
@@ -60,6 +63,7 @@
                 type="password" 
                 id="password" 
                 [formControlName]="'password'" 
+                (blur)="onBlur()"
                 placeholder="Choose a password">
             <div *ngIf="getErrorMessage('password')" class="pnd-login-modal__form-error">
                 {{ getErrorMessage('password') }}

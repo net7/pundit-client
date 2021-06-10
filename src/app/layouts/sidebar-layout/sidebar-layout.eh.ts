@@ -1,10 +1,7 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import { Subject, ReplaySubject } from 'rxjs';
-import {
-  delay,
-  takeUntil, withLatestFrom
-} from 'rxjs/operators';
+import { delay, takeUntil, withLatestFrom } from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -12,10 +9,10 @@ import { AppEventData } from 'src/app/types';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { ToastService } from 'src/app/services/toast.service';
-import {
-  AppEvent, SidebarLayoutEvent
-} from 'src/app/event-types';
+import { AppEvent, SidebarLayoutEvent } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
@@ -59,15 +56,19 @@ export class SidebarLayoutEH extends EventHandler {
         case SidebarLayoutEvent.Destroy:
           this.destroy$.next();
           break;
-        case SidebarLayoutEvent.ClickLogo: {
-          // invert the state of the sidebar
-          const state = this.dataSource.isCollapsed.value;
-          this.dataSource.isCollapsed.next(!state);
-        } break;
-        case SidebarLayoutEvent.ClickNotebookPanel: {
-          const state = this.dataSource.notebookEditor.getValue();
-          this.dataSource.notebookEditor.next(!state);
-        } break;
+        case SidebarLayoutEvent.ClickLogo:
+          {
+            // invert the state of the sidebar
+            const state = this.dataSource.isCollapsed.value;
+            this.dataSource.isCollapsed.next(!state);
+          }
+          break;
+        case SidebarLayoutEvent.ClickNotebookPanel:
+          {
+            const state = this.dataSource.notebookEditor.getValue();
+            this.dataSource.notebookEditor.next(!state);
+          }
+          break;
         case SidebarLayoutEvent.Close:
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);
@@ -77,17 +78,30 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case SidebarLayoutEvent.ClickLogout:
           this.appEvent$.next({
-            type: AppEvent.Logout
+            type: AppEvent.Logout,
           });
           break;
         case SidebarLayoutEvent.RequestLogin:
-          this.punditLoginService.start();
+        case SidebarLayoutEvent.RequestRegister: {
+          const isRegister = type === SidebarLayoutEvent.RequestRegister;
+          this.punditLoginService.start(isRegister);
           // clear anonymous (before login) selection range
           // only available with tooltip login click
           this.appEvent$.next({
-            type: AppEvent.ClearAnonymousSelectionRange
+            type: AppEvent.ClearAnonymousSelectionRange,
+          });
+
+          // analytics
+          AnalyticsModel.track({
+            action: isRegister
+              ? AnalyticsAction.RegisterButtonClick
+              : AnalyticsAction.LoginButtonClick,
+            payload: {
+              location: 'header',
+            },
           });
           break;
+        }
         default:
           console.warn('unhandled inner event of type', type);
           break;
@@ -96,11 +110,13 @@ export class SidebarLayoutEH extends EventHandler {
       this.detectChanges();
     });
 
-    this.outerEvents$.pipe(
-      delay(1) // symbolic timeout
-    ).subscribe(() => {
-      this.detectChanges();
-    });
+    this.outerEvents$
+      .pipe(
+        delay(1) // symbolic timeout
+      )
+      .subscribe(() => {
+        this.detectChanges();
+      });
   }
 
   private listenDocumentResize() {
@@ -134,7 +150,7 @@ export class SidebarLayoutEH extends EventHandler {
         // signal
         this.appEvent$.next({
           type: AppEvent.SidebarCollapse,
-          payload: { isCollapsed }
+          payload: { isCollapsed },
         });
       });
   }
