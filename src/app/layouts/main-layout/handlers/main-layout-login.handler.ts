@@ -154,8 +154,8 @@ export class MainLayoutLoginHandler implements LayoutHandler {
               // analytics
               AnalyticsModel.track({
                 action: isRegister
-                  ? AnalyticsAction.RegisterButtonClicked
-                  : AnalyticsAction.LoginButtonClicked,
+                  ? AnalyticsAction.RegisterButtonClick
+                  : AnalyticsAction.LoginButtonClick,
                 payload: {
                   location: 'toast',
                 },

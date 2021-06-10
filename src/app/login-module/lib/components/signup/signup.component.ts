@@ -117,16 +117,31 @@ export class SignUpComponent {
   registerGoogle() {
     if (!this.google || this.isLoading) { return; }
     this.oauthProviders.login(this.google);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.RegisterGoogleClick
+    });
   }
 
   registerEgi() {
     if (!this.egi || this.isLoading) { return; }
     this.oauthProviders.login(this.egi);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.RegisterEgiClick
+    });
   }
 
   registerFacebook() {
     if (!this.facebook || this.isLoading) { return; }
     this.oauthProviders.login(this.facebook);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.RegisterFacebookClick
+    });
   }
 
   registerEmail() {
@@ -139,6 +154,11 @@ export class SignUpComponent {
       this.serviceErrorMessage = errorMessage;
     });
     this.emailProvider.register(this.registerForm.value);
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.RegisterEmailClick
+    });
   }
 
   getErrorMessage = (input) => {

@@ -94,8 +94,8 @@ export class SidebarLayoutEH extends EventHandler {
           // analytics
           AnalyticsModel.track({
             action: isRegister
-              ? AnalyticsAction.RegisterButtonClicked
-              : AnalyticsAction.LoginButtonClicked,
+              ? AnalyticsAction.RegisterButtonClick
+              : AnalyticsAction.LoginButtonClick,
             payload: {
               location: 'header',
             },

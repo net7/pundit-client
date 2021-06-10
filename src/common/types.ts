@@ -61,21 +61,35 @@ export type AnalyticsData = {
 
 export enum AnalyticsAction {
   Bootstrap = 'bootstrap',
+  // annotation
   HighlightCreated = 'new-highlight',
   CommentCreated = 'new-comment',
+  // notebook
   NotebookCreated = 'notebook-new-created',
   NotebookCurrentChanged = 'notebook-switch-current',
   NotebookVisibilityChanged = 'notebook-switch-visibility',
-  LoginButtonClicked = 'login-button-click',
-  LoginSubmitted = 'login-submit',
-  RegisterButtonClicked = 'register-button-click',
+  // anchoring
+  AnnotationAnchoringSuccess = 'anchoring-success',
+  AnnotationAnchoringError = 'anchoring-error',
+  // login
+  LoginButtonClick = 'login-button-click',
+  LoginGoogleClick = 'login-google-click',
+  LoginFacebookClick = 'login-facebook-click',
+  LoginEgiClick = 'login-egi-click',
+  LoginEmailClick = 'login-email-click',
+  LoginEmailCompleted = 'login-email-completed',
+  // register
+  RegisterButtonClick = 'register-button-click',
   RegisterFormFieldsCompleted = 'register-text-fields-filled',
   RegisterCheck1Filled = 'register-check-1-filled',
   RegisterCheck2Filled = 'register-check-2-filled',
-  RegisterWithGoogleClicked = 'register-with-google-click',
-  RegisterWithFacebookClicked = 'register-with-facebook-click',
-  RegisterWithEgiClicked = 'register-with-egi-click',
-  RegistrationCompleted = 'register-completed',
-  AnnotationAnchoringSuccess = 'anchoring-success',
-  AnnotationAnchoringError = 'anchoring-error',
+  RegisterEmailClick = 'register-email-click',
+  RegisterEmailCompleted = 'register-email-completed',
+  RegisterGoogleClick = 'register-google-click',
+  RegisterFacebookClick = 'register-facebook-click',
+  RegisterEgiClick = 'register-with-egi-click',
+  // oauth access
+  AccessGoogleCompleted = 'access-google-completed',
+  AccessFacebookCompleted = 'access-facebook-completed',
+  AccessEgiCompleted = 'access-egi-completed',
 }

@@ -25,7 +25,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
             // analytics
             AnalyticsModel.track({
-              action: AnalyticsAction.LoginButtonClicked,
+              action: AnalyticsAction.LoginButtonClick,
               payload: {
                 location: 'annotation-tooltip',
               },

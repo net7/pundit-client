@@ -58,7 +58,7 @@ export class EmailProviderService implements OnDestroy {
           // analytics
           AnalyticsModel.userId = authResp.user.id;
           AnalyticsModel.track({
-            action: AnalyticsAction.LoginSubmitted
+            action: AnalyticsAction.LoginEmailCompleted
           });
         }
         this.isLoading$.next(false);
@@ -96,7 +96,7 @@ export class EmailProviderService implements OnDestroy {
           // analytics
           AnalyticsModel.userId = authResp.user.id;
           AnalyticsModel.track({
-            action: AnalyticsAction.RegistrationCompleted
+            action: AnalyticsAction.RegisterEmailCompleted
           });
         }
         this.isLoading$.next(false);

@@ -43,11 +43,11 @@ export class OauthProviderService {
           // analytics
           let action;
           if (this.selectedProvider.id === 'google') {
-            action = AnalyticsAction.RegisterWithGoogleClicked;
+            action = AnalyticsAction.AccessGoogleCompleted;
           } else if (this.selectedProvider.id === 'facebook') {
-            action = AnalyticsAction.RegisterWithFacebookClicked;
+            action = AnalyticsAction.AccessFacebookCompleted;
           } else if (this.selectedProvider.id === 'egi') {
-            action = AnalyticsAction.RegisterWithEgiClicked;
+            action = AnalyticsAction.AccessEgiCompleted;
           }
           AnalyticsModel.userId = authResp.user.id;
           AnalyticsModel.track({ action });
