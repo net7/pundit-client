@@ -93,5 +93,8 @@ export class UserService {
   clear() {
     this.users = [];
     this.me = null;
+
+    // remove analytics user
+    AnalyticsModel.userId = null;
   }
 }
