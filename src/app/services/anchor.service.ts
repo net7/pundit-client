@@ -18,6 +18,12 @@ export class AnchorService {
 
   public events$: Subject<{type: string; payload: any}> = new Subject();
 
+  // fix analytics duplicates
+  private analyticsAnchoredIds: string[] = [];
+
+  // fix analytics duplicates
+  private analyticsOrphansIds: string[] = [];
+
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
       this.add(annotation);
@@ -34,23 +40,29 @@ export class AnchorService {
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
 
         // analytics
-        AnalyticsModel.track({
-          action: AnalyticsAction.AnnotationAnchoringSuccess,
-          payload: {
-            'anchoring-type': type,
-            'annotation-type': annotation.type.toLowerCase()
-          }
-        });
+        if (!this.analyticsAnchoredIds.includes(annotation.id)) {
+          this.analyticsAnchoredIds.push(annotation.id);
+          AnalyticsModel.track({
+            action: AnalyticsAction.AnnotationAnchoringSuccess,
+            payload: {
+              'anchoring-type': type,
+              'annotation-type': annotation.type.toLowerCase()
+            }
+          });
+        }
       } catch (_e) {
         this.orphans.push(annotation);
 
         // analytics
-        AnalyticsModel.track({
-          action: AnalyticsAction.AnnotationAnchoringError,
-          payload: {
-            'annotation-id': annotation.id
-          }
-        });
+        if (!this.analyticsOrphansIds.includes(annotation.id)) {
+          this.analyticsOrphansIds.push(annotation.id);
+          AnalyticsModel.track({
+            action: AnalyticsAction.AnnotationAnchoringError,
+            payload: {
+              'annotation-id': annotation.id
+            }
+          });
+        }
       }
     }
   }
