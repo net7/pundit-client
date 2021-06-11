@@ -51,6 +51,12 @@
     &__comment-textarea-wrapper {
         line-height: 20px;
     }
+
+    &__tag-wrapper {
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+    }
 }
 
 

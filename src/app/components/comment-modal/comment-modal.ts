@@ -1,8 +1,14 @@
 import {
   AfterContentChecked,
-  Component, ElementRef, Input, ViewChild
+  Component,
+  ElementRef,
+  Input,
+  ViewChild
 } from '@angular/core';
+import { Tag } from '@pundit/communication';
 import * as Draggable from 'draggable';
+import Tagify from '@yaireo/tagify';
+import { TagService } from 'src/app/services/tag.service';
 import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 
 /**
@@ -16,7 +22,12 @@ export interface CommentModalData {
   };
   form: {
     comment: {
-      value: string | null;
+      visible: boolean;
+      value: string;
+    };
+    tags: {
+      visible: boolean;
+      values: Tag[];
     };
     notebookSelectorData: NotebookSelectorData;
     actions: {
@@ -36,6 +47,8 @@ export interface CommentModalData {
 export class CommentModalComponent implements AfterContentChecked {
   @ViewChild('saveButton') saveButton: ElementRef;
 
+  @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
+
   @Input() public data: CommentModalData;
 
   @Input() public emit: (type: string, payload?: any) => void;
@@ -48,18 +61,25 @@ export class CommentModalComponent implements AfterContentChecked {
 
   public draggableInstance;
 
+  private tagify;
+
+  constructor(private tagService: TagService) { }
+
   ngAfterContentChecked() {
     if (!this.loaded && this.data && this.data.visible) {
       this.loaded = true;
 
       // fix element dom loaded
       setTimeout(() => {
+        if (this.data.form.tags.visible) {
+          this.tagify = new Tagify(this.tagifyInputRef.nativeElement, this.setupTagForm());
+          this.tagify.addTags([{ value: 'banana', color: 'yellow' }, { value: 'apple', color: 'red' }, { value: 'watermelon', color: 'green' }]);
+        }
         const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
         const target = shadowRoot.getElementById(this.draggableTarget);
         const handle = shadowRoot.getElementById(this.draggableHandle);
         const limit = this.getDragLimit(target);
         this.draggableInstance = new Draggable(target, { handle, limit });
-
         this.data._setInstance(this.draggableInstance);
       });
     }
@@ -117,5 +137,38 @@ export class CommentModalComponent implements AfterContentChecked {
     const tw = Math.max(target.clientWidth || 200);
     const th = Math.max(target.clientHeight || 200);
     return { x: [0, vw - tw], y: [0, vh - th] };
+  }
+
+  private setupTagForm = () => ({
+    // Validate typed tag(s)
+    pattern: /^\w{1,128}$/,
+    // add new tags when a comma or a space character is entered
+    delimiters: ',| ',
+    maxTags: 20,
+    whitelist: ['tag1', 'tag2', 'tag3'], // use tagservice to fetch tags;
+    transformTag: this.transformTag,
+    backspace: 'edit',
+    placeholder: 'Add a tag',
+    dropdown: {
+      enabled: 1, // show suggestion after 1 typed character
+      fuzzySearch: false, // match only suggestions that starts with the typed characters
+      position: 'text', // position suggestions list next to typed text
+      caseSensitive: true, // allow adding duplicate items if their case is different
+    },
+  })
+
+  // generate a random color (in HSL format, which I like to use)
+  private getRandomColor = () => {
+    const rand = (min, max) => min + Math.random() * (max - min);
+
+    const h = Math.trunc(rand(1, 360));
+    const s = Math.trunc(rand(40, 70));
+    const l = Math.trunc(rand(65, 72));
+
+    return `hsl(${h},${s}%,${l}%)`;
+  }
+
+  private transformTag = (tagData) => {
+    tagData.style = `--tag-bg:${this.getRandomColor()}`;
   }
 }

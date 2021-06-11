@@ -86,16 +86,18 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     } = ds.output;
     const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.comment = {
+    this.layoutDS.state.editModal = {
       comment: comment || null,
+      tags: null,
       notebookId: null,
       isUpdate: true,
       isOpen: true
     };
     this.layoutDS.state.annotation.updatePayload = _raw;
-    this.layoutDS.openCommentModal({
+    this.layoutDS.openEditModal({
       notebookData,
-      comment,
+      comment: { value: comment, visible: true },
+      tags: { values: null, visible: true },
       textQuote: body,
     });
   }

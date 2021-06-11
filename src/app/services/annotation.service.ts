@@ -192,7 +192,7 @@ export class AnnotationService {
     return newAnnotation;
   }
 
-  getAnnotationRequestPayload(type: AnnotationType) {
+  getAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;

@@ -15,7 +15,7 @@ import {
 import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
-import { MainLayoutDS } from '../main-layout.ds';
+import { EditModalState, MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
 export class MainLayoutCommentModalHandler implements LayoutHandler {
@@ -28,13 +28,13 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     this.layoutEH.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case CommentModalEvent.TextChange:
-          this.onCommentModalTextChange(payload);
+          this.onEditModalTextChange(payload);
           break;
         case CommentModalEvent.NotebookChange:
-          this.onCommentModalNotebookChange(payload);
+          this.onEditModalNotebookChange(payload);
           break;
         case CommentModalEvent.CreateNotebook:
-          this.onCommentModalCreateNotebook(payload).pipe(
+          this.onEditModalCreateNotebook(payload).pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
 
@@ -57,13 +57,13 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
           });
           break;
         case CommentModalEvent.Save: {
-          const { isUpdate } = this.layoutDS.state.comment;
+          const { isUpdate } = this.layoutDS.state.editModal;
           let workingToast: ToastInstance;
           if (!isUpdate) {
             // toast "working..."
             workingToast = this.layoutDS.toastService.working();
           }
-          this.onCommentModalSave().pipe(
+          this.onEditModalSave().pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
               // toast
@@ -109,7 +109,7 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
           break;
         }
         case CommentModalEvent.Close:
-          this.onCommentModalClose();
+          this.onEditModalClose();
           break;
         default:
           break;
@@ -117,12 +117,12 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     });
   }
 
-  private onCommentModalTextChange(payload: string) {
-    this.layoutDS.state.comment.comment = payload;
+  private onEditModalTextChange(payload: string) {
+    this.layoutDS.state.editModal.comment = payload;
   }
 
-  private onCommentModalNotebookChange(payload: string) {
-    this.layoutDS.state.comment.notebookId = payload;
+  private onEditModalNotebookChange(payload: string) {
+    this.layoutDS.state.editModal.notebookId = payload;
 
     // set selected notebook as the default
     this.layoutDS.notebookService.setSelected(payload);
@@ -131,11 +131,11 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     });
   }
 
-  private onCommentModalCreateNotebook(payload) {
+  private onEditModalCreateNotebook(payload) {
     const iam = this.layoutDS.userService.whoami().id;
     return this.layoutDS.notebookService.create(payload).pipe(
       tap(({ data }) => {
-        this.layoutDS.state.comment.notebookId = data.id;
+        this.layoutDS.state.editModal.notebookId = data.id;
       }),
       map(({ data }) => ({
         notebookList: this.layoutDS.notebookService.getByUserId(iam),
@@ -144,49 +144,57 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     );
   }
 
-  private onCommentModalSave() {
-    const { comment, isUpdate } = this.layoutDS.state.comment;
+  private onEditModalSave() {
+    const { isUpdate } = this.layoutDS.state.editModal;
     let source$ = of(null);
-    if (typeof comment === 'string' && comment.trim()) {
-      if (isUpdate) {
-        const updateRequestPayload = this.getCommentRequestPayload(
-          this.layoutDS.state.annotation.updatePayload,
-          this.layoutDS.state.comment
-        );
-        source$ = of({ requestPayload: updateRequestPayload, isUpdate });
-      } else {
-        const pendingRequestPayload = this.getCommentRequestPayload(
-          this.layoutDS.state.annotation.pendingPayload,
-          this.layoutDS.state.comment
-        );
-        source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
-      }
+    if (isUpdate) {
+      const updateRequestPayload = this.getEditRequestPayload(
+        this.layoutDS.state.annotation.updatePayload,
+        this.layoutDS.state.editModal
+      );
+      source$ = of({ requestPayload: updateRequestPayload, isUpdate });
+    } else {
+      const pendingRequestPayload = this.getEditRequestPayload(
+        this.layoutDS.state.annotation.pendingPayload,
+        this.layoutDS.state.editModal
+      );
+      source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
     }
-    this.layoutDS.state.comment = {
+    this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
-      comment: null
+      comment: null,
+      tags: null
     };
     return source$;
   }
 
-  private onCommentModalClose() {
+  private onEditModalClose() {
     // clear pending
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.comment = {
+    this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
-      comment: null
+      comment: null,
+      tags: null
     };
   }
 
-  private getCommentRequestPayload(payload, { comment, notebookId }) {
-    payload.type = 'Commenting';
-    payload.content = {
-      comment: comment.trim()
-    };
-    if (notebookId) {
-      payload.notebookId = notebookId;
+  private getEditRequestPayload(payload, modalState: EditModalState) {
+    if (modalState.notebookId) {
+      payload.notebookId = modalState.notebookId;
+    }
+    if (modalState?.comment) {
+      payload.type = 'Commenting';
+      payload.content = {
+        comment: modalState?.comment.trim()
+      };
+    } else {
+      payload.type = 'Highlighting';
+      payload.content = undefined;
+    }
+    if (modalState?.tags?.values) {
+      payload.tags = modalState?.tags?.values;
     }
     return payload;
   }

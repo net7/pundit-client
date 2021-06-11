@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { CommentAnnotation } from '@pundit/communication';
+import { HighlightAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
@@ -69,6 +69,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
             });
           } else if (payload === 'comment') {
             this.onTooltipComment();
+          } else if (payload === 'tag') {
+            this.onTooltipTag();
           }
           break;
         }
@@ -80,37 +82,63 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload('Highlighting');
+    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload();
     return this.layoutDS.saveAnnotation(requestPayload);
   }
 
   private onTooltipComment() {
     this.setInnerState();
     this.layoutDS.state.annotation.pendingPayload = (
-      this.layoutDS.annotationService.getAnnotationRequestPayload('Commenting') as CommentAnnotation
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
-    this.addPendingAnnotation();
-    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
-      this.layoutDS.pendingAnnotationId,
-      this.layoutDS.state.annotation.pendingPayload
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      comment: { visible: true },
+      tags: { visible: true }
+    });
+  }
+
+  private onTooltipTag() {
+    this.setInnerState();
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
-    this.layoutDS.openCommentModal({ textQuote: pendingAnnotation.subject.selected.text });
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    // this.setInnerState();
+    // this.layoutDS.state.annotation.pendingPayload = (
+    //   this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    // );
+    // this.addPendingAnnotation();
+    // const pendingAnnotation =
+    //   this.layoutDS.annotationService.getAnnotationFromPayload(
+    //   this.layoutDS.pendingAnnotationId,
+    //   this.layoutDS.state.annotation.pendingPayload
+    // );
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      tags: { visible: true }
+    });
   }
 
   private setInnerState() {
-    if (this.layoutDS.state.comment.isOpen) {
-      if (this.layoutDS.state.comment.isUpdate) {
-        this.layoutDS.state.comment = {
+    if (this.layoutDS.state.editModal.isOpen) {
+      if (this.layoutDS.state.editModal.isUpdate) {
+        this.layoutDS.state.editModal = {
           comment: null,
           notebookId: null,
-          isOpen: true
+          isOpen: true,
+          tags: null
         };
       }
     } else {
-      this.layoutDS.state.comment = {
+      this.layoutDS.state.editModal = {
         comment: null,
         notebookId: null,
-        isOpen: true
+        isOpen: true,
+        tags: null
       };
     }
   }
@@ -122,5 +150,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     );
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
+
+    return pendingAnnotation;
   }
 }

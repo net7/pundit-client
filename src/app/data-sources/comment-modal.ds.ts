@@ -1,11 +1,19 @@
 import { DataSource, _t } from '@n7-frontend/core';
+import { Tag } from '@pundit/communication';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 import { NotebookData } from '../services/notebook.service';
 
 const TEXT_MIN_LIMIT = 3;
 
 interface CommentModalInput {
-  comment: string | undefined;
+  comment: {
+    visible: boolean;
+    value: string;
+  };
+  tags: {
+    visible: boolean;
+    values: Tag[];
+  };
   currentNotebook: NotebookData;
   notebooks: NotebookData[];
   textQuote: string;
@@ -18,11 +26,11 @@ export class CommentModalDS extends DataSource {
 
   transform(data: CommentModalInput): CommentModalData {
     const {
-      currentNotebook, notebooks, textQuote, comment
+      currentNotebook, notebooks, textQuote, comment, tags
     } = data;
 
     // textarea focus
-    this.initTextArea(comment);
+    this.initTextArea(comment.value);
 
     return {
       textQuote,
@@ -31,9 +39,8 @@ export class CommentModalDS extends DataSource {
         label: _t('commentmodal#label'),
       },
       form: {
-        comment: {
-          value: comment || null
-        },
+        comment: comment || null,
+        tags: tags || null,
         notebookSelectorData: {
           selectedNotebook: currentNotebook,
           notebookList: notebooks,
