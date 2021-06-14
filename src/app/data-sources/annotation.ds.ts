@@ -60,6 +60,7 @@ export class AnnotationDS extends DataSource {
       notebook: this.getNotebookData(),
       body: text,
       comment,
+      tags: data.tags,
       menu: this.getMenuData(id, comment),
     };
   }

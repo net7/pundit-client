@@ -82,13 +82,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   private onAnnotationEditComment(payload) {
     const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
     const {
-      _meta, comment, _raw, body
+      _meta, comment, _raw, body, tags
     } = ds.output;
     const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.editModal = {
       comment: comment || null,
-      tags: null,
       notebookId: null,
       isUpdate: true,
       isOpen: true
@@ -97,7 +96,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.openEditModal({
       notebookData,
       comment: { value: comment, visible: true },
-      tags: { values: null, visible: true },
+      tags: { values: tags, visible: true },
       textQuote: body,
     });
   }

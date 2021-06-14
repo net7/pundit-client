@@ -1,5 +1,4 @@
 import { DataSource, _t } from '@n7-frontend/core';
-import { Tag } from '@pundit/communication';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 import { NotebookData } from '../services/notebook.service';
 
@@ -12,7 +11,6 @@ interface CommentModalInput {
   };
   tags: {
     visible: boolean;
-    values: Tag[];
   };
   currentNotebook: NotebookData;
   notebooks: NotebookData[];
@@ -30,7 +28,9 @@ export class CommentModalDS extends DataSource {
     } = data;
 
     // textarea focus
-    this.initTextArea(comment.value);
+    if (data.comment.visible) {
+      this.initTextArea(comment.value);
+    }
 
     return {
       textQuote,

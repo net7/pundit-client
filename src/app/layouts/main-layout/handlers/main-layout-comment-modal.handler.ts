@@ -160,11 +160,11 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
       );
       source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
     }
+    this.layoutDS.tagService.clear();
     this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
       comment: null,
-      tags: null
     };
     return source$;
   }
@@ -172,11 +172,11 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
   private onEditModalClose() {
     // clear pending
     this.layoutDS.removePendingAnnotation();
+    this.layoutDS.tagService.clear();
     this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
       comment: null,
-      tags: null
     };
   }
 
@@ -193,9 +193,8 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
       payload.type = 'Highlighting';
       payload.content = undefined;
     }
-    if (modalState?.tags?.values) {
-      payload.tags = modalState?.tags?.values;
-    }
+    const tags = this.layoutDS.tagService.get();
+    payload.tags = tags.length ? tags : undefined;
     return payload;
   }
 }

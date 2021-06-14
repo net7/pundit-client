@@ -23,7 +23,6 @@ import { AnnotationModel } from '../../../common/models';
 
 export type EditModalState = {
   comment: string;
-  tags: Tag[];
   semantic?: {
   };
   notebookId: string;
@@ -71,7 +70,6 @@ export class MainLayoutDS extends LayoutDataSource {
       comment: null,
       notebookId: null,
       isOpen: false,
-      tags: null
     },
     annotation: {
       pendingPayload: null,
@@ -123,7 +121,7 @@ export class MainLayoutDS extends LayoutDataSource {
   getUserTags() {
     return from(TagModel.get()).pipe(
       tap(({ data: tags }) => {
-        this.tagService.load(tags);
+        this.tagService.loadSuggestionList(tags);
       })
     );
   }
@@ -181,8 +179,7 @@ export class MainLayoutDS extends LayoutDataSource {
         value: commentValue
       },
       tags: {
-        visible: params?.tags.visible,
-        values: params?.tags?.values
+        visible: params?.tags?.visible
       }
     });
   }

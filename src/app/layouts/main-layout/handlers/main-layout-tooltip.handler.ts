@@ -96,7 +96,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
       comment: { visible: true },
-      tags: { visible: true }
     });
   }
 
@@ -106,17 +105,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
     const pendingAnnotation = this.addPendingAnnotation();
-
-    // this.setInnerState();
-    // this.layoutDS.state.annotation.pendingPayload = (
-    //   this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
-    // );
-    // this.addPendingAnnotation();
-    // const pendingAnnotation =
-    //   this.layoutDS.annotationService.getAnnotationFromPayload(
-    //   this.layoutDS.pendingAnnotationId,
-    //   this.layoutDS.state.annotation.pendingPayload
-    // );
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
       tags: { visible: true }
@@ -124,21 +112,20 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private setInnerState() {
+    this.layoutDS.tagService.clear();
     if (this.layoutDS.state.editModal.isOpen) {
       if (this.layoutDS.state.editModal.isUpdate) {
         this.layoutDS.state.editModal = {
           comment: null,
           notebookId: null,
-          isOpen: true,
-          tags: null
+          isOpen: true
         };
       }
     } else {
       this.layoutDS.state.editModal = {
         comment: null,
         notebookId: null,
-        isOpen: true,
-        tags: null
+        isOpen: true
       };
     }
   }

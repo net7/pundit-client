@@ -3,7 +3,7 @@
 //---------------------------
 
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation, Tag } from '@pundit/communication';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon } from '../../types';
 
@@ -71,6 +71,8 @@ export interface AnnotationData {
   body: string;
   /** Annotation comment */
   comment?: string;
+  /** Annotation tags */
+  tags?: Tag[];
   /** HTML Classes */
   classes?: string;
   /** element click payload */

@@ -33,12 +33,12 @@
             </div>
 
                         
-            <div class="pnd-comment-modal__tag-wrapper" *ngIf="data?.form?.tags?.visible">
+            <div class="pnd-comment-modal__tag-wrapper" [ngStyle]="{'display': data?.form?.tags?.visible ? null : 'none'  }">
                 <div class="pnd-comment-modal__comment-label">
                     Your tags
                 </div>
                 <div class="pnd-comment-modal__comment-input-wrapper">
-                    <input  #tagifyInputRef/>
+                    <input  #tagifyInputRef *ngIf="data?.form?.tags?.visible" autofocus/>
                 </div>
             </div>
 
