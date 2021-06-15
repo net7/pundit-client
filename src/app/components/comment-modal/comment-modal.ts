@@ -5,8 +5,8 @@ import {
   Input,
   ViewChild
 } from '@angular/core';
+import { Tag } from '@pundit/communication';
 import * as Draggable from 'draggable';
-import { TagService } from 'src/app/services/tag.service';
 import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 
 /**
@@ -25,6 +25,7 @@ export interface CommentModalData {
     };
     tags: {
       visible: boolean;
+      values: Tag[];
     };
     notebookSelectorData: NotebookSelectorData;
     actions: {
@@ -35,6 +36,7 @@ export interface CommentModalData {
     }[];
   };
   _setInstance: (instance: any) => void;
+  _setupTagForm: (instance: any, tags?: any) => void;
 }
 
 @Component({
@@ -61,8 +63,6 @@ export class CommentModalComponent implements AfterContentChecked {
   public draggableInstance;
 
   private formInstance;
-
-  constructor(private tagService: TagService) { }
 
   ngAfterContentChecked() {
     this.initDraggableInstance();
@@ -142,9 +142,17 @@ export class CommentModalComponent implements AfterContentChecked {
     if (!this.tagFormLoaded && this.data?.visible && this.data?.form?.tags?.visible) {
       this.tagFormLoaded = true;
       setTimeout(() => {
-        this.formInstance = this.tagService.init(this.tagifyInputRef.nativeElement);
-        this.formInstance.on('add remove edit:updated',
-          () => { this.emit('tagschange', this.tagService.get()); });
+        this.formInstance = this.data._setupTagForm(this.tagifyInputRef.nativeElement,
+          this.data.form.tags.values);
+        this.formInstance.on(
+          'add remove edit:updated',
+          () => {
+            setTimeout(() => {
+              const elements = this.formInstance.getTagElms();
+              this.emit('tagschange', elements.map((el) => el.innerText));
+            });
+          }
+        );
       });
     }
   }

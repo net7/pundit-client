@@ -190,6 +190,10 @@ export class AnnotationDS extends DataSource {
     this.output.notebook = this.getNotebookData();
   }
 
+  updateTags(tags) {
+    this.output.tags = Array.isArray(tags) ? tags : undefined;
+  }
+
   updateCssClass(cssClass: AnnotationCssClass) {
     this.output.classes = cssClass;
   }

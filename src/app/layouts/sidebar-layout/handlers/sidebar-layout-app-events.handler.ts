@@ -84,6 +84,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         serializedBy: rawAnnotation.serializedBy,
         subject: rawAnnotation.subject,
         userId: rawAnnotation.userId,
+        tags: rawAnnotation.tags
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {

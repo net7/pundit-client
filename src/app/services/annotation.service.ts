@@ -117,6 +117,7 @@ export class AnnotationService {
             cachedAnnotation.ds.updateComment(data.content.comment);
             cachedAnnotation.ds.updateMenu();
           }
+          cachedAnnotation.ds.updateTags(data.tags);
         })
       );
   }

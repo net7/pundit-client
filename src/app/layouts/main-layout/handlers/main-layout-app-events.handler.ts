@@ -88,11 +88,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.editModal = {
       comment: comment || null,
+      tags,
       notebookId: null,
       isUpdate: true,
       isOpen: true
     };
     this.layoutDS.state.annotation.updatePayload = _raw;
+
     this.layoutDS.openEditModal({
       notebookData,
       comment: { value: comment, visible: true },

@@ -1,4 +1,5 @@
 import { _t } from '@n7-frontend/core';
+import { Tag } from '@pundit/communication';
 import { EMPTY, of } from 'rxjs';
 import {
   catchError,
@@ -29,6 +30,9 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
       switch (type) {
         case CommentModalEvent.TextChange:
           this.onEditModalTextChange(payload);
+          break;
+        case CommentModalEvent.TagsChange:
+          this.onEditModalTagsChange(payload);
           break;
         case CommentModalEvent.NotebookChange:
           this.onEditModalNotebookChange(payload);
@@ -121,6 +125,10 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
     this.layoutDS.state.editModal.comment = payload;
   }
 
+  private onEditModalTagsChange(payload: Tag[]) {
+    this.layoutDS.state.editModal.tags = payload || [];
+  }
+
   private onEditModalNotebookChange(payload: string) {
     this.layoutDS.state.editModal.notebookId = payload;
 
@@ -160,11 +168,11 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
       );
       source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
     }
-    this.layoutDS.tagService.clear();
     this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
       comment: null,
+      tags: null
     };
     return source$;
   }
@@ -172,11 +180,11 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
   private onEditModalClose() {
     // clear pending
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.tagService.clear();
     this.layoutDS.state.editModal = {
       isOpen: false,
       notebookId: null,
       comment: null,
+      tags: null
     };
   }
 
@@ -193,7 +201,7 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
       payload.type = 'Highlighting';
       payload.content = undefined;
     }
-    const tags = this.layoutDS.tagService.get();
+    const tags = modalState.tags || [];
     payload.tags = tags.length ? tags : undefined;
     return payload;
   }

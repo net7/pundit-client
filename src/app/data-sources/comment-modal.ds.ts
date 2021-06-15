@@ -1,4 +1,6 @@
 import { DataSource, _t } from '@n7-frontend/core';
+import { Tag } from '@pundit/communication';
+import Tagify from '@yaireo/tagify';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 import { NotebookData } from '../services/notebook.service';
 
@@ -10,6 +12,7 @@ interface CommentModalInput {
     value: string;
   };
   tags: {
+    values: Tag[];
     visible: boolean;
   };
   currentNotebook: NotebookData;
@@ -22,6 +25,10 @@ export class CommentModalDS extends DataSource {
 
   private defaultPosition: { x: number; y: number };
 
+  private tagFormInstance;
+
+  private tagFormRef;
+
   transform(data: CommentModalInput): CommentModalData {
     const {
       currentNotebook, notebooks, textQuote, comment, tags
@@ -30,6 +37,13 @@ export class CommentModalDS extends DataSource {
     // textarea focus
     if (data.comment.visible) {
       this.initTextArea(comment.value);
+    }
+
+    if (this.tagFormInstance) {
+      if (!data.comment.visible && data.tags.visible) {
+        this.focusTagForm();
+      }
+      this.updateTagFormIstance(data?.tags?.values);
     }
 
     return {
@@ -68,6 +82,28 @@ export class CommentModalDS extends DataSource {
         this.instance = instance;
         const { x, y } = this.instance.get();
         this.defaultPosition = { x, y };
+      },
+      _setupTagForm: (reference, initialTags?) => {
+        this.tagFormRef = reference;
+        const tagFormConfig = {
+          pattern: /^\w{1,128}$/,
+          delimiters: ',| ',
+          maxTags: 20,
+          transformTag: this.transformTag,
+          backspace: 'edit',
+          placeholder: 'Add a tag',
+          dropdown: {
+            enabled: 1,
+            fuzzySearch: false,
+            position: 'text',
+            caseSensitive: true
+          }
+        };
+        this.tagFormInstance = new Tagify(reference, tagFormConfig);
+        if (Array.isArray(initialTags)) {
+          this.tagFormInstance.addTags(initialTags);
+        }
+        return this.tagFormInstance;
       }
     };
   }
@@ -82,6 +118,13 @@ export class CommentModalDS extends DataSource {
         this.onTextChange(textarea.value);
       }
     });
+  }
+
+  private focusTagForm() {
+    if (this.tagFormRef) {
+      const input = this.tagFormRef as HTMLInputElement;
+      input.focus();
+    }
   }
 
   public updateNotebookSelector({ notebookList, selectedNotebook }) {
@@ -117,9 +160,47 @@ export class CommentModalDS extends DataSource {
     this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
   }
 
+  public onTagsChange(payload) {
+    if (!this.output.form.comment.visible && this.output.form.tags.visible) {
+      this.updateSaveButtonState(!Array.isArray(payload) || payload.length === 0);
+    }
+  }
+
+  public onSelectedNotebookChange() {
+    if (this.output.form.comment.visible) {
+      this.updateSaveButtonState(false);
+    } else if (this.output.form.tags.visible) {
+      const disabled = !Array.isArray(this.output.form?.tags?.values)
+        || !this.output.form?.tags?.values?.length;
+      this.updateSaveButtonState(disabled);
+    }
+  }
+
   public isVisible = () => this.output?.visible;
 
   changeNotebookSelectorLoadingState(loading: boolean) {
     this.output.form.notebookSelectorData.isLoading = loading;
+  }
+
+  private updateTagFormIstance(values: string[]) {
+    this.tagFormInstance.removeAllTags();
+    if (Array.isArray(values)) {
+      this.tagFormInstance.addTags(values);
+    }
+  }
+
+  // generate a random color (in HSL format, which I like to use)
+  private getRandomColor = () => {
+    const rand = (min, max) => min + Math.random() * (max - min);
+
+    const h = Math.trunc(rand(1, 360));
+    const s = Math.trunc(rand(40, 70));
+    const l = Math.trunc(rand(65, 72));
+
+    return `hsl(${h},${s}%,${l}%)`;
+  }
+
+  private transformTag = (tagData) => {
+    tagData.style = `--tag-bg:${this.getRandomColor()}`;
   }
 }

@@ -20,6 +20,7 @@ import { StorageEmbedService } from './services/storage-service/storage-embed.se
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
+import { TagService } from './services/tag.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -37,7 +38,6 @@ import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
-import { TagService } from './services/tag.service';
 
 const LANG_CODE = 'en_US';
 

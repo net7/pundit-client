@@ -87,7 +87,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    this.setInnerState();
+    this.setInnerStateForNewComment();
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
@@ -95,38 +95,47 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
-      comment: { visible: true },
+      comment: { visible: true }
     });
   }
 
   private onTooltipTag() {
-    this.setInnerState();
+    this.setInnerStateForNewTags();
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
     const pendingAnnotation = this.addPendingAnnotation();
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
-      tags: { visible: true }
+      tags: { visible: true, values: this.layoutDS.state.editModal.tags }
     });
   }
 
-  private setInnerState() {
-    this.layoutDS.tagService.clear();
-    if (this.layoutDS.state.editModal.isOpen) {
-      if (this.layoutDS.state.editModal.isUpdate) {
-        this.layoutDS.state.editModal = {
-          comment: null,
-          notebookId: null,
-          isOpen: true
-        };
-      }
-    } else {
+  private setInnerStateForNewComment() {
+    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
+    if ((isOpen && isUpdate) || !isOpen) {
       this.layoutDS.state.editModal = {
         comment: null,
         notebookId: null,
-        isOpen: true
+        isOpen: true,
+        tags: null
       };
+    } else if (isOpen && !isUpdate) {
+      this.layoutDS.state.editModal.tags = null;
+    }
+  }
+
+  private setInnerStateForNewTags() {
+    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
+    if ((isOpen && isUpdate) || !isOpen) {
+      this.layoutDS.state.editModal = {
+        comment: null,
+        notebookId: null,
+        isOpen: true,
+        tags: null
+      };
+    } else if (isOpen && !isUpdate) {
+      this.layoutDS.state.editModal.comment = null;
     }
   }
 
