@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { Tag } from '@pundit/communication';
 import * as Draggable from 'draggable';
+import { TagService } from 'src/app/services/tag.service';
 import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 
 /**
@@ -64,6 +65,8 @@ export class CommentModalComponent implements AfterContentChecked {
   public draggableInstance;
 
   private formInstance;
+
+  constructor(private tagService: TagService) {}
 
   ngAfterContentChecked() {
     this.initDraggableInstance();
@@ -143,8 +146,10 @@ export class CommentModalComponent implements AfterContentChecked {
     if (!this.tagFormLoaded && this.data?.visible && this.data?.form?.tags?.visible) {
       this.tagFormLoaded = true;
       setTimeout(() => {
-        this.formInstance = this.data._setupTagForm(this.tagifyInputRef.nativeElement,
-          this.data.form.tags.values);
+        this.formInstance = this.data._setupTagForm(
+          this.tagifyInputRef.nativeElement,
+          this.data.form.tags.values
+        );
         this.formInstance.on(
           'add remove edit:updated',
           () => {
@@ -154,6 +159,10 @@ export class CommentModalComponent implements AfterContentChecked {
             });
           }
         );
+        // suggestion list
+        this.tagService.get$().pipe().subscribe((whitelist) => {
+          this.formInstance.whitelist = whitelist;
+        });
       });
     }
   }

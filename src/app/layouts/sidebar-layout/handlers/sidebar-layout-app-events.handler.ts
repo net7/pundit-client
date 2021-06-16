@@ -108,6 +108,9 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         // refresh sidedar annotations
         this.layoutDS.updateAnnotations();
 
+        // update tags;
+        this.layoutEH.tagService.addMany(rawAnnotation?.tags);
+
         // annotation changed successfully
         this.layoutEH.toastService.success({
           title: _t('toast#annotationedit_success_title'),

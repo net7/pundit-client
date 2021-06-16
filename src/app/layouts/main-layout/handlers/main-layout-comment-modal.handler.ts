@@ -108,6 +108,8 @@ export class MainLayoutCommentModalHandler implements LayoutHandler {
                   workingToast.close();
                 }
               });
+              // update tags;
+              this.layoutDS.tagService.addMany(data?.tags);
             }
           });
           break;

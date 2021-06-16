@@ -7,6 +7,7 @@ import { AnnotationConfig, AnnotationService } from 'src/app/services/annotation
 import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
+import { TagService } from 'src/app/services/tag.service';
 import { NotebookService } from '../../services/notebook.service';
 
 const REPORT_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSfC-bkKWVOa52BP05FWwyZW446KlVnEv2w5gmZhs1BMvZn0Rg/viewform?usp=pp_url&entry.1925380618';
@@ -17,6 +18,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
   private annotationPositionService: AnnotationPositionService;
 
   private notebookService: NotebookService;
+
+  private tagService: TagService;
 
   public userService: UserService;
 
@@ -48,6 +51,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;
     this.userService = payload.userService;
+    this.tagService = payload.tagService;
 
     // add annotation service to event handler
     // to identify the single annotation

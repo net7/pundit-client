@@ -16,6 +16,7 @@ import {
   AppEvent, SidebarLayoutEvent
 } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
+import { TagService } from 'src/app/services/tag.service';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
@@ -35,6 +36,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   public toastService: ToastService;
 
+  public tagService: TagService;
+
   public changeDetectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -50,6 +53,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.userService = payload.userService;
           this.punditLoginService = payload.punditLoginService;
           this.toastService = payload.toastService;
+          this.tagService = payload.tagService;
           this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
