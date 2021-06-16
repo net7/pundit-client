@@ -15,6 +15,7 @@ import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 export interface CommentModalData {
   textQuote: string;
   visible: boolean;
+  update: boolean;
   header: {
     label: string;
   };

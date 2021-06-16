@@ -173,6 +173,7 @@ export class MainLayoutDS extends LayoutDataSource {
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
     const commentValue = params?.comment?.value || this.state.editModal.comment || null;
     this.one('comment-modal').update({
+      update: this.state.editModal.isUpdate,
       textQuote: params.textQuote,
       currentNotebook,
       notebooks,

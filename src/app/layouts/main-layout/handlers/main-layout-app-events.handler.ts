@@ -35,7 +35,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           this.onAnnotationMouseLeave(payload);
           break;
         case AppEvent.AnnotationEditComment:
-          this.onAnnotationEdit(payload, 'comment');
+          this.onAnnotationEdit(payload, 'full');
           break;
         case AppEvent.AnnotationEditTags:
           this.onAnnotationEdit(payload, 'tags');
@@ -82,7 +82,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEdit(payload, mode: 'tags' | 'comment') {
+  private onAnnotationEdit(payload, mode: 'full'| 'tags') {
     const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
     const {
       _meta, comment, _raw, body, tags
@@ -90,7 +90,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.editModal = {
-      comment: mode === 'tags' ? null : comment,
+      comment: comment || null,
       tags,
       notebookId: null,
       isUpdate: true,
@@ -100,7 +100,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
     this.layoutDS.openEditModal({
       notebookData,
-      comment: mode === 'comment' ? { value: comment, visible: true } : null,
+      comment: mode === 'tags' ? null : { value: comment, visible: true },
       tags: { values: tags, visible: true },
       textQuote: body,
     });

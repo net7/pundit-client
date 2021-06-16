@@ -62,7 +62,7 @@ export default {
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
-  'annotation#editcomment': 'Edit comment',
+  'annotation#editcomment': 'Edit',
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',

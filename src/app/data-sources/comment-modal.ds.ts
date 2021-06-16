@@ -18,6 +18,7 @@ interface CommentModalInput {
   currentNotebook: NotebookData;
   notebooks: NotebookData[];
   textQuote: string;
+  update: boolean;
 }
 
 export class CommentModalDS extends DataSource {
@@ -31,7 +32,7 @@ export class CommentModalDS extends DataSource {
 
   transform(data: CommentModalInput): CommentModalData {
     const {
-      currentNotebook, notebooks, textQuote, comment, tags
+      currentNotebook, notebooks, textQuote, comment, tags, update
     } = data;
 
     const showComment = data.comment.visible;
@@ -54,6 +55,7 @@ export class CommentModalDS extends DataSource {
     return {
       textQuote,
       visible: true,
+      update: !!update,
       header: {
         label: _t('commentmodal#label'),
       },
@@ -159,25 +161,27 @@ export class CommentModalDS extends DataSource {
   }
 
   public onTextChange(text) {
+    const isUpdate = this.output.update;
     const textLength = (typeof text === 'string' && text.trim())
       ? text.length
       : 0;
-    this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
-  }
-
-  public onTagsChange(payload) {
-    if (!this.output.form.comment.visible && this.output.form.tags.visible) {
-      this.updateSaveButtonState(!Array.isArray(payload) || payload.length === 0);
+    if (!isUpdate) {
+      this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
+    } else {
+      this.updateSaveButtonState(textLength > 0 && textLength < TEXT_MIN_LIMIT);
     }
   }
 
-  public onSelectedNotebookChange() {
-    if (this.output.form.comment.visible) {
-      this.updateSaveButtonState(false);
-    } else if (this.output.form.tags.visible) {
-      const disabled = !Array.isArray(this.output.form?.tags?.values)
-        || !this.output.form?.tags?.values?.length;
-      this.updateSaveButtonState(disabled);
+  public onTagsChange(payload) {
+    const isUpdate = this.output.update;
+    const isShowingOnlyTagsForm = !this.output.form.comment.visible
+      && this.output.form.tags.visible;
+    if (isShowingOnlyTagsForm) {
+      if (!isUpdate) {
+        this.updateSaveButtonState((!Array.isArray(payload) || payload.length === 0));
+      } else {
+        this.updateSaveButtonState(false);
+      }
     }
   }
 

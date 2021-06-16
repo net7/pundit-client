@@ -115,8 +115,10 @@ export class AnnotationService {
           if (data.type === 'Commenting') {
             // update comment
             cachedAnnotation.ds.updateComment(data.content.comment);
-            cachedAnnotation.ds.updateMenu();
+          } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
+            cachedAnnotation.ds.removeComment();
           }
+          cachedAnnotation.ds.updateMenu();
           cachedAnnotation.ds.updateTags(data.tags);
         })
       );

@@ -178,6 +178,12 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  removeComment() {
+    if (this.output.comment) {
+      this.output.comment = undefined;
+    }
+  }
+
   updateUser() {
     this.output.user = this.getUserData();
   }
