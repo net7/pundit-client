@@ -8,6 +8,7 @@ export default {
   'commentmodal#notebook': 'Save comment in notebook',
   'commentmodal#cancel': 'Cancel',
   'commentmodal#save': 'Save comment',
+  'commentmodal#save_tags': 'Save tags',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text': 'Are you sure you want to delete this annotation? Please be aware that deleted annotations cannot be recovered.',
@@ -62,6 +63,8 @@ export default {
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
   'annotation#editcomment': 'Edit comment',
+  'annotation#addtags': 'Add tags',
+  'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',

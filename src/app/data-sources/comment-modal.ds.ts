@@ -34,17 +34,22 @@ export class CommentModalDS extends DataSource {
       currentNotebook, notebooks, textQuote, comment, tags
     } = data;
 
+    const showComment = data.comment.visible;
+    const showTagsOnly = !showComment && data.tags.visible;
+
     // textarea focus
     if (data.comment.visible) {
       this.initTextArea(comment.value);
     }
 
     if (this.tagFormInstance) {
-      if (!data.comment.visible && data.tags.visible) {
+      if (showTagsOnly) {
         this.focusTagForm();
       }
       this.updateTagFormIstance(data?.tags?.values);
     }
+
+    const saveButtonLabel = showTagsOnly ? _t('commentmodal#save_tags') : _t('commentmodal#save');
 
     return {
       textQuote,
@@ -70,7 +75,7 @@ export class CommentModalDS extends DataSource {
             source: 'action-cancel'
           }
         }, {
-          label: _t('commentmodal#save'),
+          label: saveButtonLabel,
           classes: 'pnd-btn-cta',
           disabled: true,
           payload: {

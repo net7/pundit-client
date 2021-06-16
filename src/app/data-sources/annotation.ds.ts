@@ -22,7 +22,8 @@ export class AnnotationDS extends DataSource {
       notebookId,
       userId,
       subject,
-      created
+      created,
+      tags
     } = data;
     const { text } = subject.selected;
     const startPosition = subject.selected.textPositionSelector.start;
@@ -60,8 +61,8 @@ export class AnnotationDS extends DataSource {
       notebook: this.getNotebookData(),
       body: text,
       comment,
-      tags: data.tags,
-      menu: this.getMenuData(id, comment),
+      tags,
+      menu: this.getMenuData(id, comment, tags),
     };
   }
 
@@ -236,11 +237,15 @@ export class AnnotationDS extends DataSource {
     };
   }
 
-  private getMenuData(id: string, comment?: string) {
+  private getMenuData(id: string, comment?: string, tags?: string[]) {
     const hasComment = this.output
       ? !!this.output.comment
       : comment;
+    const hasTags = this.output
+      ? !!this.output.tags
+      : (Array.isArray(tags) && tags.length);
     const { currentUserNotebooks } = this.options;
+    const actions = this.createActionButtons(id, hasComment, hasTags);
     return this.isCurrentUser() ? {
       icon: {
         id: 'ellipsis-v',
@@ -249,27 +254,7 @@ export class AnnotationDS extends DataSource {
           source: 'menu-header',
         }
       },
-      actions: [{
-        label: _t('annotation#changenotebook'),
-        payload: {
-          id,
-          source: 'action-notebooks'
-        }
-      }, {
-        label: hasComment
-          ? _t('annotation#editcomment')
-          : _t('annotation#addcomment'),
-        payload: {
-          id,
-          source: 'action-comment'
-        }
-      }, {
-        label: _t('annotation#delete'),
-        payload: {
-          id,
-          source: 'action-delete'
-        }
-      }],
+      actions,
       notebooks: {
         header: {
           label: _t('annotation#changenotebook'),
@@ -289,6 +274,43 @@ export class AnnotationDS extends DataSource {
           }))
       }
     } : null;
+  }
+
+  private createActionButtons(id: string, hasComment, hasTags) {
+    const actions = [{
+      label: _t('annotation#changenotebook'),
+      payload: {
+        id,
+        source: 'action-notebooks'
+      }
+    }, {
+      label: hasComment
+        ? _t('annotation#editcomment')
+        : _t('annotation#addcomment'),
+      payload: {
+        id,
+        source: 'action-comment'
+      }
+    }, {
+      label: _t('annotation#delete'),
+      payload: {
+        id,
+        source: 'action-delete'
+      }
+    }];
+    if (!hasComment) {
+      const tagAction = {
+        label: hasTags
+          ? _t('annotation#edittags')
+          : _t('annotation#addtags'),
+        payload: {
+          id,
+          source: 'action-tags'
+        }
+      };
+      actions.splice(2, 0, tagAction);
+    }
+    return actions;
   }
 
   private getNotebookData() {

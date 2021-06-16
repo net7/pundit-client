@@ -174,7 +174,8 @@ export class AnnotationService {
     const {
       notebookId,
       subject,
-      type
+      type,
+      tags
     } = payload;
     const userId = this.userService.whoami().id;
     const created = new Date().toISOString();
@@ -185,6 +186,7 @@ export class AnnotationService {
       subject,
       created,
       type,
+      tags,
       serializedBy: _c('serializer')
     } as Annotation;
     if (payload.type === 'Commenting') {
