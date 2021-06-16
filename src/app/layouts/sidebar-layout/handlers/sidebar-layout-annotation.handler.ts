@@ -9,6 +9,8 @@ import {
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { _c } from 'src/app/models/config';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -30,6 +32,13 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
           this.layoutEH.appEvent$.next({
             payload,
             type: AppEvent.AnnotationUpdateNotebook,
+          });
+          // analytics
+          AnalyticsModel.track({
+            action: AnalyticsAction.NotebookCurrentChanged,
+            payload: {
+              location: 'annotation'
+            }
           });
           break;
 
@@ -166,6 +175,14 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     ).subscribe((res) => {
       this.layoutDS.updateNotebookPanel();
       this.updateAnnotationNotebook(payload.annotationID, res.data.id);
+
+      // analytics
+      AnalyticsModel.track({
+        action: AnalyticsAction.NotebookCreated,
+        payload: {
+          location: 'annotation'
+        }
+      });
     });
   }
 

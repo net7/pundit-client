@@ -19,6 +19,9 @@
             <ng-container *ngIf="!(ds.userService.logged$ | async)">
                 <a (click)="lb.eventHandler.emitInner('requestlogin')"
                     class="pnd-sidebar__header-login">Login</a>
+                <span class="pnd-sidebar__header-separator"></span>
+                <a (click)="lb.eventHandler.emitInner('requestregister')"
+                    class="pnd-sidebar__header-register">Register</a>
             </ng-container>
             <ng-container *ngIf="ds.userService.logged$ | async">
                 <span (click)="ds.onUsernameClick($event)">

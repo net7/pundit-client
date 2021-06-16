@@ -123,7 +123,7 @@
         cursor: pointer;
     }
 
-    &__header-login {
+    &__header-login, &__header-register {
         font-weight: $font-weight-bold;
         color: $color-text;
         // transition: color $transition-durations;
@@ -136,6 +136,15 @@
         &:active {
             color: $color-text;
         }
+    }
+
+    &__header-separator {
+        margin: 0 $space;
+        background: $color-gray-03;
+        width: 1px;
+        height: $font-size-xs;
+        display: inline-block;
+        vertical-align: middle;
     }
 
     &__user-name-link {

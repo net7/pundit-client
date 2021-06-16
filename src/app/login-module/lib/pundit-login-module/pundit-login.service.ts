@@ -16,8 +16,8 @@ export class PunditLoginService {
     private authEventService: AuthEventService
   ) { }
 
-  start() {
-    this.modalService.open();
+  start(isRegister = false) {
+    this.modalService.open(isRegister);
   }
 
   stop() {

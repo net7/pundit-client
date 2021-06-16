@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
+import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { AnchorEvent } from '../event-types';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
@@ -16,6 +18,12 @@ export class AnchorService {
 
   public events$: Subject<{type: string; payload: any}> = new Subject();
 
+  // fix analytics duplicates
+  private analyticsAnchoredIds: string[] = [];
+
+  // fix analytics duplicates
+  private analyticsOrphansIds: string[] = [];
+
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
       this.add(annotation);
@@ -26,12 +34,35 @@ export class AnchorService {
     if (!this.getHighlightById(annotation.id)) {
       try {
         const selectors = this.createSelectors(annotation);
-        const range: Range = await anchor(document.body, selectors);
+        const { range, type } = await anchor(document.body, selectors);
         const highlights = highlightRange(range);
         this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
+
+        // analytics
+        if (!this.analyticsAnchoredIds.includes(annotation.id)) {
+          this.analyticsAnchoredIds.push(annotation.id);
+          AnalyticsModel.track({
+            action: AnalyticsAction.AnnotationAnchoringSuccess,
+            payload: {
+              'anchoring-type': type,
+              'annotation-type': annotation.type.toLowerCase()
+            }
+          });
+        }
       } catch (_e) {
         this.orphans.push(annotation);
+
+        // analytics
+        if (!this.analyticsOrphansIds.includes(annotation.id)) {
+          this.analyticsOrphansIds.push(annotation.id);
+          AnalyticsModel.track({
+            action: AnalyticsAction.AnnotationAnchoringError,
+            payload: {
+              'annotation-id': annotation.id
+            }
+          });
+        }
       }
     }
   }
