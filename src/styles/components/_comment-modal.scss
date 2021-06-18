@@ -147,6 +147,16 @@
     }
 }
 
+/* ------------------------------------ *\
+   #TAGIFY FIX
+\* ------------------------------------ */
+.pnd-sidebar .tagify__dropdown {
+    margin: 12px 8px;
+
+    .tagify__dropdown__wrapper {
+        border-top-width: 1px;
+    }
+}
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES

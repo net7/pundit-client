@@ -159,11 +159,56 @@ export class CommentModalComponent implements AfterContentChecked {
             });
           }
         );
+        this.formInstance.on(
+          'blur dropdown:select',
+          () => {
+            setTimeout(() => {
+              this.tagifyDropdownManualHide();
+            });
+          }
+        );
         // suggestion list
         this.tagService.get$().pipe().subscribe((whitelist) => {
           this.formInstance.settings.whitelist = whitelist;
         });
       });
     }
+  }
+
+  // clone of tagify dropdown hide method
+  // <tagify>/src/parts/dropdown.js:hide( force )
+  private tagifyDropdownManualHide(force = false): any {
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+    const _instance = this.formInstance;
+    const { scope, dropdown } = _instance.DOM;
+    const isManual = _instance.settings.dropdown.position === 'manual' && !force;
+
+    // if there's no dropdown, this means the dropdown events aren't binded
+    if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
+      return null;
+    }
+
+    window.removeEventListener('resize', _instance.dropdown.position);
+    _instance.dropdown.events.binding.call(_instance, false); // unbind all events
+
+    scope.setAttribute('aria-expanded', false);
+    dropdown.parentNode.removeChild(dropdown);
+
+    setTimeout(() => {
+      _instance.state.dropdown.visible = false;
+    }, 100);
+
+    _instance.state.dropdown.query = null;
+    _instance.state.ddItemData = null;
+    _instance.state.ddItemElm = null;
+    _instance.state.selection = null;
+
+    if (_instance.state.tag && _instance.state.tag.value.length) {
+      _instance.state.flaggedTags[_instance.state.tag.baseOffset] = _instance.state.tag;
+    }
+
+    _instance.trigger('dropdown:hide', dropdown);
+
+    return _instance;
   }
 }
