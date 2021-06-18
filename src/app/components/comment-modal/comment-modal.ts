@@ -176,6 +176,7 @@ export class CommentModalComponent implements AfterContentChecked {
   }
 
   // clone of tagify dropdown hide method
+  // to fix shadowroot check
   // <tagify>/src/parts/dropdown.js:hide( force )
   private tagifyDropdownManualHide(force = false): any {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
