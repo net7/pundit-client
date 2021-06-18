@@ -259,6 +259,24 @@ annotation {
 
 
 /* ------------------------------------ *\
+   #TAGS
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__tags-item {
+        font-size: $font-size-xs;
+        border: 1px solid $annotation-comment-background-color;
+        padding: $space/4 $space/2;
+        margin-left: $space;
+        background: $color-gray-01;
+        color: $color-text-light;
+    }
+    .pnd-annotation__tags-item:nth-child(1) {
+        margin-left: 0;
+    }
+}
+
+
+/* ------------------------------------ *\
    #EXPANDED-ANNOTATION
 \* ------------------------------------ */
 .pnd-annotation.is-expanded {
@@ -282,6 +300,11 @@ annotation {
     .pnd-annotation__comment {
         max-height: 100px;
         overflow-y: auto;
+        padding: $space $space $space $space;
+        border-top: 1px solid $annotation-border-color;
+    }
+
+    .pnd-annotation__tags {
         padding: $space $space $space $space;
         border-top: 1px solid $annotation-border-color;
     }

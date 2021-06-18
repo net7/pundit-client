@@ -108,6 +108,15 @@
         </span>
     </div>
     <!-- END // Caret and comment -->
+
+    <!-- Tags -->
+    <div class="pnd-annotation__tags"
+        *ngIf="data.tags">
+        <span *ngFor="let tag of data.tags" class="pnd-annotation__tags-item">
+            {{ tag }}
+        </span>
+    </div>
+    <!-- END // Tags -->
 </ng-template>
 
 <ng-template #collapsed>
