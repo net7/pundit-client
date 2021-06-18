@@ -6,6 +6,12 @@
 
 
 // ------------------------------------ //
+// #TAGIFY
+// ------------------------------------ //
+@import "../../node_modules/@yaireo/tagify/dist/tagify";
+
+
+// ------------------------------------ //
 // #PUNDIT-COLOR-SCHEME
 // ------------------------------------ //
 @import "./generic/color-scheme";
@@ -58,9 +64,3 @@
 // ------------------------------------ //
 @import "./utilities/grids";
 @import "./utilities/utilities";
-
-
-// ------------------------------------ //
-// #TAGIFY
-// ------------------------------------ //
-@import "~@yaireo/tagify/dist/tagify";

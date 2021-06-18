@@ -161,7 +161,7 @@ export class CommentModalComponent implements AfterContentChecked {
         );
         // suggestion list
         this.tagService.get$().pipe().subscribe((whitelist) => {
-          this.formInstance.whitelist = whitelist;
+          this.formInstance.settings.whitelist = whitelist;
         });
       });
     }

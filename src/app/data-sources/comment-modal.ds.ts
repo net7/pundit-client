@@ -92,20 +92,24 @@ export class CommentModalDS extends DataSource {
       },
       _setupTagForm: (reference, initialTags?) => {
         this.tagFormRef = reference;
+        const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+        const sidebarRef = shadowRoot.querySelector('.pnd-sidebar');
         const tagFormConfig = {
-          pattern: /^\w{1,128}$/,
+          pattern: /^\w{2,128}$/,
           delimiters: ',| ',
           maxTags: 20,
           transformTag: this.transformTag,
           backspace: 'edit',
           placeholder: 'Add a tag',
           dropdown: {
-            enabled: 1,
+            enabled: 0,
             fuzzySearch: false,
-            position: 'text',
-            caseSensitive: true
+            position: 'all',
+            caseSensitive: true,
+            appendTarget: sidebarRef
           }
         };
+
         this.tagFormInstance = new Tagify(reference, tagFormConfig);
         if (Array.isArray(initialTags)) {
           this.tagFormInstance.addTags(initialTags);
