@@ -35,7 +35,10 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           this.onAnnotationMouseLeave(payload);
           break;
         case AppEvent.AnnotationEditComment:
-          this.onAnnotationEditComment(payload);
+          this.onAnnotationEdit(payload, 'full');
+          break;
+        case AppEvent.AnnotationEditTags:
+          this.onAnnotationEdit(payload, 'tags');
           break;
         case AppEvent.SidebarCollapse:
           this.onSidebarCollapse(payload);
@@ -79,23 +82,26 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEditComment(payload) {
+  private onAnnotationEdit(payload, mode: 'full'| 'tags') {
     const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
     const {
-      _meta, comment, _raw, body
+      _meta, comment, _raw, body, tags
     } = ds.output;
     const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.comment = {
+    this.layoutDS.state.editModal = {
       comment: comment || null,
+      tags,
       notebookId: null,
       isUpdate: true,
       isOpen: true
     };
     this.layoutDS.state.annotation.updatePayload = _raw;
-    this.layoutDS.openCommentModal({
+
+    this.layoutDS.openEditModal({
       notebookData,
-      comment,
+      comment: mode === 'tags' ? null : { value: comment, visible: true },
+      tags: { values: tags, visible: true },
       textQuote: body,
     });
   }
@@ -122,6 +128,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
       this.layoutDS.userService.clear();
       this.layoutDS.notebookService.clear();
+      this.layoutDS.tagService.clear();
       this.layoutDS.userService.logout();
 
       // close verify toast

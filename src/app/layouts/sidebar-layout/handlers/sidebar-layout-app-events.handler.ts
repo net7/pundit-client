@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { Annotation, CommentAnnotation } from '@pundit/communication';
+import { Annotation, CommentAnnotation, HighlightAnnotation } from '@pundit/communication';
 import { catchError, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
@@ -70,20 +70,21 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    * @param rawAnnotation Data for the annotation that must be updated
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
-    if (rawAnnotation.type === 'Commenting') {
+    if (rawAnnotation.type === 'Commenting' || rawAnnotation.type === 'Highlighting') {
       // toast "working..."
       const workingToast = this.layoutEH.toastService.working();
       // update loading state
       this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
         cssClass: AnnotationCssClass.Edit
       });
-      const data: CommentAnnotation = {
+      const data: CommentAnnotation | HighlightAnnotation = {
         type: rawAnnotation.type,
-        content: rawAnnotation.content,
+        content: rawAnnotation.type === 'Commenting' ? rawAnnotation.content : undefined,
         notebookId: rawAnnotation.notebookId,
         serializedBy: rawAnnotation.serializedBy,
         subject: rawAnnotation.subject,
         userId: rawAnnotation.userId,
+        tags: rawAnnotation.tags
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {
@@ -106,6 +107,9 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
 
         // refresh sidedar annotations
         this.layoutDS.updateAnnotations();
+
+        // update tags;
+        this.layoutEH.tagService.addMany(rawAnnotation?.tags);
 
         // annotation changed successfully
         this.layoutEH.toastService.success({

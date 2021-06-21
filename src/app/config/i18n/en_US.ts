@@ -2,11 +2,13 @@ export default {
   // tooltip
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
+  'tooltip#tag': 'Tag',
   // comment modal
   'commentmodal#label': 'Your comment',
   'commentmodal#notebook': 'Save comment in notebook',
   'commentmodal#cancel': 'Cancel',
   'commentmodal#save': 'Save comment',
+  'commentmodal#save_tags': 'Save tags',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':
@@ -79,7 +81,9 @@ export default {
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
-  'annotation#editcomment': 'Edit comment',
+  'annotation#editcomment': 'Edit',
+  'annotation#addtags': 'Add tags',
+  'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',

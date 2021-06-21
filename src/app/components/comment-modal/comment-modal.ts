@@ -1,8 +1,13 @@
 import {
   AfterContentChecked,
-  Component, ElementRef, Input, ViewChild
+  Component,
+  ElementRef,
+  Input,
+  ViewChild
 } from '@angular/core';
+import { Tag } from '@pundit/communication';
 import * as Draggable from 'draggable';
+import { TagService } from 'src/app/services/tag.service';
 import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 
 /**
@@ -11,12 +16,18 @@ import { NotebookSelectorData } from '../notebook-selector/notebook-selector';
 export interface CommentModalData {
   textQuote: string;
   visible: boolean;
+  update: boolean;
   header: {
     label: string;
   };
   form: {
     comment: {
-      value: string | null;
+      visible: boolean;
+      value: string;
+    };
+    tags: {
+      visible: boolean;
+      values: Tag[];
     };
     notebookSelectorData: NotebookSelectorData;
     actions: {
@@ -27,6 +38,7 @@ export interface CommentModalData {
     }[];
   };
   _setInstance: (instance: any) => void;
+  _setupTagForm: (instance: any, tags?: any) => void;
 }
 
 @Component({
@@ -36,11 +48,15 @@ export interface CommentModalData {
 export class CommentModalComponent implements AfterContentChecked {
   @ViewChild('saveButton') saveButton: ElementRef;
 
+  @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
+
   @Input() public data: CommentModalData;
 
   @Input() public emit: (type: string, payload?: any) => void;
 
   private loaded = false;
+
+  private tagFormLoaded = false;
 
   public draggableTarget = 'pnd-modal-draggable-target';
 
@@ -48,21 +64,13 @@ export class CommentModalComponent implements AfterContentChecked {
 
   public draggableInstance;
 
+  private formInstance;
+
+  constructor(private tagService: TagService) {}
+
   ngAfterContentChecked() {
-    if (!this.loaded && this.data && this.data.visible) {
-      this.loaded = true;
-
-      // fix element dom loaded
-      setTimeout(() => {
-        const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-        const target = shadowRoot.getElementById(this.draggableTarget);
-        const handle = shadowRoot.getElementById(this.draggableHandle);
-        const limit = this.getDragLimit(target);
-        this.draggableInstance = new Draggable(target, { handle, limit });
-
-        this.data._setInstance(this.draggableInstance);
-      });
-    }
+    this.initDraggableInstance();
+    this.initTagForm();
   }
 
   onClick(ev: Event, payload: any) {
@@ -108,6 +116,21 @@ export class CommentModalComponent implements AfterContentChecked {
     this.emit(type, payload);
   }
 
+  private initDraggableInstance = () => {
+    if (!this.loaded && this.data?.visible) {
+      this.loaded = true;
+      // fix element dom loaded
+      setTimeout(() => {
+        const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+        const target = shadowRoot.getElementById(this.draggableTarget);
+        const handle = shadowRoot.getElementById(this.draggableHandle);
+        const limit = this.getDragLimit(target);
+        this.draggableInstance = new Draggable(target, { handle, limit });
+        this.data._setInstance(this.draggableInstance);
+      });
+    }
+  }
+
   private getDragLimit = (target) => {
     if (!target) {
       return null;
@@ -117,5 +140,76 @@ export class CommentModalComponent implements AfterContentChecked {
     const tw = Math.max(target.clientWidth || 200);
     const th = Math.max(target.clientHeight || 200);
     return { x: [0, vw - tw], y: [0, vh - th] };
+  }
+
+  private initTagForm = () => {
+    if (!this.tagFormLoaded && this.data?.visible && this.data?.form?.tags?.visible) {
+      this.tagFormLoaded = true;
+      setTimeout(() => {
+        this.formInstance = this.data._setupTagForm(
+          this.tagifyInputRef.nativeElement,
+          this.data.form.tags.values
+        );
+        this.formInstance.on(
+          'add remove edit:updated',
+          () => {
+            setTimeout(() => {
+              const elements = this.formInstance.getTagElms();
+              this.emit('tagschange', elements.map((el) => el.innerText));
+            });
+          }
+        );
+        this.formInstance.on(
+          'blur dropdown:select',
+          () => {
+            setTimeout(() => {
+              this.tagifyDropdownManualHide();
+            });
+          }
+        );
+        // suggestion list
+        this.tagService.get$().pipe().subscribe((whitelist) => {
+          this.formInstance.settings.whitelist = whitelist;
+        });
+      });
+    }
+  }
+
+  // clone of tagify dropdown hide method
+  // to fix shadowroot check
+  // <tagify>/src/parts/dropdown.js:hide( force )
+  private tagifyDropdownManualHide(force = false): any {
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+    const _instance = this.formInstance;
+    const { scope, dropdown } = _instance.DOM;
+    const isManual = _instance.settings.dropdown.position === 'manual' && !force;
+
+    // if there's no dropdown, this means the dropdown events aren't binded
+    if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
+      return null;
+    }
+
+    window.removeEventListener('resize', _instance.dropdown.position);
+    _instance.dropdown.events.binding.call(_instance, false); // unbind all events
+
+    scope.setAttribute('aria-expanded', false);
+    dropdown.parentNode.removeChild(dropdown);
+
+    setTimeout(() => {
+      _instance.state.dropdown.visible = false;
+    }, 100);
+
+    _instance.state.dropdown.query = null;
+    _instance.state.ddItemData = null;
+    _instance.state.ddItemElm = null;
+    _instance.state.selection = null;
+
+    if (_instance.state.tag && _instance.state.tag.value.length) {
+      _instance.state.flaggedTags[_instance.state.tag.baseOffset] = _instance.state.tag;
+    }
+
+    _instance.trigger('dropdown:hide', dropdown);
+
+    return _instance;
   }
 }

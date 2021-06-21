@@ -11,12 +11,20 @@ export class TooltipDS extends DataSource {
           anchor: {
             payload: 'highlight'
           }
-        }, {
+        },
+        {
+          text: _t('tooltip#tag'),
+          anchor: {
+            payload: 'tag'
+          }
+        },
+        {
           text: _t('tooltip#comment'),
           anchor: {
             payload: 'comment'
           }
-        }]
+        }
+        ]
       }
     };
   }

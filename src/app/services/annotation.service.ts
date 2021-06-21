@@ -115,8 +115,11 @@ export class AnnotationService {
           if (data.type === 'Commenting') {
             // update comment
             cachedAnnotation.ds.updateComment(data.content.comment);
-            cachedAnnotation.ds.updateMenu();
+          } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
+            cachedAnnotation.ds.removeComment();
           }
+          cachedAnnotation.ds.updateMenu();
+          cachedAnnotation.ds.updateTags(data.tags);
         })
       );
   }
@@ -173,7 +176,8 @@ export class AnnotationService {
     const {
       notebookId,
       subject,
-      type
+      type,
+      tags
     } = payload;
     const userId = this.userService.whoami().id;
     const created = new Date().toISOString();
@@ -184,6 +188,7 @@ export class AnnotationService {
       subject,
       created,
       type,
+      tags,
       serializedBy: _c('serializer')
     } as Annotation;
     if (payload.type === 'Commenting') {
@@ -192,7 +197,7 @@ export class AnnotationService {
     return newAnnotation;
   }
 
-  getAnnotationRequestPayload(type: AnnotationType) {
+  getAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;

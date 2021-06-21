@@ -1,14 +1,24 @@
 import { DataSource, _t } from '@n7-frontend/core';
+import { Tag } from '@pundit/communication';
+import Tagify from '@yaireo/tagify';
 import { CommentModalData } from '../components/comment-modal/comment-modal';
 import { NotebookData } from '../services/notebook.service';
 
 const TEXT_MIN_LIMIT = 3;
 
 interface CommentModalInput {
-  comment: string | undefined;
+  comment: {
+    visible: boolean;
+    value: string;
+  };
+  tags: {
+    values: Tag[];
+    visible: boolean;
+  };
   currentNotebook: NotebookData;
   notebooks: NotebookData[];
   textQuote: string;
+  update: boolean;
 }
 
 export class CommentModalDS extends DataSource {
@@ -16,24 +26,42 @@ export class CommentModalDS extends DataSource {
 
   private defaultPosition: { x: number; y: number };
 
+  private tagFormInstance;
+
+  private tagFormRef;
+
   transform(data: CommentModalInput): CommentModalData {
     const {
-      currentNotebook, notebooks, textQuote, comment
+      currentNotebook, notebooks, textQuote, comment, tags, update
     } = data;
 
+    const showComment = data.comment.visible;
+    const showTagsOnly = !showComment && data.tags.visible;
+
     // textarea focus
-    this.initTextArea(comment);
+    if (data.comment.visible) {
+      this.initTextArea(comment.value);
+    }
+
+    if (this.tagFormInstance) {
+      if (showTagsOnly) {
+        this.focusTagForm();
+      }
+      this.updateTagFormIstance(data?.tags?.values);
+    }
+
+    const saveButtonLabel = showTagsOnly ? _t('commentmodal#save_tags') : _t('commentmodal#save');
 
     return {
       textQuote,
       visible: true,
+      update: !!update,
       header: {
         label: _t('commentmodal#label'),
       },
       form: {
-        comment: {
-          value: comment || null
-        },
+        comment: comment || null,
+        tags: tags || null,
         notebookSelectorData: {
           selectedNotebook: currentNotebook,
           notebookList: notebooks,
@@ -49,7 +77,7 @@ export class CommentModalDS extends DataSource {
             source: 'action-cancel'
           }
         }, {
-          label: _t('commentmodal#save'),
+          label: saveButtonLabel,
           classes: 'pnd-btn-cta',
           disabled: true,
           payload: {
@@ -61,6 +89,32 @@ export class CommentModalDS extends DataSource {
         this.instance = instance;
         const { x, y } = this.instance.get();
         this.defaultPosition = { x, y };
+      },
+      _setupTagForm: (reference, initialTags?) => {
+        this.tagFormRef = reference;
+        const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+        const sidebarRef = shadowRoot.querySelector('.pnd-sidebar');
+        const tagFormConfig = {
+          pattern: /^\w{2,128}$/,
+          delimiters: ',| ',
+          maxTags: 20,
+          transformTag: this.transformTag,
+          backspace: 'edit',
+          placeholder: 'Add a tag',
+          dropdown: {
+            enabled: 0,
+            fuzzySearch: false,
+            position: 'all',
+            caseSensitive: true,
+            appendTarget: sidebarRef
+          }
+        };
+
+        this.tagFormInstance = new Tagify(reference, tagFormConfig);
+        if (Array.isArray(initialTags)) {
+          this.tagFormInstance.addTags(initialTags);
+        }
+        return this.tagFormInstance;
       }
     };
   }
@@ -75,6 +129,13 @@ export class CommentModalDS extends DataSource {
         this.onTextChange(textarea.value);
       }
     });
+  }
+
+  private focusTagForm() {
+    if (this.tagFormRef) {
+      const input = this.tagFormRef as HTMLInputElement;
+      input.focus();
+    }
   }
 
   public updateNotebookSelector({ notebookList, selectedNotebook }) {
@@ -104,15 +165,55 @@ export class CommentModalDS extends DataSource {
   }
 
   public onTextChange(text) {
+    const isUpdate = this.output.update;
     const textLength = (typeof text === 'string' && text.trim())
       ? text.length
       : 0;
-    this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
+    if (!isUpdate) {
+      this.updateSaveButtonState(textLength < TEXT_MIN_LIMIT);
+    } else {
+      this.updateSaveButtonState(textLength > 0 && textLength < TEXT_MIN_LIMIT);
+    }
+  }
+
+  public onTagsChange(payload) {
+    const isUpdate = this.output.update;
+    const isShowingOnlyTagsForm = !this.output.form.comment.visible
+      && this.output.form.tags.visible;
+    if (isShowingOnlyTagsForm) {
+      if (!isUpdate) {
+        this.updateSaveButtonState((!Array.isArray(payload) || payload.length === 0));
+      } else {
+        this.updateSaveButtonState(false);
+      }
+    }
   }
 
   public isVisible = () => this.output?.visible;
 
   changeNotebookSelectorLoadingState(loading: boolean) {
     this.output.form.notebookSelectorData.isLoading = loading;
+  }
+
+  private updateTagFormIstance(values: string[]) {
+    this.tagFormInstance.removeAllTags();
+    if (Array.isArray(values)) {
+      this.tagFormInstance.addTags(values);
+    }
+  }
+
+  // generate a random color (in HSL format, which I like to use)
+  private getRandomColor = () => {
+    const rand = (min, max) => min + Math.random() * (max - min);
+
+    const h = Math.trunc(rand(1, 360));
+    const s = Math.trunc(rand(40, 70));
+    const l = Math.trunc(rand(65, 72));
+
+    return `hsl(${h},${s}%,${l}%)`;
+  }
+
+  private transformTag = (tagData) => {
+    tagData.style = `--tag-bg:${this.getRandomColor()}`;
   }
 }

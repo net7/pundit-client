@@ -40,6 +40,7 @@
     "@pundit/common": "git+ssh://git@github.com/net7/pundit-common.git#develop",
     "@pundit/communication": "git+ssh://git@github.com/net7/pundit-communication.git#develop",
     "@pundit/icon-font": "git+ssh://git@github.com/net7/pundit-icon-font.git#v1.1.0",
+    "@yaireo/tagify": "^4.2.0",
     "axios": "^0.21.0",
     "classlist.js": "^1.1.20150312",
     "document-register-element": "^1.7.2",

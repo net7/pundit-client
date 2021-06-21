@@ -23,7 +23,9 @@ export enum CrossMsgRequestId {
   AuthSso = 'auth.sso',
   AuthSignup = 'auth.signup',
   // analytics
-  AnalyticsTrigger = 'analytics.trigger'
+  AnalyticsTrigger = 'analytics.trigger',
+  // tag
+  TagGet = 'tag.get'
 }
 
 export enum CommonEventType {

@@ -47,29 +47,32 @@ export class MainLayoutEH extends EventHandler {
             });
           });
           break;
-        case MainLayoutEvent.GetUserData:
-          this.dataSource.getUserNotebooks().pipe(
-            switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
-            switchMap((defaultNotebookId: string) => {
+        case MainLayoutEvent.GetUserData: {
+          this.dataSource.getUserNotebooks()
+            .pipe(
+              switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
+              switchMap((defaultNotebookId: string) => {
               // set default notebook
-              this.dataSource.setDefaultNotebook(defaultNotebookId);
-              // emit signal for updates
+                this.dataSource.setDefaultNotebook(defaultNotebookId);
+                // emit signal for updates
+                this.appEvent$.next({
+                  type: AppEvent.SearchNotebookResponse
+                });
+                // do user annotations request
+                return this.dataSource.getUserAnnotations();
+              }),
+              switchMap(() => this.dataSource.getUserTags()),
+              catchError((e) => {
+                this.handleError(e);
+                return EMPTY;
+              }),
+            ).subscribe(() => {
               this.appEvent$.next({
-                type: AppEvent.SearchNotebookResponse
+                type: AppEvent.SearchAnnotationResponse
               });
-              // do user annotations request
-              return this.dataSource.getUserAnnotations();
-            }),
-            catchError((e) => {
-              this.handleError(e);
-              return EMPTY;
-            }),
-          ).subscribe(() => {
-            this.appEvent$.next({
-              type: AppEvent.SearchAnnotationResponse
             });
-          });
           break;
+        }
         default:
           break;
       }

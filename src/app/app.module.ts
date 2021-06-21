@@ -20,6 +20,7 @@ import { StorageEmbedService } from './services/storage-service/storage-embed.se
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
+import { TagService } from './services/tag.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -75,6 +76,7 @@ config.init(appConfig);
     UserService,
     AnnotationService,
     NotebookService,
+    TagService,
     AnchorService,
     AnnotationPositionService,
     ToastService,

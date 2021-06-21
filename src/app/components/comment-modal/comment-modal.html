@@ -16,7 +16,7 @@
                 </div>
             </div>
             
-            <div class="pnd-comment-modal__comment-wrapper">
+            <div class="pnd-comment-modal__comment-wrapper" *ngIf="data?.form?.comment?.visible">
                 <div class="pnd-comment-modal__comment-label">
                     {{ data.header.label }}
                 </div>
@@ -31,6 +31,14 @@
                     (input)="onChange('textchange', $event.target.value)">{{ data.form.comment.value || '' }}</textarea>
                 </div>
             </div>
+
+                        
+            <div class="pnd-comment-modal__tag-wrapper" [ngStyle]="{'display': data?.form?.tags?.visible ? null : 'none'  }">
+                <div class="pnd-comment-modal__comment-input-wrapper">
+                    <input  #tagifyInputRef *ngIf="data?.form?.tags?.visible"/>
+                </div>
+            </div>
+
 
             <div class="pnd-comment-modal__footer"
                  [ngClass]="{ 'is-creating' : data.form.notebookSelectorData.mode === 'input'}">

@@ -4,7 +4,9 @@ import {
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
-import { Annotation, CommentAnnotation } from '@pundit/communication';
+import {
+  Annotation, CommentAnnotation, HighlightAnnotation, Tag
+} from '@pundit/communication';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -15,18 +17,25 @@ import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
+import { TagModel } from 'src/common/models/tag-model';
+import { TagService } from 'src/app/services/tag.service';
 import { AnnotationModel } from '../../../common/models';
+
+export type EditModalState = {
+  comment: string;
+  tags: Tag[];
+  semantic?: {
+  };
+  notebookId: string;
+  isUpdate?: boolean;
+  isOpen: boolean;
+};
 
 type MainLayoutState = {
   isLogged: boolean;
-  comment: {
-    comment: string;
-    notebookId: string;
-    isUpdate?: boolean;
-    isOpen: boolean;
-  };
+  editModal: EditModalState;
   annotation: {
-    pendingPayload: CommentAnnotation;
+    pendingPayload: HighlightAnnotation | CommentAnnotation;
     updatePayload: Annotation;
     deleteId: string;
   };
@@ -40,6 +49,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public notebookService: NotebookService;
 
   public annotationService: AnnotationService;
+
+  public tagService: TagService;
 
   public anchorService: AnchorService;
 
@@ -56,10 +67,11 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public state: MainLayoutState = {
     isLogged: false,
-    comment: {
+    editModal: {
       comment: null,
       notebookId: null,
-      isOpen: false
+      isOpen: false,
+      tags: null
     },
     annotation: {
       pendingPayload: null,
@@ -74,6 +86,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
+    this.tagService = payload.tagService;
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
@@ -107,6 +120,14 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
+  getUserTags() {
+    return from(TagModel.get()).pipe(
+      tap(({ data: tags }) => {
+        this.tagService.load(tags);
+      })
+    );
+  }
+
   getUserNotebooks() {
     return this.notebookService.search();
   }
@@ -134,28 +155,36 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   /**
-   * Open the comment modal
+   * Open the edit modal
    * @param textQuote The highlighted string of text
    * @param notebook (optional) The notebook of the annotation
    * @param comment (optional) The existing comment
+   * @param tags (optional) The existing tags
    */
-  public openCommentModal({ textQuote, notebookData, comment }: {
-    textQuote: string;
-    notebookData?: NotebookData;
-    comment?: string;
-  }) {
+  public openEditModal(params: OpenModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
     // update component
 
     const defaultNotebook = this.notebookService.getSelected();
-    const selectedNotebook = this.notebookService.getNotebookById(this.state.comment.notebookId);
-    const currentNotebook = notebookData || selectedNotebook || defaultNotebook;
+    const selectedNotebook = this.notebookService.getNotebookById(this.state.editModal.notebookId);
+    const currentNotebook = params?.notebookData || selectedNotebook || defaultNotebook;
     const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-    const newComment = comment || this.state.comment.comment || null;
+    const commentValue = params?.comment?.value || this.state.editModal.comment || null;
     this.one('comment-modal').update({
-      textQuote, currentNotebook, notebooks, comment: newComment
+      update: this.state.editModal.isUpdate,
+      textQuote: params.textQuote,
+      currentNotebook,
+      notebooks,
+      comment: {
+        visible: params?.comment?.visible,
+        value: commentValue
+      },
+      tags: {
+        values: params?.tags?.values,
+        visible: params?.tags?.visible
+      }
     });
   }
 
@@ -261,4 +290,17 @@ export class MainLayoutDS extends LayoutDataSource {
       this.anchorService.remove(annotationId);
     });
   }
+}
+
+export type OpenModalParams = {
+  textQuote: string;
+  notebookData?: NotebookData;
+  comment?: {
+    visible: boolean;
+    value?: string;
+  };
+  tags?: {
+    values?: Tag[];
+    visible: boolean;
+  };
 }

@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { CommentAnnotation } from '@pundit/communication';
+import { HighlightAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
@@ -92,6 +92,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
                 });
             } else if (payload === 'comment') {
               this.onTooltipComment();
+            } else if (payload === 'tag') {
+              this.onTooltipTag();
             }
             break;
           }
@@ -103,43 +105,60 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload(
-      'Highlighting'
-    );
+    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload();
     return this.layoutDS.saveAnnotation(requestPayload);
   }
 
   private onTooltipComment() {
-    this.setInnerState();
-    this.layoutDS.state.annotation.pendingPayload = this.layoutDS.annotationService
-      .getAnnotationRequestPayload(
-        'Commenting'
-      ) as CommentAnnotation;
-    this.addPendingAnnotation();
-    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
-      this.layoutDS.pendingAnnotationId,
-      this.layoutDS.state.annotation.pendingPayload
+    this.setInnerStateForNewComment();
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
-    this.layoutDS.openCommentModal({
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
+      comment: { visible: true }
     });
   }
 
-  private setInnerState() {
-    if (this.layoutDS.state.comment.isOpen) {
-      if (this.layoutDS.state.comment.isUpdate) {
-        this.layoutDS.state.comment = {
-          comment: null,
-          notebookId: null,
-          isOpen: true,
-        };
-      }
-    } else {
-      this.layoutDS.state.comment = {
+  private onTooltipTag() {
+    this.setInnerStateForNewTags();
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.addPendingAnnotation();
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      tags: { visible: true, values: this.layoutDS.state.editModal.tags }
+    });
+  }
+
+  private setInnerStateForNewComment() {
+    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
+    if ((isOpen && isUpdate) || !isOpen) {
+      this.layoutDS.state.editModal = {
         comment: null,
         notebookId: null,
         isOpen: true,
+        tags: null
       };
+    } else if (isOpen && !isUpdate) {
+      this.layoutDS.state.editModal.tags = null;
+    }
+  }
+
+  private setInnerStateForNewTags() {
+    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
+    if ((isOpen && isUpdate) || !isOpen) {
+      this.layoutDS.state.editModal = {
+        comment: null,
+        notebookId: null,
+        isOpen: true,
+        tags: null
+      };
+    } else if (isOpen && !isUpdate) {
+      this.layoutDS.state.editModal.comment = null;
     }
   }
 
@@ -150,5 +169,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     );
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
+
+    return pendingAnnotation;
   }
 }

@@ -1,3 +1,4 @@
+import { TagModel } from 'src/common/models/tag-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
@@ -58,6 +59,11 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.AnalyticsTrigger:
       request$ = AnalyticsModel.trigger.apply(null, args);
+      break;
+    // TAG REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.TagGet:
+      request$ = TagModel.get.apply(null, args);
       break;
     default:
       break;

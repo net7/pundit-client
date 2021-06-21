@@ -29,8 +29,11 @@ export class CommentModalEH extends EventHandler {
           this.emitOuter(getEventType(CommentModalEvent.TextChange), payload);
           break;
         case CommentModalEvent.NotebookChange: // a different notebook is selected
-          this.dataSource.updateSaveButtonState(false);
           this.emitOuter(getEventType(CommentModalEvent.NotebookChange), payload);
+          break;
+        case CommentModalEvent.TagsChange: // a different notebook is selected
+          this.dataSource.onTagsChange(payload);
+          this.emitOuter(getEventType(CommentModalEvent.TagsChange), payload);
           break;
         case CommentModalEvent.Close:
           this.dataSource.close();

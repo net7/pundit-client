@@ -5,4 +5,5 @@ export enum CommentModalEvent {
   NotebookChange = 'comment-modal.option',
   Save = 'comment-modal.save',
   TextChange = 'comment-modal.textchange',
+  TagsChange = 'comment-modal.tagschange'
 }
