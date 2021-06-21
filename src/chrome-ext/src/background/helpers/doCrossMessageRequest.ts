@@ -1,4 +1,4 @@
-import { TagModel } from 'src/common/models/tag-model';
+import { TagModel } from '../../../../common/models/tag-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
