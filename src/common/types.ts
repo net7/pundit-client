@@ -10,6 +10,7 @@ export enum CrossMsgRequestId {
   NotebookRemove = 'notebook.remove',
   NotebookSearch = 'notebook.search',
   NotebookUpdate = 'notebook.update',
+  NotebookSetDefault = 'notebook.setDefault',
   // annotation
   AnnotationCreate = 'annotation.create',
   AnnotationGet = 'annotation.get',
@@ -46,8 +47,8 @@ export enum CommonEventType {
 
 export enum StorageKey {
   User = 'pundit-user',
-  Token = 'pundit-token',
-  Notebook = 'pundit-notebook'
+  Token = 'pundit-token'
+  // Notebook = 'pundit-notebook'
 }
 
 export enum StorageOperationType {

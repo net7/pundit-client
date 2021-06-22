@@ -21,6 +21,9 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.NotebookUpdate:
       request$ = NotebookModel.update.apply(null, args);
       break;
+    case CrossMsgRequestId.NotebookSetDefault:
+      request$ = NotebookModel.setDefault.apply(null, args);
+      break;
     // ANNOTATION REQUEST
     // --------------------------------------------------->
     case CrossMsgRequestId.AnnotationCreate:
