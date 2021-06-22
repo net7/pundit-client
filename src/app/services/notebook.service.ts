@@ -3,7 +3,6 @@ import { from, Subject, ReplaySubject } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
 import { tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
-import { StorageKey } from '../../common/types';
 import { StorageService } from './storage-service/storage.service';
 import { UserService } from './user.service';
 
@@ -34,25 +33,28 @@ export class NotebookService {
     private storageService: StorageService
   ) {
     // check storage
-    this.storageService.get(StorageKey.Notebook).subscribe((selected: string) => {
-      if (selected) {
-        this.selectedId = selected;
-      }
-      // emit signal
-      this.ready$.next();
-    });
+    // this.storageService.get(StorageKey.Notebook).subscribe((selected: string) => {
+    //   if (selected) {
+    //     this.selectedId = selected;
+    //   }
+    // emit signal
+    this.ready$.next();
+    // });
   }
 
   public getSelected = () => this.getNotebookById(this.selectedId);
 
-  public setSelected(id: string) {
-    this.selectedId = id;
+  public setSelected(id: string, sync = false) {
+    if (!id || id === this.selectedId) return;
 
-    // storage
-    this.storageService.set(StorageKey.Notebook, id).subscribe(() => {
-      // emit signal
-      this.selectedChanged$.next();
-    });
+    this.selectedId = id;
+    if (sync) {
+      from(NotebookModel.setDefault(id)).pipe(
+        tap(() => {
+          console.log('changed');
+        })
+      );
+    }
   }
 
   /**
@@ -121,7 +123,7 @@ export class NotebookService {
         };
         this.add(rawNotebook);
         // set the new notebook as the default
-        this.setSelected(data.id);
+        this.setSelected(data.id, true);
       })
     );
   }
@@ -149,8 +151,9 @@ export class NotebookService {
     this.notebooks = [];
 
     // storage sync
-    this.storageService.remove(StorageKey.Notebook).subscribe(() => {
-      // do nothing
-    });
+    // this.storageService.remove(StorageKey.Notebook).subscribe(() => {
+    //   // do nothing
+    // });
+    this.selectedId = null;
   }
 }
