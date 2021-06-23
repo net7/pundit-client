@@ -1,0 +1,44 @@
+<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal pnd-comment-modal">
+    <div class="pnd-modal__overlay pnd-comment-modal__overlay" (click)="onClose($event.target)">
+        <div class="pnd-modal__window pnd-comment-modal__window" [attr.id]="draggableTarget">
+            
+            <div class="pnd-comment-modal__handle" [attr.id]="draggableHandle">
+                <pnd-svg-icon [data]="{ id: 'drag' }"></pnd-svg-icon>  
+            </div>
+
+            <div class="pnd-modal__close">
+                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
+            </div>
+            
+            <div class="pnd-comment-modal__highlight-wrapper">
+                <div class="pnd-comment-modal__highlight">
+                    {{ data.textQuote }}
+                </div>
+            </div>
+
+            <!-- Comment Section -->
+            <pnd-comment-section *ngIf="data.sections?.comment" 
+                [data]="data.sections.comment">
+            </pnd-comment-section>
+            <!-- END // Comment Section -->
+
+            <div class="pnd-comment-modal__footer">
+                <div class="pnd-comment-modal__footer-actions">
+                    <button *ngIf="data.actions[0] as cancelAction"
+                            [disabled]="cancelAction.disabled"
+                            class="pnd-btn {{ cancelAction.classes || '' }}"
+                            (click)="onClick($event, cancelAction.payload)">
+                        {{ cancelAction.label }}
+                    </button>
+                    <button *ngIf="data.actions[1] as saveAction"
+                            #saveButton
+                            [disabled]="saveAction.disabled"
+                            class="pnd-btn {{ saveAction.classes || '' }}"
+                            (click)="onClick($event, saveAction.payload)">
+                        {{ saveAction.label }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

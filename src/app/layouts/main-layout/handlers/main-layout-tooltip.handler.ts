@@ -116,9 +116,16 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     );
     const pendingAnnotation = this.addPendingAnnotation();
 
-    this.layoutDS.openEditModal({
+    // this.layoutDS.openEditModal({
+    //   textQuote: pendingAnnotation.subject.selected.text,
+    //   comment: { visible: true }
+    // });
+
+    this.layoutDS.openEditModalAlt({
       textQuote: pendingAnnotation.subject.selected.text,
-      comment: { visible: true }
+      sections: [{
+        id: 'comment'
+      }]
     });
   }
 

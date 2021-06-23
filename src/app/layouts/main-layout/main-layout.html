@@ -17,5 +17,9 @@
     <pnd-toast [data]="toastService.data$ | async"
                [emit]="toastService.componentEmit.bind(toastService)">
     </pnd-toast>
+    <!-- Edit modal template -->
+    <pnd-edit-modal [data]="lb.widgets['edit-modal'].ds.out$ | async"
+                    [emit]="lb.widgets['edit-modal'].emit">
+    </pnd-edit-modal>
     <lib-pundit-login></lib-pundit-login>
 </div>

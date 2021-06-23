@@ -33,6 +33,8 @@ import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
 import { SvgIconComponent } from './components/svg-icon/svg-icon';
+import { EditModalComponent } from './components/edit-modal/edit-modal';
+import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -65,6 +67,8 @@ config.init(appConfig);
     DeleteModalComponent,
     ToastComponent,
     SvgIconComponent,
+    EditModalComponent,
+    CommentSectionComponent,
     // PIPES
     SortByPipe,
   ],

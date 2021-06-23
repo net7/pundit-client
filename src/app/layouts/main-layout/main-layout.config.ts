@@ -25,6 +25,7 @@ export const MainLayoutConfig = {
       id: 'tooltip',
       hasStaticData: true
     },
+    { id: 'edit-modal' },
   ],
   layoutDS: MainLayoutDS,
   layoutEH: MainLayoutEH,

@@ -19,6 +19,7 @@ import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
+import { EditModalParams } from 'src/app/types';
 import { AnnotationModel } from '../../../common/models';
 
 export type EditModalState = {
@@ -186,6 +187,14 @@ export class MainLayoutDS extends LayoutDataSource {
         visible: params?.tags?.visible
       }
     });
+  }
+
+  public openEditModalAlt({ textQuote, saveButtonLabel, sections }: EditModalParams) {
+    // clear
+    selectionModel.clearSelection();
+    tooltipModel.hide();
+    // update component
+    this.one('edit-modal').update({ textQuote, saveButtonLabel, sections });
   }
 
   public setAnonymousSelectionRange() {
