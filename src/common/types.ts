@@ -48,7 +48,6 @@ export enum CommonEventType {
 export enum StorageKey {
   User = 'pundit-user',
   Token = 'pundit-token'
-  // Notebook = 'pundit-notebook'
 }
 
 export enum StorageOperationType {

@@ -1,8 +1,9 @@
 import { _t } from '@n7-frontend/core';
-import { AuthToken, LoginResponse, SuccessLoginResponse } from '@pundit/communication';
+import {
+  AuthToken, LoginResponse, LoginUser, SuccessLoginResponse
+} from '@pundit/communication';
 import { forkJoin, Observable, of } from 'rxjs';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { UserData } from 'src/app/services/user.service';
 import { LayoutHandler } from 'src/app/types';
 import { setTokenFromStorage } from '../../../../common/helpers';
 import { CommonEventType, StorageKey } from '../../../../common/types';
@@ -44,7 +45,8 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
           let source$: Observable<unknown> = of(true);
-          if (resp.user.id !== currentUser?.id) {
+          const isSameUser = resp.user.id === currentUser?.id;
+          if (!isSameUser) {
             // update cached & storage data
             source$ = forkJoin({
               user: this.layoutDS.storageService.set(StorageKey.User, user),
@@ -72,18 +74,15 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
   private checkStateFromStorage() {
     const token$ = this.layoutDS.storageService.get(StorageKey.Token);
     const user$ = this.layoutDS.storageService.get(StorageKey.User);
-    const notebookId$ = this.layoutDS.storageService.get(StorageKey.Notebook);
     const currentUser = this.layoutDS.userService.whoami();
     const currentNotebook = this.layoutDS.notebookService.getSelected();
 
     forkJoin({
       token: token$,
       user: user$,
-      notebookId: notebookId$,
-    }).subscribe(({ token, user, notebookId }: {
+    }).subscribe(({ token, user }: {
       token: AuthToken;
-      user: UserData;
-      notebookId: string;
+      user: LoginUser;
     }) => {
       // no user from storage check
       if (!user && currentUser) {
@@ -94,6 +93,17 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
           }
         });
         return;
+      }
+
+      // selected notebook from storage check
+      if (
+        (currentNotebook && user.current_notebook)
+        && (user.current_notebook !== currentNotebook?.id)
+      ) {
+        this.layoutDS.notebookService.setSelected(user.current_notebook);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.SelectedNotebookChanged
+        });
       }
 
       // user from storage check
@@ -111,23 +121,10 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
                 setTokenFromStorage();
                 // trigger auto-login
                 this.layoutDS.userService.iam(user);
-                this.layoutDS.notebookService.setSelected(notebookId);
                 this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
               });
             }
           }
-        });
-        return;
-      }
-
-      // selected notebook from storage check
-      if (
-        (currentNotebook && notebookId)
-        && (notebookId !== currentNotebook.id)
-      ) {
-        this.layoutDS.notebookService.setSelected(notebookId);
-        this.layoutEH.appEvent$.next({
-          type: AppEvent.SelectedNotebookChanged
         });
       }
     });
