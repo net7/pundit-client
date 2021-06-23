@@ -15,7 +15,7 @@ import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
 export class MainLayoutLoginHandler implements LayoutHandler {
-  constructor(private layoutDS: MainLayoutDS, private layoutEH: MainLayoutEH) {}
+  constructor(private layoutDS: MainLayoutDS, private layoutEH: MainLayoutEH) { }
 
   public listen() {
     // user check on init
@@ -25,7 +25,10 @@ export class MainLayoutLoginHandler implements LayoutHandler {
     );
     servicesReady$.subscribe(() => {
       if (this.layoutDS.userService.whoami()) {
-        this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+        this.layoutEH.emitInner(
+          getEventType(MainLayoutEvent.GetUserData),
+          { getNotebookInfo: true }
+        );
       } else {
         this.loginAlert();
         this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
@@ -67,6 +70,7 @@ export class MainLayoutLoginHandler implements LayoutHandler {
             title: _t('toast#login_success_title'),
             text: _t('toast#login_success_text'),
           });
+          this.layoutDS.notebookService.setSelected(val.user.current_notebook);
           // signal
           setTimeout(() => {
             // waiting for elastic-search index update

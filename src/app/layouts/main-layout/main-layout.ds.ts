@@ -196,10 +196,9 @@ export class MainLayoutDS extends LayoutDataSource {
     tooltipModel.hide();
   }
 
-  public setDefaultNotebook(id: string) {
-    if (id && this.notebookService.getNotebookById(id)) {
-      this.notebookService.setSelected(id);
-    } else {
+  public setDefaultNotebook() {
+    const currentNotebookId = this.notebookService.getSelected()?.id;
+    if (!currentNotebookId || !this.notebookService.getNotebookById(currentNotebookId)) {
       const { id: userId } = this.userService.whoami();
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);

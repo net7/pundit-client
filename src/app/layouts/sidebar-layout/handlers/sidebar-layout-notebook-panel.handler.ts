@@ -19,7 +19,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     this.layoutEH.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case NotebookPanelEvent.ChangeSelected: // change the default notebook
-          this.layoutEH.notebookService.setSelected(payload);
+          this.layoutEH.notebookService.setSelected(payload, true);
           this.layoutDS.updateNotebookPanel();
           // toast
           this.layoutEH.toastService.success({
@@ -53,7 +53,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
               return EMPTY;
             })
           ).subscribe(({ data }) => {
-            this.layoutEH.notebookService.setSelected(data.id); // select the new notebook
+            this.layoutEH.notebookService.setSelected(data.id, true); // select the new notebook
             this.layoutDS.updateNotebookPanel();
 
             // signal
