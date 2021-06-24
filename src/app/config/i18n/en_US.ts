@@ -6,6 +6,7 @@ export default {
   // comment modal
   'commentmodal#label': 'Your comment',
   'commentmodal#notebook': 'Save comment in notebook',
+  'commentmodal#notebook_create': 'Create new notebook',
   'commentmodal#cancel': 'Cancel',
   'commentmodal#save': 'Save comment',
   'commentmodal#save_tags': 'Save tags',

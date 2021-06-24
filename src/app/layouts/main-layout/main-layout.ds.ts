@@ -193,6 +193,7 @@ export class MainLayoutDS extends LayoutDataSource {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
+
     // update component
     this.one('edit-modal').update({ textQuote, saveButtonLabel, sections });
   }

@@ -129,6 +129,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       }, {
         id: 'tags',
         required: true,
+      }, {
+        id: 'notebook'
       }]
     });
   }

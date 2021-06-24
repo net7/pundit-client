@@ -36,6 +36,7 @@ import { SvgIconComponent } from './components/svg-icon/svg-icon';
 import { EditModalComponent } from './components/edit-modal/edit-modal';
 import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
 import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
+import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -71,6 +72,7 @@ config.init(appConfig);
     EditModalComponent,
     CommentSectionComponent,
     TagsSectionComponent,
+    NotebookSectionComponent,
     // PIPES
     SortByPipe,
   ],

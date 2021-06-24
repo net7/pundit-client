@@ -1,4 +1,5 @@
 import {
+  AfterContentChecked,
   Component,
   ElementRef,
   Input,
@@ -19,7 +20,7 @@ export type TagsSectionOptions = {
   selector: 'pnd-tags-section',
   templateUrl: './tags-section.html'
 })
-export class TagsSectionComponent implements FormSection<
+export class TagsSectionComponent implements AfterContentChecked, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
   id = 'tags';

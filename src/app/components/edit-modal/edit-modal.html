@@ -29,6 +29,13 @@
             <!-- END // Tags Section -->
 
             <div class="pnd-edit-modal__footer">
+                <div class="pnd-comment-modal__footer-notebook">
+                    <!-- Tags Section -->
+                    <pnd-notebook-section *ngIf="data.sections?.notebook" 
+                        [data]="data.sections.notebook">
+                    </pnd-notebook-section>
+                    <!-- END // Tags Section -->
+                </div>
                 <div class="pnd-edit-modal__footer-actions">
                     <button *ngIf="data.actions.cancel as cancelAction"
                             [disabled]="cancelAction.disabled"
