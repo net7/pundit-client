@@ -53,6 +53,7 @@
     }
 
     &__tag-wrapper {
+        position: relative;
         padding: $space*2;
         border-top: 1px solid $annotation-border-color;
         border-bottom: 1px solid $annotation-border-color;
@@ -150,8 +151,9 @@
 /* ------------------------------------ *\
    #TAGIFY FIX
 \* ------------------------------------ */
-.pnd-sidebar .tagify__dropdown {
-    margin: 12px 8px;
+.pnd-comment-modal__tag-wrapper .tagify__dropdown {
+    top: 54px !important;
+    left: $space*2 !important;
 
     .tagify__dropdown__wrapper {
         border-top-width: 1px;

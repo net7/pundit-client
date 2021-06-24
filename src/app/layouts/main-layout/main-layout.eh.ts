@@ -1,13 +1,15 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import {
-  Subject, ReplaySubject, EMPTY, of
+  Subject, ReplaySubject, EMPTY, of, Observable
 } from 'rxjs';
-import { catchError, delay, switchMap } from 'rxjs/operators';
+import {
+  catchError, delay, switchMap, tap
+} from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
+import { LoginUser } from '@pundit/communication';
 import { MainLayoutDS } from './main-layout.ds';
-import { StorageKey } from '../../../common/types';
 
 export class MainLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
@@ -48,29 +50,41 @@ export class MainLayoutEH extends EventHandler {
           });
           break;
         case MainLayoutEvent.GetUserData: {
-          this.dataSource.getUserNotebooks()
-            .pipe(
-              switchMap(() => this.dataSource.storageService.get(StorageKey.Notebook)),
-              switchMap((defaultNotebookId: string) => {
+          let notebook$: Observable<any> = of(true);
+          if (payload?.getNotebookInfo) {
+            notebook$ = this.dataSource.punditLoginService.sso().pipe(
+              tap((val) => {
+                if ('user' in val) {
+                  const user = val.user as LoginUser;
+                  this.dataSource.notebookService.setSelected(user.current_notebook);
+                }
+              })
+            );
+          }
+
+          notebook$.pipe(
+            switchMap(() => this.dataSource.getUserNotebooks()),
+            switchMap(() => {
               // set default notebook
-                this.dataSource.setDefaultNotebook(defaultNotebookId);
-                // emit signal for updates
-                this.appEvent$.next({
-                  type: AppEvent.SearchNotebookResponse
-                });
-                // do user annotations request
-                return this.dataSource.getUserAnnotations();
-              }),
-              switchMap(() => this.dataSource.getUserTags()),
-              catchError((e) => {
-                this.handleError(e);
-                return EMPTY;
-              }),
-            ).subscribe(() => {
+              this.dataSource.setDefaultNotebook();
+
+              // emit signal for updates
               this.appEvent$.next({
-                type: AppEvent.SearchAnnotationResponse
+                type: AppEvent.SearchNotebookResponse
               });
+              // do user annotations request
+              return this.dataSource.getUserAnnotations();
+            }),
+            switchMap(() => this.dataSource.getUserTags()),
+            catchError((e) => {
+              this.handleError(e);
+              return EMPTY;
+            }),
+          ).subscribe(() => {
+            this.appEvent$.next({
+              type: AppEvent.SearchAnnotationResponse
             });
+          });
           break;
         }
         default:

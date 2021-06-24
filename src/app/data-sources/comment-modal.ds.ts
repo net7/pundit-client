@@ -93,7 +93,7 @@ export class CommentModalDS extends DataSource {
       _setupTagForm: (reference, initialTags?) => {
         this.tagFormRef = reference;
         const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-        const sidebarRef = shadowRoot.querySelector('.pnd-sidebar');
+        const targetRef = shadowRoot.querySelector('.pnd-comment-modal__tag-wrapper');
         const tagFormConfig = {
           pattern: /^\w{2,128}$/,
           delimiters: ',| ',
@@ -106,7 +106,7 @@ export class CommentModalDS extends DataSource {
             fuzzySearch: false,
             position: 'all',
             caseSensitive: true,
-            appendTarget: sidebarRef
+            appendTarget: targetRef
           }
         };
 

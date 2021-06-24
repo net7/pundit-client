@@ -23,4 +23,10 @@ export class NotebookModel {
     // change the notebook data on the backend
     return notebook.update(id, data);
   }
+
+  @CrossMessage(CrossMsgRequestId.NotebookSetDefault)
+  static setDefault(id: string) {
+    // change the default notebook
+    return notebook.setDefault(id);
+  }
 }
