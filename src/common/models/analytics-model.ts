@@ -8,9 +8,6 @@ import packageJson from '../../../package.json';
 
 const { version } = packageJson;
 
-// mixpanel config
-mixpanel.init(env.analytics.mixpanel.token);
-
 analytics.init([
   // mixpanel config
   {

@@ -1,7 +1,8 @@
 import { CommonEventType } from '../../../../common/types';
 
-export const onInitCommunicationSettings = () => {
+export const onInitCommunicationSettings = (ev: CustomEvent) => {
   chrome.runtime.sendMessage({
-    type: CommonEventType.InitCommunicationSettings
+    type: CommonEventType.InitCommunicationSettings,
+    payload: ev.detail
   });
 };
