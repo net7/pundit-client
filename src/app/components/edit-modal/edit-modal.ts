@@ -8,6 +8,7 @@ import {
 import { FormSectionData } from 'src/app/types';
 import * as Draggable from 'draggable';
 import { merge } from 'rxjs';
+import { isEmpty } from 'lodash';
 
 /**
  * Interface for EditModal's "data"
@@ -127,7 +128,7 @@ export class EditModalComponent implements AfterContentChecked {
 
       // check required
       const sectionValue = this.formState[key]?.value;
-      if (sections[key].required && !sectionValue) {
+      if (sections[key].required && isEmpty(sectionValue)) {
         disabled = true;
       }
     });

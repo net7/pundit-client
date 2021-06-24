@@ -35,6 +35,7 @@ import { ToastComponent } from './components/toast/toast';
 import { SvgIconComponent } from './components/svg-icon/svg-icon';
 import { EditModalComponent } from './components/edit-modal/edit-modal';
 import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
+import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -69,6 +70,7 @@ config.init(appConfig);
     SvgIconComponent,
     EditModalComponent,
     CommentSectionComponent,
+    TagsSectionComponent,
     // PIPES
     SortByPipe,
   ],

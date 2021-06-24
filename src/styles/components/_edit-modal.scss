@@ -147,14 +147,20 @@
     }
 }
 
+
 /* ------------------------------------ *\
    #TAGIFY FIX
 \* ------------------------------------ */
-.pnd-sidebar .tagify__dropdown {
-    margin: 12px 8px;
+.pnd-edit-modal__tag-wrapper {
+    position: relative;
 
-    .tagify__dropdown__wrapper {
-        border-top-width: 1px;
+    .tagify__dropdown {
+        top: 54px !important;
+        left: $space*2 !important;
+    
+        .tagify__dropdown__wrapper {
+            border-top-width: 1px;
+        }
     }
 }
 

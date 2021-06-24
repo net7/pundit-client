@@ -9,6 +9,7 @@ export default {
   'commentmodal#cancel': 'Cancel',
   'commentmodal#save': 'Save comment',
   'commentmodal#save_tags': 'Save tags',
+  'commentmodal#add_tag': 'Add a tag',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':
