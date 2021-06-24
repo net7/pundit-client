@@ -24,17 +24,17 @@
 
             <div class="pnd-comment-modal__footer">
                 <div class="pnd-comment-modal__footer-actions">
-                    <button *ngIf="data.actions[0] as cancelAction"
+                    <button *ngIf="data.actions.cancel as cancelAction"
                             [disabled]="cancelAction.disabled"
                             class="pnd-btn {{ cancelAction.classes || '' }}"
-                            (click)="onClick($event, cancelAction.payload)">
+                            (click)="onClose()">
                         {{ cancelAction.label }}
                     </button>
-                    <button *ngIf="data.actions[1] as saveAction"
+                    <button *ngIf="data.actions.save as saveAction"
                             #saveButton
                             [disabled]="saveAction.disabled"
                             class="pnd-btn {{ saveAction.classes || '' }}"
-                            (click)="onClick($event, saveAction.payload)">
+                            (click)="onSave()">
                         {{ saveAction.label }}
                     </button>
                 </div>

@@ -37,19 +37,16 @@ export class EditModalDS extends DataSource {
         label: _t('commentmodal#label'),
       },
       sections: formSections,
-      actions: [{
-        label: _t('commentmodal#cancel'),
-        payload: {
-          source: 'action-cancel'
+      actions: {
+        cancel: {
+          label: _t('commentmodal#cancel')
+        },
+        save: {
+          label: saveButtonLabel || _t('commentmodal#save'),
+          classes: 'pnd-btn-cta',
+          disabled: true,
         }
-      }, {
-        label: saveButtonLabel || _t('commentmodal#save'),
-        classes: 'pnd-btn-cta',
-        disabled: true,
-        payload: {
-          source: 'action-save'
-        }
-      }],
+      },
       _setDraggableInstance: (instance) => {
         this.draggableInstance = instance;
         const { x, y } = this.draggableInstance.get();

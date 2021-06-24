@@ -8,19 +8,14 @@ export class EditModalEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case EditModalEvent.Click: {
-          const { source } = payload;
-          if (['close-icon', 'action-cancel'].includes(source)) {
-            this.dataSource.close();
-            this.emitOuter(getEventType(EditModalEvent.Close));
-          } else if (source === 'action-save') {
-            this.dataSource.close();
-            this.emitOuter(getEventType(EditModalEvent.Save));
-          }
-        } break;
         case EditModalEvent.Close:
           this.dataSource.close();
           this.emitOuter(getEventType(EditModalEvent.Close));
+          break;
+        case EditModalEvent.Save:
+          this.dataSource.close();
+          this.emitOuter(getEventType(EditModalEvent.Save), payload);
+          console.log('payload----------------------------->', payload);
           break;
         default:
           break;

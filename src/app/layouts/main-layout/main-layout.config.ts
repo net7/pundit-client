@@ -6,6 +6,7 @@ import {
   MainLayoutAnchorHandler,
   MainLayoutAppEventsHandler,
   MainLayoutCommentModalHandler,
+  MainLayoutEditModalHandler,
   MainLayoutDeleteModalHandler,
   MainLayoutLoginHandler,
   MainLayoutSelectionHandler,
@@ -32,6 +33,7 @@ export const MainLayoutConfig = {
   handlers: [
     MainLayoutTooltipHandler,
     MainLayoutCommentModalHandler,
+    MainLayoutEditModalHandler,
     MainLayoutDeleteModalHandler,
     MainLayoutSelectionHandler,
     MainLayoutAppEventsHandler,

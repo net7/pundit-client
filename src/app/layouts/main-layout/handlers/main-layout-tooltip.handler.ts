@@ -124,7 +124,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     this.layoutDS.openEditModalAlt({
       textQuote: pendingAnnotation.subject.selected.text,
       sections: [{
-        id: 'comment'
+        id: 'comment',
+        required: true
       }]
     });
   }
