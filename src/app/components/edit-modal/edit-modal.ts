@@ -116,7 +116,8 @@ export class EditModalComponent implements AfterContentChecked {
   }
 
   private initChangedListener = () => {
-    // TODO
+    // reset form state
+    this.formState = {};
     const { sections } = this.data;
     const sources$ = Object.keys(sections)
       .map((key) => sections[key].changed$);
