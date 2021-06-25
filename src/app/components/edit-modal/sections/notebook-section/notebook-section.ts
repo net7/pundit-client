@@ -4,7 +4,10 @@ import {
   Input,
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
+import { EMPTY } from 'rxjs';
+import { catchError, finalize } from 'rxjs/operators';
 import { NotebookSelectorData } from 'src/app/components/notebook-selector/notebook-selector';
+import { EditModalEvent, getEventType } from 'src/app/event-types';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { FormSection, FormSectionData } from 'src/app/types';
@@ -26,6 +29,8 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
 
   @Input() public data: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
 
+  @Input() public emit: (type: string, payload?: any) => void;
+
   private loaded = false;
 
   public notebookSelectorData: NotebookSelectorData;
@@ -34,7 +39,7 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
 
   constructor(
     private notebookService: NotebookService,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   ngAfterContentChecked() {
@@ -46,36 +51,75 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
       this.loaded = true;
 
       const { notebookId } = this.data.options;
-      const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-      this.currentNotebook = this.notebookService.getSelected();
-
-      if (notebookId) {
-        this.currentNotebook = this.notebookService.getNotebookById(notebookId);
-      }
-
-      this.notebookSelectorData = {
-        selectedNotebook: this.currentNotebook,
-        notebookList: notebooks,
-        mode: 'select',
-        createOption: {
-          label: _t('commentmodal#notebook_create'),
-          value: 'create'
-        }
-      };
+      this.setNotebookSelectorData(notebookId);
     }
+  }
+
+  private setNotebookSelectorData(notebookId: string) {
+    const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
+    this.currentNotebook = this.notebookService.getSelected();
+
+    if (notebookId) {
+      this.currentNotebook = this.notebookService.getNotebookById(notebookId);
+    }
+
+    this.notebookSelectorData = {
+      selectedNotebook: this.currentNotebook,
+      notebookList: notebooks,
+      mode: 'select',
+      createOption: {
+        label: _t('commentmodal#notebook_create'),
+        value: 'create'
+      }
+    };
   }
 
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onChange = (type, payload) => {
-    console.log('type----------------------------->', type, payload);
+  onEmit = (type, payload) => {
     if (type === 'option') {
-      const value = this.currentNotebook.id !== payload ? payload : null;
-      this.data.changed$.next({
-        value,
-        id: this.id,
-      });
+      if (this.currentNotebook.id !== payload) {
+        this.triggerChanged(payload);
+      }
+    } else if (type === 'createnotebook') {
+      this.createNotebook(payload);
+    } else if (type === 'modechanged') {
+      this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), payload);
     }
+  }
+
+  private createNotebook(label: string) {
+    // update state
+    this.notebookSelectorData.isLoading = true;
+    this.notebookService.create(label).pipe(
+      catchError((e) => {
+        // emit signal
+        this.emit(getEventType(EditModalEvent.CreateNotebookError), e);
+
+        return EMPTY;
+      }),
+      finalize(() => {
+        // update state
+        const mode = 'select';
+        this.notebookSelectorData.isLoading = false;
+        this.notebookSelectorData.mode = mode;
+        // emit signal
+        this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), mode);
+      })
+    ).subscribe(({ data }) => {
+      this.triggerChanged(data.id);
+
+      // emit signal
+      this.emit(getEventType(EditModalEvent.CreateNotebookSuccess));
+    });
+  }
+
+  private triggerChanged(notebookId: string) {
+    this.setNotebookSelectorData(notebookId);
+    this.data.changed$.next({
+      value: notebookId,
+      id: this.id,
+    });
   }
 }

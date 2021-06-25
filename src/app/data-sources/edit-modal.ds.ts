@@ -62,4 +62,8 @@ export class EditModalDS extends DataSource {
     const { x, y } = this.defaultPosition;
     this.draggableInstance.set(x, y);
   }
+
+  public changeActionsVisibility(hide: boolean) {
+    this.output.hideActions = hide;
+  }
 }

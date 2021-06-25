@@ -27,7 +27,6 @@ export interface NotebookSelectorData {
   selector: 'notebook-selector',
   templateUrl: './notebook-selector.html'
 })
-
 export class NotebookSelectorComponent {
   @Input() public data: NotebookSelectorData;
 
@@ -46,10 +45,10 @@ export class NotebookSelectorComponent {
     if (!this.emit) return;
 
     if (payload === 'createmode') {
-      this.data.mode = 'input';
+      this.setMode('input');
       return;
     } if (payload === 'createnotebook') {
-      this.data.mode = 'select';
+      this.setMode('select');
     } else {
       // if a notebook option is clicked
       this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload);
@@ -78,7 +77,7 @@ export class NotebookSelectorComponent {
    * When pressing the "create new notebook" button.
    */
   onInputMode() {
-    this.data.mode = 'input';
+    this.setMode('input');
 
     // trigger change detector
     this.ref.detectChanges();
@@ -93,7 +92,7 @@ export class NotebookSelectorComponent {
     if (typeof payload === 'string' && payload.trim().length > 0) {
       this.emit('createnotebook', payload.trim());
     } else {
-      this.data.mode = 'select';
+      this.setMode('select');
       this.onToggleExpand();
     }
 
@@ -129,5 +128,12 @@ export class NotebookSelectorComponent {
       // trigger change detector
       this.ref.detectChanges();
     }
+  }
+
+  private setMode(mode: 'input' | 'select') {
+    this.data.mode = mode;
+
+    // signal
+    this.emit('modechanged', mode);
   }
 }

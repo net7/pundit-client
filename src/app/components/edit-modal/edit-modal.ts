@@ -9,6 +9,7 @@ import { FormSectionData } from 'src/app/types';
 import * as Draggable from 'draggable';
 import { merge } from 'rxjs';
 import { isEmpty } from 'lodash';
+import { EditModalEvent, getEventType } from 'src/app/event-types';
 
 /**
  * Interface for EditModal's "data"
@@ -26,6 +27,7 @@ export interface EditModalData {
     cancel: EditModalAction;
     save: EditModalAction;
   };
+  hideActions?: boolean;
   _setDraggableInstance: (instance: any) => void;
 }
 
@@ -71,11 +73,11 @@ export class EditModalComponent implements AfterContentChecked {
     if (target && target.className !== 'pnd-comment-modal__overlay') {
       return;
     }
-    this.emit('close');
+    this.emit(getEventType(EditModalEvent.Close));
   }
 
   onSave() {
-    this.emit('save', this.formState);
+    this.emit(getEventType(EditModalEvent.Save), this.formState);
   }
 
   private init = () => {
