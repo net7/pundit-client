@@ -14,9 +14,7 @@ import { FormSection, FormSectionData } from 'src/app/types';
 
 export type NotebookSectionValue = string;
 
-export type NotebookSectionOptions = {
-  notebookId: string;
-}
+export type NotebookSectionOptions = {};
 
 @Component({
   selector: 'pnd-notebook-section',
@@ -48,8 +46,8 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   }
 
   private init = () => {
-    const { notebookId } = this.data.options;
-    this.setNotebookSelectorData(notebookId);
+    const { initialValue } = this.data;
+    this.setNotebookSelectorData(initialValue);
   }
 
   private setNotebookSelectorData(notebookId: string) {
@@ -78,6 +76,8 @@ export class NotebookSectionComponent implements OnInit, FormSection<
     if (type === 'option') {
       if (this.currentNotebook.id !== payload) {
         this.triggerChanged(payload);
+        // update default notebook
+        this.notebookService.setSelected(payload, true);
       }
     } else if (type === 'createnotebook') {
       this.createNotebook(payload);
