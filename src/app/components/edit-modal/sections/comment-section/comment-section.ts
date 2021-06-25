@@ -1,7 +1,7 @@
 import {
+  AfterViewInit,
   Component,
   Input,
-  OnInit,
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { FormSection, FormSectionData } from 'src/app/types';
@@ -18,7 +18,7 @@ export type CommentSectionOptions = {
   selector: 'pnd-comment-section',
   templateUrl: './comment-section.html'
 })
-export class CommentSectionComponent implements OnInit, FormSection<
+export class CommentSectionComponent implements AfterViewInit, FormSection<
   CommentSectionValue, CommentSectionOptions
 > {
   id = 'comment';
@@ -27,7 +27,8 @@ export class CommentSectionComponent implements OnInit, FormSection<
 
   @Input() public reset$: Subject<void>;
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.checkFocus();
     this.reset$.subscribe(this.onReset);
   }
 
@@ -62,8 +63,19 @@ export class CommentSectionComponent implements OnInit, FormSection<
 
   private onReset = () => {
     const { initialValue } = this.data;
+    this.getTextAreaEl().value = initialValue;
+    this.checkFocus();
+  }
+
+  private checkFocus = () => {
+    const { focus } = this.data;
+    if (focus) {
+      this.getTextAreaEl().focus();
+    }
+  }
+
+  private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const textarea = shadowRoot.querySelector('textarea.pnd-edit-modal__comment-textarea') as HTMLTextAreaElement;
-    textarea.value = initialValue;
+    return shadowRoot.querySelector('textarea.pnd-edit-modal__comment-textarea') as HTMLTextAreaElement;
   }
 }

@@ -50,6 +50,7 @@ export type FormSectionData<T, U> = {
   initialValue?: T;
   options?: U;
   required?: boolean;
+  focus?: boolean;
 }
 
 export type EditModalParams = {
@@ -58,8 +59,9 @@ export type EditModalParams = {
   sections: {
     id: string;
     value?: unknown;
-    required?: boolean;
     options?: unknown;
+    required?: boolean;
+    focus?: boolean;
   }[];
 }
 

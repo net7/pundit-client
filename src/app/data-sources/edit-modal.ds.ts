@@ -21,13 +21,14 @@ export class EditModalDS extends DataSource {
     } = {};
 
     sections.forEach(({
-      id, value, options, required
+      id, value, options, required, focus
     }) => {
       formSections[id] = {
         changed$: new Subject(),
         initialValue: value || null,
         options: options || {},
-        required: !!required
+        required: !!required,
+        focus: !!focus
       };
     });
 

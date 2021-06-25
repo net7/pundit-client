@@ -1,8 +1,7 @@
 import {
-  AfterContentChecked,
+  AfterViewInit,
   Component,
   Input,
-  OnInit,
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import { EMPTY, Subject } from 'rxjs';
@@ -23,7 +22,7 @@ export type NotebookSectionOptions = {
   selector: 'pnd-notebook-section',
   templateUrl: './notebook-section.html'
 })
-export class NotebookSectionComponent implements OnInit, AfterContentChecked, FormSection<
+export class NotebookSectionComponent implements AfterViewInit, FormSection<
   NotebookSectionValue, NotebookSectionOptions
 > {
   id = 'notebook';
@@ -34,8 +33,6 @@ export class NotebookSectionComponent implements OnInit, AfterContentChecked, Fo
 
   @Input() public reset$: Subject<void>;
 
-  private loaded = false;
-
   public notebookSelectorData: NotebookSelectorData;
 
   public currentNotebook: NotebookData = null;
@@ -45,21 +42,14 @@ export class NotebookSectionComponent implements OnInit, AfterContentChecked, Fo
     private userService: UserService,
   ) {}
 
-  ngOnInit() {
+  ngAfterViewInit() {
+    this.init();
     this.reset$.subscribe(this.onReset);
   }
 
-  ngAfterContentChecked() {
-    this.init();
-  }
-
   private init = () => {
-    if (!this.loaded) {
-      this.loaded = true;
-
-      const { notebookId } = this.data.options;
-      this.setNotebookSelectorData(notebookId);
-    }
+    const { notebookId } = this.data.options;
+    this.setNotebookSelectorData(notebookId);
   }
 
   private setNotebookSelectorData(notebookId: string) {
