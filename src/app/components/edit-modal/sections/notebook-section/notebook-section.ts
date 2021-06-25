@@ -2,9 +2,10 @@ import {
   AfterContentChecked,
   Component,
   Input,
+  OnInit,
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
-import { EMPTY } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { NotebookSelectorData } from 'src/app/components/notebook-selector/notebook-selector';
 import { EditModalEvent, getEventType } from 'src/app/event-types';
@@ -22,7 +23,7 @@ export type NotebookSectionOptions = {
   selector: 'pnd-notebook-section',
   templateUrl: './notebook-section.html'
 })
-export class NotebookSectionComponent implements AfterContentChecked, FormSection<
+export class NotebookSectionComponent implements OnInit, AfterContentChecked, FormSection<
   NotebookSectionValue, NotebookSectionOptions
 > {
   id = 'notebook';
@@ -30,6 +31,8 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
   @Input() public data: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
 
   @Input() public emit: (type: string, payload?: any) => void;
+
+  @Input() public reset$: Subject<void>;
 
   private loaded = false;
 
@@ -41,6 +44,10 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
     private notebookService: NotebookService,
     private userService: UserService,
   ) {}
+
+  ngOnInit() {
+    this.reset$.subscribe(this.onReset);
+  }
 
   ngAfterContentChecked() {
     this.init();
@@ -100,12 +107,8 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
         return EMPTY;
       }),
       finalize(() => {
-        // update state
-        const mode = 'select';
-        this.notebookSelectorData.isLoading = false;
-        this.notebookSelectorData.mode = mode;
-        // emit signal
-        this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), mode);
+        // reset state
+        this.resetDropdownState();
       })
     ).subscribe(({ data }) => {
       this.triggerChanged(data.id);
@@ -121,5 +124,19 @@ export class NotebookSectionComponent implements AfterContentChecked, FormSectio
       value: notebookId,
       id: this.id,
     });
+  }
+
+  private resetDropdownState() {
+    const mode = 'select';
+    this.notebookSelectorData.isLoading = false;
+    this.notebookSelectorData.mode = mode;
+    // emit signal
+    this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), mode);
+  }
+
+  private onReset = () => {
+    const { initialValue } = this.data;
+    this.resetDropdownState();
+    this.setNotebookSelectorData(initialValue);
   }
 }

@@ -3,10 +3,12 @@ import {
   Component,
   ElementRef,
   Input,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import Tagify from '@yaireo/tagify';
+import { Subject } from 'rxjs';
 import { TagService } from 'src/app/services/tag.service';
 import { FormSection, FormSectionData } from 'src/app/types';
 
@@ -20,12 +22,14 @@ export type TagsSectionOptions = {
   selector: 'pnd-tags-section',
   templateUrl: './tags-section.html'
 })
-export class TagsSectionComponent implements AfterContentChecked, FormSection<
+export class TagsSectionComponent implements OnInit, AfterContentChecked, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
   id = 'tags';
 
   @Input() public data: FormSectionData<TagsSectionValue, TagsSectionOptions>;
+
+  @Input() public reset$: Subject<void>;
 
   @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
 
@@ -37,6 +41,10 @@ export class TagsSectionComponent implements AfterContentChecked, FormSection<
 
   ngAfterContentChecked() {
     this.init();
+  }
+
+  ngOnInit() {
+    this.reset$.subscribe(this.onReset);
   }
 
   private init = () => {
@@ -146,5 +154,13 @@ export class TagsSectionComponent implements AfterContentChecked, FormSection<
     const l = Math.trunc(rand(65, 72));
 
     return `hsl(${h},${s}%,${l}%)`;
+  }
+
+  private onReset = () => {
+    const { initialValue } = this.data;
+    this.formInstance.removeAllTags();
+    if (Array.isArray(initialValue)) {
+      this.formInstance.addTags(initialValue);
+    }
   }
 }

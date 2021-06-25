@@ -18,13 +18,15 @@
 
             <!-- Comment Section -->
             <pnd-comment-section *ngIf="data.sections?.comment" 
-                [data]="data.sections.comment">
+                [data]="data.sections.comment"
+                [reset$]="reset$">
             </pnd-comment-section>
             <!-- END // Comment Section -->
 
             <!-- Tags Section -->
             <pnd-tags-section *ngIf="data.sections?.tags" 
-                [data]="data.sections.tags">
+                [data]="data.sections.tags"
+                [reset$]="reset$">
             </pnd-tags-section>
             <!-- END // Tags Section -->
 
@@ -33,7 +35,8 @@
                     <!-- Tags Section -->
                     <pnd-notebook-section *ngIf="data.sections?.notebook" 
                         [data]="data.sections.notebook"
-                        [emit]="emit">
+                        [emit]="emit"
+                        [reset$]="reset$">
                     </pnd-notebook-section>
                     <!-- END // Tags Section -->
                 </div>

@@ -66,6 +66,7 @@ export type EditModalParams = {
 export interface FormSection<T, U> {
   id: string;
   data: FormSectionData<T, U>;
+  reset$: Subject<void>;
 }
 
 // ------------------------------------ //

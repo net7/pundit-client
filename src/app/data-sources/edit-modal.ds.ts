@@ -1,4 +1,5 @@
 import { DataSource, _t } from '@n7-frontend/core';
+import { uniqueId } from 'lodash';
 import { Subject } from 'rxjs';
 import { EditModalData } from '../components/edit-modal/edit-modal';
 import { EditModalParams, FormSectionData } from '../types';
@@ -47,6 +48,7 @@ export class EditModalDS extends DataSource {
           disabled: true,
         }
       },
+      _internalId: uniqueId(),
       _setDraggableInstance: (instance) => {
         this.draggableInstance = instance;
         const { x, y } = this.draggableInstance.get();
