@@ -1,5 +1,5 @@
 import {
-  AfterViewInit,
+  OnInit,
   Component,
   Input,
 } from '@angular/core';
@@ -22,7 +22,7 @@ export type NotebookSectionOptions = {
   selector: 'pnd-notebook-section',
   templateUrl: './notebook-section.html'
 })
-export class NotebookSectionComponent implements AfterViewInit, FormSection<
+export class NotebookSectionComponent implements OnInit, FormSection<
   NotebookSectionValue, NotebookSectionOptions
 > {
   id = 'notebook';
@@ -42,7 +42,7 @@ export class NotebookSectionComponent implements AfterViewInit, FormSection<
     private userService: UserService,
   ) {}
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.init();
     this.reset$.subscribe(this.onReset);
   }
