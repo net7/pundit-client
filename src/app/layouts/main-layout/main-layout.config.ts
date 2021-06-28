@@ -16,7 +16,6 @@ import {
 export const MainLayoutConfig = {
   layoutId: 'main-layout',
   widgets: [
-    { id: 'comment-modal' },
     {
       id: 'delete-modal',
       hasStaticData: true
