@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs';
+
 export type AppEventData = {
   type: string;
   payload?: any;
@@ -35,6 +37,38 @@ export interface NavData {
 
 export interface LayoutHandler {
   listen: () => void;
+}
+
+export type FormSectionPayload<T> = {
+  id: string;
+  value: T;
+  errors?: string[];
+}
+
+export type FormSectionData<T, U> = {
+  changed$: Subject<FormSectionPayload<T>>;
+  initialValue?: T;
+  options?: U;
+  required?: boolean;
+  focus?: boolean;
+}
+
+export type EditModalParams = {
+  textQuote: string;
+  saveButtonLabel?: string;
+  sections: {
+    id: string;
+    value?: unknown;
+    options?: unknown;
+    required?: boolean;
+    focus?: boolean;
+  }[];
+}
+
+export interface FormSection<T, U> {
+  id: string;
+  data: FormSectionData<T, U>;
+  reset$: Subject<void>;
 }
 
 // ------------------------------------ //

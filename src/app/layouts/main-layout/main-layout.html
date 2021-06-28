@@ -5,10 +5,10 @@
     <pnd-tooltip [data]="lb.widgets['tooltip'].ds.out$ | async"
                  [emit]="lb.widgets['tooltip'].emit">
     </pnd-tooltip>
-    <!-- Comment editor template -->
-    <pnd-comment-modal [data]="lb.widgets['comment-modal'].ds.out$ | async"
-                       [emit]="lb.widgets['comment-modal'].emit">
-    </pnd-comment-modal>
+    <!-- Edit modal template -->
+    <pnd-edit-modal [data]="lb.widgets['edit-modal'].ds.out$ | async"
+                    [emit]="lb.widgets['edit-modal'].emit">
+    </pnd-edit-modal>
     <!-- Delete annotation template -->
     <pnd-delete-modal [data]="lb.widgets['delete-modal'].ds.out$ | async"
                       [emit]="lb.widgets['delete-modal'].emit">

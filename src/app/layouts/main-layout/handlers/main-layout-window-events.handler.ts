@@ -40,13 +40,15 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
   private identitySync() {
     const currentUser = this.layoutDS.userService.whoami();
+    const selectedNotebook = this.layoutDS.notebookService.getSelected();
     this.layoutDS.punditLoginService.sso()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
           let source$: Observable<unknown> = of(true);
           const isSameUser = resp.user.id === currentUser?.id;
-          if (!isSameUser) {
+          const isSameNotebook = resp.user.current_notebook === selectedNotebook?.id;
+          if (!isSameUser || !isSameNotebook) {
             // update cached & storage data
             source$ = forkJoin({
               user: this.layoutDS.storageService.set(StorageKey.User, user),
@@ -95,17 +97,6 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         return;
       }
 
-      // selected notebook from storage check
-      if (
-        (currentNotebook && user.current_notebook)
-        && (user.current_notebook !== currentNotebook?.id)
-      ) {
-        this.layoutDS.notebookService.setSelected(user.current_notebook);
-        this.layoutEH.appEvent$.next({
-          type: AppEvent.SelectedNotebookChanged
-        });
-      }
-
       // user from storage check
       if ((user && (user?.id !== currentUser?.id))) {
         // trigger logout
@@ -121,10 +112,25 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
                 setTokenFromStorage();
                 // trigger auto-login
                 this.layoutDS.userService.iam(user);
+                // set default notebook
+                this.layoutDS.notebookService.setSelected(user.current_notebook);
+                // emit signal
                 this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
               });
             }
           }
+        });
+        return;
+      }
+
+      // selected notebook from storage check
+      if (
+        (currentNotebook && user.current_notebook)
+        && (user.current_notebook !== currentNotebook?.id)
+      ) {
+        this.layoutDS.notebookService.setSelected(user.current_notebook);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.SelectedNotebookChanged
         });
       }
     });

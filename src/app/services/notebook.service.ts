@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { from, Subject, ReplaySubject } from 'rxjs';
+import {
+  from, Subject, ReplaySubject, EMPTY
+} from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
 
@@ -37,9 +39,17 @@ export class NotebookService {
 
   public setSelected(id: string, sync = false) {
     if (!id || id === this.selectedId) return;
+    const previousId = this.selectedId;
     this.selectedId = id;
     if (sync) {
-      from(NotebookModel.setDefault(id));
+      from(NotebookModel.setDefault(id)).pipe(
+        catchError((err) => {
+          console.warn('NotebookService setDefault error:', err);
+          // restore previous
+          this.setSelected(previousId);
+          return EMPTY;
+        })
+      );
     }
   }
 

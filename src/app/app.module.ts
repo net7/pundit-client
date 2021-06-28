@@ -26,13 +26,16 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
 import { AnnotationComponent } from './components/annotation/annotation';
-import { CommentModalComponent } from './components/comment-modal/comment-modal';
 import { DeleteModalComponent } from './components/delete-modal/delete-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
 import { SvgIconComponent } from './components/svg-icon/svg-icon';
+import { EditModalComponent } from './components/edit-modal/edit-modal';
+import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
+import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
+import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -61,10 +64,13 @@ config.init(appConfig);
     TooltipComponent,
     NotebookPanelComponent,
     NotebookSelectorComponent,
-    CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
     SvgIconComponent,
+    EditModalComponent,
+    CommentSectionComponent,
+    TagsSectionComponent,
+    NotebookSectionComponent,
     // PIPES
     SortByPipe,
   ],

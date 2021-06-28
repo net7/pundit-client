@@ -7,7 +7,7 @@
 /* ------------------------------------ *\
    #RESOURCE MODAL
 \* ------------------------------------ */
-.pnd-comment-modal {
+.pnd-edit-modal {
     &__window {
         pointer-events: auto;
         height: auto !important;
@@ -53,7 +53,6 @@
     }
 
     &__tag-wrapper {
-        position: relative;
         padding: $space*2;
         border-top: 1px solid $annotation-border-color;
         border-bottom: 1px solid $annotation-border-color;
@@ -64,7 +63,7 @@
 /* ------------------------------------ *\
    #FOOTER
 \* ------------------------------------ */
-.pnd-comment-modal {
+.pnd-edit-modal {
     &__footer {
         display: flex;
         align-items: center;
@@ -110,7 +109,7 @@
 /* ------------------------------------ *\
    #HANDLE
 \* ------------------------------------ */
-.pnd-comment-modal {
+.pnd-edit-modal {
     &__handle {
         height: 40px;
         cursor: grab;
@@ -141,22 +140,27 @@
 /* ------------------------------------ *\
    #OVERLAY
 \* ------------------------------------ */
-.pnd-comment-modal {
+.pnd-edit-modal {
     &__overlay {
         pointer-events: none;
         background-color: transparent;
     }
 }
 
+
 /* ------------------------------------ *\
    #TAGIFY FIX
 \* ------------------------------------ */
-.pnd-comment-modal__tag-wrapper .tagify__dropdown {
-    top: 54px !important;
-    left: $space*2 !important;
+.pnd-edit-modal__tag-wrapper {
+    position: relative;
 
-    .tagify__dropdown__wrapper {
-        border-top-width: 1px;
+    .tagify__dropdown {
+        top: 54px !important;
+        left: $space*2 !important;
+    
+        .tagify__dropdown__wrapper {
+            border-top-width: 1px;
+        }
     }
 }
 
