@@ -47,6 +47,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       .subscribe(([{ type, payload }]) => {
         switch (type) {
           case TooltipEvent.Click: {
+            // reset previous payload
+            this.layoutDS.state.annotation.pendingPayload = null;
+            this.layoutDS.state.annotation.updatePayload = null;
             if (payload === 'highlight') {
               // toast "working..."
               const workingToast = this.layoutDS.toastService.working();
@@ -110,9 +113,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    // reset previous update payload
-    this.layoutDS.state.annotation.updatePayload = null;
-
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
@@ -131,9 +131,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipTag() {
-    // reset previous update payload
-    this.layoutDS.state.annotation.updatePayload = null;
-
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
