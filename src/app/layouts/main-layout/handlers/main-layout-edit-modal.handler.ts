@@ -4,6 +4,7 @@ import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
 import { AppEvent, EditModalEvent } from 'src/app/event-types';
 import { _c } from 'src/app/models/config';
+import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
@@ -23,8 +24,12 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           this.onEditModalClose();
           break;
         case EditModalEvent.Save: {
-          // toast "working..."
-          const workingToast = this.layoutDS.toastService.working();
+          const isUpdate = this.isUpdate();
+          let workingToast: ToastInstance;
+          if (!isUpdate) {
+            // toast "working..."
+            workingToast = this.layoutDS.toastService.working();
+          }
           this.onEditModalSave(payload).pipe(
             catchError((e) => {
               this.layoutEH.handleError(e);
@@ -124,7 +129,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   }
 
   private onEditModalSave(payload) {
-    const isUpdate = !!this.layoutDS.state.annotation.updatePayload;
+    const isUpdate = this.isUpdate();
     let source$ = of(null);
     if (isUpdate) {
       const updateRequestPayload = this.getEditRequestPayload(
@@ -166,4 +171,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     }
     return annotationPayload;
   }
+
+  private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;
 }
