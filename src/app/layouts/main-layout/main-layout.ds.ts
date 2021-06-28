@@ -22,19 +22,8 @@ import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
 import { AnnotationModel } from '../../../common/models';
 
-export type EditModalState = {
-  comment: string;
-  tags: Tag[];
-  semantic?: {
-  };
-  notebookId: string;
-  isUpdate?: boolean;
-  isOpen: boolean;
-};
-
 type MainLayoutState = {
   isLogged: boolean;
-  editModal: EditModalState;
   annotation: {
     pendingPayload: HighlightAnnotation | CommentAnnotation;
     updatePayload: Annotation;
@@ -68,12 +57,6 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public state: MainLayoutState = {
     isLogged: false,
-    editModal: {
-      comment: null,
-      notebookId: null,
-      isOpen: false,
-      tags: null
-    },
     annotation: {
       pendingPayload: null,
       updatePayload: null,
@@ -158,38 +141,10 @@ export class MainLayoutDS extends LayoutDataSource {
   /**
    * Open the edit modal
    * @param textQuote The highlighted string of text
-   * @param notebook (optional) The notebook of the annotation
-   * @param comment (optional) The existing comment
-   * @param tags (optional) The existing tags
+   * @param sections (required) modal form sections
+   * @param saveButtonLabel (optional) save button label
    */
-  public openEditModal(params: OpenModalParams) {
-    // clear
-    selectionModel.clearSelection();
-    tooltipModel.hide();
-    // update component
-
-    const defaultNotebook = this.notebookService.getSelected();
-    const selectedNotebook = this.notebookService.getNotebookById(this.state.editModal.notebookId);
-    const currentNotebook = params?.notebookData || selectedNotebook || defaultNotebook;
-    const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-    const commentValue = params?.comment?.value || this.state.editModal.comment || null;
-    this.one('comment-modal').update({
-      update: this.state.editModal.isUpdate,
-      textQuote: params.textQuote,
-      currentNotebook,
-      notebooks,
-      comment: {
-        visible: params?.comment?.visible,
-        value: commentValue
-      },
-      tags: {
-        values: params?.tags?.values,
-        visible: params?.tags?.visible
-      }
-    });
-  }
-
-  public openEditModalAlt({ textQuote, saveButtonLabel, sections }: EditModalParams) {
+  public openEditModal({ textQuote, saveButtonLabel, sections }: EditModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();

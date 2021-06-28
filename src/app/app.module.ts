@@ -26,7 +26,6 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
 import { AnnotationComponent } from './components/annotation/annotation';
-import { CommentModalComponent } from './components/comment-modal/comment-modal';
 import { DeleteModalComponent } from './components/delete-modal/delete-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
@@ -65,7 +64,6 @@ config.init(appConfig);
     TooltipComponent,
     NotebookPanelComponent,
     NotebookSelectorComponent,
-    CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
     SvgIconComponent,

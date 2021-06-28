@@ -5,7 +5,6 @@ import * as EH from '../../event-handlers';
 import {
   MainLayoutAnchorHandler,
   MainLayoutAppEventsHandler,
-  MainLayoutCommentModalHandler,
   MainLayoutEditModalHandler,
   MainLayoutDeleteModalHandler,
   MainLayoutLoginHandler,
@@ -32,7 +31,6 @@ export const MainLayoutConfig = {
   layoutEH: MainLayoutEH,
   handlers: [
     MainLayoutTooltipHandler,
-    MainLayoutCommentModalHandler,
     MainLayoutEditModalHandler,
     MainLayoutDeleteModalHandler,
     MainLayoutSelectionHandler,

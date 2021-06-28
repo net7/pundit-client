@@ -38,7 +38,7 @@ export type EditModalAction = {
   disabled?: boolean;
 }
 
-export type FormState = {
+export type EditModalFormState = {
   [id: string]: {
     value: unknown;
     errors?: string[];
@@ -60,7 +60,7 @@ export class EditModalComponent implements AfterContentChecked {
 
   private loaded = false;
 
-  private formState: FormState = {};
+  private formState: EditModalFormState = {};
 
   public draggableTarget = 'pnd-modal-draggable-target';
 
