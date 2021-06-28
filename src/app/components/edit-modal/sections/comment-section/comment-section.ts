@@ -70,7 +70,10 @@ export class CommentSectionComponent implements AfterViewInit, FormSection<
   private checkFocus = () => {
     const { focus } = this.data;
     if (focus) {
-      this.getTextAreaEl().focus();
+      const el = this.getTextAreaEl();
+      el.focus();
+      // focus position end of text
+      el.setSelectionRange(el.value.length, el.value.length);
     }
   }
 
