@@ -40,13 +40,15 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
 
   private identitySync() {
     const currentUser = this.layoutDS.userService.whoami();
+    const selectedNotebook = this.layoutDS.notebookService.getSelected();
     this.layoutDS.punditLoginService.sso()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
           let source$: Observable<unknown> = of(true);
           const isSameUser = resp.user.id === currentUser?.id;
-          if (!isSameUser) {
+          const isSameNotebook = resp.user.current_notebook === selectedNotebook?.id;
+          if (!isSameUser || !isSameNotebook) {
             // update cached & storage data
             source$ = forkJoin({
               user: this.layoutDS.storageService.set(StorageKey.User, user),
