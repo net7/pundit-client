@@ -41,7 +41,7 @@ export type EditModalAction = {
 export type FormState = {
   [id: string]: {
     value: unknown;
-    errors: string[];
+    errors?: string[];
   };
 }
 
@@ -98,6 +98,8 @@ export class EditModalComponent implements AfterContentChecked {
 
       // init draggable
       this.initDraggableInstance();
+      // initial form state
+      this.initFormState();
       // init changed$ listener
       this.initChangedListener();
     }
@@ -115,9 +117,23 @@ export class EditModalComponent implements AfterContentChecked {
     });
   }
 
-  private initChangedListener = () => {
+  private initFormState = () => {
     // reset form state
     this.formState = {};
+    const { sections } = this.data;
+    Object.keys(sections).forEach((key) => {
+      const { initialValue } = sections[key];
+      this.formState[key] = {
+        value: initialValue || null
+      };
+    });
+
+    // update save button state
+    // with initial form state values
+    this.updateSaveButtonState();
+  }
+
+  private initChangedListener = () => {
     const { sections } = this.data;
     const sources$ = Object.keys(sections)
       .map((key) => sections[key].changed$);

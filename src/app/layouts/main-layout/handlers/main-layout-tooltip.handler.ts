@@ -125,11 +125,13 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       textQuote: pendingAnnotation.subject.selected.text,
       sections: [{
         id: 'comment',
-        required: true
+        required: true,
+        value: 'commento di prova'
       }, {
         id: 'tags',
         required: true,
-        focus: true
+        // focus: true
+        value: ['tag1', 'tag2']
       }, {
         id: 'notebook'
       }]
