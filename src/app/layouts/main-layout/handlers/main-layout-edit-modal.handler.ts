@@ -20,6 +20,9 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   listen() {
     this.layoutEH.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
+        case EditModalEvent.NotebookChange:
+          this.onEditModalNotebookChange();
+          break;
         case EditModalEvent.Close:
           this.onEditModalClose();
           break;
@@ -117,6 +120,20 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     // analytics
     AnalyticsModel.track({
       action: AnalyticsAction.NotebookCreated,
+      payload: {
+        location: 'modal'
+      }
+    });
+  }
+
+  private onEditModalNotebookChange() {
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.SelectedNotebookChanged
+    });
+
+    // analytics
+    AnalyticsModel.track({
+      action: AnalyticsAction.NotebookCurrentChanged,
       payload: {
         location: 'modal'
       }

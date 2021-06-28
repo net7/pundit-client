@@ -16,6 +16,9 @@ export class EditModalEH extends EventHandler {
           this.dataSource.close();
           this.emitOuter(getEventType(EditModalEvent.Save), payload);
           break;
+        case EditModalEvent.NotebookChange:
+          this.emitOuter(getEventType(EditModalEvent.NotebookChange));
+          break;
         case EditModalEvent.CreateNotebookError:
           this.emitOuter(getEventType(EditModalEvent.CreateNotebookError), payload);
           break;

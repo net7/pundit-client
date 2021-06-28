@@ -78,6 +78,8 @@ export class NotebookSectionComponent implements OnInit, FormSection<
         this.triggerChanged(payload);
         // update default notebook
         this.notebookService.setSelected(payload, true);
+        // emit signal
+        this.emit(getEventType(EditModalEvent.NotebookChange));
       }
     } else if (type === 'createnotebook') {
       this.createNotebook(payload);
