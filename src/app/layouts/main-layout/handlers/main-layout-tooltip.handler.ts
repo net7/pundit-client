@@ -110,6 +110,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
+    // reset previous update payload
+    this.layoutDS.state.annotation.updatePayload = null;
+
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
@@ -128,6 +131,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipTag() {
+    // reset previous update payload
+    this.layoutDS.state.annotation.updatePayload = null;
+
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
