@@ -97,17 +97,6 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         return;
       }
 
-      // selected notebook from storage check
-      if (
-        (currentNotebook && user.current_notebook)
-        && (user.current_notebook !== currentNotebook?.id)
-      ) {
-        this.layoutDS.notebookService.setSelected(user.current_notebook);
-        this.layoutEH.appEvent$.next({
-          type: AppEvent.SelectedNotebookChanged
-        });
-      }
-
       // user from storage check
       if ((user && (user?.id !== currentUser?.id))) {
         // trigger logout
@@ -123,10 +112,25 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
                 setTokenFromStorage();
                 // trigger auto-login
                 this.layoutDS.userService.iam(user);
+                // set default notebook
+                this.layoutDS.notebookService.setSelected(user.current_notebook);
+                // emit signal
                 this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
               });
             }
           }
+        });
+        return;
+      }
+
+      // selected notebook from storage check
+      if (
+        (currentNotebook && user.current_notebook)
+        && (user.current_notebook !== currentNotebook?.id)
+      ) {
+        this.layoutDS.notebookService.setSelected(user.current_notebook);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.SelectedNotebookChanged
         });
       }
     });
