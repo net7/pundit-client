@@ -2,7 +2,7 @@ import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { LayoutHandler } from 'src/app/types';
+import { EditModalParams, LayoutHandler } from 'src/app/types';
 import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -87,23 +87,32 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     const {
       _meta, comment, _raw, body, tags
     } = ds.output;
-    const notebookData = this.layoutDS.notebookService.getNotebookById(_meta.notebookId);
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.editModal = {
-      comment: comment || null,
-      tags,
-      notebookId: null,
-      isUpdate: true,
-      isOpen: true
-    };
     this.layoutDS.state.annotation.updatePayload = _raw;
 
-    this.layoutDS.openEditModal({
-      notebookData,
-      comment: mode === 'tags' ? null : { value: comment, visible: true },
-      tags: { values: tags, visible: true },
+    const params = {
+      sections: [{
+        id: 'tags',
+        value: tags
+      }, {
+        id: 'notebook',
+        value: _meta.notebookId
+      }],
       textQuote: body,
-    });
+    } as EditModalParams;
+
+    if (mode === 'full') {
+      params.sections.push({
+        id: 'comment',
+        value: comment,
+        focus: true
+      });
+    } else {
+      // focus on input tags
+      params.sections[0].focus = true;
+    }
+
+    this.layoutDS.openEditModal(params);
   }
 
   private onSidebarCollapse({ isCollapsed }) {

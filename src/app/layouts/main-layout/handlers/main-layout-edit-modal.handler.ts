@@ -1,5 +1,9 @@
 import { _t } from '@n7-frontend/core';
+import { EMPTY, of } from 'rxjs';
+import { catchError, filter } from 'rxjs/operators';
+import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
 import { AppEvent, EditModalEvent } from 'src/app/event-types';
+import { _c } from 'src/app/models/config';
 import { LayoutHandler } from 'src/app/types';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
@@ -18,9 +22,65 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         case EditModalEvent.Close:
           this.onEditModalClose();
           break;
-        case EditModalEvent.Save:
-          this.onEditModalSave(payload);
-          break;
+        case EditModalEvent.Save: {
+          // toast "working..."
+          const workingToast = this.layoutDS.toastService.working();
+          this.onEditModalSave(payload).pipe(
+            catchError((e) => {
+              this.layoutEH.handleError(e);
+              // toast
+              this.layoutDS.toastService.error({
+                title: _t('toast#genericerror_error_title'),
+                text: _t('toast#genericerror_error_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
+              });
+              return EMPTY;
+            }),
+            filter((data) => data)
+          ).subscribe((data) => {
+            // clear previous annotation payload
+            this.layoutDS.state.annotation.pendingPayload = null;
+            this.layoutDS.state.annotation.updatePayload = null;
+
+            if (data.isUpdate) {
+              // signal
+              this.layoutEH.appEvent$.next({
+                type: AppEvent.CommentUpdate,
+                payload: data.requestPayload
+              });
+            } else {
+              // signal
+              this.layoutEH.appEvent$.next({
+                type: AppEvent.AnnotationCreateSuccess,
+                payload: data
+              });
+
+              // toast
+              this.layoutDS.toastService.success({
+                title: _t('toast#annotationsave_success_title'),
+                text: _t('toast#annotationsave_success_text'),
+                timer: _c('toastTimer'),
+                onLoad: () => {
+                  workingToast.close();
+                }
+              });
+
+              // update tags;
+              this.layoutDS.tagService.addMany(data?.tags);
+
+              // analytics
+              AnalyticsModel.track({
+                action: AnalyticsAction.CommentCreated,
+                payload: {
+                  scope: 'fragment'
+                }
+              });
+            }
+          });
+        } break;
         case EditModalEvent.CreateNotebookError:
           this.onCreateNotebookError(payload);
           break;
@@ -58,13 +118,52 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-  private onEditModalSave(payload) {
-    // TODO
-    console.log('formState----------------------------->', payload);
-  }
-
   private onEditModalClose() {
     // clear pending
     this.layoutDS.removePendingAnnotation();
+  }
+
+  private onEditModalSave(payload) {
+    const isUpdate = !!this.layoutDS.state.annotation.updatePayload;
+    let source$ = of(null);
+    if (isUpdate) {
+      const updateRequestPayload = this.getEditRequestPayload(
+        this.layoutDS.state.annotation.updatePayload,
+        payload
+      );
+      source$ = of({ requestPayload: updateRequestPayload, isUpdate });
+    } else {
+      const pendingRequestPayload = this.getEditRequestPayload(
+        this.layoutDS.state.annotation.pendingPayload,
+        payload
+      );
+      source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
+    }
+    return source$;
+  }
+
+  private getEditRequestPayload(annotationPayload, formState: EditModalFormState) {
+    const notebook = formState?.notebook?.value || null;
+    const comment = typeof formState?.comment?.value === 'string'
+      ? formState?.comment?.value.trim()
+      : null;
+    const tags = formState?.tags?.value || null;
+    // check notebook value
+    if (notebook) {
+      annotationPayload.notebookId = notebook;
+    }
+    // check comment value
+    if (comment) {
+      annotationPayload.type = 'Commenting';
+      annotationPayload.content = { comment };
+    } else {
+      annotationPayload.type = 'Highlighting';
+      annotationPayload.content = undefined;
+    }
+    // check tags value
+    if (Array.isArray(tags)) {
+      annotationPayload.tags = tags.length ? tags : undefined;
+    }
+    return annotationPayload;
   }
 }

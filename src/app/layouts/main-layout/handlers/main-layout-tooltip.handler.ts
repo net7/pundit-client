@@ -110,28 +110,17 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    this.setInnerStateForNewComment();
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
     const pendingAnnotation = this.addPendingAnnotation();
 
-    // this.layoutDS.openEditModal({
-    //   textQuote: pendingAnnotation.subject.selected.text,
-    //   comment: { visible: true }
-    // });
-
-    this.layoutDS.openEditModalAlt({
+    this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
       sections: [{
         id: 'comment',
         required: true,
-        value: 'commento di prova'
-      }, {
-        id: 'tags',
-        required: true,
-        // focus: true
-        value: ['tag1', 'tag2']
+        focus: true
       }, {
         id: 'notebook'
       }]
@@ -139,43 +128,21 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipTag() {
-    this.setInnerStateForNewTags();
     this.layoutDS.state.annotation.pendingPayload = (
       this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
     const pendingAnnotation = this.addPendingAnnotation();
+
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
-      tags: { visible: true, values: this.layoutDS.state.editModal.tags }
+      sections: [{
+        id: 'tags',
+        required: true,
+        focus: true
+      }, {
+        id: 'notebook'
+      }]
     });
-  }
-
-  private setInnerStateForNewComment() {
-    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
-    if ((isOpen && isUpdate) || !isOpen) {
-      this.layoutDS.state.editModal = {
-        comment: null,
-        notebookId: null,
-        isOpen: true,
-        tags: null
-      };
-    } else if (isOpen && !isUpdate) {
-      this.layoutDS.state.editModal.tags = null;
-    }
-  }
-
-  private setInnerStateForNewTags() {
-    const { isOpen, isUpdate } = this.layoutDS.state.editModal;
-    if ((isOpen && isUpdate) || !isOpen) {
-      this.layoutDS.state.editModal = {
-        comment: null,
-        notebookId: null,
-        isOpen: true,
-        tags: null
-      };
-    } else if (isOpen && !isUpdate) {
-      this.layoutDS.state.editModal.comment = null;
-    }
   }
 
   private addPendingAnnotation() {
