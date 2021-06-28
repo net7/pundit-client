@@ -62,9 +62,11 @@ export class CommentSectionComponent implements AfterViewInit, FormSection<
   }
 
   private onReset = () => {
-    const { initialValue } = this.data;
-    this.getTextAreaEl().value = initialValue;
-    this.checkFocus();
+    if (this.getTextAreaEl()) {
+      const { initialValue } = this.data;
+      this.getTextAreaEl().value = initialValue;
+      this.checkFocus();
+    }
   }
 
   private checkFocus = () => {
