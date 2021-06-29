@@ -118,8 +118,8 @@ export class AnnotationService {
           } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
             cachedAnnotation.ds.removeComment();
           }
-          cachedAnnotation.ds.updateMenu();
           cachedAnnotation.ds.updateTags(data.tags);
+          cachedAnnotation.ds.updateMenu();
         })
       );
   }
