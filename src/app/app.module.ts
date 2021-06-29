@@ -18,6 +18,7 @@ import { ToastService } from './services/toast.service';
 import { StorageService } from './services/storage-service/storage.service';
 import { StorageEmbedService } from './services/storage-service/storage-embed.service';
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
+import { ChromeExtService } from './services/chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
 import { TagService } from './services/tag.service';
@@ -53,6 +54,44 @@ translate.init({
 // load configuration
 config.init(appConfig);
 
+// providers config
+const providers: any[] = [
+  UserService,
+  AnnotationService,
+  NotebookService,
+  TagService,
+  AnchorService,
+  AnnotationPositionService,
+  ToastService,
+  StorageService,
+  StorageEmbedService,
+  EmbedService,
+  ChromeExtService,
+  StorageChromeExtService,
+  ImageDataService,
+  { provide: APP_BASE_HREF, useValue: '/' },
+];
+
+if (env.chromeExt) {
+  providers.push({
+    provide: APP_INITIALIZER,
+    useFactory: (
+      chromeExtService: ChromeExtService
+    ) => () => chromeExtService.load(),
+    deps: [ChromeExtService],
+    multi: true
+  });
+} else {
+  providers.push({
+    provide: APP_INITIALIZER,
+    useFactory: (
+      embedService: EmbedService
+    ) => () => embedService.load(),
+    deps: [EmbedService],
+    multi: true
+  });
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -78,29 +117,7 @@ config.init(appConfig);
     BrowserModule,
     PunditLoginModule.forRoot(env.auth)
   ],
-  providers: [
-    UserService,
-    AnnotationService,
-    NotebookService,
-    TagService,
-    AnchorService,
-    AnnotationPositionService,
-    ToastService,
-    StorageService,
-    StorageEmbedService,
-    EmbedService,
-    StorageChromeExtService,
-    ImageDataService,
-    { provide: APP_BASE_HREF, useValue: '/' },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (
-        embedService: EmbedService
-      ) => () => embedService.load(),
-      deps: [EmbedService],
-      multi: true
-    }
-  ],
+  providers,
   bootstrap: [AppComponent],
   entryComponents: [AppComponent]
 })

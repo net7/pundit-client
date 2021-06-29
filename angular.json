@@ -101,10 +101,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.chrome-ext.prod.ts"
-                },
-                {
-                  "replace": "src/app/app.module.ts",
-                  "with": "src/app/app.module.chrome-ext.ts"
                 }
               ],
               "assets": [
@@ -133,10 +129,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.chrome-ext.stage.ts"
-                },
-                {
-                  "replace": "src/app/app.module.ts",
-                  "with": "src/app/app.module.chrome-ext.ts"
                 }
               ],
               "assets": [
@@ -167,10 +159,6 @@
                   "with": "src/environments/environment.embed.prod.ts"
                 },
                 {
-                  "replace": "src/app/app.module.ts",
-                  "with": "src/app/app.module.embed.ts"
-                },
-                {
                   "replace": "src/index.html",
                   "with": "src/html-examples/embed.html"
                 }
@@ -189,10 +177,6 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.stage.ts"
-                },
-                {
-                  "replace": "src/app/app.module.ts",
-                  "with": "src/app/app.module.embed.ts"
                 },
                 {
                   "replace": "src/index.html",
