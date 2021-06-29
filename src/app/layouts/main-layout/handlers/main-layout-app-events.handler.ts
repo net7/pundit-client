@@ -3,6 +3,7 @@ import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler } from 'src/app/types';
+import { _t } from '@n7-frontend/core';
 import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -110,6 +111,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     } else {
       // focus on input tags
       params.sections[0].focus = true;
+      params.saveButtonLabel = _t('commentmodal#save_tags');
     }
 
     this.layoutDS.openEditModal(params);
