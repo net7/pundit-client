@@ -8,6 +8,7 @@ import {
 import { _t } from '@n7-frontend/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
+import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { TagService } from 'src/app/services/tag.service';
 import { FormSection, FormSectionData } from 'src/app/types';
 
@@ -132,18 +133,8 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
   }
 
   private transformTag = (tagData) => {
-    tagData.style = `--tag-bg:${this.getRandomColor()}`;
-  }
-
-  // generate a random color (in HSL format, which I like to use)
-  private getRandomColor = () => {
-    const rand = (min, max) => min + Math.random() * (max - min);
-
-    const h = Math.trunc(rand(1, 360));
-    const s = Math.trunc(rand(40, 70));
-    const l = Math.trunc(rand(65, 72));
-
-    return `hsl(${h},${s}%,${l}%)`;
+    const tagColor = getTagColor(tagData.value);
+    tagData.style = `--tag-bg:${tagColor}`;
   }
 
   private onReset = () => {

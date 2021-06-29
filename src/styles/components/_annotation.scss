@@ -264,11 +264,9 @@ annotation {
 .pnd-annotation {
     .pnd-annotation__tags-item {
         font-size: $font-size-xs;
-        border: 1px solid $annotation-comment-background-color;
         padding: $space/4 $space/2;
         margin-left: $space;
-        background: $color-gray-01;
-        color: $color-text-light;
+        color: $color-text;
     }
     .pnd-annotation__tags-item:nth-child(1) {
         margin-left: 0;

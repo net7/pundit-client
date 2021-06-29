@@ -4,6 +4,7 @@
 
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { Annotation, Tag } from '@pundit/communication';
+import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon } from '../../types';
 
@@ -142,5 +143,9 @@ export class AnnotationComponent {
 
     // trigger change detector
     this.ref.detectChanges();
+  }
+
+  getTagColor(tag: string) {
+    return getTagColor(tag);
   }
 }

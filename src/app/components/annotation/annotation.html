@@ -112,7 +112,11 @@
     <!-- Tags -->
     <div class="pnd-annotation__tags"
         *ngIf="data.tags">
-        <span *ngFor="let tag of data.tags" class="pnd-annotation__tags-item">
+        <span *ngFor="let tag of data.tags" 
+        [ngStyle]="{
+            'background-color': getTagColor(tag)
+        }"
+        class="pnd-annotation__tags-item">
             {{ tag }}
         </span>
     </div>
