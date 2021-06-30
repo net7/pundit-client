@@ -262,14 +262,17 @@ annotation {
    #TAGS
 \* ------------------------------------ */
 .pnd-annotation {
+    .pnd-annotation__tags {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
     .pnd-annotation__tags-item {
         font-size: $font-size-xs;
         padding: $space/4 $space/2;
-        margin-left: $space;
+        margin: $space/4;
         color: $color-text;
-    }
-    .pnd-annotation__tags-item:nth-child(1) {
-        margin-left: 0;
+        border-radius: $border-radius;
     }
 }
 
@@ -303,7 +306,7 @@ annotation {
     }
 
     .pnd-annotation__tags {
-        padding: $space $space $space $space;
+        padding: $space/2;
         border-top: 1px solid $annotation-border-color;
     }
 

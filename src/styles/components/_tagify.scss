@@ -44,9 +44,12 @@
 }
 
 .tagify__dropdown {
+    top: auto !important;
+    left: $space*2 !important;
 }
 
 .tagify__dropdown__wrapper {
+    border-top-width: 1px;
     border-color: $color-border-normal;
     border-radius: $form-border-radius;
 }
