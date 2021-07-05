@@ -35,6 +35,8 @@ export class ChromeExtService {
             action: AnalyticsAction.Bootstrap
           });
         }, 1000);
+        // api onload hook
+        (window as any).Pundit_API.onLoad();
         res();
       }, false);
     });

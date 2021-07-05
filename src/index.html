@@ -5,11 +5,8 @@
     <meta charset="utf-8">
     <title>pundit - shakespeare example</title>
     <base href="/">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1">
-    <link rel="icon"
-          type="image/x-icon"
-          href="favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
     <style>
         body {
             color: black;
@@ -29,6 +26,14 @@
             font-family: sans-serif;
         }
     </style>
+    <script type="text/javascript">
+        var Pundit_API = Pundit_API || {};
+        Pundit_API.onLoad = function () {
+            Pundit_API.config({
+                tagsHint: 'Please use the <strong>devgotriple</strong> tag to report bugs to the TRIPLE team'
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -5442,8 +5447,8 @@
         <A NAME=5.1.326>So sore as keeping safe Nerissa's ring.</A><br>
         <p><i>Exeunt</i></p>
 
-    <!-- PUNDIT! -->
-    <pnd-root></pnd-root>
+        <!-- PUNDIT! -->
+        <pnd-root></pnd-root>
 </body>
 
 </html>

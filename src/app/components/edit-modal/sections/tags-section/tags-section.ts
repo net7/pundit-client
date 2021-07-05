@@ -9,6 +9,7 @@ import { _t } from '@n7-frontend/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { _c } from 'src/app/models/config';
 import { TagService } from 'src/app/services/tag.service';
 import { FormSection, FormSectionData } from 'src/app/types';
 
@@ -35,6 +36,8 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
 
   private formInstance;
 
+  public tagsHint = _c('tagsHint');
+
   constructor(private tagService: TagService) {}
 
   ngAfterViewInit() {
@@ -45,7 +48,7 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
 
   private init = () => {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tag-wrapper');
+    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tags-input-wrapper');
     const tagFormConfig = {
       pattern: /^\w{2,128}$/,
       delimiters: ',| ',

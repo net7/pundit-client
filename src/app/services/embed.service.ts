@@ -12,6 +12,8 @@ export class EmbedService {
       setTokenFromStorage();
       // init communication settings
       initCommunicationSettings();
+      // api onload hook
+      (window as any).Pundit_API.onLoad();
       resolve();
     });
   }
