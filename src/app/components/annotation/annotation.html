@@ -19,7 +19,7 @@
 
 <ng-template #expanded>
     <!-- Header -->
-    <div class="pnd-annotation__header">
+    <div class="pnd-annotation__header" (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
 
         <div class="pnd-annotation__header-thumb-wrapper">
             <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
