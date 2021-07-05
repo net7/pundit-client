@@ -116,10 +116,24 @@ annotation {
         text-overflow: ellipsis;
     }
     
-    a .pnd-annotation__header-name {
-        cursor: pointer;
-        &:hover {
+    // User name link.
+    a {
+        color: $color-text;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
+        
+        .pnd-annotation__header-name { // div
+            cursor: pointer;
+            color: $color-text;            
+        }
+
+        &:hover, &:active, &:focus {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
+
+            .pnd-annotation__header-name { // div
+                color: $color-text-link;
+            }
         }
     }
     
@@ -145,12 +159,14 @@ annotation {
     }
 
     &__header-notebook-link {
-        text-decoration: none;
         color: $color-text;
         cursor: pointer;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
         
         &:hover {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
         }
     }
 
@@ -473,10 +489,11 @@ annotation {
             background-color: $color-highlight;
         }
 
-        &__header,
-        &__highlight-text,
-        &__comment,
-        &__notebook {
+        .pnd-annotation__tags,
+        .pnd-annotation__header,
+        .pnd-annotation__highlight-text,
+        .pnd-annotation__comment,
+        .pnd-annotation__notebook {
             display: none;
         }
 

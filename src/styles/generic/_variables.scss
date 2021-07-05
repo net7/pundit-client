@@ -48,7 +48,7 @@ $font-weight-bold: 500;
 // Text Colors
 $color-text: $color-gray-05;
 $color-text-inverse: $color-gray-00;
-$color-text-light: $color-gray-04;
+$color-text-light: lighten($color-gray-05, 42); // $color-gray-04;
 $color-text-link: $color-main;
 $color-text-link-hover: $color-text-hover;
 $color-text-link-visited: $color-text-hover;
