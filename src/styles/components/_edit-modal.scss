@@ -151,9 +151,18 @@
 /* ------------------------------------ *\
    #TAGIFY FIX
 \* ------------------------------------ */
-.pnd-edit-modal__tag-wrapper {
-    position: relative;
+.pnd-edit-modal {
+    &__tag-wrapper {
+        position: relative;
+    }
+
+    &__tags-hint {
+        margin: $space 0 0 0;
+        font-size: $font-size-s;
+        color: $color-text-light;
+    }
 }
+
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES
