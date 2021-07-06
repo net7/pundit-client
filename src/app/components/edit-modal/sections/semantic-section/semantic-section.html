@@ -1,0 +1,20 @@
+<div class="pnd-edit-modal__semantic-wrapper" *ngIf="data">
+    <div *ngFor="let row of rows; let $i = index" class="pnd-edit-modal__semantic-row">
+        <!-- Predicate Select -->
+        <select (change)="onPredicateChange($i, $event.target.value)">
+            <option *ngFor="let option of row.predicate.options" 
+                [value]="option.value"
+                [selected]="option.selected">
+                {{ option.label }}
+            </option>
+        </select>
+        <!-- END // Predicate Select -->
+
+        <!-- Subject Input -->
+        <input type="text" 
+            (input)="onSubjectChange($i, $event.target.value)" 
+            [value]="row.subject.value"
+            [placeholder]="row.subject.placeholder" />
+        <!-- END // Subject Input -->
+    </div>
+</div>
