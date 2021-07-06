@@ -15,7 +15,7 @@ export class NotebookModel {
 
   @CrossMessage(CrossMsgRequestId.NotebookSearch)
   static search() {
-    return notebook.search({ size: 20 });
+    return notebook.search({ size: 50 });
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookUpdate)
