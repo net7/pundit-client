@@ -4,11 +4,21 @@ import { SemanticItem, SemanticProvider } from 'src/app/types';
 export class SemanticGenericProvider implements SemanticProvider {
   selected: SemanticItem = null;
 
-  constructor(
-    public id: string,
-    public label: string,
-    public items: SemanticItem[] = [],
-  ) {}
+  public id: string;
+
+  public label: string;
+
+  public items: SemanticItem[];
+
+  constructor({ id, label, items }: {
+    id: string;
+    label: string;
+    items: SemanticItem[];
+  }) {
+    this.id = id;
+    this.label = label;
+    this.items = items;
+  }
 
   get(uri: string) {
     return this.items.find((item) => item.uri === uri);

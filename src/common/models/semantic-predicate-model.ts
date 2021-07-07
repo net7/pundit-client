@@ -52,8 +52,11 @@ const DEFAULT_PREDICATES = [
 export class SemanticPredicateModel {
   @CrossMessage(CrossMsgRequestId.SemanticPredicateGet)
   static get() {
-    return Promise.resolve({
-      data: DEFAULT_PREDICATES
+    return new Promise((res) => {
+      res({
+        status: 200,
+        data: DEFAULT_PREDICATES
+      });
     });
   }
 }

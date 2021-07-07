@@ -5,11 +5,13 @@ import {
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import { Subject } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
+import { SemanticGenericProvider, SemanticTextProvider } from 'src/app/models/semantic';
+import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
 import {
   FormSection, FormSectionData, SemanticConfig, SemanticItem
 } from 'src/app/types';
-import { config as semanticSectionConfig, DEFAULT_ID } from './semantic-section.config';
+
+export const DEFAULT_PROVIDER_ID = 'pundit-basic';
 
 const OBJECT_VALUE_MIN_LIMIT = 3;
 
@@ -29,10 +31,12 @@ export type SemanticFormRow = {
       value: string;
       selected?: boolean;
     }[];
+    isExpanded: boolean;
   };
   object: {
     value: string;
     providerId: string;
+    type?: 'literal' | 'uri';
     placeholder?: string;
   };
 };
@@ -51,19 +55,14 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     object: SemanticConfig;
   } = {
     predicate: {
-      default: DEFAULT_ID,
+      default: DEFAULT_PROVIDER_ID,
       providers: []
     },
     object: {
-      default: DEFAULT_ID,
+      default: DEFAULT_PROVIDER_ID,
       providers: []
     }
   };
-
-  private search$: Subject<{
-    rowIndex: number;
-    value: string;
-  }> = new Subject();
 
   public rows: SemanticFormRow[] = [];
 
@@ -71,24 +70,21 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
 
   @Input() public reset$: Subject<void>;
 
-  constructor() {
-    // predicate providers config
-    semanticSectionConfig.predicate.forEach(({
-      id, label, items, provider: ProviderKlass
-    }) => {
-      const provider = new ProviderKlass(id, label, items);
-      this.config.predicate.providers.push(provider);
-    });
-    // object providers config
-    semanticSectionConfig.object.forEach(({
-      id, label, items, provider: ProviderKlass
-    }) => {
-      const provider = new ProviderKlass(id, label, items);
-      this.config.object.providers.push(provider);
-    });
-
-    // listen object search
-    this.listenObjectSearch();
+  constructor(
+    private semanticPredicateService: SemanticPredicateService
+  ) {
+    // set default predicate config
+    this.config.predicate.providers.push(new SemanticGenericProvider({
+      id: DEFAULT_PROVIDER_ID,
+      label: 'Basic Relation',
+      items: this.semanticPredicateService.get()
+    }));
+    // set default object config
+    this.config.object.providers.push(new SemanticTextProvider({
+      id: DEFAULT_PROVIDER_ID,
+      label: 'Basic Object',
+      items: []
+    }));
   }
 
   ngAfterViewInit() {
@@ -123,7 +119,8 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
           label,
           value: uri,
           selected: uri === (predicate.uri || defaultPredicate.uri)
-        }))
+        })),
+        isExpanded: false
       },
       object: {
         value: object.label || null,
@@ -135,25 +132,38 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
 
   removeRow(index: number) {
     this.rows.splice(index, 1);
+
+    // trigger form change
+    this.triggerChange();
   }
 
   onPredicateChange(rowIndex, value) {
-    this.rows[rowIndex].predicate.options
+    const currentRow = this.rows[rowIndex];
+    currentRow.predicate.options
       .forEach((option) => {
         option.selected = option.value === value;
+        if (option.selected) {
+          currentRow.predicate.label = option.label;
+        }
       });
 
+    // trigger form change
     this.triggerChange();
   }
 
   onObjectChange(rowIndex, value) {
     const currentRow = this.rows[rowIndex];
-    // default value for free text input
-    currentRow.object.value = value;
-    // update autocomplete search change
-    this.search$.next({ rowIndex, value });
+    currentRow.object.value = typeof value === 'string' ? value.trim() : value;
+    if (currentRow.object.providerId === DEFAULT_PROVIDER_ID) {
+      this.updateObjectType(rowIndex);
+    }
     // trigger form change
     this.triggerChange();
+  }
+
+  onPredicateToggleExpand(rowIndex) {
+    const currentRow = this.rows[rowIndex];
+    currentRow.predicate.isExpanded = !currentRow.predicate.isExpanded;
   }
 
   private triggerChange() {
@@ -206,15 +216,14 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     // TODO
   }
 
-  private listenObjectSearch() {
-    this.search$.pipe(
-      debounceTime(500)
-    ).subscribe(({ rowIndex, value }) => {
-      const currentRow = this.rows[rowIndex];
-      const provider = this.getProviderById(currentRow.object.providerId, 'object');
-      provider.search(value).subscribe((items) => {
-        console.warn('FIXME: completare logica search', value, items);
-      });
-    });
+  private updateObjectType(rowIndex: number) {
+    const currentRow = this.rows[rowIndex];
+    const regex = /^(http:|https:|urn:|mailto:|file:)/g;
+    currentRow.object.type = 'literal';
+    if (
+      (typeof currentRow.object.value === 'string')
+      && currentRow.object.value.match(regex)) {
+      currentRow.object.type = 'uri';
+    }
   }
 }

@@ -78,6 +78,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
     this.storageService = payload.storageService;
+    this.semanticPredicateService = payload.semanticPredicateService;
   }
 
   isUserLogged = () => this.state.isLogged;
