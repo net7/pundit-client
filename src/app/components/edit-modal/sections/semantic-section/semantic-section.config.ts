@@ -18,11 +18,11 @@ export const config = {
       uri: 'http://www.w3.org/2004/02/skos/core#related'
     }] as SemanticItem[]
   }],
-  subject: [{
+  object: [{
     id: DEFAULT_ID,
-    label: 'Basic Subject',
+    label: 'Basic Object',
     provider: SemanticTextProvider,
-    placeholder: 'Add subject...',
+    placeholder: 'Add object...',
     items: [] as SemanticItem[]
   }]
 };

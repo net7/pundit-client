@@ -11,7 +11,7 @@ export default {
   'editmodal#save': 'Save comment',
   'editmodal#save_tags': 'Save tags',
   'editmodal#add_tag': 'Add a tag',
-  'editmodal#semantic_subject_placeholder': 'Add a subject',
+  'editmodal#semantic_object_placeholder': 'Add a object',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':

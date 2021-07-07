@@ -11,11 +11,11 @@ import {
 } from 'src/app/types';
 import { config as semanticSectionConfig, DEFAULT_ID } from './semantic-section.config';
 
-const SUBJECT_VALUE_MIN_LIMIT = 3;
+const OBJECT_VALUE_MIN_LIMIT = 3;
 
 export type SemanticSectionValue = {
   predicate: SemanticItem;
-  subject: SemanticItem;
+  object: SemanticItem;
 }[];
 
 export type SemanticSectionOptions = {};
@@ -30,7 +30,7 @@ export type SemanticFormRow = {
       selected?: boolean;
     }[];
   };
-  subject: {
+  object: {
     value: string;
     providerId: string;
     placeholder?: string;
@@ -48,13 +48,13 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
 
   private config: {
     predicate: SemanticConfig;
-    subject: SemanticConfig;
+    object: SemanticConfig;
   } = {
     predicate: {
       default: DEFAULT_ID,
       providers: []
     },
-    subject: {
+    object: {
       default: DEFAULT_ID,
       providers: []
     }
@@ -79,12 +79,12 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
       const provider = new ProviderKlass(id, label, items);
       this.config.predicate.providers.push(provider);
     });
-    // subject providers config
-    semanticSectionConfig.subject.forEach(({
+    // object providers config
+    semanticSectionConfig.object.forEach(({
       id, label, items, provider: ProviderKlass
     }) => {
       const provider = new ProviderKlass(id, label, items);
-      this.config.subject.providers.push(provider);
+      this.config.object.providers.push(provider);
     });
 
     // listen object search
@@ -100,8 +100,8 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
   init() {
     const { initialValue } = this.data;
     if (Array.isArray(initialValue) && initialValue.length) {
-      initialValue.forEach(({ predicate, subject }) => {
-        this.addRow(predicate, subject);
+      initialValue.forEach(({ predicate, object }) => {
+        this.addRow(predicate, object);
       });
     } else {
       this.addRow();
@@ -110,7 +110,7 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
 
   addRow(
     predicate: SemanticItem = {} as SemanticItem,
-    subject: SemanticItem = {} as SemanticItem
+    object: SemanticItem = {} as SemanticItem
   ) {
     const predicateProviderId = predicate.providerId || this.config.predicate.default;
     const predicateProvider = this.getProviderById(predicateProviderId, 'predicate');
@@ -125,10 +125,10 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
           selected: uri === (predicate.uri || defaultPredicate.uri)
         }))
       },
-      subject: {
-        value: subject.label || null,
-        providerId: subject.providerId || this.config.subject.default,
-        placeholder: _t('editmodal#semantic_subject_placeholder')
+      object: {
+        value: object.label || null,
+        providerId: object.providerId || this.config.object.default,
+        placeholder: _t('editmodal#semantic_object_placeholder')
       }
     });
   }
@@ -146,10 +146,10 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     this.triggerChange();
   }
 
-  onSubjectChange(rowIndex, value) {
+  onObjectChange(rowIndex, value) {
     const currentRow = this.rows[rowIndex];
     // default value for free text input
-    currentRow.subject.value = value;
+    currentRow.object.value = value;
     // update autocomplete search change
     this.search$.next({ rowIndex, value });
     // trigger form change
@@ -161,24 +161,24 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     const errors = [];
     this.rows.forEach((row) => {
       const rawValues = {
-        subject: row.subject.value || null,
+        object: row.object.value || null,
         predicate: (row.predicate.options
           .find((option) => option.selected) || {}).value || null
       };
 
-      if (rawValues.predicate && rawValues.subject) {
+      if (rawValues.predicate && rawValues.object) {
         const rowValue = {
           predicate: null as SemanticItem,
-          subject: null as SemanticItem
+          object: null as SemanticItem
         };
-        ['predicate', 'subject'].forEach((key: 'predicate' | 'subject') => {
+        ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
           const { providerId } = row[key];
           const provider = this.getProviderById(providerId, key);
           rowValue[key] = provider.get(rawValues[key]);
         });
-        if (rowValue.subject?.label && (rowValue.subject?.label.length < SUBJECT_VALUE_MIN_LIMIT)) {
+        if (rowValue.object?.label && (rowValue.object?.label.length < OBJECT_VALUE_MIN_LIMIT)) {
           errors.push('minlength');
-        } else if (rowValue.predicate && rowValue.subject) {
+        } else if (rowValue.predicate && rowValue.object) {
           formValue.push(rowValue);
         }
       }
@@ -191,7 +191,7 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     });
   }
 
-  private getProviderById(id: string, type: 'predicate' | 'subject') {
+  private getProviderById(id: string, type: 'predicate' | 'object') {
     return this.config[type].providers
       .find((provider) => provider.id === id) || null;
   }
@@ -211,7 +211,7 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
       debounceTime(500)
     ).subscribe(({ rowIndex, value }) => {
       const currentRow = this.rows[rowIndex];
-      const provider = this.getProviderById(currentRow.subject.providerId, 'subject');
+      const provider = this.getProviderById(currentRow.object.providerId, 'object');
       provider.search(value).subscribe((items) => {
         console.warn('FIXME: completare logica search', value, items);
       });
