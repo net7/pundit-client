@@ -26,7 +26,9 @@ export enum CrossMsgRequestId {
   // analytics
   AnalyticsTrigger = 'analytics.trigger',
   // tag
-  TagGet = 'tag.get'
+  TagGet = 'tag.get',
+  // semantic
+  SemanticPredicateGet = 'semanticpredicate.get',
 }
 
 export enum CommonEventType {

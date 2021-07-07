@@ -20,7 +20,8 @@ import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
-import { AnnotationModel } from '../../../common/models';
+import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
   isLogged: boolean;
@@ -41,6 +42,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public annotationService: AnnotationService;
 
   public tagService: TagService;
+
+  public semanticPredicateService: SemanticPredicateService;
 
   public anchorService: AnchorService;
 
@@ -108,6 +111,14 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(TagModel.get()).pipe(
       tap(({ data: tags }) => {
         this.tagService.load(tags);
+      })
+    );
+  }
+
+  getUserSemanticPredicates() {
+    return from(SemanticPredicateModel.get()).pipe(
+      tap(({ data }) => {
+        this.semanticPredicateService.load(data);
       })
     );
   }

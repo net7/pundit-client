@@ -22,6 +22,7 @@ import { ChromeExtService } from './services/chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
 import { TagService } from './services/tag.service';
+import { SemanticPredicateService } from './services/semantic-predicate.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -70,6 +71,7 @@ const providers: any[] = [
   ChromeExtService,
   StorageChromeExtService,
   ImageDataService,
+  SemanticPredicateService,
   { provide: APP_BASE_HREF, useValue: '/' },
 ];
 

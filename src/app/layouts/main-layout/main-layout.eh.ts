@@ -76,6 +76,7 @@ export class MainLayoutEH extends EventHandler {
               return this.dataSource.getUserAnnotations();
             }),
             switchMap(() => this.dataSource.getUserTags()),
+            switchMap(() => this.dataSource.getUserSemanticPredicates()),
             catchError((e) => {
               this.handleError(e);
               return EMPTY;
