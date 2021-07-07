@@ -140,7 +140,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('commentmodal#save_tags'),
+      saveButtonLabel: _t('editmodal#save_tags'),
       sections: [{
         id: 'tags',
         required: true,

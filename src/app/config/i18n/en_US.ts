@@ -4,13 +4,14 @@ export default {
   'tooltip#comment': 'Comment',
   'tooltip#tag': 'Tag',
   // comment modal
-  'commentmodal#label': 'Your comment',
-  'commentmodal#notebook': 'Save comment in notebook',
-  'commentmodal#notebook_create': 'Create new notebook',
-  'commentmodal#cancel': 'Cancel',
-  'commentmodal#save': 'Save comment',
-  'commentmodal#save_tags': 'Save tags',
-  'commentmodal#add_tag': 'Add a tag',
+  'editmodal#label': 'Your comment',
+  'editmodal#notebook': 'Save comment in notebook',
+  'editmodal#notebook_create': 'Create new notebook',
+  'editmodal#cancel': 'Cancel',
+  'editmodal#save': 'Save comment',
+  'editmodal#save_tags': 'Save tags',
+  'editmodal#add_tag': 'Add a tag',
+  'editmodal#semantic_subject_placeholder': 'Add a subject',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':

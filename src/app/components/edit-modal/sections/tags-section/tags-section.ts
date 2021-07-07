@@ -55,7 +55,7 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
       maxTags: 20,
       transformTag: this.transformTag,
       backspace: 'edit',
-      placeholder: _t('commentmodal#add_tag'),
+      placeholder: _t('editmodal#add_tag'),
       dropdown: {
         enabled: 0,
         fuzzySearch: false,

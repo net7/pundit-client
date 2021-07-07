@@ -111,7 +111,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     } else {
       // focus on input tags
       params.sections[0].focus = true;
-      params.saveButtonLabel = _t('commentmodal#save_tags');
+      params.saveButtonLabel = _t('editmodal#save_tags');
     }
 
     this.layoutDS.openEditModal(params);
