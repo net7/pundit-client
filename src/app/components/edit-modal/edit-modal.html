@@ -23,6 +23,13 @@
             </pnd-comment-section>
             <!-- END // Comment Section -->
 
+            <!-- Semantic Section -->
+            <pnd-semantic-section *ngIf="data.sections?.semantic" 
+                [data]="data.sections.semantic"
+                [reset$]="reset$">
+            </pnd-semantic-section>
+            <!-- END // Semantic Section -->
+
             <!-- Tags Section -->
             <pnd-tags-section *ngIf="data.sections?.tags" 
                 [data]="data.sections.tags"

@@ -37,6 +37,7 @@ import { EditModalComponent } from './components/edit-modal/edit-modal';
 import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
 import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
 import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
+import { SemanticSectionComponent } from './components/edit-modal/sections/semantic-section/semantic-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -110,6 +111,7 @@ if (env.chromeExt) {
     CommentSectionComponent,
     TagsSectionComponent,
     NotebookSectionComponent,
+    SemanticSectionComponent,
     // PIPES
     SortByPipe,
   ],

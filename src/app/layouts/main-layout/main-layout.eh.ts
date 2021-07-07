@@ -84,6 +84,16 @@ export class MainLayoutEH extends EventHandler {
             this.appEvent$.next({
               type: AppEvent.SearchAnnotationResponse
             });
+
+            // FIXME: togliere
+            this.dataSource.openEditModal({
+              textQuote: 'lorem ipsum...',
+              sections: [{
+                id: 'semantic',
+                required: true,
+                focus: true
+              }]
+            });
           });
           break;
         }

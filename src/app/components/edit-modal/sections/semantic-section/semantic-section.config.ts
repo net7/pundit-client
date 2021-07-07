@@ -22,6 +22,7 @@ export const config = {
     id: DEFAULT_ID,
     label: 'Basic Subject',
     provider: SemanticTextProvider,
+    placeholder: 'Add subject...',
     items: [] as SemanticItem[]
   }]
 };

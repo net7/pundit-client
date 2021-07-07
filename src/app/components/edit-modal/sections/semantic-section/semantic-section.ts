@@ -3,7 +3,9 @@ import {
   Component,
   Input,
 } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { Subject } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import {
   FormSection, FormSectionData, SemanticConfig, SemanticItem
 } from 'src/app/types';
@@ -47,9 +49,23 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
   private config: {
     predicate: SemanticConfig;
     subject: SemanticConfig;
-  }
+  } = {
+    predicate: {
+      default: DEFAULT_ID,
+      providers: []
+    },
+    subject: {
+      default: DEFAULT_ID,
+      providers: []
+    }
+  };
 
-  private rows: SemanticFormRow[];
+  private search$: Subject<{
+    rowIndex: number;
+    value: string;
+  }> = new Subject();
+
+  public rows: SemanticFormRow[] = [];
 
   @Input() public data: FormSectionData<SemanticSectionValue, SemanticSectionOptions>;
 
@@ -70,9 +86,9 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
       const provider = new ProviderKlass(id, label, items);
       this.config.subject.providers.push(provider);
     });
-    // defaults
-    this.config.predicate.default = DEFAULT_ID;
-    this.config.subject.default = DEFAULT_ID;
+
+    // listen object search
+    this.listenObjectSearch();
   }
 
   ngAfterViewInit() {
@@ -102,7 +118,7 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     this.rows.push({
       predicate: {
         label: predicate.label || defaultPredicate.label,
-        providerId: predicate.providerId || defaultPredicate.providerId,
+        providerId: predicateProviderId,
         options: predicateProvider.items.map(({ label, uri }) => ({
           label,
           value: uri,
@@ -111,7 +127,8 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
       },
       subject: {
         value: subject.label || null,
-        providerId: subject.providerId || this.config.subject.default
+        providerId: subject.providerId || this.config.subject.default,
+        placeholder: _t('editmodal#semantic_subject_placeholder')
       }
     });
   }
@@ -130,8 +147,12 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
   }
 
   onSubjectChange(rowIndex, value) {
-    this.rows[rowIndex].subject.value = value;
-
+    const currentRow = this.rows[rowIndex];
+    // default value for free text input
+    currentRow.subject.value = value;
+    // update autocomplete search change
+    this.search$.next({ rowIndex, value });
+    // trigger form change
     this.triggerChange();
   }
 
@@ -139,23 +160,25 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
     const formValue = [];
     const errors = [];
     this.rows.forEach((row) => {
-      const subjectValue = row.subject.value || null;
-      const predicateValue = (row.predicate.options
-        .find((option) => option.selected) || {}).value || null;
+      const rawValues = {
+        subject: row.subject.value || null,
+        predicate: (row.predicate.options
+          .find((option) => option.selected) || {}).value || null
+      };
 
-      if (subjectValue && (subjectValue.length < SUBJECT_VALUE_MIN_LIMIT)) {
-        errors.push('minlength');
-      } else if (predicateValue && subjectValue) {
+      if (rawValues.predicate && rawValues.subject) {
         const rowValue = {
-          predicate: null,
-          subject: null
+          predicate: null as SemanticItem,
+          subject: null as SemanticItem
         };
         ['predicate', 'subject'].forEach((key: 'predicate' | 'subject') => {
           const { providerId } = row[key];
           const provider = this.getProviderById(providerId, key);
-          rowValue[key] = provider.get(predicateValue);
+          rowValue[key] = provider.get(rawValues[key]);
         });
-        if (rowValue.predicate && rowValue.subject) {
+        if (rowValue.subject?.label && (rowValue.subject?.label.length < SUBJECT_VALUE_MIN_LIMIT)) {
+          errors.push('minlength');
+        } else if (rowValue.predicate && rowValue.subject) {
           formValue.push(rowValue);
         }
       }
@@ -181,5 +204,17 @@ export class SemanticSectionComponent implements AfterViewInit, FormSection<
 
   private checkFocus = () => {
     // TODO
+  }
+
+  private listenObjectSearch() {
+    this.search$.pipe(
+      debounceTime(500)
+    ).subscribe(({ rowIndex, value }) => {
+      const currentRow = this.rows[rowIndex];
+      const provider = this.getProviderById(currentRow.subject.providerId, 'subject');
+      provider.search(value).subscribe((items) => {
+        console.warn('FIXME: completare logica search', value, items);
+      });
+    });
   }
 }
