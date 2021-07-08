@@ -109,6 +109,19 @@
     </div>
     <!-- END // Caret and comment -->
 
+    <!-- Semantic triple -->
+    <div *ngIf="data.semantic" class="pnd-annotation__semantic">
+        <div *ngFor="let triple of data.semantic" class="pnd-annotation__semantic-item">
+            <div class="pnd-annotation__semantic-item-predicate">
+                {{ triple.predicate.label }}
+            </div>
+            <div class="pnd-annotation__semantic-item-object">
+                {{ triple.object.text }}
+            </div>
+        </div>
+    </div>
+    <!-- END // Semantic triple -->
+
     <!-- Tags -->
     <div class="pnd-annotation__tags"
         *ngIf="data.tags">

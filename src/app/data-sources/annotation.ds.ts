@@ -35,10 +35,19 @@ export class AnnotationDS extends DataSource {
         isExpanded: false,
       }
     };
+
+    // check comment
     let comment;
     if (data.type === 'Commenting') {
       const { content } = data;
       comment = content.comment;
+    }
+
+    // check semantic
+    let semantic;
+    if (data.type === 'Linking') {
+      const { content } = data;
+      semantic = content;
     }
 
     return {
@@ -61,6 +70,7 @@ export class AnnotationDS extends DataSource {
       notebook: this.getNotebookData(),
       body: text,
       comment,
+      semantic,
       tags,
       menu: this.getMenuData(id, comment, tags),
     };

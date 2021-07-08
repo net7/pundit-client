@@ -3,7 +3,7 @@
 //---------------------------
 
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Annotation, Tag } from '@pundit/communication';
+import { Annotation, SemanticTripleType, Tag } from '@pundit/communication';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon } from '../../types';
@@ -72,6 +72,8 @@ export interface AnnotationData {
   body: string;
   /** Annotation comment */
   comment?: string;
+  /** Annotation comment */
+  semantic?: SemanticTripleType[];
   /** Annotation tags */
   tags?: Tag[];
   /** HTML Classes */
