@@ -3,6 +3,7 @@ export default {
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
   'tooltip#tag': 'Tag',
+  'tooltip#semantic': 'Semantic',
   // comment modal
   'editmodal#label': 'Your comment',
   'editmodal#notebook': 'Save comment in notebook',
@@ -12,6 +13,10 @@ export default {
   'editmodal#save_tags': 'Save tags',
   'editmodal#add_tag': 'Add a tag',
   'editmodal#semantic_object_placeholder': 'Add an object',
+  'editmodal#semantic_label': 'Semantic relations',
+  'editmodal#semantic_add': 'Add relation',
+  'editmodal#semantic_remove': 'Remove relation',
+  'editmodal#save_semantic': 'Save semantic annotation',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':
