@@ -1,6 +1,6 @@
 <div class="pnd-edit-modal__semantic-wrapper" *ngIf="data">
     <div class="pnd-edit-modal__semantic-label">
-        {{ data.options.label }}
+        {{ labels.title }}
     </div>
     <div *ngFor="let row of rows; let $i = index" class="pnd-edit-modal__semantic-row">
         
@@ -41,15 +41,26 @@
         <!-- END // Predicate Select -->
 
         <!-- Object Input -->
-        <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
-            <label [attr.for]="'object-input-' + $i">
-                {{ row.object.type }}
-            </label>
-            <input [attr.id]="'object-input-' + $i" type="text" 
-                (input)="onObjectChange($i, $event.target.value)" 
-                [value]="row.object.value"
-                [placeholder]="row.object.placeholder" />
-        </ng-container>
+        <div class="pnd-edit-modal__semantic-object">
+            <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
+                <label [attr.for]="'object-input-' + $i"
+                    class="pnd-edit-modal__semantic-object-label">
+                    {{ row.object.type }}
+                </label>
+                <input [attr.id]="'object-input-' + $i" type="text" 
+                    class="pnd-edit-modal__semantic-object-input small"
+                    (input)="onObjectChange($i, $event.target.value)" 
+                    [value]="row.object.value"
+                    [placeholder]="row.object.placeholder" />
+            </ng-container>
+        </div>    
         <!-- END // Object Input -->
+
+        <!-- Actions -->
+        <div class="pnd-edit-modal__semantic-actions">
+            <a (click)="onAddClick($i)" class="pnd-btn" [title]="labels.add">&#43;</a>
+            <a (click)="onRemoveClick($i)" class="pnd-btn" [title]="labels.remove">&#45;</a>
+        </div>    
+        <!-- END // Actions -->
     </div>
 </div>
