@@ -1,5 +1,5 @@
 import { DataSource, _t } from '@n7-frontend/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnnotationData } from '../components/annotation/annotation';
@@ -72,7 +72,7 @@ export class AnnotationDS extends DataSource {
       comment,
       semantic,
       tags,
-      menu: this.getMenuData(id, comment, tags),
+      menu: this.getMenuData(id, comment, tags, semantic),
     };
   }
 
@@ -253,15 +253,23 @@ export class AnnotationDS extends DataSource {
     };
   }
 
-  private getMenuData(id: string, comment?: string, tags?: string[]) {
+  private getMenuData(
+    id: string,
+    comment?: string,
+    tags?: string[],
+    semantic?: SemanticTripleType[]
+  ) {
     const hasComment = this.output
       ? !!this.output.comment
       : comment;
     const hasTags = this.output
       ? !!this.output.tags
       : (Array.isArray(tags) && tags.length);
+    const hasSemantic = this.output
+      ? !!this.output.semantic
+      : (Array.isArray(semantic) && semantic.length);
     const { currentUserNotebooks } = this.options;
-    const actions = this.createActionButtons(id, hasComment, hasTags);
+    const actions = this.createActionButtons(id, hasComment, hasTags, hasSemantic);
     return this.isCurrentUser() ? {
       icon: {
         id: 'ellipsis-v',
@@ -292,41 +300,49 @@ export class AnnotationDS extends DataSource {
     } : null;
   }
 
-  private createActionButtons(id: string, hasComment, hasTags) {
+  private createActionButtons(id: string, hasComment, hasTags, hasSemantic) {
     const actions = [{
       label: _t('annotation#changenotebook'),
       payload: {
         id,
         source: 'action-notebooks'
       }
-    }, {
-      label: hasComment
-        ? _t('annotation#editcomment')
-        : _t('annotation#addcomment'),
-      payload: {
-        id,
-        source: 'action-comment'
-      }
-    }, {
+    }];
+
+    // comment action
+    if (hasComment) {
+      actions.push(this.getActionButton(id, 'comment', 'edit'));
+    } else if (hasSemantic) {
+      actions.push(this.getActionButton(id, 'semantic', 'edit'));
+    } else {
+      actions.push(this.getActionButton(id, 'comment', 'add'));
+      actions.push(this.getActionButton(id, 'semantic', 'add'));
+      actions.push(this.getActionButton(id, 'tags', hasTags ? 'edit' : 'add'));
+    }
+
+    // and delete action
+    actions.push({
       label: _t('annotation#delete'),
       payload: {
         id,
         source: 'action-delete'
       }
-    }];
-    if (!hasComment) {
-      const tagAction = {
-        label: hasTags
-          ? _t('annotation#edittags')
-          : _t('annotation#addtags'),
-        payload: {
-          id,
-          source: 'action-tags'
-        }
-      };
-      actions.splice(2, 0, tagAction);
-    }
+    });
     return actions;
+  }
+
+  private getActionButton(
+    id: string,
+    type: 'comment' | 'tags' | 'semantic',
+    action: 'add' | 'edit'
+  ) {
+    return {
+      label: _t(`annotation#${action}${type}`),
+      payload: {
+        id,
+        source: `action-${type}`
+      }
+    };
   }
 
   private getNotebookData() {

@@ -90,6 +90,8 @@ export default {
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
   'annotation#editcomment': 'Edit',
+  'annotation#addsemantic': 'Add semantic',
+  'annotation#editsemantic': 'Edit',
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
