@@ -58,8 +58,35 @@
 
         <!-- Actions -->
         <div class="pnd-edit-modal__semantic-actions">
-            <a (click)="onAddClick($i)" class="pnd-btn" [title]="labels.add">&#43;</a>
-            <a (click)="onRemoveClick($i)" class="pnd-btn" [title]="labels.remove">&#45;</a>
+            <div class="pnd-dropdown {{ row.actions.isExpanded ? 'is-expanded' : '' }}">
+
+                <!-- Action menu button -->
+                <button class="pnd-dropdown__selected"
+                    (click)="onActionsToggleExpand($i)">
+                    <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
+                </button>
+                <!-- END // Action menu button -->
+        
+                <!-- Dropdown items -->
+                <div class="pnd-dropdown__list-wrapper">
+                    <!-- list of actions -->
+                    <div class="pnd-dropdown__list-items">
+                        <div (click)="onAddClick($i)"
+                            class="pnd-dropdown__item">
+                            {{ labels.add }}
+                        </div>
+                    </div>
+                    <!-- list of actions -->
+                    <div class="pnd-dropdown__list-items">
+                        <div (click)="onRemoveClick($i)"
+                            class="pnd-dropdown__item">
+                            {{ getRemoveLabel() }}
+                        </div>
+                    </div>
+                </div>
+                <!-- END // Dropdown items -->
+
+            </div>
         </div>    
         <!-- END // Actions -->
     </div>

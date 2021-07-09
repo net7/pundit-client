@@ -16,6 +16,7 @@ export default {
   'editmodal#semantic_label': 'Semantic relations',
   'editmodal#semantic_add': 'Add relation',
   'editmodal#semantic_remove': 'Remove relation',
+  'editmodal#semantic_clear': 'Clear relation',
   'editmodal#save_semantic': 'Save semantic annotation',
   // delete modal
   'deletemodal#label': 'Delete Annotation',

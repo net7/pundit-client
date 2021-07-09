@@ -41,6 +41,9 @@ export type SemanticFormRow = {
     type?: 'literal' | 'uri';
     placeholder?: string;
   };
+  actions: {
+    isExpanded: boolean;
+  };
 };
 
 @Component({
@@ -56,6 +59,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     title: _t('editmodal#semantic_label'),
     add: _t('editmodal#semantic_add'),
     remove: _t('editmodal#semantic_remove'),
+    clear: _t('editmodal#semantic_clear'),
   }
 
   private config: {
@@ -150,6 +154,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
         value: objectValue,
         providerId: objectProviderId,
         placeholder: _t('editmodal#semantic_object_placeholder')
+      },
+      actions: {
+        isExpanded: false
       }
     } as SemanticFormRow;
 
@@ -213,12 +220,29 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     });
   }
 
+  onActionsToggleExpand(rowIndex) {
+    // update dropdowns
+    this.rows.forEach((row, index) => {
+      row.actions.isExpanded = index === rowIndex
+        ? !row.actions.isExpanded
+        : false;
+    });
+  }
+
   onAddClick(rowIndex) {
     this.addRow({} as SemanticItem, {} as SemanticItem, rowIndex);
+    // closes dropdown
+    this.rows[rowIndex].actions.isExpanded = false;
   }
 
   onRemoveClick(rowIndex) {
     this.removeRow(rowIndex);
+    // closes dropdown
+    this.rows[rowIndex].actions.isExpanded = false;
+  }
+
+  getRemoveLabel() {
+    return this.rows.length === 1 ? this.labels.clear : this.labels.remove;
   }
 
   private triggerChange() {

@@ -187,8 +187,10 @@
         margin-bottom: 0;
     }
 
-    .pnd-dropdown {
-        width: 130px;
+    .pnd-edit-modal__semantic-predicate {
+        .pnd-dropdown {
+            width: 130px;
+        }
     }
 
     .pnd-dropdown__list-wrapper {
@@ -207,14 +209,47 @@
         }
     }
 
+    // actions
     .pnd-edit-modal__semantic-actions {
-        a {
-            margin: 0 0 0 $space;
-            padding: 0 6px;
-            font-family: monospace;
-            height: 20px;
-            width: 20px;
-            vertical-align: sub;
+        .pnd-dropdown {
+            min-width: auto;
+        }
+        .pnd-dropdown__selected {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            margin-left: $space/2;
+            border-radius: $border-radius;
+            border: 1px solid $color-border-normal;
+            background-color: $color-background-light;
+            cursor: pointer;
+            color: $color-text-light;
+            font-size: $font-size-s;
+            transition: color $transition-durations;
+            
+            .pnd-svg-icon, .pnd-svg-icon svg {
+                width: $font-size-s;
+                height: $font-size-s;
+            }
+    
+            &:hover {
+                color: $color-text-link;
+                border: 1px solid $color-text-link;
+            }
+        }
+        .pnd-dropdown__list-wrapper {
+            position: absolute;
+            top: 24px + $space/2;
+            right: 24px + $space/2;
+            left: -91px;
+            width: 120px;
+            padding: 0;
+            background-color: $color-background-base;
+            border: 1px solid $color-border-normal;
+            border-radius: $border-radius;
+            @include cardShadow-1;
         }
     }
 }
