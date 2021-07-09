@@ -117,6 +117,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         value: semantic,
         focus: true
       });
+      params.saveButtonLabel = _t('editmodal#save_semantic');
     } else {
       // focus on input tags
       params.sections[0].focus = true;
