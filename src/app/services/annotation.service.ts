@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation
+  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation, LinkAnnotation
 } from '@pundit/communication';
 import { Subject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -198,6 +198,9 @@ export class AnnotationService {
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
+    }
+    if (payload.type === 'Linking') {
+      (newAnnotation as LinkAnnotation).content = payload.content;
     }
     return newAnnotation;
   }
