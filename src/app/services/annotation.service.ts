@@ -117,6 +117,8 @@ export class AnnotationService {
             cachedAnnotation.ds.updateComment(data.content.comment);
           } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
             cachedAnnotation.ds.removeComment();
+          } else if (data.type === 'Linking') {
+            cachedAnnotation.ds.updateSemantic(data.content);
           }
           cachedAnnotation.ds.updateTags(data.tags);
           cachedAnnotation.ds.updateMenu();

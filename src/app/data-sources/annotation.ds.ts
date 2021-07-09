@@ -6,6 +6,7 @@ import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 import { _c } from '../models/config';
 import { NotebookData } from '../services/notebook.service';
+import { SemanticItem } from '../types';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -47,7 +48,7 @@ export class AnnotationDS extends DataSource {
     let semantic;
     if (data.type === 'Linking') {
       const { content } = data;
-      semantic = content;
+      semantic = this.getSemanticData(content);
     }
 
     return {
@@ -211,8 +212,44 @@ export class AnnotationDS extends DataSource {
     this.output.tags = Array.isArray(tags) ? tags : undefined;
   }
 
+  updateSemantic(semantic) {
+    this.output.semantic = this.getSemanticData(semantic);
+  }
+
   updateCssClass(cssClass: AnnotationCssClass) {
     this.output.classes = cssClass;
+  }
+
+  private getSemanticData(rawSemantic: SemanticTripleType[]): {
+    predicate: SemanticItem;
+    object: SemanticItem;
+  }[] {
+    return rawSemantic.length ? rawSemantic.map((triple) => {
+      const { predicate } = triple;
+      let object = null;
+      // literal
+      if ('text' in triple.object) {
+        object = {
+          label: triple.object.text,
+          uri: null
+        };
+        // uri
+      } else if ('uri' in triple.object) {
+        object = {
+          label: triple.object.label,
+          uri: triple.object.uri,
+        };
+        // web page
+      } else if ('pageTitle' in triple.object) {
+        object = {
+          label: triple.object.pageTitle,
+          uri: null
+        };
+      } else {
+        console.warn('No handler for semantic object', triple.object);
+      }
+      return { predicate, object };
+    }) : undefined;
   }
 
   private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`
@@ -257,7 +294,10 @@ export class AnnotationDS extends DataSource {
     id: string,
     comment?: string,
     tags?: string[],
-    semantic?: SemanticTripleType[]
+    semantic?: {
+      predicate: SemanticItem;
+      object: SemanticItem;
+    }[]
   ) {
     const hasComment = this.output
       ? !!this.output.comment
@@ -309,7 +349,7 @@ export class AnnotationDS extends DataSource {
       }
     }];
 
-    // comment action
+    // annotation types actions logic
     if (hasComment) {
       actions.push(this.getActionButton(id, 'comment', 'edit'));
     } else if (hasSemantic) {

@@ -79,6 +79,12 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             payload
           });
           break;
+        case AnnotationEvent.EditSemantic: // open the comment modal and let the user edit
+          this.layoutEH.appEvent$.next({
+            type: AppEvent.AnnotationEditSemantic,
+            payload
+          });
+          break;
         case AnnotationEvent.CreateNotebook:
           this.createAnnotationNotebook({
             label: payload.notebook,
