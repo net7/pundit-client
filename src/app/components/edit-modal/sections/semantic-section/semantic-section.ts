@@ -270,7 +270,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     if (focus) {
       setTimeout(() => {
         const el = this.getObjectInputEl();
-        el.focus();
+        if (el) {
+          el.focus();
+        }
       });
     }
   }
@@ -287,6 +289,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   private getObjectInputEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector('input.pnd-edit-modal__semantic-object-input') as HTMLInputElement;
+    const inputs = shadowRoot.querySelectorAll('input.pnd-edit-modal__semantic-object-input');
+    return inputs.length ? inputs[inputs.length - 1] as HTMLInputElement : null;
   }
 }
