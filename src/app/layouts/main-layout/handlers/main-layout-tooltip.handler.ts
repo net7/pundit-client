@@ -97,6 +97,8 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
               this.onTooltipComment();
             } else if (payload === 'tag') {
               this.onTooltipTag();
+            } else if (payload === 'semantic') {
+              this.onTooltipSemantic();
             }
             break;
           }
@@ -140,11 +142,32 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('commentmodal#save_tags'),
+      saveButtonLabel: _t('editmodal#save_tags'),
       sections: [{
         id: 'tags',
         required: true,
         focus: true
+      }, {
+        id: 'notebook'
+      }]
+    });
+  }
+
+  private onTooltipSemantic() {
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      saveButtonLabel: _t('editmodal#save_semantic'),
+      sections: [{
+        id: 'semantic',
+        required: true,
+        focus: true
+      }, {
+        id: 'tags',
       }, {
         id: 'notebook'
       }]

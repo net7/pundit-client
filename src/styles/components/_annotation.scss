@@ -275,6 +275,70 @@ annotation {
 
 
 /* ------------------------------------ *\
+   #SEMANTIC ANNOTATIONS
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__semantic {
+        // border-bottom: 3px double $annotation-border-color;
+    
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .pnd-annotation__semantic-item-predicate {
+        display: inline-block;
+        position: relative;
+        height: 20px;
+        margin-left: 10px;
+        padding: 0 8px;
+        background: $color-predicate;
+
+        font-size: 13px;
+        line-height: 20px;
+        font-style: italic;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 3px;
+        text-shadow: 0px -1px 0px rgba(0,0,0,0.10);
+
+        /* Orange carets above and below */
+        &:before, &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+        }
+
+        &:before {
+            top: -3px;
+            border-bottom: 3px solid $color-predicate;
+        }
+
+        &:after {
+            top: 20px;
+            border-top: 3px solid $color-predicate;
+        }
+    }
+
+    /* The Object in semantic annotations */
+    .pnd-annotation__semantic-item-object {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+        padding: $space*2 $space $space;
+        margin-top: -$space;
+        background-color: $color-gray-01;
+        border-top: $annotation-border-size solid $annotation-border-color;
+    }
+}
+
+
+/* ------------------------------------ *\
    #TAGS
 \* ------------------------------------ */
 .pnd-annotation {

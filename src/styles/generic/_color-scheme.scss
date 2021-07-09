@@ -30,3 +30,12 @@ $color-info: $color-main;
 // Annotations colors
 $color-highlight: rgba($color: #fcfc05, $alpha: 0.2);
 $color-highlight-hover: rgba(#2ee6e6, .4);
+
+// Semantic colors
+$color-subject: #54b4e6;
+$color-predicate: #febe53;
+$color-object: #0084c8;
+$color-subject-text: lighten($color-subject, 27);
+$color-predicate-text: lighten($color-predicate, 25);
+$color-object-text: desaturate(lighten($color-object, 27), 30);
+

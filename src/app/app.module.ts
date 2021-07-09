@@ -22,6 +22,7 @@ import { ChromeExtService } from './services/chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
 import { TagService } from './services/tag.service';
+import { SemanticPredicateService } from './services/semantic-predicate.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -37,6 +38,7 @@ import { EditModalComponent } from './components/edit-modal/edit-modal';
 import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
 import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
 import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
+import { SemanticSectionComponent } from './components/edit-modal/sections/semantic-section/semantic-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -69,6 +71,7 @@ const providers: any[] = [
   ChromeExtService,
   StorageChromeExtService,
   ImageDataService,
+  SemanticPredicateService,
   { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
@@ -110,6 +113,7 @@ if (env.chromeExt) {
     CommentSectionComponent,
     TagsSectionComponent,
     NotebookSectionComponent,
+    SemanticSectionComponent,
     // PIPES
     SortByPipe,
   ],

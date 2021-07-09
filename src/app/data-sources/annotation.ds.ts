@@ -1,11 +1,12 @@
 import { DataSource, _t } from '@n7-frontend/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { fromEvent, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AnnotationData } from '../components/annotation/annotation';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 import { _c } from '../models/config';
 import { NotebookData } from '../services/notebook.service';
+import { SemanticItem } from '../types';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -35,10 +36,19 @@ export class AnnotationDS extends DataSource {
         isExpanded: false,
       }
     };
+
+    // check comment
     let comment;
     if (data.type === 'Commenting') {
       const { content } = data;
       comment = content.comment;
+    }
+
+    // check semantic
+    let semantic;
+    if (data.type === 'Linking') {
+      const { content } = data;
+      semantic = this.getSemanticData(content);
     }
 
     return {
@@ -61,8 +71,9 @@ export class AnnotationDS extends DataSource {
       notebook: this.getNotebookData(),
       body: text,
       comment,
+      semantic,
       tags,
-      menu: this.getMenuData(id, comment, tags),
+      menu: this.getMenuData(id, comment, tags, semantic),
     };
   }
 
@@ -184,6 +195,12 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  removeSemantic() {
+    if (this.output.semantic) {
+      this.output.semantic = undefined;
+    }
+  }
+
   updateUser() {
     this.output.user = this.getUserData();
   }
@@ -201,8 +218,44 @@ export class AnnotationDS extends DataSource {
     this.output.tags = Array.isArray(tags) ? tags : undefined;
   }
 
+  updateSemantic(semantic) {
+    this.output.semantic = this.getSemanticData(semantic);
+  }
+
   updateCssClass(cssClass: AnnotationCssClass) {
     this.output.classes = cssClass;
+  }
+
+  private getSemanticData(rawSemantic: SemanticTripleType[]): {
+    predicate: SemanticItem;
+    object: SemanticItem;
+  }[] {
+    return rawSemantic.length ? rawSemantic.map((triple) => {
+      const { predicate } = triple;
+      let object = null;
+      // literal
+      if ('text' in triple.object) {
+        object = {
+          label: triple.object.text,
+          uri: null
+        };
+        // uri
+      } else if ('uri' in triple.object) {
+        object = {
+          label: triple.object.label,
+          uri: triple.object.uri,
+        };
+        // web page
+      } else if ('pageTitle' in triple.object) {
+        object = {
+          label: triple.object.pageTitle,
+          uri: null
+        };
+      } else {
+        console.warn('No handler for semantic object', triple.object);
+      }
+      return { predicate, object };
+    }) : undefined;
   }
 
   private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`
@@ -243,15 +296,26 @@ export class AnnotationDS extends DataSource {
     };
   }
 
-  private getMenuData(id: string, comment?: string, tags?: string[]) {
+  private getMenuData(
+    id: string,
+    comment?: string,
+    tags?: string[],
+    semantic?: {
+      predicate: SemanticItem;
+      object: SemanticItem;
+    }[]
+  ) {
     const hasComment = this.output
       ? !!this.output.comment
       : comment;
     const hasTags = this.output
       ? !!this.output.tags
       : (Array.isArray(tags) && tags.length);
+    const hasSemantic = this.output
+      ? !!this.output.semantic
+      : (Array.isArray(semantic) && semantic.length);
     const { currentUserNotebooks } = this.options;
-    const actions = this.createActionButtons(id, hasComment, hasTags);
+    const actions = this.createActionButtons(id, hasComment, hasTags, hasSemantic);
     return this.isCurrentUser() ? {
       icon: {
         id: 'ellipsis-v',
@@ -282,41 +346,49 @@ export class AnnotationDS extends DataSource {
     } : null;
   }
 
-  private createActionButtons(id: string, hasComment, hasTags) {
+  private createActionButtons(id: string, hasComment, hasTags, hasSemantic) {
     const actions = [{
       label: _t('annotation#changenotebook'),
       payload: {
         id,
         source: 'action-notebooks'
       }
-    }, {
-      label: hasComment
-        ? _t('annotation#editcomment')
-        : _t('annotation#addcomment'),
-      payload: {
-        id,
-        source: 'action-comment'
-      }
-    }, {
+    }];
+
+    // annotation types actions logic
+    if (hasComment) {
+      actions.push(this.getActionButton(id, 'comment', 'edit'));
+    } else if (hasSemantic) {
+      actions.push(this.getActionButton(id, 'semantic', 'edit'));
+    } else {
+      actions.push(this.getActionButton(id, 'comment', 'add'));
+      actions.push(this.getActionButton(id, 'semantic', 'add'));
+      actions.push(this.getActionButton(id, 'tags', hasTags ? 'edit' : 'add'));
+    }
+
+    // and delete action
+    actions.push({
       label: _t('annotation#delete'),
       payload: {
         id,
         source: 'action-delete'
       }
-    }];
-    if (!hasComment) {
-      const tagAction = {
-        label: hasTags
-          ? _t('annotation#edittags')
-          : _t('annotation#addtags'),
-        payload: {
-          id,
-          source: 'action-tags'
-        }
-      };
-      actions.splice(2, 0, tagAction);
-    }
+    });
     return actions;
+  }
+
+  private getActionButton(
+    id: string,
+    type: 'comment' | 'tags' | 'semantic',
+    action: 'add' | 'edit'
+  ) {
+    return {
+      label: _t(`annotation#${action}${type}`),
+      payload: {
+        id,
+        source: `action-${type}`
+      }
+    };
   }
 
   private getNotebookData() {

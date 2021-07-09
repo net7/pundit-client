@@ -170,6 +170,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       ? formState?.comment?.value.trim()
       : null;
     const tags = formState?.tags?.value || null;
+    const semantic = formState?.semantic?.value || null;
     // check notebook value
     if (notebook) {
       annotationPayload.notebookId = notebook;
@@ -185,6 +186,20 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     // check tags value
     if (Array.isArray(tags)) {
       annotationPayload.tags = tags.length ? tags : undefined;
+    }
+    // check semantic value
+    if (Array.isArray(semantic)) {
+      annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
+      annotationPayload.content = semantic.length ? semantic.map(({ predicate, object }) => ({
+        predicate: {
+          label: predicate.label,
+          uri: predicate.uri
+        },
+        objectType: 'literal',
+        object: {
+          text: object.label
+        }
+      })) : undefined;
     }
     return annotationPayload;
   }

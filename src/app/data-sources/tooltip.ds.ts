@@ -23,8 +23,13 @@ export class TooltipDS extends DataSource {
           anchor: {
             payload: 'comment'
           }
-        }
-        ]
+        },
+        {
+          text: _t('tooltip#semantic'),
+          anchor: {
+            payload: 'semantic'
+          }
+        }]
       }
     };
   }

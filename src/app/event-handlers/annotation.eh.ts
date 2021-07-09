@@ -38,6 +38,10 @@ export class AnnotationEH extends EventHandler {
               annotation.ds.closeMenu();
               this.emitOuter(getEventType(AnnotationEvent.EditTags), id);
               break;
+            case 'action-semantic': // click on the "edit tag" button
+              annotation.ds.closeMenu();
+              this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
+              break;
             case 'menu-header': // annotation update menu header
               annotation.ds.toggleActionsMenu();
               break;

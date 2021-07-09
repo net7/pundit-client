@@ -1,7 +1,12 @@
-import { TagModel } from '../../../../common/models/tag-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
+import {
+  AnnotationModel,
+  AuthModel,
+  NotebookModel,
+  TagModel,
+  SemanticPredicateModel
+} from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -67,6 +72,11 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.TagGet:
       request$ = TagModel.get.apply(null, args);
+      break;
+    // SEMANTIC PREDICATE REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SemanticPredicateGet:
+      request$ = SemanticPredicateModel.get.apply(null, args);
       break;
     default:
       break;

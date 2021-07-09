@@ -63,7 +63,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
       notebookList: notebooks,
       mode: 'select',
       createOption: {
-        label: _t('commentmodal#notebook_create'),
+        label: _t('editmodal#notebook_create'),
         value: 'create'
       }
     };
