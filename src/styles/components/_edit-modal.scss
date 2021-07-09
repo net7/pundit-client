@@ -167,50 +167,73 @@
 /* ------------------------------------ *\
    #SEMANTIC SECTION
 \* ------------------------------------ */
-.pnd-edit-modal__semantic-wrapper {
-    padding: $space*2;
-    border-top: 1px solid $annotation-border-color;
-    border-bottom: 1px solid $annotation-border-color;
-    background-color: $annotation-comment-background-color;
+.pnd-edit-modal {
+    &__semantic-wrapper {
+        position: relative;
+        z-index: 10;
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+        background-color: $annotation-comment-background-color;
+    }
 
-    .pnd-edit-modal__semantic-label {
+    &__semantic-label {
+        display: inline-block;
         margin-bottom: $space;
         font-size: $font-size-s;
     }
 
-    .pnd-edit-modal__semantic-row {
+    &__semantic-row {
         display: flex;
+        justify-content: space-between;
         margin-bottom: $space;
     }
     
-    .pnd-edit-modal__semantic-row:last-child {
+    &__semantic-row:last-child {
         margin-bottom: 0;
     }
 
-    .pnd-edit-modal__semantic-predicate {
+    &__semantic-predicate {
         .pnd-dropdown {
-            width: 130px;
+            width: 150px;
+        }
+        .pnd-dropdown__list-items {
+            max-height: 250px;
         }
     }
 
-    .pnd-dropdown__list-wrapper {
+    &__list-wrapper {
         z-index: 2;
     }
 
-    .pnd-edit-modal__semantic-object {
-        margin-left: $space;
+    &__semantic-object {
+        position: relative;
+        flex-grow: 2;
+        margin: 0 $space;
+    }
 
-        &-label {
-            display: inline-block;
-            width: 40px;
-            text-align: right;
-            margin-right: $space;
-            font-size: $font-size-xs;
-        }
+    &__semantic-object-type {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: $space/2;
+        margin: 0;
+        padding: $space/8*3 $space/4*3;
+        background-color: $color-background-light;
+        color: $color-text-light;
+        text-transform: uppercase;
+        font-size: $font-size-xxs;
+        font-weight: $font-weight-bold;
+        border-radius: $border-radius;
+    }
+
+    &__semantic-object-input[type=text] {
+        width: 100%;
+        padding-right: 58px;
     }
 
     // actions
-    .pnd-edit-modal__semantic-actions {
+    &__semantic-actions {
         .pnd-dropdown {
             min-width: auto;
         }
@@ -220,7 +243,6 @@
             justify-content: center;
             width: 28px;
             height: 28px;
-            margin-left: $space/2;
             border-radius: $border-radius;
             border: 1px solid $color-border-normal;
             background-color: $color-background-light;
@@ -239,17 +261,22 @@
                 border: 1px solid $color-text-link;
             }
         }
+        
         .pnd-dropdown__list-wrapper {
             position: absolute;
-            top: 24px + $space/2;
-            right: 24px + $space/2;
-            left: -91px;
-            width: 120px;
+            top: 30px;
+            right: 0;
+            left: auto;
+            width: auto;
             padding: 0;
             background-color: $color-background-base;
             border: 1px solid $color-border-normal;
             border-radius: $border-radius;
             @include cardShadow-1;
+        }
+
+        .pnd-dropdown__item {
+            white-space: nowrap;
         }
     }
 }

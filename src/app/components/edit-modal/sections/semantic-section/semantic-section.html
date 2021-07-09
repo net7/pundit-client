@@ -43,10 +43,9 @@
         <!-- Object Input -->
         <div class="pnd-edit-modal__semantic-object">
             <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
-                <label [attr.for]="'object-input-' + $i"
-                    class="pnd-edit-modal__semantic-object-label">
+                <p class="pnd-edit-modal__semantic-object-type">
                     {{ row.object.type }}
-                </label>
+                </p>
                 <input [attr.id]="'object-input-' + $i" type="text" 
                     class="pnd-edit-modal__semantic-object-input small"
                     (input)="onObjectChange($i, $event.target.value)" 
