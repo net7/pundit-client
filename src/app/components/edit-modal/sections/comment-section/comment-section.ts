@@ -2,8 +2,10 @@ import {
   AfterViewInit,
   Component,
   Input,
+  OnDestroy,
 } from '@angular/core';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { FormSection, FormSectionData } from 'src/app/types';
 
 const TEXT_MIN_LIMIT = 3;
@@ -18,7 +20,7 @@ export type CommentSectionOptions = {
   selector: 'pnd-comment-section',
   templateUrl: './comment-section.html'
 })
-export class CommentSectionComponent implements AfterViewInit, FormSection<
+export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   CommentSectionValue, CommentSectionOptions
 > {
   id = 'comment';
@@ -27,9 +29,17 @@ export class CommentSectionComponent implements AfterViewInit, FormSection<
 
   @Input() public reset$: Subject<void>;
 
+  private destroy$: Subject<void> = new Subject();
+
   ngAfterViewInit() {
     this.checkFocus();
-    this.reset$.subscribe(this.onReset);
+    this.reset$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(this.onReset);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
   onChange(payload) {

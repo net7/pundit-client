@@ -36,15 +36,15 @@ export class EditModalDS extends DataSource {
       textQuote,
       visible: true,
       header: {
-        label: _t('commentmodal#label'),
+        label: _t('editmodal#label'),
       },
       sections: formSections,
       actions: {
         cancel: {
-          label: _t('commentmodal#cancel')
+          label: _t('editmodal#cancel')
         },
         save: {
-          label: saveButtonLabel || _t('commentmodal#save'),
+          label: saveButtonLabel || _t('editmodal#save'),
           classes: 'pnd-btn-cta',
           disabled: true,
         }

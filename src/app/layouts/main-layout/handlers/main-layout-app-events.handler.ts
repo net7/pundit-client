@@ -36,10 +36,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           this.onAnnotationMouseLeave(payload);
           break;
         case AppEvent.AnnotationEditComment:
-          this.onAnnotationEdit(payload, 'full');
+          this.onAnnotationEdit(payload, 'comment');
           break;
         case AppEvent.AnnotationEditTags:
           this.onAnnotationEdit(payload, 'tags');
+          break;
+        case AppEvent.AnnotationEditSemantic:
+          this.onAnnotationEdit(payload, 'semantic');
           break;
         case AppEvent.SidebarCollapse:
           this.onSidebarCollapse(payload);
@@ -83,10 +86,10 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEdit(payload, mode: 'full'| 'tags') {
+  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
     const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
     const {
-      _meta, comment, _raw, body, tags
+      _meta, comment, semantic, _raw, body, tags
     } = ds.output;
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.annotation.updatePayload = _raw;
@@ -102,16 +105,23 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       textQuote: body,
     } as EditModalParams;
 
-    if (mode === 'full') {
+    if (mode === 'comment') {
       params.sections.push({
         id: 'comment',
         value: comment,
         focus: true
       });
+    } else if (mode === 'semantic') {
+      params.sections.push({
+        id: 'semantic',
+        value: semantic,
+        focus: true
+      });
+      params.saveButtonLabel = _t('editmodal#save_semantic');
     } else {
       // focus on input tags
       params.sections[0].focus = true;
-      params.saveButtonLabel = _t('commentmodal#save_tags');
+      params.saveButtonLabel = _t('editmodal#save_tags');
     }
 
     this.layoutDS.openEditModal(params);
@@ -140,6 +150,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       this.layoutDS.userService.clear();
       this.layoutDS.notebookService.clear();
       this.layoutDS.tagService.clear();
+      this.layoutDS.semanticPredicateService.clear();
       this.layoutDS.userService.logout();
 
       // close verify toast

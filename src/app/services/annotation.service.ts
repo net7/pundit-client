@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation
+  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation, LinkAnnotation
 } from '@pundit/communication';
 import { Subject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -115,8 +115,13 @@ export class AnnotationService {
           if (data.type === 'Commenting') {
             // update comment
             cachedAnnotation.ds.updateComment(data.content.comment);
+          } else if (data.type === 'Linking') {
+            // update semantic
+            cachedAnnotation.ds.updateSemantic(data.content);
           } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
             cachedAnnotation.ds.removeComment();
+          } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.semantic) {
+            cachedAnnotation.ds.removeSemantic();
           }
           cachedAnnotation.ds.updateTags(data.tags);
           cachedAnnotation.ds.updateMenu();
@@ -193,6 +198,9 @@ export class AnnotationService {
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
+    }
+    if (payload.type === 'Linking') {
+      (newAnnotation as LinkAnnotation).content = payload.content;
     }
     return newAnnotation;
   }

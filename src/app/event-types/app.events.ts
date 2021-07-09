@@ -7,6 +7,7 @@ export enum AppEvent {
   AnnotationDeleteClick = 'app.annotationdeleteclick',
   AnnotationEditComment = 'app.annotationeditcomment',
   AnnotationEditTags = 'app.annotationedittags',
+  AnnotationEditSemantic = 'app.annotationeditsemantic',
   AnnotationMouseEnter = 'app.annotationmouseenter',
   AnnotationMouseLeave = 'app.annotationmouseleave',
   AnnotationUpdateNotebook = 'app.annotationupdatenotebook',

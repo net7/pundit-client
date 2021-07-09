@@ -4,10 +4,12 @@ import {
   Input,
   AfterViewInit,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { _c } from 'src/app/models/config';
 import { TagService } from 'src/app/services/tag.service';
@@ -23,7 +25,7 @@ export type TagsSectionOptions = {
   selector: 'pnd-tags-section',
   templateUrl: './tags-section.html'
 })
-export class TagsSectionComponent implements AfterViewInit, FormSection<
+export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
   id = 'tags';
@@ -34,6 +36,8 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
 
   @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
 
+  private destroy$: Subject<void> = new Subject();
+
   private formInstance;
 
   public tagsHint = _c('tagsHint');
@@ -43,7 +47,13 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
   ngAfterViewInit() {
     this.init();
     this.checkFocus();
-    this.reset$.subscribe(this.onReset);
+    this.reset$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(this.onReset);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
   private init = () => {
@@ -55,7 +65,7 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
       maxTags: 20,
       transformTag: this.transformTag,
       backspace: 'edit',
-      placeholder: _t('commentmodal#add_tag'),
+      placeholder: _t('editmodal#add_tag'),
       dropdown: {
         enabled: 0,
         fuzzySearch: false,

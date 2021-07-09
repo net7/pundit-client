@@ -1,0 +1,66 @@
+<div class="pnd-edit-modal__semantic-wrapper" *ngIf="data">
+    <div class="pnd-edit-modal__semantic-label">
+        {{ labels.title }}
+    </div>
+    <div *ngFor="let row of rows; let $i = index" class="pnd-edit-modal__semantic-row">
+        
+        <!-- Predicate Input -->
+        <div class="pnd-edit-modal__semantic-predicate">
+            <div class="pnd-dropdown {{ row.predicate.isExpanded ? 'is-expanded' : '' }}">
+
+                <!-- Selected element -->
+                <button class="pnd-dropdown__selected"
+                    (click)="onPredicateToggleExpand($i)">
+                    <div class="pnd-dropdown__selected-label"
+                        title="{{row.predicate.label}}">
+                        {{ row.predicate.label }}
+                    </div>
+                    <div class="pnd-dropdown__selected-right-icon">
+                        <pnd-svg-icon *ngIf="!row.predicate.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+                        <pnd-svg-icon *ngIf="row.predicate.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+                    </div>
+                </button>
+                <!-- END // Selected element -->
+        
+                <!-- Dropdown items -->
+                <div class="pnd-dropdown__list-wrapper">
+                    <!-- list of predicate options -->
+                    <div class="pnd-dropdown__list-items">
+                        <ng-container *ngFor="let option of row.predicate.options">
+                            <div (click)="onPredicateChange($i, option.value)"
+                                class="pnd-dropdown__item {{ option.selected ? 'is-current' : '' }}">
+                                {{ option.label }}
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- END // Dropdown items -->
+
+            </div>
+        </div>
+        <!-- END // Predicate Select -->
+
+        <!-- Object Input -->
+        <div class="pnd-edit-modal__semantic-object">
+            <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
+                <label [attr.for]="'object-input-' + $i"
+                    class="pnd-edit-modal__semantic-object-label">
+                    {{ row.object.type }}
+                </label>
+                <input [attr.id]="'object-input-' + $i" type="text" 
+                    class="pnd-edit-modal__semantic-object-input small"
+                    (input)="onObjectChange($i, $event.target.value)" 
+                    [value]="row.object.value"
+                    [placeholder]="row.object.placeholder" />
+            </ng-container>
+        </div>    
+        <!-- END // Object Input -->
+
+        <!-- Actions -->
+        <div class="pnd-edit-modal__semantic-actions">
+            <a (click)="onAddClick($i)" class="pnd-btn" [title]="labels.add">&#43;</a>
+            <a (click)="onRemoveClick($i)" class="pnd-btn" [title]="labels.remove">&#45;</a>
+        </div>    
+        <!-- END // Actions -->
+    </div>
+</div>
