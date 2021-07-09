@@ -195,6 +195,12 @@ export class AnnotationDS extends DataSource {
     }
   }
 
+  removeSemantic() {
+    if (this.output.semantic) {
+      this.output.semantic = undefined;
+    }
+  }
+
   updateUser() {
     this.output.user = this.getUserData();
   }

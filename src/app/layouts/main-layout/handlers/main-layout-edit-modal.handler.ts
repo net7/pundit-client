@@ -189,7 +189,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     }
     // check semantic value
     if (Array.isArray(semantic)) {
-      annotationPayload.type = 'Linking';
+      annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
       annotationPayload.content = semantic.length ? semantic.map(({ predicate, object }) => ({
         predicate: {
           label: predicate.label,

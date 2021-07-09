@@ -115,10 +115,13 @@ export class AnnotationService {
           if (data.type === 'Commenting') {
             // update comment
             cachedAnnotation.ds.updateComment(data.content.comment);
+          } else if (data.type === 'Linking') {
+            // update semantic
+            cachedAnnotation.ds.updateSemantic(data.content);
           } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.comment) {
             cachedAnnotation.ds.removeComment();
-          } else if (data.type === 'Linking') {
-            cachedAnnotation.ds.updateSemantic(data.content);
+          } else if (data.type === 'Highlighting' && cachedAnnotation.ds.output.semantic) {
+            cachedAnnotation.ds.removeSemantic();
           }
           cachedAnnotation.ds.updateTags(data.tags);
           cachedAnnotation.ds.updateMenu();
