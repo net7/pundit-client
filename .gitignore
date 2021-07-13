@@ -62,3 +62,4 @@ src/environments/local.stage.ts
 
 #deploy scripts
 deploy-*.sh
+publish-*.sh
