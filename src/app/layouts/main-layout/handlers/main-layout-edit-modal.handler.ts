@@ -1,4 +1,5 @@
 import { _t } from '@n7-frontend/core';
+import { SemanticTripleType } from '@pundit/communication';
 import { EMPTY, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
@@ -7,7 +8,7 @@ import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
 import { AnalyticsModel } from 'src/common/models';
-import { AnalyticsAction } from 'src/common/types';
+import { AnalyticsAction, AnalyticsData } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -80,12 +81,43 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               this.layoutDS.tagService.addMany(data?.tags);
 
               // analytics
-              AnalyticsModel.track({
-                action: AnalyticsAction.CommentCreated,
-                payload: {
-                  scope: 'fragment'
-                }
-              });
+              let analyticsData: AnalyticsData;
+              // comment
+              if (data.type === 'Commenting') {
+                analyticsData = {
+                  action: AnalyticsAction.CommentAnnotationCreated,
+                  payload: {
+                    scope: 'fragment'
+                  }
+                };
+              // semantic
+              } else if (data.type === 'Linking') {
+                const { content }: { content: SemanticTripleType[] } = data;
+                analyticsData = {
+                  action: AnalyticsAction.SemanticAnnotationCreated,
+                  payload: {
+                    scope: 'fragment',
+                    predicate: content.map(({ predicate }) => predicate.label),
+                    'object-type': content.map(({ objectType }) => objectType),
+                    'object-lod': content.map((triple) => (
+                      triple.objectType === 'uri'
+                        ? triple.object.label
+                        : null
+                    )),
+                    'number-triples': content.length,
+                  }
+                };
+              // tags
+              } else if (Array.isArray(data.tags) && data.tags.length) {
+                analyticsData = {
+                  action: AnalyticsAction.TagAnnotationCreated,
+                  payload: {
+                    scope: 'fragment',
+                    tags: data.tags
+                  }
+                };
+              }
+              AnalyticsModel.track(analyticsData);
             }
           });
         } break;

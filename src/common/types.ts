@@ -66,8 +66,10 @@ export type AnalyticsData = {
 export enum AnalyticsAction {
   Bootstrap = 'bootstrap',
   // annotation
-  HighlightCreated = 'new-highlight',
-  CommentCreated = 'new-comment',
+  HighlightAnnotationCreated = 'new-highlight',
+  CommentAnnotationCreated = 'new-comment',
+  SemanticAnnotationCreated = 'new-semantic',
+  TagAnnotationCreated = 'new-tag',
   // notebook
   NotebookCreated = 'notebook-new-created',
   NotebookCurrentChanged = 'notebook-switch-current',

@@ -90,7 +90,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
                   // analytics
                   AnalyticsModel.track({
-                    action: AnalyticsAction.HighlightCreated,
+                    action: AnalyticsAction.HighlightAnnotationCreated,
                   });
                 });
             } else if (payload === 'comment') {

@@ -21,8 +21,10 @@ analytics.init([
     },
     actions: [
       AnalyticsAction.Bootstrap,
-      AnalyticsAction.HighlightCreated,
-      AnalyticsAction.CommentCreated,
+      AnalyticsAction.HighlightAnnotationCreated,
+      AnalyticsAction.CommentAnnotationCreated,
+      AnalyticsAction.TagAnnotationCreated,
+      AnalyticsAction.SemanticAnnotationCreated,
       AnalyticsAction.NotebookCreated,
       AnalyticsAction.NotebookCurrentChanged,
       AnalyticsAction.NotebookVisibilityChanged,
