@@ -5,6 +5,22 @@ TOKEN_CODE="";
 ACCESS_TOKEN="";
 CHROME_EXT_DIR="chrome-ext-prod"
 
+#PROCESS ARGS
+while getopts ":t:c:a:s:" opt; do
+    case "$opt" in
+    t)  ACCESS_TOKEN=$OPTARG
+        ;;
+    c)  TOKEN_CODE=$OPTARG
+        ;;
+    a)  APP_ID=$OPTARG
+        ;;
+    s)  CLIENT_SECRET=$OPTARG
+        ;;
+    esac
+done
+
+
+#CHECK IF ZIP FILE EXISTS. IF NOT, CREATE A NEW ONE.
 cd dist
 if [ -d "$CHROME_EXT_DIR" ]; then
     if [ -f "$CHROME_EXT_DIR.zip" ]; then
@@ -19,19 +35,8 @@ else
     exit 0;
 fi
 
-while getopts ":t:c:a:s:" opt; do
-    case "$opt" in
-    t)  ACCESS_TOKEN=$OPTARG
-        ;;
-    c)  TOKEN_CODE=$OPTARG
-        ;;
-    a)  APP_ID=$OPTARG
-        ;;
-    s)  CLIENT_SECRET=$OPTARG
-        ;;
-    esac
-done
 
+#GET CODE FOR OAUHT2 AUTH FLOW
 if [  [-z ${TOKEN_CODE}]  && [ -z ${ACCESS_TOKEN} ]]
 then
     read -p "Retrieve code from
@@ -41,20 +46,27 @@ then
     echo "\n\n"
 fi
 
+
+#GET TOKEN
 if [  -z ${ACCESS_TOKEN} ]
 then
-    ACCESS_TOKEN=$(curl "https://accounts.google.com/o/oauth2/token" -d \
+    ACCESS_TOKEN_RESPONSE=$(curl "https://accounts.google.com/o/oauth2/token" -d \
     "client_id=$CLIENT_ID&client_secret=$CLIENT_SECRET&code=$TOKEN_CODE&grant_type=authorization_code&redirect_uri=urn:ietf:wg:oauth:2.0:oob" | 
-    node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin')).access_token;")
+    node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin'));")
+    ACCESS_TOKEN=$(node -pe "var resp=$ACCESS_TOKEN_RESPONSE; resp.access_token;")
+    
+    #CHECK IF TOKEN IS VALID
     if [ -z ${ACCESS_TOKEN} ];
     then
-        echo "Impossible to get access_token"
+        echo "Impossible to get access_token. Server response $ACCESS_TOKEN_RESPONSE"
         exit 0;
     else
         echo "ACCESS_TOKEN: $ACCESS_TOKEN" ;
     fi;
 fi
 
+
+#UPDATE ITEM ON STORE
 echo "\nUPDATE STORE ITEM\n"
 UPDATE_RESP=$(curl \
 -H "Authorization: Bearer $ACCESS_TOKEN"  \
@@ -65,6 +77,8 @@ UPDATE_RESP=$(curl \
 https://www.googleapis.com/upload/chromewebstore/v1.1/items/$APP_ID |
 node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin'));")
 
+
+#CHECK UPDATE RESPONSE
 UPDATE_STATUS=$(node -pe "var resp=$UPDATE_RESP; resp.uploadState;")
 if [ UPDATE_STATUS != "SUCCESS" ]
 then
@@ -73,6 +87,8 @@ then
     exit 0;
 fi
 
+
+#PUBLISH ITEM
 echo "\nPUBLISH STORE ITEM\n"
 curl \
 -H "Authorization: Bearer $ACCESS_TOKEN"  \
@@ -80,6 +96,6 @@ curl \
 -H "Content-Length: 0" \
 -X POST \
 -v \
-https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarget=default
+https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarget=trustedTesters
 
 exit;
