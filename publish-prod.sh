@@ -32,7 +32,7 @@ if [ -d "$CHROME_EXT_DIR" ]; then
     echo "Created zip file ${CHROME_EXT_DIR}.zip\n"
 else
     echo "Directory $CHROME_EXT_DIR not exists"
-    exit 0;
+    exit 1;
 fi
 
 
@@ -59,7 +59,7 @@ then
     if [ -z ${ACCESS_TOKEN} ];
     then
         echo "Impossible to get access_token. Server response $ACCESS_TOKEN_RESPONSE"
-        exit 0;
+        exit 1;
     else
         echo "ACCESS_TOKEN: $ACCESS_TOKEN" ;
     fi;
@@ -82,20 +82,29 @@ node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin'));")
 UPDATE_STATUS=$(node -pe "var resp=$UPDATE_RESP; resp.uploadState;")
 if [ UPDATE_STATUS != "SUCCESS" ]
 then
-    echo "STATUS $UPDATE_STATUS"
     echo "Error on update item ${CHROME_EXT_DIR}.zip. Authentication failed $UPDATE_RESP"
-    exit 0;
+    exit 1;
 fi
 
 
 #PUBLISH ITEM
 echo "\nPUBLISH STORE ITEM\n"
+PUBLISH_RESPONSE=$(echo "\nPUBLISH STORE ITEM\n"
 curl \
 -H "Authorization: Bearer $ACCESS_TOKEN"  \
 -H "x-goog-api-version: 2" \
 -H "Content-Length: 0" \
 -X POST \
 -v \
-https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarget=trustedTesters
+https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarget=default)
 
-exit;
+
+#CHECK PUBLISH RESPONSE
+PUBLISH_STATUS=$(node -pe "var resp=$PUBLISH_RESPONSE; resp.status.includes('SUCCESS') ? 'SUCCESS' : 'FAIL';")
+if [ PUBLISH_STATUS != "SUCCESS" ]
+then
+    echo "Error on publish item ${CHROME_EXT_DIR}.zip.\n$PUBLISH_RESPONSE"
+    exit 1;
+fi
+
+exit 0;
