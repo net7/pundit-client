@@ -1,11 +1,11 @@
     <!-- Semantic triple -->
-    <div *ngIf="data.semantic" class="pnd-annotation__semantic">
-        <div *ngFor="let triple of data.semantic" class="pnd-annotation__semantic-item">
+    <div *ngIf="(semantic$ | async)?.triples as triples" class="pnd-annotation__semantic">
+        <div *ngFor="let triple of triples" class="pnd-annotation__semantic-item">
             <div class="pnd-annotation__semantic-item-predicate">
-                {{ triple.predicate.label }}
+                {{ triple?.predicate?.label }}
             </div>
             <div class="pnd-annotation__semantic-item-object">
-                {{ triple.object.label }}
+                {{ triple?.object?.label }}
             </div>
         </div>
     </div>

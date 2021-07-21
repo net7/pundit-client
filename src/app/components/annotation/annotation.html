@@ -87,30 +87,37 @@
         </div>
     </div>
     <!-- END // Header -->
+    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+    <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
+    <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
 
     <!-- Highlight -->
-    <div class="pnd-annotation__highlight"
-         *ngIf="data.body">
+  
+    <!-- <div class="pnd-annotation__highlight"
+         *ngIf="(update | async)?.subject?.selected?.text">
         <span class="pnd-annotation__highlight-text">
-            {{data.body}}
+            {{(update | async)?.subject?.selected?.text}}
         </span>
-    </div>
+    </div> -->
     <!-- END // Highlight -->
 
     <!-- Caret and comment -->
-    <div class="pnd-annotation__caret"
-        *ngIf="data.comment"></div>
+    <!-- <div class="pnd-annotation__caret"
+        *ngIf="(data$ | async)?.content?.comment"></div> -->
 
-    <div class="pnd-annotation__comment"
-        *ngIf="data.comment">
+  
+    <!-- <div class="pnd-annotation__comment"
+        *ngIf="(update | async)?.content?.comment">
         <span class="pnd-annotation__comment-text">
-            {{data.comment}}
+            {{(update | async)?.content?.comment}}
         </span>
-    </div>
+    </div> -->
     <!-- END // Caret and comment -->
 
     <!-- Semantic triple -->
-    <div *ngIf="data.semantic" class="pnd-annotation__semantic">
+
+    <!-- <div *ngIf="data.semantic" class="pnd-annotation__semantic">
         <div *ngFor="let triple of data.semantic" class="pnd-annotation__semantic-item">
             <div class="pnd-annotation__semantic-item-predicate">
                 {{ triple.predicate.label }}
@@ -119,11 +126,11 @@
                 {{ triple.object.label }}
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- END // Semantic triple -->
 
     <!-- Tags -->
-    <div class="pnd-annotation__tags"
+    <!-- <div class="pnd-annotation__tags"
         *ngIf="data.tags">
         <span *ngFor="let tag of data.tags" 
         [ngStyle]="{
@@ -132,29 +139,35 @@
         class="pnd-annotation__tags-item">
             {{ tag }}
         </span>
-    </div>
+    </div> -->
+
     <!-- END // Tags -->
 </ng-template>
 
 <ng-template #collapsed>
+    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+   
     <!-- Highlight -->
-    <div class="pnd-annotation__highlight"
+    <!-- <div class="pnd-annotation__highlight"
          *ngIf="data.body">
         <span class="pnd-annotation__highlight-text">
             {{data.body}}
         </span>
-    </div>
+    </div> -->
     <!-- END // Highlight -->
 
     <!-- Caret and comment -->
-    <div class="pnd-annotation__caret"
-         *ngIf="data.comment"></div>
+    <!-- <div class="pnd-annotation__caret"
+         *ngIf="(data$ | async)?.content?.comment"></div> -->
 
-    <div class="pnd-annotation__comment"
+  
+    <!-- <div class="pnd-annotation__comment"
          *ngIf="data.comment">
         <span class="pnd-annotation__comment-text">
             {{data.comment}}
         </span>
-    </div>
+    </div> -->
     <!-- END // Caret and comment -->
+    
 </ng-template>

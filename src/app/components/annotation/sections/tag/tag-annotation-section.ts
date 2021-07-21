@@ -1,31 +1,31 @@
-import { Component, Input } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { Annotation } from '@pundit/communication';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { getTagColor } from 'src/app/helpers/tag-color.helper';
+
+type TagType = { label: string; color: string };
 
 @Component({
   selector: 'pnd-tag-annotation-section',
-  templateUrl: './tag-annotation-section.html'
+  templateUrl: './tag-annotation-section.html',
 })
-export class TagAnnotationSectionComponent {
-    id = 'tags';
+export class TagAnnotationSectionComponent implements OnInit {
+  id = 'tags';
 
-    @Input() public update$: Subject<void>;
+  @Input() public data$: Subject<Annotation>;
 
-    @Input() public data: Subject<void>;
+  public tags$: Observable<any>;
 
-    private destroy$: Subject<void> = new Subject();
+  ngOnInit(): void {
+    this.tags$ = this.data$.pipe(map(this.transformData));
+  }
 
-    ngAfterViewInit() {
-      this.update$.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(this.onUpdate);
-    }
-
-    ngOnDestroy() {
-      this.destroy$.next();
-    }
-
-    private onUpdate = (payload: any) => {
-      this.data = payload;
-    }
+  private transformData = (data: Annotation): TagType[] => {
+    const tags = data?.tags?.map((tag) => ({
+      label: tag,
+      color: getTagColor(tag),
+    }));
+    return tags;
+  };
 }

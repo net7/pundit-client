@@ -1,31 +1,25 @@
-import { Component, Input } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { Annotation } from '@pundit/communication';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'pnd-comment-annotation-section',
-  templateUrl: './comment-annotation-section.html'
+  templateUrl: './comment-annotation-section.html',
 })
-export class CommentAnnotationSectionComponent {
-    id = 'comment';
+export class CommentAnnotationSectionComponent implements OnInit {
+  id = 'comment';
 
-    @Input() public update$: Subject<void>;
+  @Input() public data$: Subject<Annotation>;
 
-    @Input() public data: Subject<void>;
+  public comment$: Observable<any>;
 
-    private destroy$: Subject<void> = new Subject();
+  ngOnInit(): void {
+    this.comment$ = this.data$.pipe(map(this.transformData));
+  }
 
-    ngAfterViewInit() {
-      this.update$.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(this.onUpdate);
-    }
-
-    ngOnDestroy() {
-      this.destroy$.next();
-    }
-
-    private onUpdate = () => {
-      console.log('update');
-    }
+  private transformData = (data: Annotation): string => {
+    if (data.type !== 'Commenting') return null;
+    return data?.content?.comment;
+  };
 }

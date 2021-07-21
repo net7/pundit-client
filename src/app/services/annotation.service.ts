@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation, LinkAnnotation
 } from '@pundit/communication';
-import { Subject, from } from 'rxjs';
+import { Subject, from, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { AnnotationCssClass, AnnotationDS } from '../data-sources';
@@ -16,6 +16,7 @@ export type AnnotationConfig = {
   id: string;
   ds: AnnotationDS;
   data: Annotation;
+  data$: BehaviorSubject<Annotation>;
 }
 
 @Injectable()
@@ -61,14 +62,16 @@ export class AnnotationService {
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
     // if annotation exists update auth related info
     if (currentAnnotation) {
-      const annotationDS = this.getAnnotationById(rawAnnotation.id).ds;
+      const { ds: annotationDS, data$ } = this.getAnnotationById(rawAnnotation.id);
       annotationDS.options.currentUser = currentUser;
       annotationDS.updateUser();
       annotationDS.updateMenu();
       annotationDS.updateNotebook();
+      data$.next(rawAnnotation);
     } else {
       const { id } = rawAnnotation;
       const data = rawAnnotation;
+      const data$ = new BehaviorSubject<Annotation>(rawAnnotation);
       const ds = new AnnotationDS();
       // update datasource options
       const currentUserNotebooks = currentUser
@@ -84,7 +87,7 @@ export class AnnotationService {
         notebookService: this.notebookService,
       };
       this.annotations.push({
-        id, data, ds
+        id, data$, ds, data
       });
       // first datasource update
       ds.update(data);
@@ -106,6 +109,10 @@ export class AnnotationService {
         tap(() => {
           const cachedAnnotation = this.getAnnotationById(annotationId);
           if (!cachedAnnotation) return;
+          const { created, changed, uri } = cachedAnnotation.data$.getValue();
+          cachedAnnotation.data$.next({
+            id: annotationId, ...data, created, changed, uri
+          });
           if (data.notebookId) {
             // update the notebook
             const { notebookId } = data;

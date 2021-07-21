@@ -2,8 +2,11 @@
 // ANNOTATION.ts
 //---------------------------
 
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import {
+  ChangeDetectorRef, Component, Input, OnInit
+} from '@angular/core';
 import { Annotation, Tag } from '@pundit/communication';
+import { BehaviorSubject } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon, SemanticItem } from '../../types';
@@ -93,15 +96,21 @@ export interface AnnotationData {
   selector: 'annotation',
   templateUrl: './annotation.html'
 })
-export class AnnotationComponent {
+export class AnnotationComponent implements OnInit {
   @Input() data: AnnotationData;
 
   @Input() emit: any;
+
+  @Input() data$: BehaviorSubject<Annotation>
 
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
   ) {}
+
+  ngOnInit(): void {
+    // this.data$.subscribe(data=>console.log(data));
+  }
 
   onClick(ev: Event, payload) {
     if (!this.emit) return;
@@ -141,7 +150,8 @@ export class AnnotationComponent {
    */
   onNotebookSelection = (type, payload) => {
     if (!this.emit) return;
-    const annotationID = this.data.payload.id;
+    // const annotationID = this.data.payload.id;
+    const annotationID = this.data$.getValue().id;
     const notebookID = payload;
     if (!annotationID || !notebookID) return;
     this.emit(type, { annotation: annotationID, notebook: notebookID });

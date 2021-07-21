@@ -39,6 +39,10 @@ import { CommentSectionComponent } from './components/edit-modal/sections/commen
 import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
 import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
 import { SemanticSectionComponent } from './components/edit-modal/sections/semantic-section/semantic-section';
+import { HighlightAnnotationSectionComponent } from './components/annotation/sections/highlight/highlight-annotation-section';
+import { CommentAnnotationSectionComponent } from './components/annotation/sections/comment/comment-annotation-section';
+import { SemanticAnnotationSectionComponent } from './components/annotation/sections/semantic/semantic-annotation-section';
+import { TagAnnotationSectionComponent } from './components/annotation/sections/tag/tag-annotation-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -114,6 +118,10 @@ if (env.chromeExt) {
     TagsSectionComponent,
     NotebookSectionComponent,
     SemanticSectionComponent,
+    HighlightAnnotationSectionComponent,
+    CommentAnnotationSectionComponent,
+    SemanticAnnotationSectionComponent,
+    TagAnnotationSectionComponent,
     // PIPES
     SortByPipe,
   ],
