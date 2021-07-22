@@ -1,6 +1,6 @@
-<div class="pnd-annotation__caret" *ngIf="(comment$ | async)"></div>
-<div class="pnd-annotation__comment" *ngIf="(comment$ | async) as comment">
+<div class="pnd-annotation__caret" *ngIf="(comment$ | async)?.text as text"></div>
+<div class="pnd-annotation__comment" *ngIf="(comment$ | async)?.text as text">
     <span class="pnd-annotation__comment-text">
-        {{ comment }}
+        {{ text }}
     </span>
 </div>

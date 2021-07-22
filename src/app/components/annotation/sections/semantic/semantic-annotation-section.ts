@@ -18,14 +18,13 @@ export class SemanticAnnotationSectionComponent implements OnInit {
     this.semantic$ = this.data$.pipe(map(this.transformData));
   }
 
-  private transformData = (data: Annotation): any => {
-    if (data.type !== 'Linking') return {};
-    const triples = data.content?.map(this.transformTriple);
-    return { triples };
+  private transformData = (annotation: Annotation): any => {
+    if (annotation.type !== 'Linking') return {};
+    const data = annotation.content?.map(this.transformTriple);
+    return { data };
   };
 
   private transformTriple = (triple: SemanticTripleType): any => {
-    if (!triple) return {};
     const data = {
       predicate: this.getPredicate(triple),
       object: this.getObject(triple),
@@ -33,7 +32,7 @@ export class SemanticAnnotationSectionComponent implements OnInit {
     return data;
   };
 
-  private getPredicate = (triple: SemanticTripleType): any => ({ label: triple.predicate?.label });
+  private getPredicate = (triple: SemanticTripleType): any => ({ label: triple?.predicate?.label });
 
   private getObject = (triple: SemanticTripleType): any => {
     if (triple?.objectType === 'literal') {

@@ -18,8 +18,8 @@ export class HighlightAnnotationSectionComponent implements OnInit {
     this.highlight$ = this.data$.pipe(map(this.transformData));
   }
 
-  private transformData = (data: Annotation): string => {
-    const { text } = data?.subject?.selected;
-    return text;
+  private transformData = (annotation: Annotation): any => {
+    const { text } = annotation?.subject?.selected;
+    return { text };
   };
 }

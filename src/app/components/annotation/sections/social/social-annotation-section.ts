@@ -1,31 +1,22 @@
-import { Component, Input } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { Social, User } from '@pundit/communication';
+import { Observable, Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'pnd-social-annotation-section',
   templateUrl: './social-annotation-section.html'
 })
-export class SocialAnnotationSectionComponent {
+export class SocialAnnotationSectionComponent implements OnInit {
     id = 'social';
 
-    @Input() public update$: Subject<void>;
+    @Input() public data$: Subject<any>;
 
-    @Input() public data: Subject<void>;
+    public social$: Observable<any>;
 
-    private destroy$: Subject<void> = new Subject();
-
-    ngAfterViewInit() {
-      this.update$.pipe(
-        takeUntil(this.destroy$)
-      ).subscribe(this.onUpdate);
+    ngOnInit(): void {
+      this.social$ = this.data$.pipe(map(this.transformData));
     }
 
-    ngOnDestroy() {
-      this.destroy$.next();
-    }
-
-    private onUpdate = (payload: any) => {
-      this.data = payload;
-    }
+    private transformData = (data: {socials: Social[]; users: User[]}) => data
 }
