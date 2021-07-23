@@ -43,11 +43,15 @@ import { HighlightAnnotationSectionComponent } from './components/annotation/sec
 import { CommentAnnotationSectionComponent } from './components/annotation/sections/comment/comment-annotation-section';
 import { SemanticAnnotationSectionComponent } from './components/annotation/sections/semantic/semantic-annotation-section';
 import { TagAnnotationSectionComponent } from './components/annotation/sections/tag/tag-annotation-section';
+import { HeaderAnnotationSectionComponent } from './components/annotation/sections/header/header-annotation-section';
+import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+
+
 
 const LANG_CODE = 'en_US';
 
@@ -122,6 +126,8 @@ if (env.chromeExt) {
     CommentAnnotationSectionComponent,
     SemanticAnnotationSectionComponent,
     TagAnnotationSectionComponent,
+    HeaderAnnotationSectionComponent,
+    MenuHeaderSectionComponent,
     // PIPES
     SortByPipe,
   ],

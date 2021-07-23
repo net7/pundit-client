@@ -114,7 +114,8 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     // toast "working..."
     const workingToast = this.layoutEH.toastService.working();
     // update the annotation on the back end
-    const { data: rawAnnotation } = this.layoutEH.annotationService.getAnnotationById(annotationID);
+    const { data$ } = this.layoutEH.annotationService.getAnnotationById(annotationID);
+    const rawAnnotation = data$.getValue();
     const annotationUpdate = {
       type: rawAnnotation.type,
       notebookId,

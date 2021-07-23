@@ -87,34 +87,32 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
-    const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
-    const {
-      _meta, comment, semantic, _raw, body, tags
-    } = ds.output;
+    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
+    const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.annotation.updatePayload = _raw;
+    this.layoutDS.state.annotation.updatePayload = annotation;
 
     const params = {
       sections: [{
         id: 'tags',
-        value: tags
+        value: annotation.tags
       }, {
         id: 'notebook',
-        value: _meta.notebookId
+        value: annotation.notebookId
       }],
-      textQuote: body,
+      textQuote: annotation.subject?.selected?.text,
     } as EditModalParams;
 
     if (mode === 'comment') {
       params.sections.push({
         id: 'comment',
-        value: comment,
+        value:  annotation.type === 'Commenting' ? annotation.content?.comment : undefined,
         focus: true
       });
     } else if (mode === 'semantic') {
       params.sections.push({
         id: 'semantic',
-        value: semantic,
+        value: annotation.type === 'Linking' ? annotation.content : undefined,
         focus: true
       });
       params.saveButtonLabel = _t('editmodal#save_semantic');

@@ -1,0 +1,32 @@
+<div class="pnd-annotation__header-menu">
+    <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
+        *ngIf="(menu$ | async)?.menuData as menuData" (click)="onClick($event, menuData.icon['payload'])">
+        <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
+    </button>
+    <button class="pnd-annotation__header-menu-button"
+        (click)="onClick($event, {id: annotationId, source: 'compress'})">
+        <pnd-svg-icon [data]="{ id: 'compress' }"></pnd-svg-icon>
+    </button>
+
+    <div *ngIf="(state$ | async)?.activeMenu as activeMenu" class="pnd-annotation__menu-dropdown"
+        [ngClass]="{'has-notebooks': activeMenu === 'notebooks' }">
+        <!-- menu actions -->
+        <div class="pnd-annotation__menu-dropdown-actions" *ngIf="activeMenu === 'actions'">
+            <div *ngFor="let action of (menu$ | async)?.menuData?.actions" (click)="onClick($event, action.payload)"
+                class="pnd-annotation__menu-dropdown-action">
+                {{ action.label }}
+            </div>
+        </div>
+        <div class="pnd-annotation__menu-notebooks" *ngIf="activeMenu === 'notebooks'">
+            <div class="pnd-annotation__menu-notebooks-header" *ngIf="(menu$ | async)?.menuData?.notebooks as notebooks"
+                (click)="onClick($event, notebooks.header.payload)">
+                {{ notebooks.header.label }}
+            </div>
+            <div class="pnd-annotation__select-cont"
+                *ngIf="(menu$ | async)?.notebookSelectorData as notebookSelectorData">
+                <notebook-selector [data]="notebookSelectorData" [emit]="onNotebookSelection">
+                </notebook-selector>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,16 @@
-<div *ngIf="data"
-     class="pnd-annotation {{ data.classes || ''}}"
-     [ngClass]="{'is-collapsed': data.isCollapsed, 'is-expanded': !data.isCollapsed, 'has-comment': data.comment}"
-     (click)="data.payload && onContainerClick(data.payload)"
-     (mouseenter)="data.payload && onEnter(data.payload)"
-     (mouseleave)="data.payload && onLeave(data.payload)">
+<div *ngIf="(state$ | async) as state"
+     class="pnd-annotation {{ state?.classes || ''}}"
+     [ngClass]="{'is-collapsed': state?.isCollapsed, 'is-expanded': !state?.isCollapsed, 'has-comment': (data$ | async)?.type === 'Commenting'}"
+     (click)="onContainerClick(state)"
+     (mouseenter)="onEnter(state)"
+     (mouseleave)="onLeave(state)">
     
-    <ng-container *ngIf="!data.isCollapsed">
+    <ng-container *ngIf="!state.isCollapsed">
         <!-- view the full annotation -->
         <ng-container *ngTemplateOutlet="expanded"></ng-container>
     </ng-container>
     
-    <ng-container *ngIf="data.isCollapsed">
+    <ng-container *ngIf="state.isCollapsed">
         <!-- minimal view of the annotation -->
         <ng-container *ngTemplateOutlet="collapsed"></ng-container>
     </ng-container>
@@ -19,7 +19,13 @@
 
 <ng-template #expanded>
     <!-- Header -->
-    <div class="pnd-annotation__header" (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
+    <pnd-header-annotation-section 
+    [data$]="data$"
+     [emit]="emit" 
+     [state$]="state$"
+     [annotationId]="annotationId"
+     ></pnd-header-annotation-section>
+    <!-- <div class="pnd-annotation__header" (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
 
         <div class="pnd-annotation__header-thumb-wrapper">
             <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
@@ -61,8 +67,8 @@
             <div *ngIf="data.activeMenu" 
                  class="pnd-annotation__menu-dropdown"
                  [ngClass]="{'has-notebooks': data.activeMenu === 'notebooks' }">
-                <!-- menu actions -->
-                <div class="pnd-annotation__menu-dropdown-actions"
+
+                 <div class="pnd-annotation__menu-dropdown-actions"
                      *ngIf="data.activeMenu === 'actions'">
                     <div *ngFor="let action of data.menu.actions"
                          (click)="onClick($event, action.payload)"
@@ -85,7 +91,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <!-- END // Header -->
     <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
     <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
