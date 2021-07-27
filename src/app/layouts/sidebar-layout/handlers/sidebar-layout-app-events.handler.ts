@@ -7,7 +7,7 @@ import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { EMPTY } from 'rxjs';
-import { AnnotationCssClass } from 'src/app/data-sources';
+import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -76,8 +76,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       // toast "working..."
       const workingToast = this.layoutEH.toastService.working();
       // update loading state
-      this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-        cssClass: AnnotationCssClass.Edit
+      this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+        classes: AnnotationCssClass.Edit
       });
       // fix typescript explicit
       // annotation types
@@ -111,8 +111,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         })
       ).subscribe(() => {
         // update loading state
-        this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-          cssClass: AnnotationCssClass.Empty
+        this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+          classes: AnnotationCssClass.Empty
         });
 
         // refresh sidedar annotations

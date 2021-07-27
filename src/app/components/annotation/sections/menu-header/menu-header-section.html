@@ -23,7 +23,7 @@
                 {{ notebooks.header.label }}
             </div>
             <div class="pnd-annotation__select-cont"
-                *ngIf="(menu$ | async)?.notebookSelectorData as notebookSelectorData">
+                *ngIf="notebookSelectorData">
                 <notebook-selector [data]="notebookSelectorData" [emit]="onNotebookSelection">
                 </notebook-selector>
             </div>

@@ -43,7 +43,6 @@ export class NotebookSelectorComponent {
 
   onClick(type, payload) {
     if (!this.emit) return;
-
     if (payload === 'createmode') {
       this.setMode('input');
       return;
@@ -68,7 +67,6 @@ export class NotebookSelectorComponent {
       this.data._meta.isExpanded = false;
     }
     this.data._meta.isExpanded = !this.data._meta.isExpanded;
-
     // trigger change detector
     this.ref.detectChanges();
   }
