@@ -3,7 +3,7 @@
 //---------------------------
 
 import {
-  ChangeDetectorRef, Component, Input, OnInit
+  ChangeDetectorRef, Component, Input
 } from '@angular/core';
 import { Annotation, Tag } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
@@ -50,14 +50,13 @@ export interface AnnotationData {
     classes?: string;
   };
   /** Visible menu */
-  activeMenu?: "actions" | "notebooks";
+  activeMenu?: 'actions' | 'notebooks';
   /** HTML Classes */
   classes?: string;
   /** element click payload */
   payload?: any;
-    /** additional data useful for the component's logic */
+  /** additional data useful for the component's logic */
   _meta?: any;
-
 
   /** User data */
   user: {
@@ -99,7 +98,7 @@ export interface AnnotationData {
   selector: 'annotation',
   templateUrl: './annotation.html'
 })
-export class AnnotationComponent implements OnInit {
+export class AnnotationComponent {
   @Input() data: AnnotationData;
 
   @Input() emit: any;
@@ -113,11 +112,7 @@ export class AnnotationComponent implements OnInit {
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
-  ) {}
-
-  ngOnInit(): void {
-    // this.data$.subscribe(data=>console.log(data));
-  }
+  ) { }
 
   onContainerClick(payload) {
     if (!this.emit) return;
