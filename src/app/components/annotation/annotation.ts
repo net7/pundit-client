@@ -8,6 +8,7 @@ import {
 import { Annotation, Tag } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { Icon, SemanticItem } from '../../types';
 
@@ -105,7 +106,7 @@ export class AnnotationComponent {
 
   @Input() data$: BehaviorSubject<Annotation>;
 
-  @Input() state$: BehaviorSubject<any>;
+  @Input() state$: BehaviorSubject<AnnotationState>;
 
   @Input() public annotationId: string;
 

@@ -17,9 +17,17 @@ export enum AnnotationCssClass {
   Edit = 'is-edited'
 }
 
+export type AnnotationState = {
+  id: string;
+  activeMenu?: string;
+  isNotebookSelectorLoading: boolean;
+  source: 'box';
+  isCollapsed: boolean;
+}
+
 export type AnnotationConfig = {
   id: string;
-  state$: BehaviorSubject<any>;
+  state$: BehaviorSubject<AnnotationState>;
   data$: BehaviorSubject<Annotation>;
 }
 @Injectable()
@@ -78,7 +86,6 @@ export class AnnotationService {
       });
       this.annotations.push({ id, data$, state$ });
     }
-
     // emit signal
     this.totalChanged$.next(this.annotations.length);
   }
@@ -108,7 +115,8 @@ export class AnnotationService {
     if (!cachedAnnotation) return;
     const { state$ } = cachedAnnotation;
     const currentState = state$.getValue();
-    state$.next({ ...currentState, ...state });
+    const newState: AnnotationState = { ...currentState, ...state };
+    state$.next(newState);
   }
 
   /**

@@ -5,6 +5,7 @@ import { Annotation } from '@pundit/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
+import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
@@ -20,7 +21,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
 
   @Input() public emit: any;
 
-  @Input() public state$: any;
+  @Input() public state$: BehaviorSubject<AnnotationState>;
 
   @Input() public annotationId: string;
 

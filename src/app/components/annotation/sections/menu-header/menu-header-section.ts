@@ -10,6 +10,7 @@ import {
   map, takeUntil, withLatestFrom
 } from 'rxjs/operators';
 import { NotebookSelectorData } from 'src/app/components/notebook-selector/notebook-selector';
+import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
@@ -25,7 +26,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   @Input() public emit: any;
 
-  @Input() public state$: any;
+  @Input() public state$: BehaviorSubject<AnnotationState>;
 
   @Input() public annotationId: string;
 
