@@ -1,75 +1,29 @@
 <ng-container *ngIf="(header$ | async) as data">
-    <div class="pnd-annotation__header" (click)="onClick($event, {id: annotationId, source: 'compress'})">
+    <div class="pnd-annotation__header">
 
         <div class="pnd-annotation__header-thumb-wrapper">
             <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
             <img [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
-                onerror="this.style.display='none'"
-                alt="{{data.user.name}}"
-                class="pnd-annotation__header-thumb-image">
+                onerror="this.style.display='none'" alt="{{data.user.name}}" class="pnd-annotation__header-thumb-image">
         </div>
-        
+
         <div class="pnd-annotation__header-info">
             <a *ngIf="data.user.anchor as anchor" [href]="anchor" target="_blank">
                 <div class="pnd-annotation__header-name">{{data.user.name}}</div>
             </a>
             <div *ngIf="!data.user.anchor" class="pnd-annotation__header-name">{{data.user.name}}</div>
-            
+
             <div class="pnd-annotation__header-additional-info">
                 <span class="pnd-annotation__header-date">{{data.date}}</span>
-                <span *ngIf="data.notebook.anchor as anchor"
-                      class="pnd-annotation__header-notebook">in
+                <span *ngIf="data.notebook.anchor as anchor" class="pnd-annotation__header-notebook">in
                     <a [href]="anchor" target="_blank" class="pnd-annotation__header-notebook-link">
                         <span>{{ data.notebook.name }}</span>
                     </a>
                 </span>
             </div>
         </div>
-        
-        <pnd-menu-header-section 
-        [data$]="data$"
-        [emit]="emit"
-        [annotationId]="annotationId"
-        [state$]="state$" ></pnd-menu-header-section>
-        <!-- <div class="pnd-annotation__header-menu">
-            <button class="pnd-annotation__header-menu-button {{ data.menu.classes || '' }}"
-                   *ngIf="data.menu"
-                  [ngClass]="data.menu.icon['id']"
-                  (click)="onClick($event, data.menu.icon['payload'])">
-                  <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
-            </button>
-            <button class="pnd-annotation__header-menu-button" *ngIf="(state$ | async) as state" 
-                    (click)="onClick($event, {id: state.id, source: 'compress'})">
-                <pnd-svg-icon [data]="{ id: 'compress' }"></pnd-svg-icon> 
-            </button>
-    
-            <div *ngIf="(state$ | async)?.activeMenu as activeMenu" 
-                 class="pnd-annotation__menu-dropdown"
-                 [ngClass]="{'has-notebooks': activeMenu === 'notebooks' }">
-     
-                <div class="pnd-annotation__menu-dropdown-actions"
-                     *ngIf="activeMenu === 'actions'">
-                    <div *ngFor="let action of data.menu.actions"
-                         (click)="onClick($event, action.payload)"
-                         class="pnd-annotation__menu-dropdown-action">
-                        {{ action.label }}
-                    </div>
-                </div>
-                <div class="pnd-annotation__menu-notebooks"
-                     *ngIf="activeMenu === 'notebooks'">
-                    <div class="pnd-annotation__menu-notebooks-header"
-                         (click)="onClick($event, data.menu.notebooks.header.payload)">
-                        {{ data.menu.notebooks.header.label }}
-                    </div>
-                    <div class="pnd-annotation__select-cont"
-                         *ngIf="data.notebookSelectorData">
-                        <notebook-selector [data]="data.notebookSelectorData"
-                                           [emit]="onNotebookSelection">
-                        </notebook-selector>
-                    </div>
-                </div>
-            </div>
-        </div>
-         -->
+
+        <pnd-menu-header-section [data$]="data$" [emit]="emit" [annotationId]="annotationId" [state$]="state$">
+        </pnd-menu-header-section>
     </div>
 </ng-container>
