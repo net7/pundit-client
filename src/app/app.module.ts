@@ -39,11 +39,19 @@ import { CommentSectionComponent } from './components/edit-modal/sections/commen
 import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
 import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
 import { SemanticSectionComponent } from './components/edit-modal/sections/semantic-section/semantic-section';
+import { HighlightAnnotationSectionComponent } from './components/annotation/sections/highlight/highlight-annotation-section';
+import { CommentAnnotationSectionComponent } from './components/annotation/sections/comment/comment-annotation-section';
+import { SemanticAnnotationSectionComponent } from './components/annotation/sections/semantic/semantic-annotation-section';
+import { TagAnnotationSectionComponent } from './components/annotation/sections/tag/tag-annotation-section';
+import { HeaderAnnotationSectionComponent } from './components/annotation/sections/header/header-annotation-section';
+import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
 import appConfig from './config';
 import i18n from './config/i18n';
+
+
 
 const LANG_CODE = 'en_US';
 
@@ -114,6 +122,12 @@ if (env.chromeExt) {
     TagsSectionComponent,
     NotebookSectionComponent,
     SemanticSectionComponent,
+    HighlightAnnotationSectionComponent,
+    CommentAnnotationSectionComponent,
+    SemanticAnnotationSectionComponent,
+    TagAnnotationSectionComponent,
+    HeaderAnnotationSectionComponent,
+    MenuHeaderSectionComponent,
     // PIPES
     SortByPipe,
   ],

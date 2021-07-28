@@ -60,20 +60,20 @@ export class AnnotationDS extends DataSource {
         notebookId,
         notebookSelectorData
       },
-      _raw: data,
       payload: {
         source: 'box',
         id
       },
-      user: this.getUserData(),
       isCollapsed: true,
+      menu: this.getMenuData(id, comment, tags, semantic),
+      
+      user: this.getUserData(),
       date: new Date(created).toLocaleDateString(),
       notebook: this.getNotebookData(),
       body: text,
       comment,
       semantic,
       tags,
-      menu: this.getMenuData(id, comment, tags, semantic),
     };
   }
 
@@ -117,6 +117,7 @@ export class AnnotationDS extends DataSource {
       selectedNotebook: notebook,
       notebookList: notebooks,
       mode: 'select',
+      
       createOption: {
         label: 'New notebook',
         value: 'createnotebook',

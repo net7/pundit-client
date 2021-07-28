@@ -3,14 +3,13 @@ import {
   AnnotationEvent, AppEvent, getEventType, SidebarLayoutEvent
 } from 'src/app/event-types';
 import { _t } from '@n7-frontend/core';
-import {
-  AnnotationAttributes, CommentAnnotation
-} from '@pundit/communication';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { _c } from 'src/app/models/config';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
+import { Annotation, AnnotationAttributes } from '@pundit/communication';
+import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -114,17 +113,12 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     // toast "working..."
     const workingToast = this.layoutEH.toastService.working();
     // update the annotation on the back end
-    const { data: rawAnnotation } = this.layoutEH.annotationService.getAnnotationById(annotationID);
-    const annotationUpdate = {
-      type: rawAnnotation.type,
-      notebookId,
-      serializedBy: rawAnnotation.serializedBy,
-      subject: rawAnnotation.subject,
-      userId: rawAnnotation.userId
-    } as AnnotationAttributes;
-    if (rawAnnotation.type === 'Commenting') {
-      (annotationUpdate as CommentAnnotation).content = rawAnnotation.content;
-    }
+    const { data$ } = this.layoutEH.annotationService.getAnnotationById(annotationID);
+    const rawAnnotation = data$.getValue();
+    const annotationUpdate = this.createUpdatePayload(rawAnnotation, notebookId);
+    this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+      classes: AnnotationCssClass.Edit
+    });
     setTimeout(() => { // waiting for elastic-search index update
       this.layoutEH.annotationService.update(annotationID, annotationUpdate)
         .pipe(
@@ -137,11 +131,17 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
                 workingToast.close();
               }
             });
+            this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+              classes: AnnotationCssClass.Empty
+            });
             console.error('Update annotation notebook error:', err);
             return EMPTY;
           })
         )
         .subscribe(() => {
+          this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+            classes: AnnotationCssClass.Empty
+          });
           this.layoutEH.toastService.success({
             title: _t('toast#notebookchange_success_title'),
             text: _t('toast#notebookchange_success_text'),
@@ -179,9 +179,15 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     annotationID: string;
   }) {
     // create the notebook in the backend first to generate it's id
+    this.layoutEH.annotationService.updateAnnotationState(payload.annotationID, {
+      classes: AnnotationCssClass.Edit
+    });
     this.createNotebookFromString(payload.label).pipe(
       catchError((err) => {
         console.error(err);
+        this.layoutEH.annotationService.updateAnnotationState(payload.annotationID, {
+          classes: AnnotationCssClass.Empty
+        });
         return EMPTY;
       })
     ).subscribe((res) => {
@@ -196,6 +202,36 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         }
       });
     });
+  }
+
+  private createUpdatePayload(rawAnnotation: Annotation, notebookId: string): AnnotationAttributes {
+    const { serializedBy, userId, subject } = rawAnnotation;
+    if (rawAnnotation.type === 'Commenting') {
+      return {
+        type: rawAnnotation.type,
+        notebookId,
+        serializedBy,
+        subject,
+        userId,
+        content: rawAnnotation.content
+      };
+    } if (rawAnnotation.type === 'Linking') {
+      return {
+        type: rawAnnotation.type,
+        notebookId,
+        serializedBy,
+        subject,
+        userId,
+        content: rawAnnotation.content
+      };
+    }
+    return {
+      type: rawAnnotation.type,
+      notebookId,
+      serializedBy,
+      subject,
+      userId
+    };
   }
 
   /**

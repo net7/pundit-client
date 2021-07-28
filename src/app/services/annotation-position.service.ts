@@ -23,8 +23,8 @@ export class AnnotationPositionService {
     const bodyTop = document.body.getBoundingClientRect().top;
     // get all annotations (creation date and anchor)
     const annotations = this.annotationService.getAnnotations().map(
-      ({ ds, id }) => ({
-        created: ds.output._meta.created,
+      ({ data$, id }) => ({
+        created: data$.getValue().created,
         anchor: this.anchorService.getHighlightById(id)
       })
     );

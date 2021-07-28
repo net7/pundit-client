@@ -2,8 +2,9 @@ import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { EditModalParams, LayoutHandler } from 'src/app/types';
+import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@n7-frontend/core';
+import { SemanticTripleType } from '@pundit/communication';
 import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -87,34 +88,32 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
-    const { ds } = this.layoutDS.annotationService.getAnnotationById(payload);
-    const {
-      _meta, comment, semantic, _raw, body, tags
-    } = ds.output;
+    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
+    const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.annotation.updatePayload = _raw;
+    this.layoutDS.state.annotation.updatePayload = annotation;
 
     const params = {
       sections: [{
         id: 'tags',
-        value: tags
+        value: annotation.tags
       }, {
         id: 'notebook',
-        value: _meta.notebookId
+        value: annotation.notebookId
       }],
-      textQuote: body,
+      textQuote: annotation.subject?.selected?.text,
     } as EditModalParams;
 
     if (mode === 'comment') {
       params.sections.push({
         id: 'comment',
-        value: comment,
+        value: annotation.type === 'Commenting' ? annotation.content?.comment : undefined,
         focus: true
       });
     } else if (mode === 'semantic') {
       params.sections.push({
         id: 'semantic',
-        value: semantic,
+        value: annotation.type === 'Linking' ? this.getSemanticData(annotation.content) : undefined,
         focus: true
       });
       params.saveButtonLabel = _t('editmodal#save_semantic');
@@ -125,6 +124,38 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
 
     this.layoutDS.openEditModal(params);
+  }
+
+  private getSemanticData(rawSemantic: SemanticTripleType[]): {
+    predicate: SemanticItem;
+    object: SemanticItem;
+  }[] {
+    return rawSemantic.length ? rawSemantic.map((triple) => {
+      const { predicate } = triple;
+      let object = null;
+      // literal
+      if ('text' in triple.object) {
+        object = {
+          label: triple.object.text,
+          uri: null
+        };
+        // uri
+      } else if ('uri' in triple.object) {
+        object = {
+          label: triple.object.label,
+          uri: triple.object.uri,
+        };
+        // web page
+      } else if ('pageTitle' in triple.object) {
+        object = {
+          label: triple.object.pageTitle,
+          uri: null
+        };
+      } else {
+        console.warn('No handler for semantic object', triple.object);
+      }
+      return { predicate, object };
+    }) : undefined;
   }
 
   private onSidebarCollapse({ isCollapsed }) {
