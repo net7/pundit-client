@@ -46,6 +46,16 @@ export type SemanticFormRow = {
   };
 };
 
+export const getObjectType = (value: string) => {
+  const regex = /^(http:|https:|urn:|mailto:|file:)/g;
+  if (
+    (typeof value === 'string')
+    && value.match(regex)) {
+    return 'uri';
+  }
+  return 'literal';
+};
+
 @Component({
   selector: 'pnd-semantic-section',
   templateUrl: './semantic-section.html'
@@ -162,7 +172,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
     // object type check
     if (objectProviderId === DEFAULT_PROVIDER_ID) {
-      rowData.object.type = this.getObjectType(objectValue);
+      rowData.object.type = getObjectType(objectValue);
     }
 
     if (rowIndex || rowIndex === 0) {
@@ -205,7 +215,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     const value = typeof inputValue === 'string' ? inputValue.trim() : inputValue;
     currentRow.object.value = value;
     if (currentRow.object.providerId === DEFAULT_PROVIDER_ID) {
-      currentRow.object.type = this.getObjectType(value);
+      currentRow.object.type = getObjectType(value);
     }
     // trigger form change
     this.triggerChange();
@@ -299,16 +309,6 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
         }
       });
     }
-  }
-
-  private getObjectType(value: string) {
-    const regex = /^(http:|https:|urn:|mailto:|file:)/g;
-    if (
-      (typeof value === 'string')
-      && value.match(regex)) {
-      return 'uri';
-    }
-    return 'literal';
   }
 
   private getObjectInputEl() {
