@@ -39,11 +39,14 @@ export class SemanticAnnotationSectionComponent implements OnInit {
       return {
         label: triple?.object?.text,
       };
-    // } else if (triple?.objectType === "uri") {
-    //   // TODO
-    // } else if (triple.objectType === "object") {
-    //   // TODO
+    } if (triple?.objectType === 'uri' && triple?.object.source === 'free-text') {
+      return {
+        label: triple?.object?.uri,
+      };
     }
+    //  else if (triple.objectType === "object") {
+    //   // TODO
+    // }
     return {};
   };
 }

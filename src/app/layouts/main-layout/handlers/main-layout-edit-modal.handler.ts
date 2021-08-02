@@ -222,18 +222,34 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     // check semantic value
     if (Array.isArray(semantic)) {
       annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
-      annotationPayload.content = semantic.length ? semantic.map(({ predicate, object }) => ({
-        predicate: {
-          label: predicate.label,
-          uri: predicate.uri
-        },
-        objectType: 'literal',
-        object: {
-          text: object.label
-        }
-      })) : undefined;
+      annotationPayload.content = semantic.length
+        ? semantic.map(({ predicate, object, objectType }) => {
+          const objectPayload = this.getObjectPayload(object, objectType);
+          return {
+            predicate: {
+              label: predicate.label,
+              uri: predicate.uri
+            },
+            ...objectPayload
+          };
+        }) : undefined;
     }
     return annotationPayload;
+  }
+
+  private getObjectPayload = (object, objectType: string) => {
+    if (objectType === 'literal') {
+      return { objectType, object: { text: object.label } };
+    } if (objectType === 'uri') {
+      return {
+        objectType,
+        object: {
+          uri: object.label,
+          source: 'free-text'
+        }
+      };
+    }
+    return {};
   }
 
   private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;
