@@ -3,7 +3,6 @@ import { SemanticTripleType } from '@pundit/communication';
 import { EMPTY, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
-import { getObjectType } from 'src/app/components/edit-modal/sections/semantic-section/semantic-section';
 import { AppEvent, EditModalEvent } from 'src/app/event-types';
 import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
@@ -223,22 +222,22 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     // check semantic value
     if (Array.isArray(semantic)) {
       annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
-      annotationPayload.content = semantic.length ? semantic.map(({ predicate, object }) => {
-        const objectPayload = this.getObjectPayload(object);
-        return {
-          predicate: {
-            label: predicate.label,
-            uri: predicate.uri
-          },
-          ...objectPayload
-        };
-      }) : undefined;
+      annotationPayload.content = semantic.length
+        ? semantic.map(({ predicate, object, objectType }) => {
+          const objectPayload = this.getObjectPayload(object, objectType);
+          return {
+            predicate: {
+              label: predicate.label,
+              uri: predicate.uri
+            },
+            ...objectPayload
+          };
+        }) : undefined;
     }
     return annotationPayload;
   }
 
-  private getObjectPayload = (object) => {
-    const objectType = getObjectType(object.label);
+  private getObjectPayload = (object, objectType: string) => {
     if (objectType === 'literal') {
       return { objectType, object: { text: object.label } };
     } if (objectType === 'uri') {

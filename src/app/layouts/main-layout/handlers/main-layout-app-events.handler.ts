@@ -139,8 +139,14 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           label: triple.object.text,
           uri: null
         };
+        // uri as free-text
+      } else if ('uri' in triple.object && triple.object.source === 'free-text') {
+        object = {
+          label: triple.object.uri,
+          uri: triple.object.uri,
+        };
         // uri
-      } else if ('uri' in triple.object) {
+      } else if ('uri' in triple.object && triple.object.source === 'search') {
         object = {
           label: triple.object.label,
           uri: triple.object.uri,

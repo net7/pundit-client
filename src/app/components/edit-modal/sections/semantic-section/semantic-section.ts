@@ -260,6 +260,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     const errors = [];
     this.rows.forEach((row) => {
       const rawValues = {
+        objectType: row.object.type,
         object: row.object.value || null,
         predicate: (row.predicate.options
           .find((option) => option.selected) || {}).value || null
@@ -268,7 +269,8 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       if (rawValues.predicate && rawValues.object) {
         const rowValue = {
           predicate: null as SemanticItem,
-          object: null as SemanticItem
+          object: null as SemanticItem,
+          objectType: rawValues.objectType
         };
         ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
           const { providerId } = row[key];
