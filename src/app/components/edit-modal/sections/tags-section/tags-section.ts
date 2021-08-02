@@ -67,7 +67,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       backspace: 'edit',
       placeholder: _t('editmodal#add_tag'),
       dropdown: {
-        enabled: 0,
+        enabled: 1,
         fuzzySearch: false,
         position: 'all',
         caseSensitive: true,
@@ -94,11 +94,12 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       }
     );
     this.formInstance.on(
-      'blur dropdown:select',
-      () => {
-        setTimeout(() => {
-          this.tagifyDropdownManualHide();
-        });
+      'blur dropdown:select dropdown:noMatch input',
+      (e: CustomEvent) => {
+        if (e.type === 'input' && e?.detail?.value) {
+          return;
+        }
+        this.tagifyDropdownManualHide();
       }
     );
     // suggestion list
