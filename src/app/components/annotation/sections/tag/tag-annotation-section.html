@@ -1,0 +1,7 @@
+<div class="pnd-annotation__tags" *ngIf="(tags$ | async) as tags">
+    <span *ngFor="let tag of tags" [ngStyle]="{
+            'background-color': tag.color
+        }" class="pnd-annotation__tags-item">
+        {{ tag.label }}
+    </span>
+</div>

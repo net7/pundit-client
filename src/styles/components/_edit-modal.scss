@@ -1,0 +1,299 @@
+/**
+ * RESOURCE MODAL
+ *
+ * Style for the modal.
+ */
+
+/* ------------------------------------ *\
+   #RESOURCE MODAL
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__window {
+        pointer-events: auto;
+        height: auto !important;
+        overflow-y: visible;
+    }
+
+    &__highlight-wrapper {
+        padding: $space*2;
+        max-height: 120px;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-top: 1px solid $annotation-border-color;
+        line-height: 20px;
+    }
+
+    &__highlight {
+        display: inline;
+        background-color: $color-highlight;
+        font-size: $font-size-s;
+        font-style: italic;
+    }
+
+    &__comment-wrapper {
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+        background-color: $annotation-comment-background-color;
+    }
+
+    &__comment-label {
+        margin-bottom: $space;
+        font-size: $font-size-s;
+    }
+
+    &__comment-textarea {
+        width: 100%;
+        height: $space*20;
+        resize: none;
+    }
+
+    &__comment-textarea-wrapper {
+        line-height: 20px;
+    }
+
+    &__tag-wrapper {
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #FOOTER
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $space*2;
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
+    }
+
+    &__footer-notebook {
+        flex-grow: 2;
+        flex-shrink: 0;
+        padding-right: $space*2;
+    }
+
+    &__footer-actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        text-align: right;
+        
+        .pnd-btn:last-child {
+            margin-left: $space/2;
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
+   #CLOSE
+\* ------------------------------------ */
+.pnd-modal {
+    &__close {
+        .pnd-svg-icon svg {
+            width: 18px;
+            height: auto;
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
+   #HANDLE
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__handle {
+        height: 40px;
+        cursor: grab;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        [class^="pnd-svg-icon-"] {
+            width: $font-size-l;
+            height: $font-size-l;
+            color: $color-text-light;
+            transition: color $transition-durations;
+            svg {
+                width: $font-size-l;
+                height: $font-size-l;
+            }
+        }
+
+        &:hover {
+            [class^="pnd-svg-icon-"] {
+                color: $color-text;
+            }
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
+   #OVERLAY
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__overlay {
+        pointer-events: none;
+        background-color: transparent;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #TAGIFY FIX
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__tag-wrapper {
+        position: relative;
+    }
+
+    &__tags-hint {
+        margin: $space 0 0 0;
+        font-size: $font-size-s;
+        color: $color-text-light;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #SEMANTIC SECTION
+\* ------------------------------------ */
+.pnd-edit-modal {
+    &__semantic-wrapper {
+        position: relative;
+        z-index: 10;
+        padding: $space*2;
+        border-top: 1px solid $annotation-border-color;
+        border-bottom: 1px solid $annotation-border-color;
+        background-color: $annotation-comment-background-color;
+    }
+
+    &__semantic-label {
+        display: inline-block;
+        margin-bottom: $space;
+        font-size: $font-size-s;
+    }
+
+    &__semantic-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: $space;
+    }
+    
+    &__semantic-row:last-child {
+        margin-bottom: 0;
+    }
+
+    &__semantic-predicate {
+        .pnd-dropdown {
+            width: 150px;
+        }
+        .pnd-dropdown__list-items {
+            max-height: 250px;
+        }
+    }
+
+    &__list-wrapper {
+        z-index: 2;
+    }
+
+    &__semantic-object {
+        position: relative;
+        flex-grow: 2;
+        margin: 0 $space;
+    }
+
+    &__semantic-object-type {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        right: $space/2;
+        margin: 0;
+        padding: $space/8*3 $space/4*3;
+        background-color: $color-background-light;
+        color: $color-text-light;
+        text-transform: uppercase;
+        font-size: $font-size-xxs;
+        font-weight: $font-weight-bold;
+        border-radius: $border-radius;
+    }
+
+    &__semantic-object-input[type=text] {
+        width: 100%;
+        padding-right: 58px;
+    }
+
+    // actions
+    &__semantic-actions {
+        .pnd-dropdown {
+            min-width: auto;
+        }
+        .pnd-dropdown__selected {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: $border-radius;
+            border: 1px solid $color-border-normal;
+            background-color: $color-background-light;
+            cursor: pointer;
+            color: $color-text-light;
+            font-size: $font-size-s;
+            transition: color $transition-durations;
+            
+            .pnd-svg-icon, .pnd-svg-icon svg {
+                width: $font-size-s;
+                height: $font-size-s;
+            }
+    
+            &:hover {
+                color: $color-text-link;
+                border: 1px solid $color-text-link;
+            }
+        }
+        
+        .pnd-dropdown__list-wrapper {
+            position: absolute;
+            top: 30px;
+            right: 0;
+            left: auto;
+            width: auto;
+            padding: 0;
+            background-color: $color-background-base;
+            border: 1px solid $color-border-normal;
+            border-radius: $border-radius;
+            @include cardShadow-1;
+        }
+
+        .pnd-dropdown__item {
+            white-space: nowrap;
+        }
+    }
+}
+
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}

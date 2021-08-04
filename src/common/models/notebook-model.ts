@@ -15,12 +15,18 @@ export class NotebookModel {
 
   @CrossMessage(CrossMsgRequestId.NotebookSearch)
   static search() {
-    return notebook.search({ size: 20 });
+    return notebook.search({ size: 50 });
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookUpdate)
   static update(id: string, { data }: { data: NotebookAttributes }) {
     // change the notebook data on the backend
     return notebook.update(id, data);
+  }
+
+  @CrossMessage(CrossMsgRequestId.NotebookSetDefault)
+  static setDefault(id: string) {
+    // change the default notebook
+    return notebook.setDefault(id);
   }
 }

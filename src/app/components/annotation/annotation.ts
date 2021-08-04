@@ -2,10 +2,15 @@
 // ANNOTATION.ts
 //---------------------------
 
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
-import { Annotation } from '@pundit/communication';
+import {
+  ChangeDetectorRef, Component, Input
+} from '@angular/core';
+import { Annotation, Tag } from '@pundit/communication';
+import { BehaviorSubject } from 'rxjs';
+import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
-import { Icon } from '../../types';
+import { Icon, SemanticItem } from '../../types';
 
 /**
  * Interface for AnnotationComponent's "data"
@@ -24,26 +29,6 @@ import { Icon } from '../../types';
  * @property classes (optional)
  */
 export interface AnnotationData {
-  /** User data */
-  user: {
-    /** Profile picture */
-    image: string;
-    /** User full name */
-    name: string;
-    /** User initials: image fallback */
-    initials: string;
-    /** Navigate to user page */
-    anchor?: string;
-  };
-  /** Date string */
-  date: string;
-  /** Parent notebook data */
-  notebook?: {
-    /** Notebook title */
-    name: string;
-    /** Notebook link */
-    anchor: string;
-  };
   /** View the annotation in a minimal form */
   isCollapsed: boolean;
   /** Menu in the top-right corner of the annotation */
@@ -67,16 +52,45 @@ export interface AnnotationData {
   };
   /** Visible menu */
   activeMenu?: 'actions' | 'notebooks';
-  /** Annotated text */
-  body: string;
-  /** Annotation comment */
-  comment?: string;
   /** HTML Classes */
   classes?: string;
   /** element click payload */
   payload?: any;
   /** additional data useful for the component's logic */
   _meta?: any;
+
+  /** User data */
+  user: {
+    /** Profile picture */
+    image: string;
+    /** User full name */
+    name: string;
+    /** User initials: image fallback */
+    initials: string;
+    /** Navigate to user page */
+    anchor?: string;
+  };
+  /** Date string */
+  date: string;
+  /** Parent notebook data */
+  notebook?: {
+    /** Notebook title */
+    name: string;
+    /** Notebook link */
+    anchor: string;
+  };
+  /** Annotated text */
+  body: string;
+  /** Annotation comment */
+  comment?: string;
+  /** Annotation semantic */
+  semantic?: {
+    predicate: SemanticItem;
+    object: SemanticItem;
+  }[];
+  /** Annotation tags */
+  tags?: Tag[];
+
   /** rawAnnotation data from the backend */
   _raw?: Annotation;
 }
@@ -90,19 +104,16 @@ export class AnnotationComponent {
 
   @Input() emit: any;
 
+  @Input() data$: BehaviorSubject<Annotation>;
+
+  @Input() state$: BehaviorSubject<AnnotationState>;
+
+  @Input() public annotationId: string;
+
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
-  ) {}
-
-  onClick(ev: Event, payload) {
-    if (!this.emit) return;
-    ev.stopImmediatePropagation();
-    this.emit('click', payload);
-
-    // trigger change detector
-    this.ref.detectChanges();
-  }
+  ) { }
 
   onContainerClick(payload) {
     if (!this.emit) return;
@@ -128,17 +139,7 @@ export class AnnotationComponent {
     this.ref.detectChanges();
   }
 
-  /**
-   * Event emitter for the internal notebook-selector component
-   */
-  onNotebookSelection = (type, payload) => {
-    if (!this.emit) return;
-    const annotationID = this.data.payload.id;
-    const notebookID = payload;
-    if (!annotationID || !notebookID) return;
-    this.emit(type, { annotation: annotationID, notebook: notebookID });
-
-    // trigger change detector
-    this.ref.detectChanges();
+  getTagColor(tag: string) {
+    return getTagColor(tag);
   }
 }

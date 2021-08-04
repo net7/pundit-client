@@ -29,9 +29,14 @@ export class ChromeExtService {
         // init communication settings
         initCommunicationSettings();
         // analytics
-        AnalyticsModel.track({
-          action: AnalyticsAction.Bootstrap
-        });
+        // timeout waiting for mixpanel setup
+        setTimeout(() => {
+          AnalyticsModel.track({
+            action: AnalyticsAction.Bootstrap
+          });
+        }, 1000);
+        // api onload hook
+        (window as any).Pundit_API.onLoad();
         res();
       }, false);
     });

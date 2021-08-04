@@ -1,0 +1,71 @@
+/**
+ * TAGIFY
+ *
+ * Style for the tagify module.
+ */
+
+/* ------------------------------------ *\
+   #TAGIFY
+\* ------------------------------------ */
+.tagify {
+    padding: $space/4 $space/4;
+    border-radius: $form-border-radius;
+
+    &:focus, &.tagify--focus {
+        border-color: $color-main;
+    }
+
+    .tagify__tag {
+        margin: $space/4;
+        > div {
+            padding: $space/4 $space/2;
+        }
+    }
+
+    .tagify__tag-text {
+        font-size: $font-size-s;
+    }
+
+    .tagify__tag__removeBtn {
+        &:after {
+            opacity: .65;
+        }
+    }
+
+    .tagify__input {
+        margin: $space/4;
+        padding: $space/4 $space/2;
+        font-size: $font-size-s;
+
+        &::before {
+            line-height: 1.35;
+        }
+    }
+}
+
+.tagify__dropdown {
+    top: auto !important;
+    left: $space*2 !important;
+}
+
+.tagify__dropdown__wrapper {
+    border-top-width: 1px;
+    border-color: $color-border-normal;
+    border-radius: $form-border-radius;
+}
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}

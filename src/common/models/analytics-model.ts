@@ -8,9 +8,6 @@ import packageJson from '../../../package.json';
 
 const { version } = packageJson;
 
-// mixpanel config
-mixpanel.init(env.analytics.mixpanel.token);
-
 analytics.init([
   // mixpanel config
   {
@@ -24,8 +21,10 @@ analytics.init([
     },
     actions: [
       AnalyticsAction.Bootstrap,
-      AnalyticsAction.HighlightCreated,
-      AnalyticsAction.CommentCreated,
+      AnalyticsAction.HighlightAnnotationCreated,
+      AnalyticsAction.CommentAnnotationCreated,
+      AnalyticsAction.TagAnnotationCreated,
+      AnalyticsAction.SemanticAnnotationCreated,
       AnalyticsAction.NotebookCreated,
       AnalyticsAction.NotebookCurrentChanged,
       AnalyticsAction.NotebookVisibilityChanged,

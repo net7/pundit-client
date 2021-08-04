@@ -1,0 +1,68 @@
+<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal pnd-edit-modal">
+    <div class="pnd-modal__overlay pnd-edit-modal__overlay" (click)="onClose($event.target)">
+        <div class="pnd-modal__window pnd-edit-modal__window" [attr.id]="draggableTarget">
+            
+            <div class="pnd-edit-modal__handle" [attr.id]="draggableHandle">
+                <pnd-svg-icon [data]="{ id: 'drag' }"></pnd-svg-icon>  
+            </div>
+
+            <div class="pnd-modal__close">
+                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
+            </div>
+            
+            <div class="pnd-edit-modal__highlight-wrapper">
+                <div class="pnd-edit-modal__highlight">
+                    {{ data.textQuote }}
+                </div>
+            </div>
+
+            <!-- Comment Section -->
+            <pnd-comment-section *ngIf="data.sections?.comment" 
+                [data]="data.sections.comment"
+                [reset$]="reset$">
+            </pnd-comment-section>
+            <!-- END // Comment Section -->
+
+            <!-- Semantic Section -->
+            <pnd-semantic-section *ngIf="data.sections?.semantic" 
+                [data]="data.sections.semantic"
+                [reset$]="reset$">
+            </pnd-semantic-section>
+            <!-- END // Semantic Section -->
+
+            <!-- Tags Section -->
+            <pnd-tags-section *ngIf="data.sections?.tags" 
+                [data]="data.sections.tags"
+                [reset$]="reset$">
+            </pnd-tags-section>
+            <!-- END // Tags Section -->
+
+            <div class="pnd-edit-modal__footer">
+                <div class="pnd-edit-modal__footer-notebook">
+                    <!-- Tags Section -->
+                    <pnd-notebook-section *ngIf="data.sections?.notebook" 
+                        [data]="data.sections.notebook"
+                        [emit]="emit"
+                        [reset$]="reset$">
+                    </pnd-notebook-section>
+                    <!-- END // Tags Section -->
+                </div>
+                <div class="pnd-edit-modal__footer-actions" *ngIf="!data.hideActions">
+                    <button *ngIf="data.actions.cancel as cancelAction"
+                            [disabled]="cancelAction.disabled"
+                            class="pnd-btn {{ cancelAction.classes || '' }}"
+                            (click)="onClose()">
+                        {{ cancelAction.label }}
+                    </button>
+                    <button *ngIf="data.actions.save as saveAction"
+                            #saveButton
+                            [disabled]="saveAction.disabled"
+                            class="pnd-btn {{ saveAction.classes || '' }}"
+                            (click)="onSave()">
+                        {{ saveAction.label }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

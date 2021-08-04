@@ -1,9 +1,9 @@
 import { AuthToken, CommunicationSettings } from '@pundit/communication';
+import mixpanel from 'mixpanel-browser';
 import { CommonEventType, StorageKey } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
 import { ChromeExtStorage } from '../storage';
-import { environment as env } from '../../../../environments/environment';
 
 type RuntimeMessage = {
   type: string;
@@ -37,8 +37,11 @@ export const onContentScriptMessage = (
       });
       break;
     case CommonEventType.InitCommunicationSettings:
-      CommunicationSettings.apiBaseUrl = env.apiBaseUrl;
-      CommunicationSettings.authBaseUrl = env.authBaseUrl;
+      // communication config
+      CommunicationSettings.apiBaseUrl = payload.apiBaseUrl;
+      CommunicationSettings.authBaseUrl = payload.authBaseUrl;
+      // mixpanel config
+      mixpanel.init(payload.mixpanelToken);
       break;
     case CommonEventType.ImageDataRequest:
       helpers.doImageDataRequest(tab, payload);

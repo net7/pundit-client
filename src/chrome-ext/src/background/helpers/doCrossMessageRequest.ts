@@ -1,7 +1,12 @@
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
-  AnnotationModel, AuthModel, NotebookModel, SocialModel
+  AnnotationModel,
+  AuthModel,
+  NotebookModel,
+  TagModel,
+  SemanticPredicateModel,
+  SocialModel
 } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
@@ -21,6 +26,9 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.NotebookUpdate:
       request$ = NotebookModel.update.apply(null, args);
+      break;
+    case CrossMsgRequestId.NotebookSetDefault:
+      request$ = NotebookModel.setDefault.apply(null, args);
       break;
     // ANNOTATION REQUEST
     // --------------------------------------------------->
@@ -71,6 +79,16 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.AnalyticsTrigger:
       request$ = AnalyticsModel.trigger.apply(null, args);
+      break;
+    // TAG REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.TagGet:
+      request$ = TagModel.get.apply(null, args);
+      break;
+    // SEMANTIC PREDICATE REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SemanticPredicateGet:
+      request$ = SemanticPredicateModel.get.apply(null, args);
       break;
     default:
       break;

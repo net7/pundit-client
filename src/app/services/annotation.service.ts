@@ -1,23 +1,35 @@
 import { Injectable } from '@angular/core';
 import {
-  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation
+  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation, LinkAnnotation
 } from '@pundit/communication';
-import { Subject, from } from 'rxjs';
+import { Subject, from, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
-import { AnnotationCssClass, AnnotationDS } from '../data-sources';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 import { AnnotationModel } from '../../common/models';
 import { createRequestPayload } from '../models/annotation';
 
-export type AnnotationConfig = {
-  id: string;
-  ds: AnnotationDS;
-  data: Annotation;
+export enum AnnotationCssClass {
+  Empty = '',
+  Delete = 'is-deleted',
+  Edit = 'is-edited'
 }
 
+export type AnnotationState = {
+  id: string;
+  activeMenu?: string;
+  isNotebookSelectorLoading: boolean;
+  source: 'box';
+  isCollapsed: boolean;
+}
+
+export type AnnotationConfig = {
+  id: string;
+  state$: BehaviorSubject<AnnotationState>;
+  data$: BehaviorSubject<Annotation>;
+}
 @Injectable()
 export class AnnotationService {
   private annotations: AnnotationConfig[] = [];
@@ -27,7 +39,7 @@ export class AnnotationService {
   constructor(
     private userService: UserService,
     private notebookService: NotebookService
-  ) {}
+  ) { }
 
   load(rawAnnotations: Annotation[]) {
     rawAnnotations.forEach((rawAnnotation) => {
@@ -57,39 +69,23 @@ export class AnnotationService {
    * @param rawAnnotation
    */
   add(rawAnnotation: Annotation) {
-    const currentUser = this.userService.whoami();
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
     // if annotation exists update auth related info
     if (currentAnnotation) {
-      const annotationDS = this.getAnnotationById(rawAnnotation.id).ds;
-      annotationDS.options.currentUser = currentUser;
-      annotationDS.updateUser();
-      annotationDS.updateMenu();
-      annotationDS.updateNotebook();
+      const { data$ } = this.getAnnotationById(rawAnnotation.id);
+      data$.next(rawAnnotation);
     } else {
       const { id } = rawAnnotation;
-      const data = rawAnnotation;
-      const ds = new AnnotationDS();
-      // update datasource options
-      const currentUserNotebooks = currentUser
-        ? this.notebookService.getByUserId(currentUser.id)
-        : [];
-      const annotationUser = this.userService.getUserById(rawAnnotation.userId) || {} as any;
-      const annotationNotebook = this.notebookService.getNotebookById(rawAnnotation.notebookId);
-      ds.options = {
-        currentUser,
-        currentUserNotebooks,
-        annotationUser,
-        annotationNotebook,
-        notebookService: this.notebookService,
-      };
-      this.annotations.push({
-        id, data, ds
+      const data$ = new BehaviorSubject<Annotation>(rawAnnotation);
+      const state$ = new BehaviorSubject<any>({
+        id: rawAnnotation.id,
+        activeMenu: undefined,
+        isNotebookSelectorLoading: false,
+        source: 'box',
+        isCollapsed: true,
       });
-      // first datasource update
-      ds.update(data);
+      this.annotations.push({ id, data$, state$ });
     }
-
     // emit signal
     this.totalChanged$.next(this.annotations.length);
   }
@@ -106,29 +102,21 @@ export class AnnotationService {
         tap(() => {
           const cachedAnnotation = this.getAnnotationById(annotationId);
           if (!cachedAnnotation) return;
-          if (data.notebookId) {
-            // update the notebook
-            const { notebookId } = data;
-            const notebookData = this.notebookService.getNotebookById(notebookId);
-            cachedAnnotation.ds.updateSelectedNotebook(notebookData);
-          }
-          if (data.type === 'Commenting') {
-            // update comment
-            cachedAnnotation.ds.updateComment(data.content.comment);
-            cachedAnnotation.ds.updateMenu();
-          }
+          const { created, changed, uri } = cachedAnnotation.data$.getValue();
+          cachedAnnotation.data$.next({
+            ...data, id: annotationId, created, changed, uri
+          });
         })
       );
   }
 
-  updateCached(annotationId: string, updateData: {
-    cssClass: AnnotationCssClass;
-  }) {
+  updateAnnotationState(annotationId: string, state: any): void {
     const cachedAnnotation = this.getAnnotationById(annotationId);
     if (!cachedAnnotation) return;
-    if (typeof updateData.cssClass === 'string') {
-      cachedAnnotation.ds.updateCssClass(updateData.cssClass);
-    }
+    const { state$ } = cachedAnnotation;
+    const currentState = state$.getValue();
+    const newState: AnnotationState = { ...currentState, ...state };
+    state$.next(newState);
   }
 
   /**
@@ -158,12 +146,15 @@ export class AnnotationService {
 
   getAnnotations() {
     return this.annotations.sort((a, b) => {
-      const aMeta = a.ds.output._meta;
-      const bMeta = b.ds.output._meta;
-      const { created: aCreated, startPosition: aStartPosition } = aMeta;
-      const { created: bCreated, startPosition: bStartPosition } = bMeta;
+      const aAnnotation = a.data$.getValue();
+      const bAnnotation = b.data$.getValue();
+      const aCreated = aAnnotation.created;
+      const bCreated = bAnnotation.created;
+      const aStartPosition = aAnnotation.subject.selected.textPositionSelector.start;
+      const bStartPosition = bAnnotation.subject.selected.textPositionSelector.start;
+
       if (aStartPosition === bStartPosition) {
-        return aCreated - bCreated;
+        return new Date(aCreated).getTime() - new Date(bCreated).getTime();
       }
       return aStartPosition - bStartPosition;
     });
@@ -173,7 +164,8 @@ export class AnnotationService {
     const {
       notebookId,
       subject,
-      type
+      type,
+      tags
     } = payload;
     const userId = this.userService.whoami().id;
     const created = new Date().toISOString();
@@ -184,15 +176,19 @@ export class AnnotationService {
       subject,
       created,
       type,
+      tags,
       serializedBy: _c('serializer')
     } as Annotation;
     if (payload.type === 'Commenting') {
       (newAnnotation as CommentAnnotation).content = payload.content;
     }
+    if (payload.type === 'Linking') {
+      (newAnnotation as LinkAnnotation).content = payload.content;
+    }
     return newAnnotation;
   }
 
-  getAnnotationRequestPayload(type: AnnotationType) {
+  getAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;

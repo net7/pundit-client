@@ -5,7 +5,7 @@ import * as EH from '../../event-handlers';
 import {
   MainLayoutAnchorHandler,
   MainLayoutAppEventsHandler,
-  MainLayoutCommentModalHandler,
+  MainLayoutEditModalHandler,
   MainLayoutDeleteModalHandler,
   MainLayoutLoginHandler,
   MainLayoutSelectionHandler,
@@ -16,7 +16,6 @@ import {
 export const MainLayoutConfig = {
   layoutId: 'main-layout',
   widgets: [
-    { id: 'comment-modal' },
     {
       id: 'delete-modal',
       hasStaticData: true
@@ -25,12 +24,13 @@ export const MainLayoutConfig = {
       id: 'tooltip',
       hasStaticData: true
     },
+    { id: 'edit-modal' },
   ],
   layoutDS: MainLayoutDS,
   layoutEH: MainLayoutEH,
   handlers: [
     MainLayoutTooltipHandler,
-    MainLayoutCommentModalHandler,
+    MainLayoutEditModalHandler,
     MainLayoutDeleteModalHandler,
     MainLayoutSelectionHandler,
     MainLayoutAppEventsHandler,

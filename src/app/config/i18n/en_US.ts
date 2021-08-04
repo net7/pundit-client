@@ -2,11 +2,22 @@ export default {
   // tooltip
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
+  'tooltip#tag': 'Tag',
+  'tooltip#semantic': 'Semantic annotation',
   // comment modal
-  'commentmodal#label': 'Your comment',
-  'commentmodal#notebook': 'Save comment in notebook',
-  'commentmodal#cancel': 'Cancel',
-  'commentmodal#save': 'Save comment',
+  'editmodal#label': 'Your comment',
+  'editmodal#notebook': 'Save comment in notebook',
+  'editmodal#notebook_create': 'Create new notebook',
+  'editmodal#cancel': 'Cancel',
+  'editmodal#save': 'Save comment',
+  'editmodal#save_tags': 'Save tags',
+  'editmodal#add_tag': 'Add a tag',
+  'editmodal#semantic_object_placeholder': 'Add an object',
+  'editmodal#semantic_label': 'Semantic relations',
+  'editmodal#semantic_add': 'Add relation',
+  'editmodal#semantic_remove': 'Remove relation',
+  'editmodal#semantic_clear': 'Clear relation',
+  'editmodal#save_semantic': 'Save',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':
@@ -79,7 +90,11 @@ export default {
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
-  'annotation#editcomment': 'Edit comment',
+  'annotation#editcomment': 'Edit',
+  'annotation#addsemantic': 'Add semantic',
+  'annotation#editsemantic': 'Edit',
+  'annotation#addtags': 'Add tags',
+  'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',

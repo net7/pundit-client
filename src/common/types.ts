@@ -10,6 +10,7 @@ export enum CrossMsgRequestId {
   NotebookRemove = 'notebook.remove',
   NotebookSearch = 'notebook.search',
   NotebookUpdate = 'notebook.update',
+  NotebookSetDefault = 'notebook.setDefault',
   // annotation
   AnnotationCreate = 'annotation.create',
   AnnotationGet = 'annotation.get',
@@ -27,7 +28,11 @@ export enum CrossMsgRequestId {
   AuthSso = 'auth.sso',
   AuthSignup = 'auth.signup',
   // analytics
-  AnalyticsTrigger = 'analytics.trigger'
+  AnalyticsTrigger = 'analytics.trigger',
+  // tag
+  TagGet = 'tag.get',
+  // semantic
+  SemanticPredicateGet = 'semanticpredicate.get',
 }
 
 export enum CommonEventType {
@@ -48,8 +53,7 @@ export enum CommonEventType {
 
 export enum StorageKey {
   User = 'pundit-user',
-  Token = 'pundit-token',
-  Notebook = 'pundit-notebook'
+  Token = 'pundit-token'
 }
 
 export enum StorageOperationType {
@@ -66,8 +70,10 @@ export type AnalyticsData = {
 export enum AnalyticsAction {
   Bootstrap = 'bootstrap',
   // annotation
-  HighlightCreated = 'new-highlight',
-  CommentCreated = 'new-comment',
+  HighlightAnnotationCreated = 'new-highlight',
+  CommentAnnotationCreated = 'new-comment',
+  SemanticAnnotationCreated = 'new-semantic',
+  TagAnnotationCreated = 'new-tag',
   // notebook
   NotebookCreated = 'notebook-new-created',
   NotebookCurrentChanged = 'notebook-switch-current',

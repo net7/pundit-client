@@ -18,20 +18,33 @@ import { ToastService } from './services/toast.service';
 import { StorageService } from './services/storage-service/storage.service';
 import { StorageEmbedService } from './services/storage-service/storage-embed.service';
 import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
+import { ChromeExtService } from './services/chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
+import { TagService } from './services/tag.service';
+import { SemanticPredicateService } from './services/semantic-predicate.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
 // COMPONENTS
 import { AnnotationComponent } from './components/annotation/annotation';
-import { CommentModalComponent } from './components/comment-modal/comment-modal';
 import { DeleteModalComponent } from './components/delete-modal/delete-modal';
 import { NotebookPanelComponent } from './components/notebook-panel/notebook-panel';
 import { TooltipComponent } from './components/tooltip/tooltip';
 import { NotebookSelectorComponent } from './components/notebook-selector/notebook-selector';
 import { ToastComponent } from './components/toast/toast';
 import { SvgIconComponent } from './components/svg-icon/svg-icon';
+import { EditModalComponent } from './components/edit-modal/edit-modal';
+import { CommentSectionComponent } from './components/edit-modal/sections/comment-section/comment-section';
+import { TagsSectionComponent } from './components/edit-modal/sections/tags-section/tags-section';
+import { NotebookSectionComponent } from './components/edit-modal/sections/notebook-section/notebook-section';
+import { SemanticSectionComponent } from './components/edit-modal/sections/semantic-section/semantic-section';
+import { HighlightAnnotationSectionComponent } from './components/annotation/sections/highlight/highlight-annotation-section';
+import { CommentAnnotationSectionComponent } from './components/annotation/sections/comment/comment-annotation-section';
+import { SemanticAnnotationSectionComponent } from './components/annotation/sections/semantic/semantic-annotation-section';
+import { TagAnnotationSectionComponent } from './components/annotation/sections/tag/tag-annotation-section';
+import { HeaderAnnotationSectionComponent } from './components/annotation/sections/header/header-annotation-section';
+import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -49,6 +62,45 @@ translate.init({
 // load configuration
 config.init(appConfig);
 
+// providers config
+const providers: any[] = [
+  UserService,
+  AnnotationService,
+  NotebookService,
+  TagService,
+  AnchorService,
+  AnnotationPositionService,
+  ToastService,
+  StorageService,
+  StorageEmbedService,
+  EmbedService,
+  ChromeExtService,
+  StorageChromeExtService,
+  ImageDataService,
+  SemanticPredicateService,
+  { provide: APP_BASE_HREF, useValue: '/' },
+];
+
+if (env.chromeExt) {
+  providers.push({
+    provide: APP_INITIALIZER,
+    useFactory: (
+      chromeExtService: ChromeExtService
+    ) => () => chromeExtService.load(),
+    deps: [ChromeExtService],
+    multi: true
+  });
+} else {
+  providers.push({
+    provide: APP_INITIALIZER,
+    useFactory: (
+      embedService: EmbedService
+    ) => () => embedService.load(),
+    deps: [EmbedService],
+    multi: true
+  });
+}
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,10 +112,20 @@ config.init(appConfig);
     TooltipComponent,
     NotebookPanelComponent,
     NotebookSelectorComponent,
-    CommentModalComponent,
     DeleteModalComponent,
     ToastComponent,
     SvgIconComponent,
+    EditModalComponent,
+    CommentSectionComponent,
+    TagsSectionComponent,
+    NotebookSectionComponent,
+    SemanticSectionComponent,
+    HighlightAnnotationSectionComponent,
+    CommentAnnotationSectionComponent,
+    SemanticAnnotationSectionComponent,
+    TagAnnotationSectionComponent,
+    HeaderAnnotationSectionComponent,
+    MenuHeaderSectionComponent,
     // PIPES
     SortByPipe,
   ],
@@ -71,28 +133,7 @@ config.init(appConfig);
     BrowserModule,
     PunditLoginModule.forRoot(env.auth)
   ],
-  providers: [
-    UserService,
-    AnnotationService,
-    NotebookService,
-    AnchorService,
-    AnnotationPositionService,
-    ToastService,
-    StorageService,
-    StorageEmbedService,
-    EmbedService,
-    StorageChromeExtService,
-    ImageDataService,
-    { provide: APP_BASE_HREF, useValue: '/' },
-    {
-      provide: APP_INITIALIZER,
-      useFactory: (
-        embedService: EmbedService
-      ) => () => embedService.load(),
-      deps: [EmbedService],
-      multi: true
-    }
-  ],
+  providers,
   bootstrap: [AppComponent],
   entryComponents: [AppComponent]
 })

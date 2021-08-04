@@ -80,8 +80,10 @@
          <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
             <ng-container *ngFor="let annotation of lb.dataSource.annotations">
                 <annotation [ngClass]="annotation"
-                            [data]="annotation.ds.out$ | async"
-                            [emit]="lb.widgets['annotation'].emit">
+                            [data$]="annotation.data$"
+                            [state$]="annotation.state$"
+                            [emit]="lb.widgets['annotation'].emit"
+                            [annotationId]="annotation.id">
                 </annotation>
             </ng-container>
         </ng-container>

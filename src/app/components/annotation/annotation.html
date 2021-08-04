@@ -1,134 +1,30 @@
-<div *ngIf="data"
-     class="pnd-annotation {{ data.classes || ''}}"
-     [ngClass]="{'is-collapsed': data.isCollapsed, 'is-expanded': !data.isCollapsed, 'has-comment': data.comment}"
-     (click)="data.payload && onContainerClick(data.payload)"
-     (mouseenter)="data.payload && onEnter(data.payload)"
-     (mouseleave)="data.payload && onLeave(data.payload)">
-    
-    <ng-container *ngIf="!data.isCollapsed">
+<div *ngIf="(state$ | async) as state" class="pnd-annotation {{ state?.classes || ''}}"
+    [ngClass]="{'is-collapsed': state?.isCollapsed, 'is-expanded': !state?.isCollapsed, 'has-comment': (data$ | async)?.type === 'Commenting'}"
+    (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
+
+    <ng-container *ngIf="!state.isCollapsed">
         <!-- view the full annotation -->
         <ng-container *ngTemplateOutlet="expanded"></ng-container>
     </ng-container>
-    
-    <ng-container *ngIf="data.isCollapsed">
+
+    <ng-container *ngIf="state.isCollapsed">
         <!-- minimal view of the annotation -->
         <ng-container *ngTemplateOutlet="collapsed"></ng-container>
     </ng-container>
-
 </div>
 
 <ng-template #expanded>
     <!-- Header -->
-    <div class="pnd-annotation__header">
-
-        <div class="pnd-annotation__header-thumb-wrapper">
-            <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
-            <img [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
-                onerror="this.style.display='none'"
-                alt="{{data.user.name}}"
-                class="pnd-annotation__header-thumb-image">
-        </div>
-        
-        <div class="pnd-annotation__header-info">
-            <a *ngIf="data.user.anchor as anchor" [href]="anchor" target="_blank">
-                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
-            </a>
-            <div *ngIf="!data.user.anchor" class="pnd-annotation__header-name">{{data.user.name}}</div>
-            
-            <div class="pnd-annotation__header-additional-info">
-                <span class="pnd-annotation__header-date">{{data.date}}</span>
-                <span *ngIf="data.notebook.anchor as anchor"
-                      class="pnd-annotation__header-notebook">in
-                    <a [href]="anchor" target="_blank" class="pnd-annotation__header-notebook-link">
-                        <span>{{ data.notebook.name }}</span>
-                    </a>
-                </span>
-            </div>
-        </div>
-        
-        <div class="pnd-annotation__header-menu">
-            <button class="pnd-annotation__header-menu-button {{ data.menu.classes || '' }}"
-                   *ngIf="data.menu"
-                  [ngClass]="data.menu.icon['id']"
-                  (click)="onClick($event, data.menu.icon['payload'])">
-                  <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
-            </button>
-            <button class="pnd-annotation__header-menu-button"
-                    (click)="onClick($event, {id: data.payload.id, source: 'compress'})">
-                <pnd-svg-icon [data]="{ id: 'compress' }"></pnd-svg-icon> 
-            </button>
-
-            <div *ngIf="data.activeMenu" 
-                 class="pnd-annotation__menu-dropdown"
-                 [ngClass]="{'has-notebooks': data.activeMenu === 'notebooks' }">
-                <!-- menu actions -->
-                <div class="pnd-annotation__menu-dropdown-actions"
-                     *ngIf="data.activeMenu === 'actions'">
-                    <div *ngFor="let action of data.menu.actions"
-                         (click)="onClick($event, action.payload)"
-                         class="pnd-annotation__menu-dropdown-action">
-                        {{ action.label }}
-                    </div>
-                </div>
-                <div class="pnd-annotation__menu-notebooks"
-                     *ngIf="data.activeMenu === 'notebooks'">
-                    <div class="pnd-annotation__menu-notebooks-header"
-                         (click)="onClick($event, data.menu.notebooks.header.payload)">
-                        {{ data.menu.notebooks.header.label }}
-                    </div>
-                    <div class="pnd-annotation__select-cont"
-                         *ngIf="data._meta.notebookSelectorData">
-                        <notebook-selector [data]="data._meta.notebookSelectorData"
-                                           [emit]="onNotebookSelection">
-                        </notebook-selector>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <pnd-header-annotation-section [data$]="data$" [emit]="emit" [state$]="state$" [annotationId]="annotationId">
+    </pnd-header-annotation-section>
     <!-- END // Header -->
-
-    <!-- Highlight -->
-    <div class="pnd-annotation__highlight"
-         *ngIf="data.body">
-        <span class="pnd-annotation__highlight-text">
-            {{data.body}}
-        </span>
-    </div>
-    <!-- END // Highlight -->
-
-    <!-- Caret and comment -->
-    <div class="pnd-annotation__caret"
-        *ngIf="data.comment"></div>
-
-    <div class="pnd-annotation__comment"
-        *ngIf="data.comment">
-        <span class="pnd-annotation__comment-text">
-            {{data.comment}}
-        </span>
-    </div>
-    <!-- END // Caret and comment -->
+    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+    <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
+    <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
 </ng-template>
 
 <ng-template #collapsed>
-    <!-- Highlight -->
-    <div class="pnd-annotation__highlight"
-         *ngIf="data.body">
-        <span class="pnd-annotation__highlight-text">
-            {{data.body}}
-        </span>
-    </div>
-    <!-- END // Highlight -->
-
-    <!-- Caret and comment -->
-    <div class="pnd-annotation__caret"
-         *ngIf="data.comment"></div>
-
-    <div class="pnd-annotation__comment"
-         *ngIf="data.comment">
-        <span class="pnd-annotation__comment-text">
-            {{data.comment}}
-        </span>
-    </div>
-    <!-- END // Caret and comment -->
+    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
 </ng-template>

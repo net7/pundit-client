@@ -4,7 +4,9 @@ import {
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
-import { Annotation, CommentAnnotation } from '@pundit/communication';
+import {
+  Annotation, CommentAnnotation, HighlightAnnotation, Tag
+} from '@pundit/communication';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -15,18 +17,16 @@ import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
-import { AnnotationModel } from '../../../common/models';
+import { TagModel } from 'src/common/models/tag-model';
+import { TagService } from 'src/app/services/tag.service';
+import { EditModalParams } from 'src/app/types';
+import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
   isLogged: boolean;
-  comment: {
-    comment: string;
-    notebookId: string;
-    isUpdate?: boolean;
-    isOpen: boolean;
-  };
   annotation: {
-    pendingPayload: CommentAnnotation;
+    pendingPayload: HighlightAnnotation | CommentAnnotation;
     updatePayload: Annotation;
     deleteId: string;
   };
@@ -40,6 +40,10 @@ export class MainLayoutDS extends LayoutDataSource {
   public notebookService: NotebookService;
 
   public annotationService: AnnotationService;
+
+  public tagService: TagService;
+
+  public semanticPredicateService: SemanticPredicateService;
 
   public anchorService: AnchorService;
 
@@ -56,11 +60,6 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public state: MainLayoutState = {
     isLogged: false,
-    comment: {
-      comment: null,
-      notebookId: null,
-      isOpen: false
-    },
     annotation: {
       pendingPayload: null,
       updatePayload: null,
@@ -74,10 +73,12 @@ export class MainLayoutDS extends LayoutDataSource {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
+    this.tagService = payload.tagService;
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
     this.storageService = payload.storageService;
+    this.semanticPredicateService = payload.semanticPredicateService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -103,6 +104,22 @@ export class MainLayoutDS extends LayoutDataSource {
       tap(({ data: searchData }) => {
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);
+      })
+    );
+  }
+
+  getUserTags() {
+    return from(TagModel.get()).pipe(
+      tap(({ data: tags }) => {
+        this.tagService.load(tags);
+      })
+    );
+  }
+
+  getUserSemanticPredicates() {
+    return from(SemanticPredicateModel.get()).pipe(
+      tap(({ data }) => {
+        this.semanticPredicateService.load(data);
       })
     );
   }
@@ -134,29 +151,18 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   /**
-   * Open the comment modal
+   * Open the edit modal
    * @param textQuote The highlighted string of text
-   * @param notebook (optional) The notebook of the annotation
-   * @param comment (optional) The existing comment
+   * @param sections (required) modal form sections
+   * @param saveButtonLabel (optional) save button label
    */
-  public openCommentModal({ textQuote, notebookData, comment }: {
-    textQuote: string;
-    notebookData?: NotebookData;
-    comment?: string;
-  }) {
+  public openEditModal({ textQuote, saveButtonLabel, sections }: EditModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
-    // update component
 
-    const defaultNotebook = this.notebookService.getSelected();
-    const selectedNotebook = this.notebookService.getNotebookById(this.state.comment.notebookId);
-    const currentNotebook = notebookData || selectedNotebook || defaultNotebook;
-    const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
-    const newComment = comment || this.state.comment.comment || null;
-    this.one('comment-modal').update({
-      textQuote, currentNotebook, notebooks, comment: newComment
-    });
+    // update component
+    this.one('edit-modal').update({ textQuote, saveButtonLabel, sections });
   }
 
   public setAnonymousSelectionRange() {
@@ -167,10 +173,9 @@ export class MainLayoutDS extends LayoutDataSource {
     tooltipModel.hide();
   }
 
-  public setDefaultNotebook(id: string) {
-    if (id && this.notebookService.getNotebookById(id)) {
-      this.notebookService.setSelected(id);
-    } else {
+  public setDefaultNotebook() {
+    const currentNotebookId = this.notebookService.getSelected()?.id;
+    if (!currentNotebookId || !this.notebookService.getNotebookById(currentNotebookId)) {
       const { id: userId } = this.userService.whoami();
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
@@ -261,4 +266,17 @@ export class MainLayoutDS extends LayoutDataSource {
       this.anchorService.remove(annotationId);
     });
   }
+}
+
+export type OpenModalParams = {
+  textQuote: string;
+  notebookData?: NotebookData;
+  comment?: {
+    visible: boolean;
+    value?: string;
+  };
+  tags?: {
+    values?: Tag[];
+    visible: boolean;
+  };
 }

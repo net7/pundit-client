@@ -1,3 +1,5 @@
+import { Observable, Subject } from 'rxjs';
+
 export type AppEventData = {
   type: string;
   payload?: any;
@@ -35,6 +37,60 @@ export interface NavData {
 
 export interface LayoutHandler {
   listen: () => void;
+}
+
+export type FormSectionPayload<T> = {
+  id: string;
+  value: T;
+  errors?: string[];
+}
+
+export type FormSectionData<T, U> = {
+  changed$: Subject<FormSectionPayload<T>>;
+  initialValue?: T;
+  options?: U;
+  required?: boolean;
+  focus?: boolean;
+}
+
+export type EditModalParams = {
+  textQuote: string;
+  saveButtonLabel?: string;
+  sections: {
+    id: string;
+    value?: unknown;
+    options?: unknown;
+    required?: boolean;
+    focus?: boolean;
+  }[];
+}
+
+export interface FormSection<T, U> {
+  id: string;
+  data: FormSectionData<T, U>;
+  reset$: Subject<void>;
+}
+
+export type SemanticItem = {
+  label: string;
+  uri: string;
+  description?: string;
+  providerId?: string;
+}
+
+export interface SemanticProvider {
+  id: string;
+  label: string;
+  items: SemanticItem[];
+  selected: SemanticItem;
+  get: (uri: string) => SemanticItem;
+  search: (query?: string) => Observable<SemanticItem[]>;
+  setSelected: (uri: string) => void;
+}
+
+export type SemanticConfig = {
+  default: string;
+  providers: SemanticProvider[];
 }
 
 // ------------------------------------ //

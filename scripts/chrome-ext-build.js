@@ -9,6 +9,12 @@ const path = require('path');
 const _ = require('lodash');
 const { version } = require('../package.json');
 
+const getFormattedDate = () => {
+  const [date, time] = new Date().toISOString().split('T');
+  const [hours, minutes] = time.split(':');
+  return date.replace(/-/g, '') + hours + minutes;
+};
+
 const copyChromeExtFiles = (dist, src) => fs.copy(src, dist).catch((err) => {
   console.log('copy chrome ext files error:', err);
   throw new Error('copy chrome ext files fail');
@@ -24,7 +30,9 @@ const createManifestFile = (dist, context) => {
   const manifestContext = require(manifestContextPath);
   const manifestData = _.merge(manifestCommon, manifestContext);
   // update with lib version
-  manifestData.version = version;
+  manifestData.version = context === 'chrome-ext-stage'
+    ? `${version}.${getFormattedDate()}`
+    : version;
   return fs.writeJson(`${dist}/manifest.json`, manifestData);
 };
 

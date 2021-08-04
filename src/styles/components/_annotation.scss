@@ -116,10 +116,24 @@ annotation {
         text-overflow: ellipsis;
     }
     
-    a .pnd-annotation__header-name {
-        cursor: pointer;
-        &:hover {
+    // User name link.
+    a {
+        color: $color-text;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
+        
+        .pnd-annotation__header-name { // div
+            cursor: pointer;
+            color: $color-text;
+        }
+
+        &:hover, &:active, &:focus {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
+
+            .pnd-annotation__header-name { // div
+                color: $color-text-link;
+            }
         }
     }
     
@@ -145,12 +159,14 @@ annotation {
     }
 
     &__header-notebook-link {
-        text-decoration: none;
         color: $color-text;
         cursor: pointer;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
         
         &:hover {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
         }
     }
 
@@ -259,6 +275,89 @@ annotation {
 
 
 /* ------------------------------------ *\
+   #SEMANTIC ANNOTATIONS
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__semantic {
+        // border-bottom: 3px double $annotation-border-color;
+    
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .pnd-annotation__semantic-item-predicate {
+        display: inline-block;
+        position: relative;
+        height: 20px;
+        margin-left: 10px;
+        padding: 0 8px;
+        background: $color-predicate;
+
+        font-size: 13px;
+        line-height: 20px;
+        font-style: italic;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 3px;
+        text-shadow: 0px -1px 0px rgba(0,0,0,0.10);
+
+        /* Orange carets above and below */
+        &:before, &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+        }
+
+        &:before {
+            top: -3px;
+            border-bottom: 3px solid $color-predicate;
+        }
+
+        &:after {
+            top: 20px;
+            border-top: 3px solid $color-predicate;
+        }
+    }
+
+    /* The Object in semantic annotations */
+    .pnd-annotation__semantic-item-object {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+        padding: $space*2 $space $space;
+        margin-top: -$space;
+        background-color: $color-gray-01;
+        border-top: $annotation-border-size solid $annotation-border-color;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #TAGS
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__tags {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .pnd-annotation__tags-item {
+        font-size: $font-size-xs;
+        padding: $space/4 $space/2;
+        margin: $space/4;
+        color: $color-text;
+        border-radius: $border-radius;
+    }
+}
+
+
+/* ------------------------------------ *\
    #EXPANDED-ANNOTATION
 \* ------------------------------------ */
 .pnd-annotation.is-expanded {
@@ -283,6 +382,11 @@ annotation {
         max-height: 100px;
         overflow-y: auto;
         padding: $space $space $space $space;
+        border-top: 1px solid $annotation-border-color;
+    }
+
+    .pnd-annotation__tags {
+        padding: $space/2;
         border-top: 1px solid $annotation-border-color;
     }
 
@@ -449,10 +553,11 @@ annotation {
             background-color: $color-highlight;
         }
 
-        &__header,
-        &__highlight-text,
-        &__comment,
-        &__notebook {
+        .pnd-annotation__tags,
+        .pnd-annotation__header,
+        .pnd-annotation__highlight-text,
+        .pnd-annotation__comment,
+        .pnd-annotation__notebook {
             display: none;
         }
 

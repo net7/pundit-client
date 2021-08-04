@@ -1,5 +1,5 @@
 import { _t } from '@n7-frontend/core';
-import { CommentAnnotation } from '@pundit/communication';
+import { HighlightAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
@@ -47,6 +47,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       .subscribe(([{ type, payload }]) => {
         switch (type) {
           case TooltipEvent.Click: {
+            // reset previous payload
+            this.layoutDS.state.annotation.pendingPayload = null;
+            this.layoutDS.state.annotation.updatePayload = null;
             if (payload === 'highlight') {
               // toast "working..."
               const workingToast = this.layoutDS.toastService.working();
@@ -87,11 +90,15 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
 
                   // analytics
                   AnalyticsModel.track({
-                    action: AnalyticsAction.HighlightCreated,
+                    action: AnalyticsAction.HighlightAnnotationCreated,
                   });
                 });
             } else if (payload === 'comment') {
               this.onTooltipComment();
+            } else if (payload === 'tag') {
+              this.onTooltipTag();
+            } else if (payload === 'semantic') {
+              this.onTooltipSemantic();
             }
             break;
           }
@@ -103,44 +110,68 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload(
-      'Highlighting'
-    );
+    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload();
     return this.layoutDS.saveAnnotation(requestPayload);
   }
 
   private onTooltipComment() {
-    this.setInnerState();
-    this.layoutDS.state.annotation.pendingPayload = this.layoutDS.annotationService
-      .getAnnotationRequestPayload(
-        'Commenting'
-      ) as CommentAnnotation;
-    this.addPendingAnnotation();
-    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
-      this.layoutDS.pendingAnnotationId,
-      this.layoutDS.state.annotation.pendingPayload
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
     );
-    this.layoutDS.openCommentModal({
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
+      sections: [{
+        id: 'comment',
+        required: true,
+        focus: true
+      }, {
+        id: 'tags',
+      }, {
+        id: 'notebook'
+      }]
     });
   }
 
-  private setInnerState() {
-    if (this.layoutDS.state.comment.isOpen) {
-      if (this.layoutDS.state.comment.isUpdate) {
-        this.layoutDS.state.comment = {
-          comment: null,
-          notebookId: null,
-          isOpen: true,
-        };
-      }
-    } else {
-      this.layoutDS.state.comment = {
-        comment: null,
-        notebookId: null,
-        isOpen: true,
-      };
-    }
+  private onTooltipTag() {
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      saveButtonLabel: _t('editmodal#save_tags'),
+      sections: [{
+        id: 'tags',
+        required: true,
+        focus: true
+      }, {
+        id: 'notebook'
+      }]
+    });
+  }
+
+  private onTooltipSemantic() {
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.addPendingAnnotation();
+
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.selected.text,
+      saveButtonLabel: _t('editmodal#save_semantic'),
+      sections: [{
+        id: 'semantic',
+        required: true,
+        focus: true
+      }, {
+        id: 'tags',
+      }, {
+        id: 'notebook'
+      }]
+    });
   }
 
   private addPendingAnnotation() {
@@ -150,5 +181,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     );
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
+
+    return pendingAnnotation;
   }
 }

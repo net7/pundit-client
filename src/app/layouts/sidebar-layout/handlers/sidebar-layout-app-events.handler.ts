@@ -1,11 +1,13 @@
 import { _t } from '@n7-frontend/core';
-import { Annotation, CommentAnnotation } from '@pundit/communication';
+import {
+  Annotation, CommentAnnotation, HighlightAnnotation, LinkAnnotation
+} from '@pundit/communication';
 import { catchError, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { EMPTY } from 'rxjs';
-import { AnnotationCssClass } from 'src/app/data-sources';
+import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -70,20 +72,29 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    * @param rawAnnotation Data for the annotation that must be updated
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
-    if (rawAnnotation.type === 'Commenting') {
+    if (['Commenting', 'Highlighting', 'Linking'].includes(rawAnnotation.type)) {
       // toast "working..."
       const workingToast = this.layoutEH.toastService.working();
       // update loading state
-      this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-        cssClass: AnnotationCssClass.Edit
+      this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+        classes: AnnotationCssClass.Edit
       });
-      const data: CommentAnnotation = {
+      // fix typescript explicit
+      // annotation types
+      let content;
+      if (rawAnnotation.type === 'Commenting') {
+        content = rawAnnotation.content;
+      } else if (rawAnnotation.type === 'Linking') {
+        content = rawAnnotation.content;
+      }
+      const data: CommentAnnotation | HighlightAnnotation | LinkAnnotation = {
+        content,
         type: rawAnnotation.type,
-        content: rawAnnotation.content,
         notebookId: rawAnnotation.notebookId,
         serializedBy: rawAnnotation.serializedBy,
         subject: rawAnnotation.subject,
         userId: rawAnnotation.userId,
+        tags: rawAnnotation.tags
       };
       this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
         catchError((err) => {
@@ -100,12 +111,15 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         })
       ).subscribe(() => {
         // update loading state
-        this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-          cssClass: AnnotationCssClass.Empty
+        this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+          classes: AnnotationCssClass.Empty
         });
 
         // refresh sidedar annotations
         this.layoutDS.updateAnnotations();
+
+        // update tags;
+        this.layoutEH.tagService.addMany(rawAnnotation?.tags);
 
         // annotation changed successfully
         this.layoutEH.toastService.success({
