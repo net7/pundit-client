@@ -21,6 +21,7 @@ import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { SocialService } from 'src/app/services/social.service';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -42,6 +43,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public annotationService: AnnotationService;
 
   public tagService: TagService;
+
+  public socialService: SocialService;
 
   public semanticPredicateService: SemanticPredicateService;
 
@@ -74,6 +77,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
     this.tagService = payload.tagService;
+    this.socialService = payload.socialService;
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
@@ -244,12 +248,15 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private handleSearchResponse(searchData) {
-    const { users, annotations, notebooks } = searchData;
+    const {
+      users, annotations, notebooks, socials
+    } = searchData;
     // update notebooks
     this.notebookService.load(notebooks);
     // load order matters
     this.userService.load(users);
     this.annotationService.load(annotations);
+    this.socialService.load(socials);
     this.anchorService.load(annotations);
     // signal
     if (!this.annotationService.getAnnotations().length) {

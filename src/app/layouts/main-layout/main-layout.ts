@@ -9,6 +9,7 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { SocialService } from 'src/app/services/social.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
 import { TagService } from 'src/app/services/tag.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -43,6 +44,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private storageService: StorageService,
     public toastService: ToastService,
     public tagService: TagService,
+    public socialService: SocialService,
     public semanticPredicateService: SemanticPredicateService,
   ) {
     super(config);
@@ -61,6 +63,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       storageService: this.storageService,
       toastService: this.toastService,
       tagService: this.tagService,
+      socialService: this.socialService,
       semanticPredicateService: this.semanticPredicateService
     };
   }
