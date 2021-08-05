@@ -5,6 +5,9 @@ import {
   CrossMsgData, CommonEventType, StorageKey, CrossMsgRequestId
 } from './types';
 
+// to fix test & linting errors
+declare const chrome: any;
+
 const crossMessageEnabled = () => !!(
   env.chromeExt && document.location.protocol !== 'chrome-extension:'
 );
