@@ -356,6 +356,54 @@ annotation {
     }
 }
 
+/* ------------------------------------ *\
+   #SOCIAL-bar
+\* ------------------------------------ */
+.pnd-annotation {
+    &__social {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        // margin: $space;
+        padding: $space;
+        border-bottom: 1px solid $annotation-border-color;
+    }
+
+    &__social-actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        display: flex;
+        position: relative;
+    }
+
+    &__social-actions-item {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        margin-left: $space/2;
+        border-radius: $border-radius;
+        border: 1px solid $color-border-normal;
+        background-color: $color-background-light;
+        cursor: pointer;
+        color: $color-text-light;
+        font-size: $font-size-s;
+        transition: color $transition-durations;
+        
+        .pnd-svg-icon, .pnd-svg-icon svg {
+            width: $font-size-s;
+            height: $font-size-s;
+        }
+
+        &:hover {
+            color: $color-text-link;
+            border: 1px solid $color-text-link;
+        }
+    }
+}
+
+
 
 /* ------------------------------------ *\
    #EXPANDED-ANNOTATION

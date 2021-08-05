@@ -10,6 +10,7 @@ import { BehaviorSubject } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
+import { SocialService } from 'src/app/services/social.service';
 import { Icon, SemanticItem } from '../../types';
 
 /**
@@ -113,6 +114,7 @@ export class AnnotationComponent {
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
+    public socialService: SocialService
   ) { }
 
   onContainerClick(payload) {
@@ -141,5 +143,9 @@ export class AnnotationComponent {
 
   getTagColor(tag: string) {
     return getTagColor(tag);
+  }
+
+  getSocials() {
+    return this.socialService.getSocialsByAnnotationId(this.annotationId);
   }
 }

@@ -105,6 +105,10 @@ export class SocialService {
     });
   }
 
+  getSocialsByAnnotationId(id: string): Social[] {
+    return this.getSocials().filter(({ annotationId }) => annotationId === id);
+  }
+
   getSocialFromPayload(id: string, payload: SocialAttributes): Social {
     const userId = this.userService.whoami().id;
     const created = new Date().toISOString();

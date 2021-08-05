@@ -1,0 +1,23 @@
+<div class="pnd-annotation__social">
+    <div class="pnd-annotation__social-actions">
+        <button class="pnd-annotation__social-actions-item"
+             (click)="toggleLike()">
+            <pnd-svg-icon [data]="{ id: 'like' }"></pnd-svg-icon>
+        </button>
+        <span>{{likeNum || 0}}</span>
+        <button class="pnd-annotation__social-actions-item"
+           (click)="toggleDislike()">
+            <pnd-svg-icon [data]="{ id: 'dislike' }"></pnd-svg-icon>
+        </button>
+        <span>{{dislikeNum || 0}}</span>
+        <!-- <button class="pnd-annotation__social-actions-item"
+           (click)="onClick($event)">
+            <pnd-svg-icon [data]="{ id: 'endorse' }"></pnd-svg-icon>
+        </button> -->
+        <button class="pnd-annotation__social-actions-item"
+           (click)="toggleReport()">
+            <pnd-svg-icon [data]="{ id: 'report' }"></pnd-svg-icon>
+        </button>
+        <span>{{reportNum || 0}}</span>
+    </div>
+</div>
