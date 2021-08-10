@@ -9,10 +9,38 @@ const path = require('path');
 const _ = require('lodash');
 const { version } = require('../package.json');
 
-const getFormattedDate = () => {
-  const [date, time] = new Date().toISOString().split('T');
-  const [hours, minutes] = time.split(':');
-  return date.replace(/-/g, '') + hours + minutes;
+const stageVersionFilePath = path.join(path.dirname(fs.realpathSync(__filename)), '../scripts/.stage.version');
+
+const getStageVersion = () => {
+  let newStageVersion = null;
+  try {
+    const fileData = fs.readFileSync(stageVersionFilePath, 'utf8');
+    const fileLines = fileData.split(/\r?\n/);
+    if (Array.isArray(fileLines) && fileLines.length) {
+      const firstLine = fileLines[0].trim();
+      const [pkgMajor, pkgMinor, pkgPatch] = version.split('.');
+      const [major, minor, patch, extra] = firstLine.split('.');
+      let newExtra;
+      if (
+        (pkgMajor !== major)
+        || (pkgMinor !== minor)
+        || (pkgPatch !== patch)
+      ) {
+        newExtra = 0;
+      } else {
+        newExtra = +extra + 1;
+      }
+      newStageVersion = [pkgMajor, pkgMinor, pkgPatch, newExtra].join('.');
+      // update stage file with new version
+      fs.writeFileSync(stageVersionFilePath, newStageVersion);
+    } else {
+      throw Error(`File ${stageVersionFilePath} empty`);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return newStageVersion;
 };
 
 const copyChromeExtFiles = (dist, src) => fs.copy(src, dist).catch((err) => {
@@ -31,7 +59,7 @@ const createManifestFile = (dist, context) => {
   const manifestData = _.merge(manifestCommon, manifestContext);
   // update with lib version
   manifestData.version = context === 'chrome-ext-stage'
-    ? `${version}.${getFormattedDate()}`
+    ? getStageVersion()
     : version;
   return fs.writeJson(`${dist}/manifest.json`, manifestData);
 };
