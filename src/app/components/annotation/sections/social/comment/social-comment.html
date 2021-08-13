@@ -1,0 +1,48 @@
+<div class="pnd-annotation__header" *ngIf="activeMenu !== 'edit-comment'">
+    <div class="pnd-annotation__header-info">
+        <div  class="pnd-annotation__header-name">{{data.comment}}</div>
+    </div>
+    <div class="pnd-annotation__header-menu" >
+        <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
+            *ngIf="menuData" (click)="onClick($event, menuData.icon['payload'])">
+            <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
+        </button>
+        <div  *ngIf="activeMenu === 'display-menu'" class="pnd-annotation__menu-dropdown">
+            <!-- menu actions -->
+            <div  class="pnd-annotation__menu-dropdown-actions">
+                <div *ngFor="let action of menuData?.actions" (click)="onClick($event, action.payload)"
+                    class="pnd-annotation__menu-dropdown-action">
+                    {{ action.label }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="activeMenu === 'edit-comment'">
+    <div class="pnd-annotation__social__comment-textarea-wrapper">
+        <textarea maxlength="1000" name="pnd-new-social-comment" class="pnd-annotation__social__comment-textarea"
+            (input)="onCommentChange($event.target.value)">{{data.comment}}</textarea>
+    </div>
+    <div class="pnd-annotation__social__new-comment-footer">
+        <div class="pnd-annotation__social__new-comment-actions">
+            <button class="pnd-btn" (click)="onCommentClose()">
+                {{ 'Close' }}
+            </button>
+            <button class="pnd-btn" #saveButton (click)="onCommentSave()">
+                {{ 'Save'}}
+            </button>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="pnd-annotation__header_action-bar">
+        <pnd-social-action-bar 
+        [socials$]="socials$" 
+        [annotationId]="annotationId"
+        [emit]="emit"
+        [actions]="ACTIONS"
+        [parentId]="data.id"
+        >
+        </pnd-social-action-bar>
+    </div>
+</div>

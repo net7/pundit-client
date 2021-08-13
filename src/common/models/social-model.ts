@@ -9,12 +9,7 @@ export class SocialModel {
   }
 
   @CrossMessage(CrossMsgRequestId.SocialRemove)
-  static remove(id: string) {
-    return social.remove(id);
-  }
-
-  @CrossMessage(CrossMsgRequestId.SocialUpdate)
-  static update(id: string, { data }: { data: SocialAttributes }) {
-    return social.update(id, data);
+  static remove({ data }: { data: SocialAttributes }) {
+    return social.remove(data);
   }
 }

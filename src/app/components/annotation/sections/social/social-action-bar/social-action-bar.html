@@ -1,0 +1,53 @@
+<div class="pnd-annotation__social-bar">
+    <ng-container *ngIf="state?.comment">
+        <button class="pnd-annotation__social-bar-action" (click)="toggleComment()">
+            <pnd-svg-icon [data]="{ id: 'comment' }" ></pnd-svg-icon>
+        </button>
+        <span>{{state?.comment?.total || 0}}</span>
+    </ng-container>
+
+    <ng-container *ngIf="state?.like" >
+        <button class="pnd-annotation__social-bar-action" (click)="doAction('Like')">
+            <pnd-svg-icon [data]="{ id: 'like' }"></pnd-svg-icon>
+        </button>
+        <span>{{state?.like?.total || 0}}</span>
+    </ng-container>
+
+    <ng-container *ngIf="state?.dislike as dislike">
+        <button class="pnd-annotation__social-bar-action" (click)="doAction('Dislike')">
+            <pnd-svg-icon [data]="{ id: 'dislike' }"></pnd-svg-icon>
+        </button>
+        <span>{{state?.dislike?.total || 0}}</span>
+    </ng-container>
+
+    <ng-container *ngIf="state?.report">
+        <button class="pnd-annotation__social-bar-action" (click)="doAction('Report')">
+            <pnd-svg-icon [data]="{ id: 'report' }"></pnd-svg-icon>
+        </button>
+        <span>{{state?.report.total || 0}}</span>
+    </ng-container>
+
+    <ng-container *ngIf="state?.endorse">
+        <button class="pnd-annotation__social-bar-action" (click)="doAction('Endorse')">
+            <pnd-svg-icon [data]="{ id: 'endorse' }"></pnd-svg-icon>
+        </button>
+        <span>{{state?.endorse?.total || 0}}</span>
+    </ng-container>
+</div>
+<ng-content></ng-content>
+<ng-container *ngIf="state?.comment?.toggleComment">
+    <div class="pnd-annotation__social__comment-textarea-wrapper">
+        <textarea maxlength="1000" name="pnd-new-social-comment" class="pnd-annotation__social__comment-textarea"
+            (input)="onCommentChange($event.target.value)"></textarea>
+    </div>
+    <div class="pnd-annotation__social__new-comment-footer">
+        <div class="pnd-annotation__social__new-comment-actions">
+            <button class="pnd-btn" (click)="onCommentClose()">
+                {{ newCommentCancelLabel}}
+            </button>
+            <button class="pnd-btn" #saveButton (click)="onCommentSave()">
+                {{ newCommentSaveLabel }}
+            </button>
+        </div>
+    </div>
+</ng-container>

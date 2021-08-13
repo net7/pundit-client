@@ -3,12 +3,15 @@
 //---------------------------
 
 import {
-  ChangeDetectorRef, Component, Input
+  ChangeDetectorRef, Component, Input, OnInit
 } from '@angular/core';
-import { Annotation, Tag } from '@pundit/communication';
-import { BehaviorSubject } from 'rxjs';
+import {
+  Annotation, AnnotationComment, Tag
+} from '@pundit/communication';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { AnnotationState } from 'src/app/services/annotation.service';
+import { CommentService } from 'src/app/services/comment.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SocialService } from 'src/app/services/social.service';
 import { Icon, SemanticItem } from '../../types';
@@ -100,7 +103,7 @@ export interface AnnotationData {
   selector: 'annotation',
   templateUrl: './annotation.html'
 })
-export class AnnotationComponent {
+export class AnnotationComponent implements OnInit {
   @Input() data: AnnotationData;
 
   @Input() emit: any;
@@ -111,11 +114,21 @@ export class AnnotationComponent {
 
   @Input() public annotationId: string;
 
+  public socials$: Observable<any>;
+
+  public comments$: Observable<AnnotationComment[]>;
+
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
-    public socialService: SocialService
+    public socialService: SocialService,
+    public commentService: CommentService
   ) { }
+
+  ngOnInit() {
+    this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId);
+    this.comments$ = this.commentService.getCommentsByAnnotationId$(this.annotationId);
+  }
 
   onContainerClick(payload) {
     if (!this.emit) return;
@@ -143,9 +156,5 @@ export class AnnotationComponent {
 
   getTagColor(tag: string) {
     return getTagColor(tag);
-  }
-
-  getSocials() {
-    return this.socialService.getSocialsByAnnotationId(this.annotationId);
   }
 }

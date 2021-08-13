@@ -369,14 +369,14 @@ annotation {
         border-bottom: 1px solid $annotation-border-color;
     }
 
-    &__social-actions {
+    &__social-bar {
         flex-grow: 0;
         flex-shrink: 0;
         display: flex;
         position: relative;
     }
 
-    &__social-actions-item {
+    &__social-bar-action {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -401,6 +401,39 @@ annotation {
             border: 1px solid $color-text-link;
         }
     }
+
+    &__social__comment-textarea-wrapper {
+        line-height: 20px;
+    }
+
+    &__social__comment-textarea {
+        width: 100%;
+        height: $space*20;
+        resize: none;
+    }
+
+    &__social__new-comment-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $space*2;
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
+    }
+
+    &__social__new-comment-actions {
+        flex-grow: 0;
+        flex-shrink: 0;
+        text-align: right;
+        
+        .pnd-btn:last-child {
+            margin-left: $space/2;
+        }
+    }
+
+   
 }
 
 

@@ -1,3 +1,4 @@
+import { CommentModel } from 'src/common/models/comment-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -55,8 +56,16 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.SocialRemove:
       request$ = SocialModel.remove.apply(null, args);
       break;
-    case CrossMsgRequestId.SocialUpdate:
-      request$ = SocialModel.update.apply(null, args);
+    // COMMENT REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.CommentCreate:
+      request$ = CommentModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.CommentRemove:
+      request$ = CommentModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.CommentUpdate:
+      request$ = CommentModel.update.apply(null, args);
       break;
     // AUTH REQUEST
     // --------------------------------------------------->

@@ -1,23 +1,19 @@
 <div class="pnd-annotation__social">
-    <div class="pnd-annotation__social-actions">
-        <button class="pnd-annotation__social-actions-item"
-             (click)="toggleLike()">
-            <pnd-svg-icon [data]="{ id: 'like' }"></pnd-svg-icon>
-        </button>
-        <span>{{likeNum || 0}}</span>
-        <button class="pnd-annotation__social-actions-item"
-           (click)="toggleDislike()">
-            <pnd-svg-icon [data]="{ id: 'dislike' }"></pnd-svg-icon>
-        </button>
-        <span>{{dislikeNum || 0}}</span>
-        <!-- <button class="pnd-annotation__social-actions-item"
-           (click)="onClick($event)">
-            <pnd-svg-icon [data]="{ id: 'endorse' }"></pnd-svg-icon>
-        </button> -->
-        <button class="pnd-annotation__social-actions-item"
-           (click)="toggleReport()">
-            <pnd-svg-icon [data]="{ id: 'report' }"></pnd-svg-icon>
-        </button>
-        <span>{{reportNum || 0}}</span>
-    </div>
+    <pnd-social-action-bar 
+    [socials$]="socials$"
+    [comments$]="comments$" 
+    [annotationId]="annotationId"
+    [emit]="emit"
+    [actions]="ACTIONS"
+    >
+    <ng-container *ngFor="let comment of (comments$ | async)">
+        <pnd-social-comment 
+        [data]="comment"
+        [emit]="emit"
+        [annotationId]="annotationId"
+        >
+        </pnd-social-comment>
+    </ng-container>
+</pnd-social-action-bar>
+
 </div>

@@ -96,6 +96,11 @@ export default {
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
+  // social
+  'social#save': 'Save',
+  'social#cancel': 'Cancel',
+  'social#comment_edit': 'Edit',
+  'social#comment_delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',

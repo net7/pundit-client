@@ -20,7 +20,10 @@ export enum CrossMsgRequestId {
   // social
   SocialCreate = 'social.create',
   SocialRemove = 'social.remove',
-  SocialUpdate = 'social.update',
+    // social
+  CommentCreate = 'social.create',
+  CommentRemove = 'social.remove',
+  CommentUpdate = 'social.update',
   // auth
   AuthLogin = 'auth.login',
   AuthLogout = 'auth.logout',

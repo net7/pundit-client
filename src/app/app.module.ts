@@ -12,6 +12,7 @@ import { PunditLoginModule } from './login-module/public-api';
 import { UserService } from './services/user.service';
 import { AnnotationService } from './services/annotation.service';
 import { NotebookService } from './services/notebook.service';
+import { CommentService } from './services/comment.service';
 import { SocialService } from './services/social.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
@@ -45,6 +46,8 @@ import { CommentAnnotationSectionComponent } from './components/annotation/secti
 import { SemanticAnnotationSectionComponent } from './components/annotation/sections/semantic/semantic-annotation-section';
 import { TagAnnotationSectionComponent } from './components/annotation/sections/tag/tag-annotation-section';
 import { SocialAnnotationSectionComponent } from './components/annotation/sections/social/social-annotation-section';
+import { SocialActionBarComponent } from './components/annotation/sections/social/social-action-bar/social-action-bar';
+import { SocialCommentComponent } from './components/annotation/sections/social/comment/social-comment';
 import { HeaderAnnotationSectionComponent } from './components/annotation/sections/header/header-annotation-section';
 import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
 // PIPES
@@ -70,6 +73,7 @@ const providers: any[] = [
   AnnotationService,
   NotebookService,
   TagService,
+  CommentService,
   SocialService,
   AnchorService,
   AnnotationPositionService,
@@ -128,6 +132,8 @@ if (env.chromeExt) {
     SemanticAnnotationSectionComponent,
     TagAnnotationSectionComponent,
     SocialAnnotationSectionComponent,
+    SocialActionBarComponent,
+    SocialCommentComponent,
     HeaderAnnotationSectionComponent,
     MenuHeaderSectionComponent,
     // PIPES
