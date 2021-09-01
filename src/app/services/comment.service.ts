@@ -5,6 +5,7 @@ import {
 import { BehaviorSubject, from } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { CommentModel } from 'src/common/models/comment-model';
+import { SocialService } from './social.service';
 import { UserService } from './user.service';
 
 type CommentConfig= {
@@ -16,7 +17,8 @@ export class CommentService {
   private commentsByAnnotationId: CommentConfig[] = [];
 
   constructor(
-    private userService: UserService
+    private userService: UserService,
+    private socialService: SocialService
   ) { }
 
   load(rawComments: AnnotationComment[]) {
@@ -106,6 +108,8 @@ export class CommentService {
       comments$.pipe(take(1)).subscribe((comments) => {
         const index = comments.map(({ id }) => id).indexOf(commentId);
         if (index > -1) {
+          const { annotationId } = comments[index];
+          this.socialService.removeCachedAndStats(annotationId, commentId);
           comments.splice(index, 1);
           comments$.next(comments);
         }

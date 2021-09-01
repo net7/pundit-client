@@ -34,20 +34,18 @@
         <span>{{state?.endorse?.total || 0}}</span>
     </ng-container>
 </div>
-<ng-content></ng-content>
 <ng-container *ngIf="state?.comment?.toggleComment">
     <div class="pnd-annotation__social__comment-textarea-wrapper">
-        <textarea maxlength="1000" name="pnd-new-social-comment" class="pnd-annotation__social__comment-textarea"
+        <textarea maxlength="1000" name="pnd-new-social-comment" id="{{annotationId}}" class="pnd-annotation__social__comment-textarea"
             (input)="onCommentChange($event.target.value)"></textarea>
     </div>
     <div class="pnd-annotation__social__new-comment-footer">
         <div class="pnd-annotation__social__new-comment-actions">
-            <button class="pnd-btn" (click)="onCommentClose()">
-                {{ newCommentCancelLabel}}
-            </button>
-            <button class="pnd-btn" #saveButton (click)="onCommentSave()">
-                {{ newCommentSaveLabel }}
-            </button>
+            <ng-container *ngFor="let action of state.comment.form.actions">
+                <button class="pnd-btn" (click)="onFormCommentAction(action.source)" [disabled]="action?.disabled">
+                    {{ action.label }}
+                </button>
+            </ng-container>
         </div>
     </div>
 </ng-container>

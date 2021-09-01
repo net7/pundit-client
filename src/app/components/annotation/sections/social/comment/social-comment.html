@@ -20,17 +20,18 @@
 </div>
 <div *ngIf="activeMenu === 'edit-comment'">
     <div class="pnd-annotation__social__comment-textarea-wrapper">
-        <textarea maxlength="1000" name="pnd-new-social-comment" class="pnd-annotation__social__comment-textarea"
-            (input)="onCommentChange($event.target.value)">{{data.comment}}</textarea>
+        <textarea maxlength="1000" name="pnd-new-social-comment" 
+        id="{{data.id}}" 
+        class="pnd-annotation__social__comment-textarea"
+        (input)="onCommentChange($event.target.value)">{{data.comment}}</textarea>
     </div>
     <div class="pnd-annotation__social__new-comment-footer">
         <div class="pnd-annotation__social__new-comment-actions">
-            <button class="pnd-btn" (click)="onCommentClose()">
-                {{ 'Close' }}
-            </button>
-            <button class="pnd-btn" #saveButton (click)="onCommentSave()">
-                {{ 'Save'}}
-            </button>
+            <ng-container *ngFor="let action of formState?.actions">
+                <button class="pnd-btn" (click)="onEditFormAction(action.source)" [disabled]="action?.disabled">
+                    {{action.label}}
+                </button>
+            </ng-container>
         </div>
     </div>
 </div>

@@ -6,14 +6,10 @@
     [emit]="emit"
     [actions]="ACTIONS"
     >
-    <ng-container *ngFor="let comment of (comments$ | async)">
-        <pnd-social-comment 
-        [data]="comment"
-        [emit]="emit"
-        [annotationId]="annotationId"
-        >
-        </pnd-social-comment>
-    </ng-container>
 </pnd-social-action-bar>
-
 </div>
+
+<ng-container *ngFor="let comment of (comments$ | async)">
+    <pnd-social-comment [data]="comment" [emit]="emit" [annotationId]="annotationId">
+    </pnd-social-comment>
+</ng-container>

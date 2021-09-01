@@ -73,7 +73,7 @@ export class SocialService implements OnInit {
     this.removeStats(annotationId, parentId);
   }
 
-  removeStats(annotationId: string, parentId?: string) {
+  private removeStats(annotationId: string, parentId?: string) {
     if (parentId) {
       const index = this.socialStatsByAnnotationId.findIndex(
         (s) => s.annotationId === annotationId && parentId === s.parentId
@@ -183,7 +183,7 @@ export class SocialService implements OnInit {
       }),
       tap(({ data }) => {
         if (!data) {
-          this.removeCached(data.id);
+          this.removeCachedAndStats(params.annotationId, data.id);
         }
       })
     );

@@ -97,8 +97,8 @@ export default {
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // social
-  'social#save': 'Save',
-  'social#cancel': 'Cancel',
+  'social#comment-save': 'Save',
+  'social#comment-cancel': 'Cancel',
   'social#comment_edit': 'Edit',
   'social#comment_delete': 'Delete',
   // userpopover

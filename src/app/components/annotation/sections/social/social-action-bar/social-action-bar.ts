@@ -10,6 +10,7 @@ import { PunditLoginService } from 'src/app/login-module/public-api';
 import { CommentService } from 'src/app/services/comment.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
 import { UserService } from 'src/app/services/user.service';
+import { SocialCommentFormState } from '../comment/social-comment';
 import { } from '../social-annotation-section';
 
 type SocialBarState = {
@@ -32,8 +33,8 @@ type SocialBarState = {
   comment?: {
     madeByUser?: boolean;
     total: number;
-    tmpNewComment?: string;
     toggleComment?: boolean;
+    form: SocialCommentFormState;
   };
 
   isLogged: boolean;
@@ -57,10 +58,6 @@ export class SocialActionBarComponent implements OnInit {
   @Input() emit: any;
 
   @Input() actions: (SocialType | 'Comment')[];
-
-  public newCommentSaveLabel = _t('social#save');
-
-  public newCommentCancelLabel = _t('social#cancel');
 
   public state: SocialBarState;
 
@@ -87,7 +84,7 @@ export class SocialActionBarComponent implements OnInit {
         this.state.isLoading = false;
         if (this.state?.comment) {
           this.state.comment.toggleComment = false;
-          this.state.comment.tmpNewComment = '';
+          this.state.comment.form = this.setFormState();
         }
       }
     });
@@ -99,9 +96,25 @@ export class SocialActionBarComponent implements OnInit {
       dislike: this.actions.includes('Dislike') ? { total: 0 } : undefined,
       report: this.actions.includes('Report') ? { total: 0 } : undefined,
       endorse: this.actions.includes('Endorse') ? { total: 0 } : undefined,
-      comment: this.actions.includes('Comment') ? { total: 0 } : undefined,
+      comment: this.actions.includes('Comment') ? { total: 0, form: this.setFormState() } : undefined,
       isLoading: false,
       isLogged: false,
+    };
+  }
+
+  private setFormState = (newComment?: string) => {
+    const isValidComment = (comment: string): boolean => comment && comment.length > 3;
+    return {
+      value: newComment,
+      actions: [{
+        label: _t('social#comment-save'),
+        source: 'save',
+        disabled: !isValidComment(newComment),
+      },
+      {
+        label: _t('social#comment-cancel'),
+        source: 'cancel',
+      }]
     };
   }
 
@@ -168,12 +181,13 @@ export class SocialActionBarComponent implements OnInit {
       return;
     }
     this.state.comment.toggleComment = !this.state.comment.toggleComment;
-    this.state.comment.tmpNewComment = '';
+    this.checkFocus();
+    this.state.comment.form = this.setFormState();
   }
 
   private like() {
     if (this.state.like?.madeByUser) {
-      const newStats = { totalLikes: this.state.like.total - 1, hasUserLike: false }as SocialStats;
+      const newStats = { totalLikes: this.state.like.total - 1, hasUserLike: false } as SocialStats;
       this.updateSocialState(newStats);
       this.removeSocial('Like');
     } else {
@@ -269,8 +283,8 @@ export class SocialActionBarComponent implements OnInit {
       annotationId: this.annotationId,
       parentId: this.parentId,
       type
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    }).subscribe(() => {});
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+    }).subscribe(() => { });
   }
 
   private removeSocial(type: SocialType) {
@@ -280,11 +294,19 @@ export class SocialActionBarComponent implements OnInit {
       annotationId: this.annotationId,
       parentId: this.parentId,
       type
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    }).subscribe(() => {});
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+    }).subscribe(() => { });
   }
 
-  onCommentSave() {
+  onFormCommentAction(source: string) {
+    if (source === 'save') {
+      this.onCommentSave();
+    } else if (source === 'cancel') {
+      this.onCommentCancel();
+    }
+  }
+
+  private onCommentSave() {
     if (this.state.isLoading) {
       return;
     }
@@ -292,28 +314,45 @@ export class SocialActionBarComponent implements OnInit {
       type: 'Comment',
       userId: this.userService.whoami().id,
       annotationId: this.annotationId,
-      comment: this.state.comment.tmpNewComment
+      comment: this.state.comment.form.value
     };
     this.state.isLoading = true;
     this.commentService.create(payload).pipe(
       catchError(() => {
         this.state.isLoading = false;
-        this.onCommentClose();
+        this.state.comment.toggleComment = false;
+        this.state.comment.form = this.setFormState();
         return EMPTY;
       })
     ).subscribe(
       () => {
-        this.onCommentClose();
+        this.state.isLoading = false;
+        this.state.comment.toggleComment = false;
+        this.state.comment.form = this.setFormState();
       }
     );
   }
 
-  onCommentClose() {
+  private onCommentCancel() {
     this.state.comment.toggleComment = false;
-    this.state.comment.tmpNewComment = '';
+    this.state.comment.form = this.setFormState();
   }
 
   onCommentChange(e: string) {
-    this.state.comment.tmpNewComment = e;
+    this.state.comment.form = this.setFormState(e);
+  }
+
+  private checkFocus = () => {
+    if (this.state.comment.toggleComment) {
+      setTimeout(() => {
+        const el = this.getTextAreaEl();
+        el.focus();
+      });
+    }
+  }
+
+  private getTextAreaEl() {
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+    return shadowRoot.querySelector(`textarea#${this.annotationId}.pnd-annotation__social__comment-textarea`) as HTMLTextAreaElement;
   }
 }
