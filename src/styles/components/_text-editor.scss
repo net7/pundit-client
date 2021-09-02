@@ -1,0 +1,245 @@
+/**
+ * TEXT EDITOR
+ *
+ * Style for edit modal text editor.
+ */
+
+.editor-demo {
+    position: fixed;
+    z-index: 10;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: $color-gray-00;
+}
+
+.pnd-text-editor {
+    width: 500px;
+    margin: 100px auto;
+    background-color: $color-gray-00;
+    border: 1px solid $color-gray-03;
+    border-radius: $border-radius;
+
+    // &__menu {
+    //     padding-top: 0;
+
+    //     .menubar {
+    //         border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    //         line-height: 0.1;
+    //     }
+    //     .menuicon {
+    //         display: inline-block;
+    //         border-right: 1px solid rgba(0, 0, 0, 0.2);
+    //         color: #888;
+    //         line-height: 1;
+    //         padding: 0 7px;
+    //         margin: 1px;
+    //         cursor: pointer;
+    //         text-align: center;
+    //         min-width: 1.4em;
+    //     }
+    //     .menuicon-strong {
+    //         font-weight: bold;
+    //     }
+    //     .menuicon-em {
+    //         font-style: italic;
+    //     }
+    // }
+
+    // &__content {
+    //     display: none;
+
+    //     &.ProseMirror {
+    //         position: relative;
+    //     }
+
+    //     &.ProseMirror {
+    //         word-wrap: break-word;
+    //         white-space: pre-wrap;
+    //         white-space: break-spaces;
+    //         -webkit-font-variant-ligatures: none;
+    //         font-variant-ligatures: none;
+    //         font-feature-settings: "liga" 0; /* the above doesn't seem to work in Edge */
+    //     }
+
+    //     &.ProseMirror pre {
+    //         white-space: pre-wrap;
+    //     }
+
+    //     &.ProseMirror li {
+    //         position: relative;
+    //     }
+
+    //     .ProseMirror-hideselection *::selection { 
+    //         background: transparent; 
+    //     }
+
+    //     .ProseMirror-hideselection *::-moz-selection { 
+    //         background: transparent; 
+    //     }
+
+    //     .ProseMirror-hideselection { 
+    //         caret-color: transparent; 
+    //     }
+
+    //     .ProseMirror-selectednode {
+    //         outline: 2px solid #8cf;
+    //     }
+
+    //     /* Make sure li selections wrap around markers */
+    //     li.ProseMirror-selectednode {
+    //         outline: none;
+    //     }
+
+    //     li.ProseMirror-selectednode:after {
+    //         content: "";
+    //         position: absolute;
+    //         left: -32px;
+    //         right: -2px; top: -2px; bottom: -2px;
+    //         border: 2px solid #8cf;
+    //         pointer-events: none;
+    //     }
+
+    //     /* Protect against generic img rules */
+    //     img.ProseMirror-separator {
+    //         display: inline !important;
+    //         border: none !important;
+    //         margin: 0 !important;
+    //     }
+    // }
+}
+
+
+.pnd-text-editor {
+    &__menu-wrapper {
+        background-color: $color-gray-02;
+    }
+
+    &__menu {
+        display: inline-flex;
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+
+    &__group {
+        display: inline-flex;
+        flex: 0 0 auto;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        max-width: 100%;
+    }
+
+    &__group:not(:last-child):after {
+        border-left: 0;
+        border-right: 1px solid $color-gray-03;
+        content: "";
+        cursor: default;
+        margin: 2px;
+        padding: 0;
+    }
+
+    &__button {
+        margin: 2px;
+        padding: 0;
+        align-items: center;
+        border: 1px solid transparent;
+        border-radius: $border-radius;
+        display: flex;
+        height: 26px;
+        justify-content: center;
+        min-width: 26px;
+        overflow: hidden;
+
+        &:hover {
+            background: $color-gray-03;
+        }
+        
+        &.is-active {
+            background: $color-gray-03;
+        }
+
+        &.is-disabled {
+            color: $color-gray-04;
+
+            &:hover {
+                cursor: not-allowed;
+            }
+        }
+
+        .pnd-svg-icon svg {
+            height: 14px;
+            width: 14px;
+        }
+    }
+}
+
+.pnd-text-editor {
+    &__content {
+        display: none;
+
+        &.ProseMirror {
+            position: relative;
+        }
+
+        &.ProseMirror {
+            word-wrap: break-word;
+            white-space: pre-wrap;
+            white-space: break-spaces;
+            -webkit-font-variant-ligatures: none;
+            font-variant-ligatures: none;
+            font-feature-settings: "liga" 0; /* the above doesn't seem to work in Edge */
+        }
+
+        &.ProseMirror pre {
+            white-space: pre-wrap;
+        }
+
+        &.ProseMirror li {
+            position: relative;
+        }
+
+        .ProseMirror-hideselection *::selection {
+            background: transparent;
+        }
+
+        .ProseMirror-hideselection *::-moz-selection {
+            background: transparent;
+        }
+
+        .ProseMirror-hideselection {
+            caret-color: transparent;
+        }
+
+        .ProseMirror-selectednode {
+            outline: 2px solid #88ccff;
+        }
+
+        /* Make sure li selections wrap around markers */
+        li.ProseMirror-selectednode {
+            outline: none;
+        }
+
+        li.ProseMirror-selectednode:after {
+            content: "";
+            position: absolute;
+            left: -32px;
+            right: -2px;
+            top: -2px;
+            bottom: -2px;
+            border: 2px solid #88ccff;
+            pointer-events: none;
+        }
+
+        /* Protect against generic img rules */
+        img.ProseMirror-separator {
+            display: inline !important;
+            border: none !important;
+            margin: 0 !important;
+        }
+    }
+}

@@ -1,0 +1,12 @@
+<div *ngIf="data" class="pnd-text-editor {{ data.classes || '' }}">
+    <div class="pnd-text-editor__menu-wrapper">
+        <pnd-text-editor-menu [data]="config.menu" [menuEvent$]="menuEvent$"></pnd-text-editor-menu>
+    </div>
+    <div class="pnd-text-editor__content-wrapper">
+        <div class="pnd-text-editor__view"></div>
+        <div class="pnd-text-editor__content">
+            <h3>Simple editor</h3>
+            <p>With a very crude menu bar.</p>
+        </div>
+    </div>
+</div>

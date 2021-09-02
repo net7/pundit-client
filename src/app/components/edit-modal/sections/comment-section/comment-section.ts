@@ -7,6 +7,7 @@ import {
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { FormSection, FormSectionData } from 'src/app/types';
+import * as textEditor from './text-editor';
 
 const TEXT_MIN_LIMIT = 3;
 
@@ -25,6 +26,8 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
 > {
   id = 'comment';
 
+  editor: any;
+
   @Input() public data: FormSectionData<CommentSectionValue, CommentSectionOptions>;
 
   @Input() public reset$: Subject<void>;
@@ -32,7 +35,8 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
   private destroy$: Subject<void> = new Subject();
 
   ngAfterViewInit() {
-    this.checkFocus();
+    this.init();
+    // this.checkFocus();
     this.reset$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(this.onReset);
@@ -40,6 +44,14 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
 
   ngOnDestroy() {
     this.destroy$.next();
+  }
+
+  init() {
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+    const editorEl: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__menu');
+    const contentEl: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__content');
+    this.editor = textEditor.load(editorEl, contentEl);
+    // console.log('editor----------------------------->', this.editor);
   }
 
   onChange(payload) {
