@@ -3,23 +3,22 @@ import { DOMOutputSpec, Schema } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { schema as baseSchema } from 'prosemirror-schema-basic';
 import * as sl from 'prosemirror-schema-list';
-import { TextEditorMenuData } from './sections/text-editor-menu/text-editor-menu';
 import ListCommand from './list-command';
 
-const buttonsMap = [
-  ['bold', 'italic', 'underline', 'strikethrough'],
+const buttons = [
+  ['strong', 'em', 'underline', 'strike'],
   ['ul', 'ol'],
   ['link']
 ];
 
-const labelsMap = {
-  bold: 'Bold',
-  italic: 'Italic',
-  underline: 'Underline',
-  strikethrough: 'Strikethrough',
-  ul: 'Unordered list',
-  ol: 'Ordered list',
-  link: 'Add Link'
+const labels = {
+  strong: 'texteditor#bold',
+  em: 'texteditor#italic',
+  underline: 'texteditor#underline',
+  strike: 'texteditor#strikethrough',
+  ul: 'texteditor#ul',
+  ol: 'texteditor#ol',
+  link: 'texteditor#link'
 };
 
 const listItem = {
@@ -99,7 +98,7 @@ const customSchema = {
 const marks = baseSchema.spec.marks.append(customSchema.marks);
 const nodes = baseSchema.spec.nodes.append(customSchema.nodes);
 
-const editorSchema = new Schema({
+const schema = new Schema({
   nodes,
   marks,
 });
@@ -107,27 +106,17 @@ const editorSchema = new Schema({
 const ulCommand = new ListCommand(true);
 const olCommand = new ListCommand(false);
 
-const commandMap = {
-  bold: toggleMark(editorSchema.marks.strong),
-  italic: toggleMark(editorSchema.marks.em),
-  underline: toggleMark(editorSchema.marks.underline),
-  strikethrough: toggleMark(editorSchema.marks.strike),
+const commands = {
+  strong: toggleMark(schema.marks.strong),
+  em: toggleMark(schema.marks.em),
+  underline: toggleMark(schema.marks.underline),
+  strike: toggleMark(schema.marks.strike),
   ul: ulCommand.toggle(),
   ol: olCommand.toggle(),
-  // TODO: completare commands
-  link: toggleMark(editorSchema.marks.strong),
+  link: null, // command manually triggered
 };
 
 export default {
-  editorSchema,
-  menu: {
-    groups: buttonsMap.map((group) => ({
-      buttons: group.map((button) => ({
-        id: button,
-        type: '',
-        title: labelsMap[button],
-        command: commandMap[button]
-      }))
-    }))
-  } as TextEditorMenuData
+  schema,
+  menu: { buttons, labels, commands }
 };

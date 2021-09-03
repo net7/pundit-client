@@ -6,6 +6,25 @@ import { Subject } from 'rxjs';
  */
 export interface TextEditorMenuData {
   groups: TextEditorMenuGroup[];
+  linkForm: {
+    actions: {
+      save: {
+        label: string;
+        disabled: boolean;
+      };
+      cancel: {
+        label: string;
+      };
+    };
+    inputValue?: string;
+    label?: string;
+    placeholder?: string;
+    visible?: boolean;
+  };
+  menuEvent$: Subject<{
+    type: string;
+    payload?: any;
+  }>;
   classes?: string;
 }
 
@@ -15,7 +34,7 @@ export interface TextEditorMenuGroup {
 
 export interface TextEditorMenuButton {
   id: string;
-  command: (schema: object) => any;
+  command: (state: any, dispatch: any) => any;
   title?: string;
   active?: boolean;
   disabled?: boolean;
@@ -29,15 +48,35 @@ export interface TextEditorMenuButton {
 export class TextEditorMenuComponent {
   @Input() public data: TextEditorMenuData;
 
-  @Input() public menuEvent$: Subject<{
-    type: string;
-    payload: any;
-  }>;
-
   onClick(button: TextEditorMenuButton) {
-    this.menuEvent$.next({
+    this.data.menuEvent$.next({
       type: 'click',
       payload: button
+    });
+  }
+
+  onLinkKeyup(ev: KeyboardEvent) {
+    if (ev.key === 'Enter') {
+      this.onLinkSave();
+    }
+  }
+
+  onLinkInput(payload: string) {
+    this.data.menuEvent$.next({
+      payload,
+      type: 'linkinput',
+    });
+  }
+
+  onLinkSave() {
+    this.data.menuEvent$.next({
+      type: 'linksave'
+    });
+  }
+
+  onLinkCancel() {
+    this.data.menuEvent$.next({
+      type: 'linkcancel'
     });
   }
 }

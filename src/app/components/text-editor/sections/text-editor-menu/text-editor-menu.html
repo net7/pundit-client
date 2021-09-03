@@ -12,3 +12,26 @@
         </a>
     </div>
 </div>
+
+<div *ngIf="data && data.linkForm?.visible" class="pnd-text-editor__link">
+    <span *ngIf="data.linkForm?.label"
+        class="pnd-text-editor__link-label">
+        {{ data.linkForm.label }}
+    </span>
+    <input type="text" name="insert-link"
+        class="pnd-text-editor__link-field small"
+        [placeholder]="data.linkForm?.placeholder"
+        (input)="onLinkInput($event.target.value)"
+        (keyup)="onLinkKeyup($event)">
+    <button *ngIf="data.linkForm?.actions.cancel as cancelAction" 
+        class="pnd-btn pnd-text-editor__link-btn-cancel"
+        (click)="onLinkCancel()">
+        {{ cancelAction.label }}
+    </button>
+    <button *ngIf="data.linkForm?.actions.save as saveAction" 
+        class="pnd-btn pnd-text-editor__link-btn-save"
+        [disabled]="saveAction.disabled"
+        (click)="onLinkSave()">
+        {{ saveAction.label }}
+    </button>
+</div>

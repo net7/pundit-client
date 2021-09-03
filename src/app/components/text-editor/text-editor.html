@@ -1,6 +1,6 @@
 <div *ngIf="data" class="pnd-text-editor {{ data.classes || '' }}">
     <div class="pnd-text-editor__menu-wrapper">
-        <pnd-text-editor-menu [data]="config.menu" [menuEvent$]="menuEvent$"></pnd-text-editor-menu>
+        <pnd-text-editor-menu [data]="menuData"></pnd-text-editor-menu>
     </div>
     <div class="pnd-text-editor__content-wrapper">
         <div class="pnd-text-editor__view"></div>
