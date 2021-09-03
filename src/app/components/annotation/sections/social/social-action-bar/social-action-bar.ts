@@ -9,6 +9,7 @@ import { catchError } from 'rxjs/operators';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { CommentService } from 'src/app/services/comment.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
+import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
 import { SocialCommentFormState } from '../comment/social-comment';
 import { } from '../social-annotation-section';
@@ -36,10 +37,7 @@ type SocialBarState = {
     toggleComment?: boolean;
     form: SocialCommentFormState;
   };
-
   isLogged: boolean;
-
-  isLoading: boolean;
 }
 
 @Component({
@@ -65,7 +63,8 @@ export class SocialActionBarComponent implements OnInit {
     private userService: UserService,
     private punditLoginService: PunditLoginService,
     private socialService: SocialService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private toastService: ToastService
   ) { }
 
   ngOnInit(): void {
@@ -80,12 +79,9 @@ export class SocialActionBarComponent implements OnInit {
     }
     this.userService.logged$.subscribe((logged) => {
       this.state.isLogged = logged;
-      if (!logged) {
-        this.state.isLoading = false;
-        if (this.state?.comment) {
-          this.state.comment.toggleComment = false;
-          this.state.comment.form = this.setFormState();
-        }
+      if (!logged && this.state?.comment) {
+        this.state.comment.toggleComment = false;
+        this.state.comment.form = this.resetFormState();
       }
     });
   }
@@ -96,13 +92,12 @@ export class SocialActionBarComponent implements OnInit {
       dislike: this.actions.includes('Dislike') ? { total: 0 } : undefined,
       report: this.actions.includes('Report') ? { total: 0 } : undefined,
       endorse: this.actions.includes('Endorse') ? { total: 0 } : undefined,
-      comment: this.actions.includes('Comment') ? { total: 0, form: this.setFormState() } : undefined,
-      isLoading: false,
+      comment: this.actions.includes('Comment') ? { total: 0, form: this.resetFormState() } : undefined,
       isLogged: false,
     };
   }
 
-  private setFormState = (newComment?: string) => {
+  private resetFormState = (newComment?: string) => {
     const isValidComment = (comment: string): boolean => comment && comment.length > 3;
     return {
       value: newComment,
@@ -114,7 +109,8 @@ export class SocialActionBarComponent implements OnInit {
       {
         label: _t('social#comment-cancel'),
         source: 'cancel',
-      }]
+      }],
+      isLoading: false
     };
   }
 
@@ -182,7 +178,7 @@ export class SocialActionBarComponent implements OnInit {
     }
     this.state.comment.toggleComment = !this.state.comment.toggleComment;
     this.checkFocus();
-    this.state.comment.form = this.setFormState();
+    this.state.comment.form = this.resetFormState();
   }
 
   private like() {
@@ -307,7 +303,7 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private onCommentSave() {
-    if (this.state.isLoading) {
+    if (this.state.comment.form.isLoading) {
       return;
     }
     const payload: AnnotationCommentAttributes = {
@@ -316,30 +312,36 @@ export class SocialActionBarComponent implements OnInit {
       annotationId: this.annotationId,
       comment: this.state.comment.form.value
     };
-    this.state.isLoading = true;
+    this.state.comment.form.isLoading = true;
     this.commentService.create(payload).pipe(
       catchError(() => {
-        this.state.isLoading = false;
         this.state.comment.toggleComment = false;
-        this.state.comment.form = this.setFormState();
+        this.state.comment.form = this.resetFormState();
+        this.toastService.error({
+          title: _t('toast#social_commentsave_error_title'),
+          text: _t('toast#social_commentsave_error_text'),
+        });
         return EMPTY;
       })
     ).subscribe(
       () => {
-        this.state.isLoading = false;
         this.state.comment.toggleComment = false;
-        this.state.comment.form = this.setFormState();
+        this.state.comment.form = this.resetFormState();
+        this.toastService.success({
+          title: _t('toast#social_commentsave_success_title'),
+          text: _t('toast#social_commentsave_success_text'),
+        });
       }
     );
   }
 
   private onCommentCancel() {
     this.state.comment.toggleComment = false;
-    this.state.comment.form = this.setFormState();
+    this.state.comment.form = this.resetFormState();
   }
 
   onCommentChange(e: string) {
-    this.state.comment.form = this.setFormState(e);
+    this.state.comment.form = this.resetFormState(e);
   }
 
   private checkFocus = () => {

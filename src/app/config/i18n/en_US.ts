@@ -87,6 +87,24 @@ export default {
   'toast#verify_email_success_title': 'Email sent!',
   'toast#verify_email_success_text':
     'We have sent a verification email to { mail }',
+  'toast#social_commentsave_success_title': 'Comment created',
+  'toast#social_commentsave_success_text':
+    'Your comment was correctly saved.',
+  'toast#social_commentedit_success_title': 'Comment edited',
+  'toast#social_commentedit_success_text':
+    'Your comment was edited correctly.',
+  'toast#social_commentsave_error_title': 'Oops! Something went wrong',
+  'toast#social_commentsave_error_text':
+      "Pundit couldn't save your comment, please try again later.",
+  'toast#social_commentedit_error_title': 'Oops! Something went wrong',
+  'toast#social_commentedit_error_text':
+          "Pundit couldn't edit your comment, please try again later.",
+  'toast#social_commentdelete_success_title': 'Comment deleted',
+  'toast#social_commentdelete_success_text':
+    'Your comment was deleted correctly.',
+  'toast#social_commentdelete_error_title': 'Oops! Something went wrong',
+  'toast#social_commentdelete_error_text':
+          "Pundit couldn't delete your comment, please try again later.",
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',

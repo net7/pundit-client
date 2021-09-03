@@ -36,14 +36,25 @@
 </div>
 <ng-container *ngIf="state?.comment?.toggleComment">
     <div class="pnd-annotation__social__comment-textarea-wrapper">
-        <textarea maxlength="1000" name="pnd-new-social-comment" id="{{annotationId}}" class="pnd-annotation__social__comment-textarea"
+        <textarea maxlength="1000" name="pnd-new-social-comment" 
+        id="{{annotationId}}"
+        class="pnd-annotation__social__comment-textarea"
+        [disabled]="!!state?.comment?.form?.isLoading"
             (input)="onCommentChange($event.target.value)"></textarea>
     </div>
     <div class="pnd-annotation__social__new-comment-footer">
         <div class="pnd-annotation__social__new-comment-actions">
             <ng-container *ngFor="let action of state.comment.form.actions">
-                <button class="pnd-btn" (click)="onFormCommentAction(action.source)" [disabled]="action?.disabled">
+                <button class="pnd-btn" 
+                (click)="onFormCommentAction(action.source)" 
+                [ngClass]="{
+                    'is-loading': !!state?.comment?.form?.isLoading && action.source ==='save'
+                }"
+                [disabled]="action?.disabled || !!state?.comment?.form?.isLoading">
                     {{ action.label }}
+                    <ng-container *ngIf="!!state?.comment?.form?.isLoading && action.source ==='save'">
+                        <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+                    </ng-container>
                 </button>
             </ng-container>
         </div>

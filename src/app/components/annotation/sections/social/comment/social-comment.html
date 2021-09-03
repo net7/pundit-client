@@ -1,35 +1,60 @@
-<div class="pnd-annotation__header" *ngIf="activeMenu !== 'edit-comment'">
-    <div class="pnd-annotation__header-info">
-        <div  class="pnd-annotation__header-name">{{data.comment}}</div>
-    </div>
-    <div class="pnd-annotation__header-menu" >
-        <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
-            *ngIf="menuData" (click)="onClick($event, menuData.icon['payload'])">
-            <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
-        </button>
-        <div  *ngIf="activeMenu === 'display-menu'" class="pnd-annotation__menu-dropdown">
-            <!-- menu actions -->
-            <div  class="pnd-annotation__menu-dropdown-actions">
-                <div *ngFor="let action of menuData?.actions" (click)="onClick($event, action.payload)"
-                    class="pnd-annotation__menu-dropdown-action">
-                    {{ action.label }}
+<ng-container *ngIf="activeMenu !== 'edit-comment'">
+    <div class="pnd-annotation__header" *ngIf="activeMenu !== 'edit-comment'">
+        <div class="pnd-annotation__header-thumb-wrapper">
+            <span class="pnd-annotation__header-initials">{{ userData.initials }}</span>
+            <img [src]="(imageDataService.images[userData.image]?.data | async) || userData.image"
+                onerror="this.style.display='none'" alt="{{userData.name}}" class="pnd-annotation__header-thumb-image">
+        </div>
+        <div class="pnd-annotation__header-info">
+            <a *ngIf="userData?.anchor as anchor" [href]="anchor" target="_blank">
+                <div class="pnd-annotation__header-name">{{userData.name}}</div>
+            </a>
+            <div *ngIf="!userData.anchor" class="pnd-annotation__header-name">{{userData.name}}</div>
+        </div>
+        <div class="pnd-annotation__header-menu" >
+            <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
+                *ngIf="menuData" (click)="onClick($event, menuData.icon['payload'])">
+                <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
+            </button>
+            <div  *ngIf="activeMenu === 'display-menu'" class="pnd-annotation__menu-dropdown">
+                <div  class="pnd-annotation__menu-dropdown-actions">
+                    <div *ngFor="let action of menuData?.actions" (click)="onClick($event, action.payload)"
+                        class="pnd-annotation__menu-dropdown-action">
+                        {{ action.label }}
+                    </div>
                 </div>
             </div>
         </div>
+        
     </div>
-</div>
+    <div class="pnd-annotation__highlight">
+        <span >
+            {{ data.comment }}
+        </span>
+    </div>
+</ng-container>
+
 <div *ngIf="activeMenu === 'edit-comment'">
     <div class="pnd-annotation__social__comment-textarea-wrapper">
         <textarea maxlength="1000" name="pnd-new-social-comment" 
         id="{{data.id}}" 
+        [disabled]="!!formState?.isLoading"
         class="pnd-annotation__social__comment-textarea"
         (input)="onCommentChange($event.target.value)">{{data.comment}}</textarea>
     </div>
     <div class="pnd-annotation__social__new-comment-footer">
         <div class="pnd-annotation__social__new-comment-actions">
             <ng-container *ngFor="let action of formState?.actions">
-                <button class="pnd-btn" (click)="onEditFormAction(action.source)" [disabled]="action?.disabled">
+                <button class="pnd-btn" 
+                (click)="onEditFormAction(action.source)" 
+                [ngClass]="{
+                    'is-loading': !!formState?.isLoading && action.source ==='save'
+                }"
+                [disabled]="action?.disabled || formState?.isLoading">
                     {{action.label}}
+                    <ng-container *ngIf="!!formState?.isLoading && action.source ==='save'">
+                        <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+                    </ng-container>
                 </button>
             </ng-container>
         </div>
