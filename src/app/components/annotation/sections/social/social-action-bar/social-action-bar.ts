@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import {
-  AnnotationComment,
-  AnnotationCommentAttributes, SocialType
+  Reply,
+  ReplyAttributes, SocialType
 } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { PunditLoginService } from 'src/app/login-module/public-api';
-import { CommentService } from 'src/app/services/comment.service';
+import { ReplyService } from 'src/app/services/reply.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
-import { SocialCommentFormState } from '../comment/social-comment';
+import { ReplyFormState, ReplyType } from '../reply/reply';
 import { } from '../social-annotation-section';
 
 type SocialBarState = {
@@ -31,11 +31,11 @@ type SocialBarState = {
     madeByUser?: boolean;
     total: number;
   };
-  comment?: {
+  reply?: {
     madeByUser?: boolean;
     total: number;
-    toggleComment?: boolean;
-    form: SocialCommentFormState;
+    toggleForm?: boolean;
+    form: ReplyFormState;
   };
   isLogged: boolean;
 }
@@ -47,7 +47,7 @@ type SocialBarState = {
 export class SocialActionBarComponent implements OnInit {
   @Input() socials$: Observable<SocialStats>
 
-  @Input() comments$: Observable<AnnotationComment[]>;
+  @Input() replies$: Observable<Reply[]>;
 
   @Input() annotationId: string;
 
@@ -55,7 +55,7 @@ export class SocialActionBarComponent implements OnInit {
 
   @Input() emit: any;
 
-  @Input() actions: (SocialType | 'Comment')[];
+  @Input() actions: (SocialType | ReplyType)[];
 
   public state: SocialBarState;
 
@@ -63,7 +63,7 @@ export class SocialActionBarComponent implements OnInit {
     private userService: UserService,
     private punditLoginService: PunditLoginService,
     private socialService: SocialService,
-    private commentService: CommentService,
+    private replyService: ReplyService,
     private toastService: ToastService
   ) { }
 
@@ -72,16 +72,16 @@ export class SocialActionBarComponent implements OnInit {
     this.socials$.subscribe((socials) => {
       this.setSocialState(socials);
     });
-    if (this.comments$) {
-      this.comments$.subscribe((comments) => {
-        this.setCommentState(comments);
+    if (this.replies$) {
+      this.replies$.subscribe((replies) => {
+        this.setReplyState(replies);
       });
     }
     this.userService.logged$.subscribe((logged) => {
       this.state.isLogged = logged;
-      if (!logged && this.state?.comment) {
-        this.state.comment.toggleComment = false;
-        this.state.comment.form = this.resetFormState();
+      if (!logged && this.state?.reply) {
+        this.state.reply.toggleForm = false;
+        this.state.reply.form = this.resetFormState();
       }
     });
   }
@@ -92,22 +92,22 @@ export class SocialActionBarComponent implements OnInit {
       dislike: this.actions.includes('Dislike') ? { total: 0 } : undefined,
       report: this.actions.includes('Report') ? { total: 0 } : undefined,
       endorse: this.actions.includes('Endorse') ? { total: 0 } : undefined,
-      comment: this.actions.includes('Comment') ? { total: 0, form: this.resetFormState() } : undefined,
+      reply: this.actions.includes('Reply') ? { total: 0, form: this.resetFormState() } : undefined,
       isLogged: false,
     };
   }
 
-  private resetFormState = (newComment?: string) => {
-    const isValidComment = (comment: string): boolean => comment && comment.length > 3;
+  private resetFormState = (newReply?: string) => {
+    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
     return {
-      value: newComment,
+      value: newReply,
       actions: [{
-        label: _t('social#comment-save'),
+        label: _t('social#reply-save'),
         source: 'save',
-        disabled: !isValidComment(newComment),
+        disabled: !isValidReply(newReply),
       },
       {
-        label: _t('social#comment-cancel'),
+        label: _t('social#reply-cancel'),
         source: 'cancel',
       }],
       isLoading: false
@@ -129,15 +129,15 @@ export class SocialActionBarComponent implements OnInit {
     }
   }
 
-  private setCommentState(comments: AnnotationComment[]) {
+  private setReplyState(replies: Reply[]) {
     const currentUserId = this.userService.whoami()?.id;
-    const isCommentFromCurrentUser = (c) => c.userId === currentUserId;
-    if (this.state?.comment) {
-      const userComments = !!comments.filter(isCommentFromCurrentUser);
-      this.state.comment = {
-        ...this.state.comment,
-        madeByUser: userComments,
-        total: comments.length,
+    const isReplyFromUser = (c) => c.userId === currentUserId;
+    if (this.state?.reply) {
+      const userReplies = !!replies.filter(isReplyFromUser);
+      this.state.reply = {
+        ...this.state.reply,
+        madeByUser: userReplies,
+        total: replies.length,
       };
     }
   }
@@ -168,17 +168,17 @@ export class SocialActionBarComponent implements OnInit {
     }
   }
 
-  toggleComment() {
-    if (!this.state?.comment) {
+  toggleReplyForm() {
+    if (!this.state?.reply) {
       return;
     }
     if (!this.state.isLogged) {
       this.punditLoginService.start();
       return;
     }
-    this.state.comment.toggleComment = !this.state.comment.toggleComment;
+    this.state.reply.toggleForm = !this.state.reply.toggleForm;
     this.checkFocus();
-    this.state.comment.form = this.resetFormState();
+    this.state.reply.form = this.resetFormState();
   }
 
   private like() {
@@ -294,58 +294,58 @@ export class SocialActionBarComponent implements OnInit {
     }).subscribe(() => { });
   }
 
-  onFormCommentAction(source: string) {
+  onReplyFormAction(source: string) {
     if (source === 'save') {
-      this.onCommentSave();
+      this.onReplySave();
     } else if (source === 'cancel') {
-      this.onCommentCancel();
+      this.onReplyCancel();
     }
   }
 
-  private onCommentSave() {
-    if (this.state.comment.form.isLoading) {
+  private onReplySave() {
+    if (this.state.reply.form.isLoading) {
       return;
     }
-    const payload: AnnotationCommentAttributes = {
+    const payload: ReplyAttributes = {
       type: 'Comment',
       userId: this.userService.whoami().id,
       annotationId: this.annotationId,
-      comment: this.state.comment.form.value
+      comment: this.state.reply.form.value
     };
-    this.state.comment.form.isLoading = true;
-    this.commentService.create(payload).pipe(
+    this.state.reply.form.isLoading = true;
+    this.replyService.create(payload).pipe(
       catchError(() => {
-        this.state.comment.toggleComment = false;
-        this.state.comment.form = this.resetFormState();
+        this.state.reply.toggleForm = false;
+        this.state.reply.form = this.resetFormState();
         this.toastService.error({
-          title: _t('toast#social_commentsave_error_title'),
-          text: _t('toast#social_commentsave_error_text'),
+          title: _t('toast#annotation_reply_save_error_title'),
+          text: _t('toast#annotation_reply_save_error_text'),
         });
         return EMPTY;
       })
     ).subscribe(
       () => {
-        this.state.comment.toggleComment = false;
-        this.state.comment.form = this.resetFormState();
+        this.state.reply.toggleForm = false;
+        this.state.reply.form = this.resetFormState();
         this.toastService.success({
-          title: _t('toast#social_commentsave_success_title'),
-          text: _t('toast#social_commentsave_success_text'),
+          title: _t('toast#annotation_reply_save_success_title'),
+          text: _t('toast#annotation_reply_save_success_text'),
         });
       }
     );
   }
 
-  private onCommentCancel() {
-    this.state.comment.toggleComment = false;
-    this.state.comment.form = this.resetFormState();
+  private onReplyCancel() {
+    this.state.reply.toggleForm = false;
+    this.state.reply.form = this.resetFormState();
   }
 
-  onCommentChange(e: string) {
-    this.state.comment.form = this.resetFormState(e);
+  onReplyChange(e: string) {
+    this.state.reply.form = this.resetFormState(e);
   }
 
   private checkFocus = () => {
-    if (this.state.comment.toggleComment) {
+    if (this.state.reply.toggleForm) {
       setTimeout(() => {
         const el = this.getTextAreaEl();
         el.focus();
@@ -355,6 +355,6 @@ export class SocialActionBarComponent implements OnInit {
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.annotationId}.pnd-annotation__social__comment-textarea`) as HTMLTextAreaElement;
+    return shadowRoot.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 }

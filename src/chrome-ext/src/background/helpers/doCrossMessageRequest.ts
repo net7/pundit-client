@@ -1,4 +1,4 @@
-import { CommentModel } from 'src/common/models/comment-model';
+import { ReplyModel } from 'src/common/models/reply-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -56,16 +56,16 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.SocialRemove:
       request$ = SocialModel.remove.apply(null, args);
       break;
-    // COMMENT REQUEST
+    // REPLY REQUEST
     // --------------------------------------------------->
-    case CrossMsgRequestId.CommentCreate:
-      request$ = CommentModel.create.apply(null, args);
+    case CrossMsgRequestId.ReplyCreate:
+      request$ = ReplyModel.create.apply(null, args);
       break;
-    case CrossMsgRequestId.CommentRemove:
-      request$ = CommentModel.remove.apply(null, args);
+    case CrossMsgRequestId.ReplyRemove:
+      request$ = ReplyModel.remove.apply(null, args);
       break;
-    case CrossMsgRequestId.CommentUpdate:
-      request$ = CommentModel.update.apply(null, args);
+    case CrossMsgRequestId.ReplyUpdate:
+      request$ = ReplyModel.update.apply(null, args);
       break;
     // AUTH REQUEST
     // --------------------------------------------------->

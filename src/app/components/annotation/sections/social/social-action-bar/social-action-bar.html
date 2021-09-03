@@ -1,9 +1,9 @@
 <div class="pnd-annotation__social-bar">
-    <ng-container *ngIf="state?.comment">
-        <button class="pnd-annotation__social-bar-action" (click)="toggleComment()">
-            <pnd-svg-icon [data]="{ id: 'comment' }" ></pnd-svg-icon>
+    <ng-container *ngIf="state?.reply">
+        <button class="pnd-annotation__social-bar-action" (click)="toggleReplyForm()">
+            <pnd-svg-icon [data]="{ id: 'reply' }" ></pnd-svg-icon>
         </button>
-        <span>{{state?.comment?.total || 0}}</span>
+        <span>{{state?.reply?.total || 0}}</span>
     </ng-container>
 
     <ng-container *ngIf="state?.like" >
@@ -34,25 +34,25 @@
         <span>{{state?.endorse?.total || 0}}</span>
     </ng-container>
 </div>
-<ng-container *ngIf="state?.comment?.toggleComment">
-    <div class="pnd-annotation__social__comment-textarea-wrapper">
-        <textarea maxlength="1000" name="pnd-new-social-comment" 
+<ng-container *ngIf="state?.reply?.toggleForm">
+    <div class="pnd-annotation__reply-textarea-wrapper">
+        <textarea maxlength="1000" name="pnd-new-reply" 
         id="{{annotationId}}"
-        class="pnd-annotation__social__comment-textarea"
-        [disabled]="!!state?.comment?.form?.isLoading"
-            (input)="onCommentChange($event.target.value)"></textarea>
+        class="pnd-annotation__reply-textarea"
+        [disabled]="!!state?.reply?.form?.isLoading"
+            (input)="onReplyChange($event.target.value)"></textarea>
     </div>
-    <div class="pnd-annotation__social__new-comment-footer">
-        <div class="pnd-annotation__social__new-comment-actions">
-            <ng-container *ngFor="let action of state.comment.form.actions">
+    <div class="pnd-annotation__reply__new-reply-footer">
+        <div class="pnd-annotation__reply__new-reply-actions">
+            <ng-container *ngFor="let action of state.reply.form.actions">
                 <button class="pnd-btn" 
-                (click)="onFormCommentAction(action.source)" 
+                (click)="onReplyFormAction(action.source)" 
                 [ngClass]="{
-                    'is-loading': !!state?.comment?.form?.isLoading && action.source ==='save'
+                    'is-loading': !!state?.reply?.form?.isLoading && action.source ==='save'
                 }"
-                [disabled]="action?.disabled || !!state?.comment?.form?.isLoading">
+                [disabled]="action?.disabled || !!state?.reply?.form?.isLoading">
                     {{ action.label }}
-                    <ng-container *ngIf="!!state?.comment?.form?.isLoading && action.source ==='save'">
+                    <ng-container *ngIf="!!state?.reply?.form?.isLoading && action.source ==='save'">
                         <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
                     </ng-container>
                 </button>

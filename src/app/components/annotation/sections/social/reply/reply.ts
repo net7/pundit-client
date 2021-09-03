@@ -1,29 +1,31 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { _t } from '@n7-frontend/core';
 import {
-  SocialType, AnnotationComment
+  SocialType, Reply
 } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
-import { CommentService } from 'src/app/services/comment.service';
+import { ReplyService } from 'src/app/services/reply.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SocialService } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserData, UserService } from 'src/app/services/user.service';
 
-export type SocialCommentFormState = {
+export type ReplyFormState = {
   value?: string;
   actions?: {label: string; source: string; disabled?: boolean }[];
   isLoading?: boolean;
 }
 
+export type ReplyType = 'Reply';
+
 @Component({
-  selector: 'pnd-social-comment',
-  templateUrl: './social-comment.html'
+  selector: 'pnd-annotation-reply',
+  templateUrl: './reply.html'
 })
-export class SocialCommentComponent implements OnInit {
-  @Input() public data: AnnotationComment
+export class ReplyComponent implements OnInit {
+  @Input() public data: Reply
 
   @Input() public annotationId: string;
 
@@ -37,13 +39,13 @@ export class SocialCommentComponent implements OnInit {
 
   public activeMenu;
 
-  public formState: SocialCommentFormState;
+  public formState: ReplyFormState;
 
   public userData;
 
   constructor(
     private userService: UserService,
-    private commentService: CommentService,
+    private replyService: ReplyService,
     private socialService: SocialService,
     private toastService: ToastService,
     public imageDataService: ImageDataService
@@ -58,17 +60,17 @@ export class SocialCommentComponent implements OnInit {
     this.userData = this.getUserData(this.data.userId);
   }
 
-  private resetFormState = (newComment: string) => {
-    const isValidComment = (comment: string): boolean => comment && comment.length > 3;
+  private resetFormState = (newReply: string) => {
+    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
     return {
-      value: newComment,
+      value: newReply,
       actions: [{
-        label: _t('social#comment-save'),
+        label: _t('social#reply-save'),
         source: 'save',
-        disabled: !isValidComment(newComment) && this.data.comment !== newComment,
+        disabled: !isValidReply(newReply) && this.data.comment !== newReply,
       },
       {
-        label: _t('social#comment-cancel'),
+        label: _t('social#reply-cancel'),
         source: 'cancel',
       }]
     };
@@ -83,7 +85,7 @@ export class SocialCommentComponent implements OnInit {
           id: 'ellipsis-v',
           payload: {
             id: this.annotationId,
-            source: 'social-comment-menu-header',
+            source: 'reply-menu-header',
           },
         },
         actions
@@ -92,14 +94,14 @@ export class SocialCommentComponent implements OnInit {
   }
 
   private createActionButtons= (id) => [{
-    label: _t('social#comment_edit'),
+    label: _t('social#reply_edit'),
     payload: {
       id,
       source: 'action-edit',
     },
   },
   {
-    label: _t('social#comment_delete'),
+    label: _t('social#reply_delete'),
     payload: {
       id,
       source: 'action-delete',
@@ -116,9 +118,9 @@ export class SocialCommentComponent implements OnInit {
       this.delete();
       this.activeMenu = null;
     } else if (source === 'action-edit') {
-      this.activeMenu = 'edit-comment';
+      this.activeMenu = 'edit-reply';
       this.checkFocus();
-    } else if (source === 'social-comment-menu-header' && !this.activeMenu) {
+    } else if (source === 'reply-menu-header' && !this.activeMenu) {
       this.activeMenu = 'display-menu';
     } else {
       this.activeMenu = null;
@@ -130,11 +132,11 @@ export class SocialCommentComponent implements OnInit {
       return;
     }
     this.formState.isLoading = true;
-    this.commentService.remove(this.data.id)
+    this.replyService.remove(this.data.id)
       .pipe(catchError(() => {
         this.toastService.error({
-          title: _t('toast#social_commentdelete_error_title'),
-          text: _t('toast#social_commentedelete_error_text'),
+          title: _t('toast#annotation_reply_delete_error_title'),
+          text: _t('toast#annotation_reply_edelete_error_text'),
         });
         this.formState.isLoading = false;
         return EMPTY;
@@ -143,8 +145,8 @@ export class SocialCommentComponent implements OnInit {
         if (response) {
           this.toastService.success(
             {
-              title: _t('toast#social_commentdelete_success_title'),
-              text: _t('toast#social_commentdelete_success_text'),
+              title: _t('toast#annotation_reply_delete_success_title'),
+              text: _t('toast#annotation_reply_delete_success_text'),
             }
           );
         }
@@ -152,7 +154,7 @@ export class SocialCommentComponent implements OnInit {
       });
   }
 
-  onCommentChange(payload) {
+  onReplyChange(payload) {
     this.formState = this.resetFormState(payload);
   }
 
@@ -165,13 +167,13 @@ export class SocialCommentComponent implements OnInit {
         return;
       }
       this.formState.isLoading = true;
-      this.commentService.update(this.data.id,
+      this.replyService.update(this.data.id,
         {
           userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value
         }).pipe(catchError(() => {
         this.toastService.error({
-          title: _t('toast#social_commentedit_error_title'),
-          text: _t('toast#social_commentedit_error_text'),
+          title: _t('toast#annotation_reply_edit_error_title'),
+          text: _t('toast#annotation_reply_edit_error_text'),
         });
 
         this.formState.isLoading = false;
@@ -181,8 +183,8 @@ export class SocialCommentComponent implements OnInit {
         if (response) {
           this.toastService.success(
             {
-              title: _t('toast#social_commentedit_success_title'),
-              text: _t('toast#social_commentedit_success_text'),
+              title: _t('toast#annotation_reply_edit_success_title'),
+              text: _t('toast#annotation_reply_edit_success_text'),
             }
           );
         }
@@ -202,7 +204,7 @@ export class SocialCommentComponent implements OnInit {
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.data.id}.pnd-annotation__social__comment-textarea`) as HTMLTextAreaElement;
+    return shadowRoot.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 
   private getUserData(userId: string) {

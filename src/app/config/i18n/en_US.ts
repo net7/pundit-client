@@ -87,24 +87,24 @@ export default {
   'toast#verify_email_success_title': 'Email sent!',
   'toast#verify_email_success_text':
     'We have sent a verification email to { mail }',
-  'toast#social_commentsave_success_title': 'Comment created',
-  'toast#social_commentsave_success_text':
-    'Your comment was correctly saved.',
-  'toast#social_commentedit_success_title': 'Comment edited',
-  'toast#social_commentedit_success_text':
-    'Your comment was edited correctly.',
-  'toast#social_commentsave_error_title': 'Oops! Something went wrong',
-  'toast#social_commentsave_error_text':
-      "Pundit couldn't save your comment, please try again later.",
-  'toast#social_commentedit_error_title': 'Oops! Something went wrong',
-  'toast#social_commentedit_error_text':
-          "Pundit couldn't edit your comment, please try again later.",
-  'toast#social_commentdelete_success_title': 'Comment deleted',
-  'toast#social_commentdelete_success_text':
-    'Your comment was deleted correctly.',
-  'toast#social_commentdelete_error_title': 'Oops! Something went wrong',
-  'toast#social_commentdelete_error_text':
-          "Pundit couldn't delete your comment, please try again later.",
+  'toast#annotation_reply_save_success_title': 'Reply created',
+  'toast#annotation_reply_save_success_text':
+    'Your reply was correctly saved.',
+  'toast#annotation_reply_edit_success_title': 'Reply edited',
+  'toast#annotation_reply_edit_success_text':
+    'Your reply was edited correctly.',
+  'toast#annotation_reply_save_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_save_error_text':
+      "Pundit couldn't save your reply, please try again later.",
+  'toast#annotation_reply_edit_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_edit_error_text':
+          "Pundit couldn't edit your reply, please try again later.",
+  'toast#annotation_reply_delete_success_title': 'Reply deleted',
+  'toast#annotation_reply_delete_success_text':
+    'Your reply was deleted correctly.',
+  'toast#annotation_reply_delete_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_delete_error_text':
+          "Pundit couldn't delete your reply, please try again later.",
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
@@ -115,10 +115,10 @@ export default {
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // social
-  'social#comment-save': 'Save',
-  'social#comment-cancel': 'Cancel',
-  'social#comment_edit': 'Edit',
-  'social#comment_delete': 'Delete',
+  'social#reply-save': 'Save',
+  'social#reply-cancel': 'Cancel',
+  'social#reply_edit': 'Edit',
+  'social#reply_delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',

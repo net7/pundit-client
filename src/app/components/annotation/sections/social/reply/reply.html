@@ -1,5 +1,5 @@
-<ng-container *ngIf="activeMenu !== 'edit-comment'">
-    <div class="pnd-annotation__header" *ngIf="activeMenu !== 'edit-comment'">
+<ng-container *ngIf="activeMenu !== 'edit-reply'">
+    <div class="pnd-annotation__header" *ngIf="activeMenu !== 'edit-reply'">
         <div class="pnd-annotation__header-thumb-wrapper">
             <span class="pnd-annotation__header-initials">{{ userData.initials }}</span>
             <img [src]="(imageDataService.images[userData.image]?.data | async) || userData.image"
@@ -34,16 +34,16 @@
     </div>
 </ng-container>
 
-<div *ngIf="activeMenu === 'edit-comment'">
-    <div class="pnd-annotation__social__comment-textarea-wrapper">
-        <textarea maxlength="1000" name="pnd-new-social-comment" 
+<div *ngIf="activeMenu === 'edit-reply'">
+    <div class="pnd-annotation__reply-textarea-wrapper">
+        <textarea maxlength="1000" name="pnd-new-social-reply" 
         id="{{data.id}}" 
         [disabled]="!!formState?.isLoading"
-        class="pnd-annotation__social__comment-textarea"
-        (input)="onCommentChange($event.target.value)">{{data.comment}}</textarea>
+        class="pnd-annotation__reply-textarea"
+        (input)="onReplyChange($event.target.value)">{{data.comment}}</textarea>
     </div>
-    <div class="pnd-annotation__social__new-comment-footer">
-        <div class="pnd-annotation__social__new-comment-actions">
+    <div class="pnd-annotation__reply__edit-reply-footer">
+        <div class="pnd-annotation__reply__edit-reply-actions">
             <ng-container *ngFor="let action of formState?.actions">
                 <button class="pnd-btn" 
                 (click)="onEditFormAction(action.source)" 

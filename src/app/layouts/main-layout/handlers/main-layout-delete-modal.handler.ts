@@ -73,7 +73,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
     return this.layoutDS.annotationService.remove(deleteId).pipe(
       tap(() => {
         this.layoutDS.socialService.removeCachedAndStats(deleteId);
-        this.layoutDS.commentService.removeCachedByAnnotationId(deleteId);
+        this.layoutDS.replyService.removeCachedByAnnotationId(deleteId);
         this.layoutDS.anchorService.remove(deleteId);
       })
     );

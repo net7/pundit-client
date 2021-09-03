@@ -6,12 +6,12 @@ import {
   ChangeDetectorRef, Component, Input, OnInit
 } from '@angular/core';
 import {
-  Annotation, AnnotationComment, Tag
+  Annotation, Reply, Tag
 } from '@pundit/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { AnnotationState } from 'src/app/services/annotation.service';
-import { CommentService } from 'src/app/services/comment.service';
+import { ReplyService } from 'src/app/services/reply.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SocialService } from 'src/app/services/social.service';
 import { Icon, SemanticItem } from '../../types';
@@ -116,18 +116,18 @@ export class AnnotationComponent implements OnInit {
 
   public socials$: Observable<any>;
 
-  public comments$: Observable<AnnotationComment[]>;
+  public replies$: Observable<Reply[]>;
 
   constructor(
     private ref: ChangeDetectorRef,
     public imageDataService: ImageDataService,
     public socialService: SocialService,
-    public commentService: CommentService
+    public replyService: ReplyService
   ) { }
 
   ngOnInit() {
     this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId);
-    this.comments$ = this.commentService.getCommentsByAnnotationId$(this.annotationId);
+    this.replies$ = this.replyService.getRepliesByAnnotationId$(this.annotationId);
   }
 
   onContainerClick(payload) {

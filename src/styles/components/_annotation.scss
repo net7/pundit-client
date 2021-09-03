@@ -402,17 +402,17 @@ annotation {
         }
     }
 
-    &__social__comment-textarea-wrapper {
+    &__reply-textarea-wrapper {
         line-height: 20px;
     }
 
-    &__social__comment-textarea {
+    &__reply-textarea {
         width: 100%;
         height: $space*20;
         resize: none;
     }
 
-    &__social__new-comment-footer {
+    &__reply__new-reply-footer {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -423,7 +423,18 @@ annotation {
         }
     }
 
-    &__social__new-comment-actions {
+    &__reply__edit-reply-footer {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: $space*2;
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
+    }
+
+    &__reply__new-reply-actions {
         flex-grow: 0;
         flex-shrink: 0;
         text-align: right;
