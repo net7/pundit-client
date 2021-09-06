@@ -14,7 +14,7 @@ Pundit as a service is divided in a couple repositories:
 
 - Pundit Client (that you are currently viewing)
 - [Pundit Communication](https://github.com/net7/pundit-communication)
-  - this is where the networking is handled, and provides an api for the client to get annotations
+  - this is where the networking is handled, and provides an api for the client to manage annotations, notebooks and authentication.
 - [Pundit Anchoring](https://github.com/net7/pundit-anchoring)
   - this repo hosts the anchoring logic, this manages how each annotation is anchored to the web page
 
