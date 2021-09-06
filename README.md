@@ -13,13 +13,13 @@ The app is built using the shadow-root in order to maximize the compatibility wi
 Pundit as a service is divided in a couple repositories:
 
 - Pundit Client (that you are currently viewing)
-- Pundit Communication
+- [Pundit Communication](https://github.com/net7/pundit-communication)
   - this is where the networking is handled, and provides an api for the client to get annotations
-- Pundit Anchoring
+- [Pundit Anchoring](https://github.com/net7/pundit-anchoring)
   - this repo hosts the anchoring logic, this manages how each annotation is anchored to the web page
 
 In this repository you will find:
-- **app**: the main folder where the majority of the client's code is located. For a detailed view of the app folder, refer to the readme document in src/app.
+- **app**: the main folder where the majority of the client's code is located. For a detailed view of the app folder, [refer to the readme document in src/app](./src/app/README.md).
 - **chrome-ext**: files included only when building the client for the chrome extension / web-store.
 - **common**: this folder contains the shared files that are compiled both into the chrome extension and into the embedded versions.
 - **environments**: files with the parameters needed to build each of the various environments (chrome-ext prod/stage, embedded prod/stage, local)
