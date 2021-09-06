@@ -13,10 +13,8 @@ The app is built using the shadow-root in order to maximize the compatibility wi
 Pundit as a service is divided in a couple repositories:
 
 - Pundit Client (that you are currently viewing)
-- [Pundit Communication](https://github.com/net7/pundit-communication)
-  - this is where the networking is handled, and provides an api for the client to manage annotations, notebooks and authentication.
-- [Pundit Anchoring](https://github.com/net7/pundit-anchoring)
-  - this repo hosts the anchoring logic, this manages how each annotation is anchored to the web page
+- [Pundit Communication](https://github.com/net7/pundit-communication): this is where the networking is handled, and provides an api for the client to manage annotations, notebooks and authentication.
+- [Pundit Anchoring](https://github.com/net7/pundit-anchoring): this repo hosts the anchoring logic, this manages how each annotation is anchored to the web page
 
 In this repository you will find:
 - **app**: the main folder where the majority of the client's code is located. For a detailed view of the app folder, [refer to the readme document in src/app](./src/app/README.md).
