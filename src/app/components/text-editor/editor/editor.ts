@@ -8,7 +8,7 @@ import { _t } from '@n7-frontend/core';
 import getDefaultPlugins from './plugins';
 import editorConfig from './editor.config';
 import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-editor-menu/text-editor-menu';
-import { isLinkActive, isNodeActive } from './helpers';
+import { isMarkActive, isNodeActive } from './helpers';
 
 class Editor {
   private editorView;
@@ -164,7 +164,7 @@ class Editor {
 
     if (button.id === 'link') {
       const { state, dispatch } = this.editorView;
-      if (isLinkActive(state)) {
+      if (this.isLinkActive()) {
         const markType = this.schema.marks.link;
         toggleMark(markType)(state, dispatch);
       } else {
@@ -244,20 +244,15 @@ class Editor {
       }
       return $from.marks().map((mark) => mark.type.name);
     }
-    const { $head } = this.editorView.state.selection;
-    const { $anchor } = this.editorView.state.selection;
 
     // We're using a Set to not get duplicate values
     const activeMarks = new Set();
 
-    // Here we're getting the marks at the head and anchor of the selection
-    $head.marks().forEach((mark) => activeMarks.add(mark.type.name));
-    $anchor.marks().forEach((mark) => activeMarks.add(mark.type.name));
-
-    // fix link selection active check
-    if (isLinkActive(state)) {
-      activeMarks.add('link');
-    }
+    Object.keys(this.schema.marks).forEach((type) => {
+      if (isMarkActive(state, this.schema.marks[type])) {
+        activeMarks.add(type);
+      }
+    });
 
     return Array.from(activeMarks);
   }
@@ -280,6 +275,12 @@ class Editor {
   private isListActive(type) {
     const { state } = this.editorView;
     return isNodeActive(state, type);
+  }
+
+  private isLinkActive() {
+    const { state } = this.editorView;
+    const markType = this.schema.marks.link;
+    return isMarkActive(state, markType);
   }
 }
 
