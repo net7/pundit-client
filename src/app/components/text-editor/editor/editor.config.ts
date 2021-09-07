@@ -78,7 +78,7 @@ const customSchema = {
           return {
             href: dom.getAttribute('href'),
             title: dom.getAttribute('title'),
-            target: dom.getAttribute('target')
+            target: '_blank' // force _blank
           };
         }
       }],
@@ -96,7 +96,19 @@ const customSchema = {
 };
 
 const marks = baseSchema.spec.marks.append(customSchema.marks);
-const nodes = baseSchema.spec.nodes.append(customSchema.nodes);
+let nodes = baseSchema.spec.nodes.append(customSchema.nodes);
+
+// clean up unused
+const unusedNodeTypes = [
+  'blockquote',
+  'horizontal_rule',
+  'heading',
+  'code_block',
+  'image'
+];
+unusedNodeTypes.forEach((key) => {
+  nodes = nodes.remove(key);
+});
 
 const schema = new Schema({
   nodes,
