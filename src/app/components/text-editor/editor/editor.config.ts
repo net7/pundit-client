@@ -6,7 +6,7 @@ import * as sl from 'prosemirror-schema-list';
 import ListCommand from './list-command';
 
 const buttons = [
-  ['strong', 'em', 'underline', 'strike'],
+  ['strong', 'em', 'underline', 'strike', 'code'],
   ['ul', 'ol'],
   ['link']
 ];
@@ -16,6 +16,7 @@ const labels = {
   em: 'texteditor#italic',
   underline: 'texteditor#underline',
   strike: 'texteditor#strikethrough',
+  code: 'texteditor#code',
   ul: 'texteditor#ul',
   ol: 'texteditor#ol',
   link: 'texteditor#link'
@@ -123,6 +124,7 @@ const commands = {
   em: toggleMark(schema.marks.em),
   underline: toggleMark(schema.marks.underline),
   strike: toggleMark(schema.marks.strike),
+  code: toggleMark(schema.marks.code),
   ul: ulCommand.toggle(),
   ol: olCommand.toggle(),
   link: null, // command manually triggered
