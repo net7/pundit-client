@@ -78,17 +78,18 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
     }
 
     this.data.changed$.next({
-      value: html,
+      value: textValue ? html : null,
       errors,
       id: this.id,
     });
   }
 
   private onReset = () => {
-    // FIXME: set editor content
-    // const { initialValue } = this.data;
-    // this.getTextAreaEl().value = initialValue;
-    this.checkFocus();
+    const { initialValue } = this.data;
+    setTimeout(() => {
+      editor.setContent(initialValue);
+      this.checkFocus();
+    });
   }
 
   private checkFocus = () => {

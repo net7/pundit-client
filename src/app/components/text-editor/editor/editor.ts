@@ -79,6 +79,30 @@ class Editor {
     };
   }
 
+  // source: https://github.com/sibiraj-s/ngx-editor
+  public setContent(html: string) {
+    const { state } = this.editorView;
+    const { tr, doc, schema } = state;
+
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    const docJson = DOMParser.fromSchema(schema).parse(el).toJSON();
+    const newDoc = schema.nodeFromJSON(docJson);
+
+    tr.replaceWith(0, state.doc.content.size, newDoc);
+
+    // don't emit if both content is same
+    if (doc.eq(tr.doc)) {
+      return;
+    }
+
+    if (!tr.docChanged) {
+      return;
+    }
+
+    this.editorView.dispatch(tr);
+  }
+
   private loadMenu() {
     const { buttons, labels, commands } = editorConfig.menu;
     this.menu = {
