@@ -254,6 +254,11 @@ class Editor {
     $head.marks().forEach((mark) => activeMarks.add(mark.type.name));
     $anchor.marks().forEach((mark) => activeMarks.add(mark.type.name));
 
+    // fix link selection active check
+    if (isLinkActive(state)) {
+      activeMarks.add('link');
+    }
+
     return Array.from(activeMarks);
   }
 
