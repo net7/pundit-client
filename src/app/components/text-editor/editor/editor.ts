@@ -22,7 +22,14 @@ class Editor {
     payload: any;
   }> = new Subject();
 
-  public init(target: HTMLElement, appendTo: HTMLElement) {
+  public init(
+    { target, appendTo, onChange }:
+    {
+      target: HTMLElement;
+      appendTo: HTMLElement;
+      onChange: (content: object) => void;
+    }
+  ) {
     // menu
     this.loadMenu();
 
@@ -42,6 +49,9 @@ class Editor {
         const newState = this.editorView.state.apply(transaction);
         this.editorView.updateState(newState);
         this.updateMenuState();
+
+        // send changes
+        onChange(this.getContent());
       }
     });
 
@@ -49,15 +59,24 @@ class Editor {
     this.listen();
   }
 
+  public focus() {
+    if (this.editorView) {
+      this.editorView.focus();
+    }
+  }
+
   public getMenu = () => this.menu;
 
   // source: https://github.com/PierBover/prosemirror-cookbook
-  public getHTML() {
+  public getContent() {
     const { state } = this.editorView;
     const fragment = DOMSerializer.fromSchema(state.schema).serializeFragment(state.doc.content);
     const div = document.createElement('div');
     div.appendChild(fragment);
-    return div.innerHTML;
+    return {
+      html: div.innerHTML,
+      text: div.innerText
+    };
   }
 
   private loadMenu() {

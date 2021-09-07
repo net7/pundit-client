@@ -3,22 +3,8 @@
  *
  * Style for edit modal text editor.
  */
-
-.editor-demo {
-    position: fixed;
-    z-index: 10;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: $color-gray-00;
-}
-
 .pnd-text-editor {
-    width: 500px;
-    margin: 100px auto;
+    width: 100%;
     background-color: $color-gray-00;
     border: 1px solid $color-gray-03;
     border-radius: $border-radius;

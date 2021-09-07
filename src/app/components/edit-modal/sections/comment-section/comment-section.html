@@ -2,22 +2,7 @@
     <div class="pnd-edit-modal__comment-label">
         {{ data.options.label }}
     </div>
-    <!-- <div class="pnd-edit-modal__comment-textarea-wrapper">
-        <textarea 
-        maxlength="1000"
-        name="pnd-edit-comment" 
-        class="pnd-edit-modal__comment-textarea"
-        (keydown)="onKeyEvent($event)"
-        (keypress)="onKeyEvent($event)"
-        (keyup)="onKeyEvent($event)"
-        (input)="onChange($event.target.value)">{{ data.initialValue || '' }}</textarea>
-    </div> -->
-
-    <div class="pnd-text-editor">
-        <div class="pnd-text-editor__menu"></div>
-        <div class="pnd-text-editor__content">
-            <h3>Simple editor</h3>
-            <p>With a very crude menu bar.</p>
-        </div>
+    <div class="pnd-edit-modal__comment-editor">
+        <pnd-text-editor [data]="editorData"></pnd-text-editor>
     </div>
 </div>
