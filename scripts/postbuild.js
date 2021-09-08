@@ -24,6 +24,7 @@ if (['chrome-ext-stage', 'chrome-ext-prod'].includes(context)) {
     'assets',
     'background.bundle.js',
     'content.bundle.js',
+    'manifest.json'
   ];
   buildExt(context, basePath);
 }
