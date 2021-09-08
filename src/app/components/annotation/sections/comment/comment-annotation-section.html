@@ -1,6 +1,7 @@
 <ng-container *ngIf="(comment$ | async)?.text as text">
     <div class="pnd-annotation__caret"></div>
     <div class="pnd-annotation__comment">
+        <span class="pnd-annotation__comment-plain-text">{{ htmlToPlainText(text) }}</span>
         <span class="pnd-annotation__comment-text" [innerHTML]="text"></span>
     </div>
 </ng-container>

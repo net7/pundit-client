@@ -271,6 +271,12 @@ annotation {
         box-sizing: border-box;
         font-size: $font-size-s;
     }
+
+    .pnd-annotation__comment-plain-text {
+        display: none;
+        box-sizing: border-box;
+        font-size: $font-size-s;
+    }
 }
 
 
@@ -523,7 +529,7 @@ annotation {
     align-items: center;
     cursor: pointer;
 
-    .pnd-annotation__highlight {
+    pnd-highlight-annotation-section {
         max-width: calc( 100% - #{$space} );
         padding: 0 $space/2 0 $space;
     }
@@ -549,11 +555,15 @@ annotation {
 .pnd-annotation.is-collapsed.has-comment {
     justify-content: space-between;
 
-    .pnd-annotation__highlight {
+    pnd-highlight-annotation-section, .pnd-annotation__highlight {
         max-width: calc( 50% - 9px );
     }
 
-    .pnd-annotation__comment {
+    .pnd-annotation__highlight {
+        max-width: 100%;
+    }
+
+    pnd-comment-annotation-section, .pnd-annotation__comment {
         display: flex;
         align-items: center;
         width: calc( 50% - 12px );
@@ -561,7 +571,16 @@ annotation {
         line-height: 20px;
     }
 
+    .pnd-annotation__comment {
+        width: 100%;
+    }
+
     .pnd-annotation__comment-text {
+        display: none;
+    }
+
+    .pnd-annotation__comment-plain-text {
+        display: block;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
