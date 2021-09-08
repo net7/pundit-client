@@ -17,6 +17,13 @@ export enum CrossMsgRequestId {
   AnnotationRemove = 'annotation.remove',
   AnnotationSearch = 'annotation.search',
   AnnotationUpdate = 'annotation.update',
+  // social
+  SocialCreate = 'social.create',
+  SocialRemove = 'social.remove',
+  // reply
+  ReplyCreate = 'reply.create',
+  ReplyRemove = 'reply.remove',
+  ReplyUpdate = 'reply.update',
   // auth
   AuthLogin = 'auth.login',
   AuthLogout = 'auth.logout',

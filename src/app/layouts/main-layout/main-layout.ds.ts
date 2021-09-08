@@ -21,6 +21,8 @@ import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { SocialService } from 'src/app/services/social.service';
+import { ReplyService } from 'src/app/services/reply.service';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -42,6 +44,10 @@ export class MainLayoutDS extends LayoutDataSource {
   public annotationService: AnnotationService;
 
   public tagService: TagService;
+
+  public socialService: SocialService;
+
+  public replyService: ReplyService;
 
   public semanticPredicateService: SemanticPredicateService;
 
@@ -74,6 +80,8 @@ export class MainLayoutDS extends LayoutDataSource {
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
     this.tagService = payload.tagService;
+    this.socialService = payload.socialService;
+    this.replyService = payload.replyService;
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
@@ -244,11 +252,15 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private handleSearchResponse(searchData) {
-    const { users, annotations, notebooks } = searchData;
+    const {
+      users, annotations, notebooks, socials, replies
+    } = searchData;
     // update notebooks
     this.notebookService.load(notebooks);
     // load order matters
     this.userService.load(users);
+    this.socialService.load(socials);
+    this.replyService.load(replies);
     this.annotationService.load(annotations);
     this.anchorService.load(annotations);
     // signal
@@ -262,6 +274,8 @@ export class MainLayoutDS extends LayoutDataSource {
     const annotationIds = annotations.map(({ id }) => id);
     const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);
     difference(annotationConfigIds, annotationIds).forEach((annotationId) => {
+      this.socialService.removeCachedAndStats(annotationId);
+      this.replyService.removeCachedByAnnotationId(annotationId);
       this.annotationService.removeCached(annotationId);
       this.anchorService.remove(annotationId);
     });

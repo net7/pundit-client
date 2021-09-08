@@ -87,6 +87,24 @@ export default {
   'toast#verify_email_success_title': 'Email sent!',
   'toast#verify_email_success_text':
     'We have sent a verification email to { mail }',
+  'toast#annotation_reply_save_success_title': 'Reply created',
+  'toast#annotation_reply_save_success_text':
+    'Your reply was correctly saved.',
+  'toast#annotation_reply_edit_success_title': 'Reply edited',
+  'toast#annotation_reply_edit_success_text':
+    'Your reply was edited correctly.',
+  'toast#annotation_reply_save_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_save_error_text':
+      "Pundit couldn't save your reply, please try again later.",
+  'toast#annotation_reply_edit_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_edit_error_text':
+          "Pundit couldn't edit your reply, please try again later.",
+  'toast#annotation_reply_delete_success_title': 'Reply deleted',
+  'toast#annotation_reply_delete_success_text':
+    'Your reply was deleted correctly.',
+  'toast#annotation_reply_delete_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_delete_error_text':
+          "Pundit couldn't delete your reply, please try again later.",
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
@@ -96,6 +114,11 @@ export default {
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
+  // social
+  'social#reply-save': 'Save',
+  'social#reply-cancel': 'Cancel',
+  'social#reply_edit': 'Edit',
+  'social#reply_delete': 'Delete',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',

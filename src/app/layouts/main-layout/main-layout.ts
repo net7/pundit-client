@@ -7,8 +7,10 @@ import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { ReplyService } from 'src/app/services/reply.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
+import { SocialService } from 'src/app/services/social.service';
 import { StorageService } from 'src/app/services/storage-service/storage.service';
 import { TagService } from 'src/app/services/tag.service';
 import { ToastService } from 'src/app/services/toast.service';
@@ -36,14 +38,16 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private anchorService: AnchorService,
     private annotationService: AnnotationService,
     private changeDetectorRef: ChangeDetectorRef,
+    private replyService: ReplyService,
     private loginService: PunditLoginService,
     private notebookService: NotebookService,
     private punditLoginService: PunditLoginService,
-    private userService: UserService,
     private storageService: StorageService,
     public toastService: ToastService,
     public tagService: TagService,
+    public socialService: SocialService,
     public semanticPredicateService: SemanticPredicateService,
+    private userService: UserService
   ) {
     super(config);
   }
@@ -53,6 +57,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       anchorService: this.anchorService,
       annotationService: this.annotationService,
       changeDetectorRef: this.changeDetectorRef,
+      replyService: this.replyService,
       appEvent$: this.appEvent$,
       loginService: this.loginService,
       notebookService: this.notebookService,
@@ -61,6 +66,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       storageService: this.storageService,
       toastService: this.toastService,
       tagService: this.tagService,
+      socialService: this.socialService,
       semanticPredicateService: this.semanticPredicateService
     };
   }

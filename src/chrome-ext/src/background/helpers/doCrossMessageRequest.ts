@@ -1,3 +1,4 @@
+import { ReplyModel } from 'src/common/models/reply-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -5,7 +6,8 @@ import {
   AuthModel,
   NotebookModel,
   TagModel,
-  SemanticPredicateModel
+  SemanticPredicateModel,
+  SocialModel
 } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
@@ -45,6 +47,25 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
     case CrossMsgRequestId.AnnotationUpdate:
       request$ = AnnotationModel.update.apply(null, args);
+      break;
+    // SOCIAL REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SocialCreate:
+      request$ = SocialModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.SocialRemove:
+      request$ = SocialModel.remove.apply(null, args);
+      break;
+    // REPLY REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.ReplyCreate:
+      request$ = ReplyModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.ReplyRemove:
+      request$ = ReplyModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.ReplyUpdate:
+      request$ = ReplyModel.update.apply(null, args);
       break;
     // AUTH REQUEST
     // --------------------------------------------------->

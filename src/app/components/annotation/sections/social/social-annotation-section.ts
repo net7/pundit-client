@@ -1,22 +1,22 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Social, User } from '@pundit/communication';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Component, Input } from '@angular/core';
+import { Reply, SocialType } from '@pundit/communication';
+import { Observable } from 'rxjs';
+import { ReplyType } from './reply/reply';
 
 @Component({
   selector: 'pnd-social-annotation-section',
   templateUrl: './social-annotation-section.html'
 })
-export class SocialAnnotationSectionComponent implements OnInit {
-    id = 'social';
+export class SocialAnnotationSectionComponent {
+  id = 'social';
 
-    @Input() public data$: Subject<any>;
+  @Input() public socials$: Observable<any>;
 
-    public social$: Observable<any>;
+  @Input() public replies$: Observable<Reply[]>;
 
-    ngOnInit(): void {
-      this.social$ = this.data$.pipe(map(this.transformData));
-    }
+  @Input() public annotationId: string;
 
-    private transformData = (data: {socials: Social[]; users: User[]}) => data
+  @Input() public emit: any;
+
+  public readonly ACTIONS: (SocialType | ReplyType)[]= ['Like', 'Dislike', 'Report', 'Reply'];
 }
