@@ -143,8 +143,11 @@ export class AnnotationEH extends EventHandler {
       .subscribe((e: PointerEvent) => {
         const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
         // only act if the clicked item is NOT the notebook-selector component
-        if (clickedElement.className && !clickedElement.className
-          .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi)) {
+        if (
+          typeof clickedElement.className === 'string'
+          && !clickedElement.className
+            .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi)
+        ) {
           this.closeAnnotationMenu(annotationID);
           this.onMenuFocusLost.next(true);
         }

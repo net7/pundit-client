@@ -50,6 +50,8 @@ import { SocialActionBarComponent } from './components/annotation/sections/socia
 import { ReplyComponent } from './components/annotation/sections/social/reply/reply';
 import { HeaderAnnotationSectionComponent } from './components/annotation/sections/header/header-annotation-section';
 import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
+import { TextEditorComponent } from './components/text-editor/text-editor';
+import { TextEditorMenuComponent } from './components/text-editor/sections/text-editor-menu/text-editor-menu';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -136,6 +138,8 @@ if (env.chromeExt) {
     ReplyComponent,
     HeaderAnnotationSectionComponent,
     MenuHeaderSectionComponent,
+    TextEditorComponent,
+    TextEditorMenuComponent,
     // PIPES
     SortByPipe,
   ],

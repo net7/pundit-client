@@ -1,0 +1,9 @@
+<div [hidden]="!data" class="pnd-text-editor {{ data?.classes || '' }}">
+    <div class="pnd-text-editor__menu-wrapper">
+        <pnd-text-editor-menu [data]="data?.menu"></pnd-text-editor-menu>
+    </div>
+    <div class="pnd-text-editor__content-wrapper">
+        <div class="pnd-text-editor__view"></div>
+        <div class="pnd-text-editor__content" [innerHTML]="data?.content || ''"></div>
+    </div>
+</div>
