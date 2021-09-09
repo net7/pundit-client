@@ -45,7 +45,7 @@
     <div class="pnd-annotation__reply__edit-reply-footer">
         <div class="pnd-annotation__reply__edit-reply-actions">
             <ng-container *ngFor="let action of formState?.actions">
-                <button class="pnd-btn" 
+                <button class="pnd-btn pnd-btn-s" 
                 (click)="onEditFormAction(action.source)" 
                 [ngClass]="{
                     'is-loading': !!formState?.isLoading && action.source ==='save'

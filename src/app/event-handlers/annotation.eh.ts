@@ -85,6 +85,9 @@ export class AnnotationEH extends EventHandler {
           this.emitOuter(getEventType(type), payload);
           break;
         }
+        case AnnotationEvent.ActionReplyClicked:
+          this.emitOuter(getEventType(type));
+          break;
         default:
           console.warn('unhandled inner event of type', type);
           break;

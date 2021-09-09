@@ -428,16 +428,18 @@ annotation {
     }
 
     &__reply-textarea {
-        width: 100%;
-        height: $space*20;
+        width: calc(100% - 8px);
+        height: 75px;
         resize: none;
+        margin: 0 $space/2;
+        font-size: $font-size-xs;
+        padding: $space;
     }
 
-    &__reply__new-reply-footer {
+    .pnd-annotation__reply__new-reply-footer,
+    .pnd-annotation__reply__edit-reply-footer {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: $space*2;
+        margin: 0 $space/2 $space/2;
 
         .pnd-notebook-selector {
             width: 100%;

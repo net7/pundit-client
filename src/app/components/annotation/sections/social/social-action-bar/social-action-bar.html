@@ -61,7 +61,7 @@
     <div class="pnd-annotation__reply__new-reply-footer">
         <div class="pnd-annotation__reply__new-reply-actions">
             <ng-container *ngFor="let action of state.reply.form.actions">
-                <button class="pnd-btn" 
+                <button class="pnd-btn pnd-btn-s" 
                 (click)="onReplyFormAction(action.source)" 
                 [ngClass]="{
                     'is-loading': !!state?.reply?.form?.isLoading && action.source ==='save'
