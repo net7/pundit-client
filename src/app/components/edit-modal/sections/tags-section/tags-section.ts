@@ -14,6 +14,7 @@ import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { _c } from 'src/app/models/config';
 import { TagService } from 'src/app/services/tag.service';
 import { FormSection, FormSectionData } from 'src/app/types';
+import { customDropdownHide, customShadowRootRender } from './tagify-custom';
 
 export type TagsSectionValue = string[];
 
@@ -78,6 +79,9 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       this.tagifyInputRef.nativeElement,
       tagFormConfig
     );
+    this.formInstance.dropdown.render = customShadowRootRender.bind(this.formInstance);
+    this.formInstance.dropdown.hide = customDropdownHide.bind(this.formInstance);
+
     if (Array.isArray(this.data.initialValue)) {
       this.formInstance.addTags(this.data.initialValue);
     }
@@ -93,57 +97,10 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
         });
       }
     );
-    this.formInstance.on(
-      'blur dropdown:select dropdown:noMatch input',
-      (e: CustomEvent) => {
-        if (e.type === 'input' && e?.detail?.value) {
-          return;
-        }
-        this.tagifyDropdownManualHide();
-      }
-    );
     // suggestion list
     this.tagService.get$().pipe().subscribe((whitelist) => {
       this.formInstance.settings.whitelist = whitelist;
     });
-  }
-
-  // clone of tagify dropdown hide method
-  // to fix shadowroot check
-  // <tagify>/src/parts/dropdown.js:hide( force )
-  private tagifyDropdownManualHide(force = false): any {
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const _instance = this.formInstance;
-    const { scope, dropdown } = _instance.DOM;
-    const isManual = _instance.settings.dropdown.position === 'manual' && !force;
-
-    // if there's no dropdown, this means the dropdown events aren't binded
-    if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
-      return null;
-    }
-
-    window.removeEventListener('resize', _instance.dropdown.position);
-    _instance.dropdown.events.binding.call(_instance, false); // unbind all events
-
-    scope.setAttribute('aria-expanded', false);
-    dropdown.parentNode.removeChild(dropdown);
-
-    setTimeout(() => {
-      _instance.state.dropdown.visible = false;
-    }, 100);
-
-    _instance.state.dropdown.query = null;
-    _instance.state.ddItemData = null;
-    _instance.state.ddItemElm = null;
-    _instance.state.selection = null;
-
-    if (_instance.state.tag && _instance.state.tag.value.length) {
-      _instance.state.flaggedTags[_instance.state.tag.baseOffset] = _instance.state.tag;
-    }
-
-    _instance.trigger('dropdown:hide', dropdown);
-
-    return _instance;
   }
 
   private transformTag = (tagData) => {
