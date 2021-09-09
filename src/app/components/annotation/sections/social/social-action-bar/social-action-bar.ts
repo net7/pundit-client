@@ -59,6 +59,17 @@ export class SocialActionBarComponent implements OnInit {
 
   public state: SocialBarState;
 
+  public labels = {
+    reply: _t('social#reply'),
+    like: _t('social#like'),
+    dislike: _t('social#dislike'),
+    report: _t('social#report'),
+    endorse: _t('social#endorse'),
+    removeAction: (action: string) => _t('social#remove_action', {
+      action: action.toLowerCase()
+    })
+  };
+
   constructor(
     private userService: UserService,
     private punditLoginService: PunditLoginService,

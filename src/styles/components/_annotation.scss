@@ -270,6 +270,23 @@ annotation {
         display: block;
         box-sizing: border-box;
         font-size: $font-size-s;
+
+        p, ol, ul {
+            margin: 0 0 $space;
+        }
+
+        ol, ul {
+            padding: 0 0 0 $space*4;
+        }
+
+        code {
+            padding: $space/4 $space/2;
+            font-size: 90%;
+            background-color: $color-gray-01;
+            color: lighten($color-gray-05, 30%);
+            border-radius: 4px;
+        }
+
     }
 
     .pnd-annotation__comment-plain-text {
@@ -367,45 +384,43 @@ annotation {
 \* ------------------------------------ */
 .pnd-annotation {
     &__social {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        // margin: $space;
-        padding: $space;
-        border-bottom: 1px solid $annotation-border-color;
+        text-align: left;
     }
 
     &__social-bar {
-        flex-grow: 0;
-        flex-shrink: 0;
-        display: flex;
-        position: relative;
-    }
-
-    &__social-bar-action {
         display: flex;
         align-items: center;
-        justify-content: center;
-        width: 24px;
-        height: 24px;
-        margin-left: $space/2;
-        border-radius: $border-radius;
-        border: 1px solid $color-border-normal;
-        background-color: $color-background-light;
-        cursor: pointer;
-        color: $color-text-light;
-        font-size: $font-size-s;
-        transition: color $transition-durations;
-        
+        justify-content: flex-end;
+        border-top: 1px solid $color-gray-03;
+    }
+
+    a.pnd-annotation__social-bar-action {
+        margin: $space/2;
+        color: $color-gray-04;
         .pnd-svg-icon, .pnd-svg-icon svg {
-            width: $font-size-s;
-            height: $font-size-s;
+            width: $font-size-xxs;
+            height: $font-size-xxs;
+        }
+        
+        &:hover, &.is-active {
+            cursor: pointer;
+            color: $color-text-link;
         }
 
-        &:hover {
-            color: $color-text-link;
-            border: 1px solid $color-text-link;
+        .pnd-svg-icon {
+            margin-right: $space/2;
+            svg {
+                height: 14px;
+            }
         }
+    }
+    
+    &__social-bar-action:hover {
+        margin-right: $space/2;
+    }
+
+    &__social-bar-action > span {
+        font-size: $font-size-xxs;
     }
 
     &__reply-textarea-wrapper {

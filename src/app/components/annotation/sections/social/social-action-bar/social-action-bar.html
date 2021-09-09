@@ -1,47 +1,52 @@
 <div class="pnd-annotation__social-bar">
     <ng-container *ngIf="state?.reply">
-        <button class="pnd-annotation__social-bar-action"
+        <a class="pnd-annotation__social-bar-action"
+        [title]="labels.reply"
         [ngClass]="{'is-active': state?.reply?.madeByUser }"
         (click)="toggleReplyForm()">
             <pnd-svg-icon [data]="{ id: 'reply' }" ></pnd-svg-icon>
-        </button>
-        <span>{{state?.reply?.total || 0}}</span>
+            <span>{{state?.reply?.total || 0}}</span>
+        </a>
     </ng-container>
 
     <ng-container *ngIf="state?.like" >
-        <button class="pnd-annotation__social-bar-action" 
+        <a class="pnd-annotation__social-bar-action"
+        [title]="state?.like?.madeByUser ? labels.removeAction(labels.like) : labels.like" 
         [ngClass]="{'is-active': state?.like?.madeByUser }"
         (click)="doAction('Like')">
             <pnd-svg-icon [data]="{ id: 'like' }"></pnd-svg-icon>
-        </button>
-        <span>{{state?.like?.total || 0}}</span>
+            <span>{{state?.like?.total || 0}}</span>
+        </a>
     </ng-container>
 
     <ng-container *ngIf="state?.dislike as dislike">
-        <button class="pnd-annotation__social-bar-action"  
+        <a class="pnd-annotation__social-bar-action" 
+        [title]="state?.dislike?.madeByUser ? labels.removeAction(labels.dislike) : labels.dislike"
         [ngClass]="{'is-active': state?.dislike?.madeByUser }"
         (click)="doAction('Dislike')">
             <pnd-svg-icon [data]="{ id: 'dislike' }"></pnd-svg-icon>
-        </button>
-        <span>{{state?.dislike?.total || 0}}</span>
+            <span>{{state?.dislike?.total || 0}}</span>
+        </a>
     </ng-container>
 
     <ng-container *ngIf="state?.report">
-        <button class="pnd-annotation__social-bar-action" 
+        <a class="pnd-annotation__social-bar-action" 
+        [title]="state?.report?.madeByUser ? labels.removeAction(labels.report) : labels.report"
         [ngClass]="{'is-active': state?.report?.madeByUser }"
         (click)="doAction('Report')">
             <pnd-svg-icon [data]="{ id: 'report' }"></pnd-svg-icon>
-        </button>
-        <span>{{state?.report.total || 0}}</span>
+            <span>{{state?.report.total || 0}}</span>
+        </a>
     </ng-container>
 
     <ng-container *ngIf="state?.endorse">
-        <button class="pnd-annotation__social-bar-action" 
+        <a class="pnd-annotation__social-bar-action" 
+        [title]="state?.endorse?.madeByUser ? labels.removeAction(labels.endorse) : labels.endorse"
         [ngClass]="{'is-active': state?.endorse?.madeByUser }"
         (click)="doAction('Endorse')">
             <pnd-svg-icon [data]="{ id: 'endorse' }"></pnd-svg-icon>
-        </button>
-        <span>{{state?.endorse?.total || 0}}</span>
+            <span>{{state?.endorse?.total || 0}}</span>
+        </a>
     </ng-container>
 </div>
 <ng-container *ngIf="state?.reply?.toggleForm">

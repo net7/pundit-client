@@ -115,6 +115,12 @@ export default {
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
   // social
+  'social#reply': 'Reply',
+  'social#like': 'Like',
+  'social#dislike': 'Dislike',
+  'social#report': 'Report',
+  'social#endorse': 'Endorse',
+  'social#remove_action': 'Remove { action }',
   'social#reply-save': 'Save',
   'social#reply-cancel': 'Cancel',
   'social#reply_edit': 'Edit',
