@@ -380,7 +380,7 @@ annotation {
 }
 
 /* ------------------------------------ *\
-   #SOCIAL-bar
+   #SOCIAL-BAR
 \* ------------------------------------ */
 .pnd-annotation {
     &__social {
@@ -422,14 +422,21 @@ annotation {
     &__social-bar-action > span {
         font-size: $font-size-xxs;
     }
+}
 
+
+/* ------------------------------------ *\
+   #SOCIAL-REPLY
+\* ------------------------------------ */
+.pnd-annotation {
     &__reply-textarea-wrapper {
-        line-height: 20px;
+        border-top: 1px solid $color-gray-03;
+        padding: $space 0 $space/2;
     }
 
     &__reply-textarea {
         width: calc(100% - 8px);
-        height: 75px;
+        height: 100px;
         resize: none;
         margin: 0 $space/2;
         font-size: $font-size-xs;
@@ -439,38 +446,65 @@ annotation {
     .pnd-annotation__reply__new-reply-footer,
     .pnd-annotation__reply__edit-reply-footer {
         display: flex;
-        margin: 0 $space/2 $space/2;
+        justify-content: flex-end;
+        margin: 0 $space/2 $space;
 
         .pnd-notebook-selector {
             width: 100%;
         }
-    }
 
-    &__reply__edit-reply-footer {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: $space*2;
-
-        .pnd-notebook-selector {
-            width: 100%;
+        .pnd-btn {
+            width: 70px;
         }
     }
 
-    &__reply__new-reply-actions {
-        flex-grow: 0;
-        flex-shrink: 0;
-        text-align: right;
-        
+    .pnd-annotation__reply__new-reply-actions,
+    .pnd-annotation__reply__edit-reply-actions {
         .pnd-btn:last-child {
             margin-left: $space/2;
         }
     }
 
-   
+    pnd-annotation-reply {
+        .pnd-annotation__header {
+            padding-left: $space*2;
+            align-items: initial;
+            border-bottom: 0;
+            border-top: 1px solid $color-gray-03;
+        }
+
+        .pnd-annotation__header-thumb-wrapper,
+        .pnd-annotation__header-initials,
+        .pnd-annotation__header-thumb-image {
+            height: 24px;
+            width: 24px;
+        }
+
+        a .pnd-annotation__header-name,
+        .pnd-annotation__header-name {
+            font-size: $font-size-xs;
+            line-height: 14px;
+            margin-bottom: 0;
+            margin-right: $space/2;
+        }
+
+        .pnd-annotation__header-reply {
+            font-size: $font-size-xs;
+            line-height: 14px;
+            color: $color-gray-04;
+            margin-bottom: 0;
+        }
+
+        .pnd-annotation__social-bar {
+            margin-left: $space*2;
+            border-top: 1px solid $color-gray-02;
+        }
+
+        .pnd-annotation__menu-dropdown {
+            right: 0;
+        }
+    }
 }
-
-
 
 /* ------------------------------------ *\
    #EXPANDED-ANNOTATION

@@ -113,14 +113,16 @@ export class SocialActionBarComponent implements OnInit {
     const isValidReply = (reply: string): boolean => reply && reply.length > 3;
     return {
       value: newReply,
+      placeholder: _t('social#reply_placeholder'),
       actions: [{
-        label: _t('social#reply-save'),
+        label: _t('social#reply_cancel'),
+        source: 'cancel',
+        classes: 'pnd-btn-light'
+      }, {
+        label: _t('social#reply_save'),
         source: 'save',
         disabled: !isValidReply(newReply),
-      },
-      {
-        label: _t('social#reply-cancel'),
-        source: 'cancel',
+        classes: 'pnd-btn-cta'
       }],
       isLoading: false
     };

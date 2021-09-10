@@ -55,19 +55,22 @@
         name="pnd-new-reply" 
         id="{{annotationId}}"
         class="pnd-annotation__reply-textarea"
+        [placeholder]="state.reply.form.placeholder"
         [disabled]="!!state?.reply?.form?.isLoading"
             (input)="onReplyChange($event.target.value)"></textarea>
     </div>
     <div class="pnd-annotation__reply__new-reply-footer">
         <div class="pnd-annotation__reply__new-reply-actions">
             <ng-container *ngFor="let action of state.reply.form.actions">
-                <button class="pnd-btn pnd-btn-s" 
+                <button class="pnd-btn {{ action.classes || '' }}" 
                 (click)="onReplyFormAction(action.source)" 
                 [ngClass]="{
                     'is-loading': !!state?.reply?.form?.isLoading && action.source ==='save'
                 }"
                 [disabled]="action?.disabled || !!state?.reply?.form?.isLoading">
-                    {{ action.label }}
+                    <ng-container *ngIf="action.source !=='save' || !state?.reply?.form?.isLoading">
+                        {{ action.label }}
+                    </ng-container>
                     <ng-container *ngIf="!!state?.reply?.form?.isLoading && action.source ==='save'">
                         <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
                     </ng-container>

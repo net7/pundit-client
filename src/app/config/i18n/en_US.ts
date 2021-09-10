@@ -121,10 +121,11 @@ export default {
   'social#report': 'Report',
   'social#endorse': 'Endorse',
   'social#remove_action': 'Remove { action }',
-  'social#reply-save': 'Save',
-  'social#reply-cancel': 'Cancel',
+  'social#reply_save': 'Reply',
+  'social#reply_cancel': 'Cancel',
   'social#reply_edit': 'Edit',
   'social#reply_delete': 'Delete',
+  'social#reply_placeholder': 'Reply to the annotation...',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',
