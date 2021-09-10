@@ -6,6 +6,7 @@ import {
 } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import { AnnotationEvent, getEventType } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { ReplyService } from 'src/app/services/reply.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
@@ -59,6 +60,17 @@ export class SocialActionBarComponent implements OnInit {
 
   public state: SocialBarState;
 
+  public labels = {
+    reply: _t('social#reply'),
+    like: _t('social#like'),
+    dislike: _t('social#dislike'),
+    report: _t('social#report'),
+    endorse: _t('social#endorse'),
+    removeAction: (action: string) => _t('social#remove_action', {
+      action: action.toLowerCase()
+    })
+  };
+
   constructor(
     private userService: UserService,
     private punditLoginService: PunditLoginService,
@@ -101,14 +113,16 @@ export class SocialActionBarComponent implements OnInit {
     const isValidReply = (reply: string): boolean => reply && reply.length > 3;
     return {
       value: newReply,
+      placeholder: _t('social#reply_placeholder'),
       actions: [{
-        label: _t('social#reply-save'),
+        label: _t('social#reply_cancel'),
+        source: 'cancel',
+        classes: 'pnd-btn-light'
+      }, {
+        label: _t('social#reply_save'),
         source: 'save',
         disabled: !isValidReply(newReply),
-      },
-      {
-        label: _t('social#reply-cancel'),
-        source: 'cancel',
+        classes: 'pnd-btn-cta'
       }],
       isLoading: false
     };
@@ -179,6 +193,9 @@ export class SocialActionBarComponent implements OnInit {
     this.state.reply.toggleForm = !this.state.reply.toggleForm;
     this.checkFocus();
     this.state.reply.form = this.resetFormState();
+
+    // emit signal
+    this.emit(getEventType(AnnotationEvent.ActionReplyClicked));
   }
 
   private like() {

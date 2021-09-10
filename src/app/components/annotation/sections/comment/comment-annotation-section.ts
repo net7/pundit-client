@@ -18,6 +18,13 @@ export class CommentAnnotationSectionComponent implements OnInit {
     this.comment$ = this.data$.pipe(map(this.transformData));
   }
 
+  public htmlToPlainText(html: string) {
+    const el: HTMLElement = document.createElement('div');
+    el.innerHTML = html;
+
+    return el.textContent || el.innerText || '';
+  }
+
   private transformData = (annotation: Annotation): any => {
     if (annotation.type !== 'Commenting') return {};
     const { comment: text } = annotation?.content;

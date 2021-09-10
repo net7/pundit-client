@@ -9,4 +9,5 @@ export enum AnnotationEvent {
   MouseLeave = 'annotation.mouseleave',
   ToggleCollapsed = 'annotation.togglecollapsed',
   UpdateNotebook = 'annotation.option',
+  ActionReplyClicked = 'annotation.actionreplyclicked',
 }

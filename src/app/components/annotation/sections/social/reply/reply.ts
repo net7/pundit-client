@@ -14,7 +14,13 @@ import { UserData, UserService } from 'src/app/services/user.service';
 
 export type ReplyFormState = {
   value?: string;
-  actions?: {label: string; source: string; disabled?: boolean }[];
+  placeholder?: string;
+  actions?: {
+    label: string;
+    source: string;
+    disabled?: boolean;
+    classes?: string;
+  }[];
   isLoading?: boolean;
 }
 
@@ -64,14 +70,16 @@ export class ReplyComponent implements OnInit {
     const isValidReply = (reply: string): boolean => reply && reply.length > 3;
     return {
       value: newReply,
+      placeholder: _t('social#reply_placeholder'),
       actions: [{
-        label: _t('social#reply-save'),
+        label: _t('social#reply_cancel'),
+        source: 'cancel',
+        classes: 'pnd-btn-light'
+      }, {
+        label: _t('social#reply_edit'),
         source: 'save',
         disabled: !isValidReply(newReply) && this.data.comment !== newReply,
-      },
-      {
-        label: _t('social#reply-cancel'),
-        source: 'cancel',
+        classes: 'pnd-btn-cta'
       }]
     };
   }
@@ -136,7 +144,7 @@ export class ReplyComponent implements OnInit {
       .pipe(catchError(() => {
         this.toastService.error({
           title: _t('toast#annotation_reply_delete_error_title'),
-          text: _t('toast#annotation_reply_edelete_error_text'),
+          text: _t('toast#annotation_reply_delete_error_text'),
         });
         this.formState.isLoading = false;
         return EMPTY;
