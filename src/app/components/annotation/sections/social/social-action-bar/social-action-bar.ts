@@ -147,7 +147,7 @@ export class SocialActionBarComponent implements OnInit {
     const currentUserId = this.userService.whoami()?.id;
     const isReplyFromUser = (c) => c.userId === currentUserId;
     if (this.state?.reply) {
-      const userReplies = !!replies.filter(isReplyFromUser);
+      const userReplies = !!replies.filter(isReplyFromUser).length;
       this.state.reply = {
         ...this.state.reply,
         madeByUser: userReplies,
