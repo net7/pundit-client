@@ -85,7 +85,7 @@ export class AnnotationEH extends EventHandler {
           this.emitOuter(getEventType(type), payload);
           break;
         }
-        case AnnotationEvent.ActionReplyClicked:
+        case AnnotationEvent.ReplyChanged:
           this.emitOuter(getEventType(type));
           break;
         default:

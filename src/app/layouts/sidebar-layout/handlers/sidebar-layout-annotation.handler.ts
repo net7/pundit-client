@@ -90,7 +90,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
             annotationID: payload.annotation
           });
           break;
-        case AnnotationEvent.ActionReplyClicked:
+        case AnnotationEvent.ReplyChanged:
           this.layoutDS.updateAnnotations();
           break;
 

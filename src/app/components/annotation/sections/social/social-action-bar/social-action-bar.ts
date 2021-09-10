@@ -5,7 +5,7 @@ import {
   ReplyAttributes, SocialType
 } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { ReplyService } from 'src/app/services/reply.service';
@@ -195,7 +195,7 @@ export class SocialActionBarComponent implements OnInit {
     this.state.reply.form = this.resetFormState();
 
     // emit signal
-    this.emit(getEventType(AnnotationEvent.ActionReplyClicked));
+    this.emit(getEventType(AnnotationEvent.ReplyChanged));
   }
 
   private like() {
@@ -339,6 +339,10 @@ export class SocialActionBarComponent implements OnInit {
           text: _t('toast#annotation_reply_save_error_text'),
         });
         return EMPTY;
+      }),
+      finalize(() => {
+        // send signal
+        this.emit(getEventType(AnnotationEvent.ReplyChanged));
       })
     ).subscribe(
       () => {

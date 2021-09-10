@@ -4,13 +4,14 @@ import {
   SocialType, Reply
 } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { ReplyService } from 'src/app/services/reply.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SocialService } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserData, UserService } from 'src/app/services/user.service';
+import { AnnotationEvent, getEventType } from 'src/app/event-types';
 
 export type ReplyFormState = {
   value?: string;
@@ -133,6 +134,9 @@ export class ReplyComponent implements OnInit {
     } else {
       this.activeMenu = null;
     }
+
+    // send signal
+    this.emit(getEventType(AnnotationEvent.ReplyChanged));
   }
 
   delete() {
@@ -141,14 +145,20 @@ export class ReplyComponent implements OnInit {
     }
     this.formState.isLoading = true;
     this.replyService.remove(this.data.id)
-      .pipe(catchError(() => {
-        this.toastService.error({
-          title: _t('toast#annotation_reply_delete_error_title'),
-          text: _t('toast#annotation_reply_delete_error_text'),
-        });
-        this.formState.isLoading = false;
-        return EMPTY;
-      }))
+      .pipe(
+        catchError(() => {
+          this.toastService.error({
+            title: _t('toast#annotation_reply_delete_error_title'),
+            text: _t('toast#annotation_reply_delete_error_text'),
+          });
+          this.formState.isLoading = false;
+          return EMPTY;
+        }),
+        finalize(() => {
+          // send signal
+          this.emit(getEventType(AnnotationEvent.ReplyChanged));
+        })
+      )
       .subscribe((response) => {
         if (response) {
           this.toastService.success(
@@ -169,6 +179,9 @@ export class ReplyComponent implements OnInit {
   onEditFormAction(source: string) {
     if (source === 'cancel') {
       this.activeMenu = null;
+
+      // send signal
+      this.emit(getEventType(AnnotationEvent.ReplyChanged));
     } else if (source === 'save') {
       const userId = this.userService.whoami()?.id;
       if (!userId || userId !== this.data.userId || this.formState.isLoading) {
@@ -178,16 +191,22 @@ export class ReplyComponent implements OnInit {
       this.replyService.update(this.data.id,
         {
           userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value
-        }).pipe(catchError(() => {
-        this.toastService.error({
-          title: _t('toast#annotation_reply_edit_error_title'),
-          text: _t('toast#annotation_reply_edit_error_text'),
-        });
+        }).pipe(
+        catchError(() => {
+          this.toastService.error({
+            title: _t('toast#annotation_reply_edit_error_title'),
+            text: _t('toast#annotation_reply_edit_error_text'),
+          });
 
-        this.formState.isLoading = false;
-        this.activeMenu = null;
-        return EMPTY;
-      })).subscribe((response) => {
+          this.formState.isLoading = false;
+          this.activeMenu = null;
+          return EMPTY;
+        }),
+        finalize(() => {
+          // send signal
+          this.emit(getEventType(AnnotationEvent.ReplyChanged));
+        })
+      ).subscribe((response) => {
         if (response) {
           this.toastService.success(
             {
