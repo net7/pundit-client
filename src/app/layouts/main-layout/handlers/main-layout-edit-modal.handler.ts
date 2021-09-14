@@ -39,8 +39,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               this.layoutEH.handleError(e);
               // toast
               this.layoutDS.toastService.error({
-                title: _t('toast#genericerror_error_title'),
-                text: _t('toast#genericerror_error_text'),
+                title: _t('toast#annotationsave_error_title'),
+                text: _t('toast#annotationsave_error_text'),
                 timer: _c('toastTimer'),
                 onLoad: () => {
                   workingToast.close();
@@ -138,8 +138,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
 
     // toast
     this.layoutDS.toastService.error({
-      title: _t('toast#genericerror_error_title'),
-      text: _t('toast#genericerror_error_text'),
+      title: _t('toast#genericerror_title'),
+      text: _t('toast#genericerror_text'),
     });
   }
 
