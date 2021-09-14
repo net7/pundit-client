@@ -1,4 +1,3 @@
-import { ReplyModel } from 'src/common/models/reply-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -7,7 +6,8 @@ import {
   NotebookModel,
   TagModel,
   SemanticPredicateModel,
-  SocialModel
+  SocialModel,
+  ReplyModel
 } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
