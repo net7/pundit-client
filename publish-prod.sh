@@ -80,7 +80,7 @@ node -pe "JSON.parse(require('fs').readFileSync('/dev/stdin'));")
 
 #CHECK UPDATE RESPONSE
 UPDATE_STATUS=$(node -pe "var resp=$UPDATE_RESP; resp.uploadState;")
-if [ UPDATE_STATUS != "SUCCESS" ]
+if [ $UPDATE_STATUS != "SUCCESS" ]
 then
     echo "Error on update item ${CHROME_EXT_DIR}.zip. Authentication failed $UPDATE_RESP"
     exit 1;
@@ -100,8 +100,8 @@ https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarg
 
 
 #CHECK PUBLISH RESPONSE
-PUBLISH_STATUS=$(node -pe "var resp=$PUBLISH_RESPONSE; resp.status.includes('SUCCESS') ? 'SUCCESS' : 'FAIL';")
-if [ PUBLISH_STATUS != "SUCCESS" ]
+PUBLISH_STATUS=$(node -pe "var resp=$PUBLISH_RESPONSE; resp.status.includes('OK') ? 'SUCCESS' : 'FAIL';")
+if [ $PUBLISH_STATUS != "SUCCESS" ]
 then
     echo "Error on publish item ${CHROME_EXT_DIR}.zip.\n$PUBLISH_RESPONSE"
     exit 1;
