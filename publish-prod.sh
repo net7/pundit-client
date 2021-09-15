@@ -1,4 +1,4 @@
-CLIENT_ID='550160987680-ovr8h3lmc1l4cutir9ljl2cn7qthrcvp.apps.googleusercontent.com'
+CLIENT_ID=''
 CLIENT_SECRET=''
 APP_ID="eilojhemeemnpfmailfeiggpgilblaco"
 TOKEN_CODE="";
