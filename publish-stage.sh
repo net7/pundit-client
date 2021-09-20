@@ -89,8 +89,7 @@ fi
 
 #PUBLISH ITEM
 echo "\nPUBLISH STORE ITEM\n"
-PUBLISH_RESPONSE=$(echo "\nPUBLISH STORE ITEM\n"
-curl \
+PUBLISH_RESPONSE=$(curl \
 -H "Authorization: Bearer $ACCESS_TOKEN"  \
 -H "x-goog-api-version: 2" \
 -H "Content-Length: 0" \
