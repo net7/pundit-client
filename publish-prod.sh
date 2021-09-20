@@ -89,8 +89,7 @@ fi
 
 #PUBLISH ITEM
 echo "\nPUBLISH STORE ITEM\n"
-PUBLISH_RESPONSE=$(echo "\nPUBLISH STORE ITEM\n"
-curl \
+PUBLISH_RESPONSE=$(curl \
 -H "Authorization: Bearer $ACCESS_TOKEN"  \
 -H "x-goog-api-version: 2" \
 -H "Content-Length: 0" \
@@ -100,7 +99,7 @@ https://www.googleapis.com/chromewebstore/v1.1/items/$APP_ID/publish?publishTarg
 
 
 #CHECK PUBLISH RESPONSE
-PUBLISH_STATUS=$(node -pe "var resp=$PUBLISH_RESPONSE; resp.status.includes('OK') ? 'SUCCESS' : 'FAIL';")
+PUBLISH_STATUS=$(node -pe "var resp=$PUBLISH_RESPONSE; resp.status && resp.status.includes && resp.status.includes('OK') ? 'SUCCESS' : 'FAIL';")
 if [ $PUBLISH_STATUS != "SUCCESS" ]
 then
     echo "Error on publish item ${CHROME_EXT_DIR}.zip.\n$PUBLISH_RESPONSE"
