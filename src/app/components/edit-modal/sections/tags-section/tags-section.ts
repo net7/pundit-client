@@ -71,7 +71,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
         enabled: 1,
         fuzzySearch: false,
         position: 'all',
-        caseSensitive: true,
+        caseSensitive: false,
         appendTarget: targetRef
       }
     };
