@@ -195,8 +195,8 @@ export class SocialService implements OnInit {
         return EMPTY;
       }),
       tap(({ data }) => {
-        if (!data) {
-          this.removeCachedAndStats(params.annotationId, data.id);
+        if (data?.id) {
+          this.removeCached(data.id);
         }
       })
     );
