@@ -4,7 +4,8 @@ import {
   BehaviorSubject, EMPTY, from, Observable
 } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { SocialModel } from 'src/common/models';
+import { AnalyticsModel, SocialModel } from 'src/common/models';
+import { AnalyticsAction } from 'src/common/types';
 import { UserService } from './user.service';
 
 export type SocialStats = {
@@ -164,6 +165,18 @@ export class SocialService implements OnInit {
             id, requestPayload
           );
           this.addToCache(newSocial);
+
+          // analytics
+          const actionMap = {
+            Like: AnalyticsAction.SocialLike,
+            Dislike: AnalyticsAction.SocialDislike,
+            Report: AnalyticsAction.SocialReport,
+          };
+          if (actionMap[attributes.type]) {
+            AnalyticsModel.track({
+              action: actionMap[attributes.type]
+            });
+          }
         }
       })
     );

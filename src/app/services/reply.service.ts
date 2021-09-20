@@ -4,7 +4,9 @@ import {
 } from '@pundit/communication';
 import { BehaviorSubject, from } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
+import { AnalyticsModel } from 'src/common/models';
 import { ReplyModel } from 'src/common/models/reply-model';
+import { AnalyticsAction } from 'src/common/types';
 import { SocialService } from './social.service';
 import { UserService } from './user.service';
 
@@ -38,6 +40,11 @@ export class ReplyService {
           id, requestPayload
         );
         this.add(newReply);
+
+        // analytics
+        AnalyticsModel.track({
+          action: AnalyticsAction.SocialComment
+        });
       })
     );
   }

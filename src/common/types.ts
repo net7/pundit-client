@@ -105,4 +105,9 @@ export enum AnalyticsAction {
   AccessGoogleCompleted = 'access-google-completed',
   AccessFacebookCompleted = 'access-facebook-completed',
   AccessEgiCompleted = 'access-egi-completed',
+  // social
+  SocialLike = 'social-like',
+  SocialDislike = 'social-dislike',
+  SocialReport = 'social-report',
+  SocialComment = 'social-comment',
 }

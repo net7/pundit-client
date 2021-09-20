@@ -48,6 +48,10 @@ analytics.init([
       AnalyticsAction.AccessGoogleCompleted,
       AnalyticsAction.AccessFacebookCompleted,
       AnalyticsAction.AccessEgiCompleted,
+      AnalyticsAction.SocialLike,
+      AnalyticsAction.SocialDislike,
+      AnalyticsAction.SocialReport,
+      AnalyticsAction.SocialComment,
     ]
   }
 ]);
