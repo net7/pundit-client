@@ -104,6 +104,8 @@ if [ $PUBLISH_STATUS != "SUCCESS" ]
 then
     echo "Error on publish item ${CHROME_EXT_DIR}.zip.\n$PUBLISH_RESPONSE"
     exit 1;
+else
+    echo "${CHROME_EXT_DIR} published!"
 fi
 
 exit 0;
