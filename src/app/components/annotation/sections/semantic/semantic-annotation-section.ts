@@ -34,19 +34,8 @@ export class SemanticAnnotationSectionComponent implements OnInit {
 
   private getPredicate = (triple: SemanticTripleType): any => ({ label: triple?.predicate?.label });
 
-  private getObject = (triple: SemanticTripleType): any => {
-    if (triple?.objectType === 'literal') {
-      return {
-        label: triple?.object?.text,
-      };
-    } if (triple?.objectType === 'uri' && triple?.object.source === 'free-text') {
-      return {
-        label: triple?.object?.uri,
-      };
-    }
-    //  else if (triple.objectType === "object") {
-    //   // TODO
-    // }
-    return {};
-  };
+  private getObject = (triple: SemanticTripleType): any => ({
+    type: triple.objectType,
+    ...triple.object
+  })
 }
