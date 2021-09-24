@@ -121,6 +121,8 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     const hasComment = annotation.type === 'Commenting';
     const hasTags = annotation.tags?.length;
     const hasSemantic = annotation.type === 'Linking';
+    // TODO REMOVE AFTER SEMANTIC IMPLEMENTATION
+    const avoidEdit = this.blockEditAction(annotation);
     const currentUser = this.userService.whoami();
     const currentUserNotebooks = currentUser
       ? this.notebookService.getByUserId(currentUser.id)
@@ -129,7 +131,8 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       id,
       hasComment,
       hasTags,
-      hasSemantic
+      hasSemantic,
+      avoidEdit
     );
     return this.isCurrentUser(user)
       ? {
@@ -162,7 +165,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       : null;
   }
 
-  private createActionButtons(id: string, hasComment, hasTags, hasSemantic) {
+  private createActionButtons(id: string, hasComment, hasTags, hasSemanticLiteral, avoidEdit) {
     const actions = [
       {
         label: _t('annotation#changenotebook'),
@@ -173,15 +176,18 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       },
     ];
 
-    // annotation types actions logic
-    if (hasComment) {
-      actions.push(this.getActionButton(id, 'comment', 'edit'));
-    } else if (hasSemantic) {
-      actions.push(this.getActionButton(id, 'semantic', 'edit'));
-    } else {
-      actions.push(this.getActionButton(id, 'comment', 'add'));
-      actions.push(this.getActionButton(id, 'semantic', 'add'));
-      actions.push(this.getActionButton(id, 'tags', hasTags ? 'edit' : 'add'));
+    // TODO REMOVE AFTER SEMANTIC MODAL IMPLEMENTATION
+    if (!avoidEdit) {
+      // annotation types actions logic
+      if (hasComment) {
+        actions.push(this.getActionButton(id, 'comment', 'edit'));
+      } else if (hasSemanticLiteral) {
+        actions.push(this.getActionButton(id, 'semantic', 'edit'));
+      } else {
+        actions.push(this.getActionButton(id, 'comment', 'add'));
+        actions.push(this.getActionButton(id, 'semantic', 'add'));
+        actions.push(this.getActionButton(id, 'tags', hasTags ? 'edit' : 'add'));
+      }
     }
 
     // and delete action
@@ -232,4 +238,13 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     // trigger change detector
     this.ref.detectChanges();
   };
+
+  private blockEditAction(annotation: Annotation) {
+    if (annotation.type !== 'Linking') {
+      return false;
+    }
+    const triples = annotation.content;
+    const objectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
+    return !!objectUri;
+  }
 }
