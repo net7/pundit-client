@@ -287,7 +287,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   private removePageAnnotation(searchData: {annotations: Annotation[]}) {
     const { annotations } = searchData;
-    const data = annotations.filter((a) => !!a?.subject?.selected?.textPositionSelector);
+    const data = annotations.filter((a) => !!a?.subject?.selected);
     searchData.annotations = data;
   }
 }
