@@ -21,9 +21,9 @@
                                     onerror="this.style.display='none'" class="pnd-annotation__header-thumb-image" >
                             </span>
                             <div class="pnd-annotation__header-info">
-                                <div class="pnd-annotation__header-name">
+                                <div >
                                     <a [href]="triple.object?.uri" target="_blank">
-                                        <div class="pnd-icon-arrow-right">{{triple.object?.label}}</div>
+                                        <div class="pnd-annotation__header-name" >{{triple.object?.label}}</div>
                                     </a>
                                 </div>
                                 <ng-container *ngIf="triple.object?.rdfTypes?.length">

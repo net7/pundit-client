@@ -366,8 +366,11 @@ annotation {
 
         .pnd-annotation__header-thumb-wrapper,
         .pnd-annotation__header-thumb-image {
-            max-height: 30px;
-            max-width: 30px;
+            margin: 2px;
+            max-height: 40px;
+            max-width: 40px;
+            width: 40px;
+            height: 40px;
         }
 
         .pnd-annotation__header-name__header-info {
@@ -378,15 +381,14 @@ annotation {
 
         a .pnd-annotation__header-name,
         .pnd-annotation__header-name {
-            font-size: $font-size-s;
+            font-size: $font-size-m;
             font-weight: $font-weight-bold;
-            margin-bottom: 0;
-            margin-right: $space/2;
+            margin: 5px 8px;
+            text-decoration: none;
         }
 
-        .pnd-annotation-header-types {
-            margin-top: 2px;
-            border-top: 1px solid #dddddd;
+        .pnd-annotation__header-types {
+            margin: 6px;
         }
 
         a .pnd-annotation__header-type,
@@ -410,6 +412,7 @@ annotation {
             border-image: initial;
             list-style: none;
             border-radius: 3px;
+            text-decoration: none;
         }
 
         &__description {
