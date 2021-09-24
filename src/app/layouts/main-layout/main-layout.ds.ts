@@ -96,6 +96,8 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(AnnotationModel.search(uri, true)).pipe(
       tap((response) => {
         const { data: searchData } = response;
+        // TODO REMOVE AFTER FIX
+        this.removePageAnnotation(searchData);
         // remove private annotations
         this.removePrivateAnnotations(searchData);
         // handle response
@@ -110,6 +112,8 @@ export class MainLayoutDS extends LayoutDataSource {
     const uri = getDocumentHref();
     return from(AnnotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
+        // TODO REMOVE AFTER FIX
+        this.removePageAnnotation(searchData);
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);
       })
@@ -279,6 +283,12 @@ export class MainLayoutDS extends LayoutDataSource {
       this.annotationService.removeCached(annotationId);
       this.anchorService.remove(annotationId);
     });
+  }
+
+  private removePageAnnotation(searchData: {annotations: Annotation[]}) {
+    const { annotations } = searchData;
+    const data = annotations.filter((a) => !!a?.subject?.selected?.textPositionSelector);
+    searchData.annotations = data;
   }
 }
 

@@ -357,6 +357,66 @@ annotation {
         margin-top: -$space;
         background-color: $color-gray-01;
         border-top: $annotation-border-size solid $annotation-border-color;
+
+        .pnd-annotation__header {
+            padding: 0px $space;
+            align-items: initial;
+            border-bottom: 0;
+        }
+
+        .pnd-annotation__header-thumb-wrapper,
+        .pnd-annotation__header-thumb-image {
+            max-height: 30px;
+            max-width: 30px;
+        }
+
+        .pnd-annotation__header-name__header-info {
+            margin-right: auto;
+            padding-right: 8px;
+            overflow: hidden;
+        }
+
+        a .pnd-annotation__header-name,
+        .pnd-annotation__header-name {
+            font-size: $font-size-s;
+            font-weight: $font-weight-bold;
+            margin-bottom: 0;
+            margin-right: $space/2;
+        }
+
+        .pnd-annotation-header-types {
+            margin-top: 2px;
+            border-top: 1px solid #dddddd;
+        }
+
+        a .pnd-annotation__header-type,
+        .pnd-annotation__header-type {
+            margin: 2px;
+            padding: 2px 3px;
+            display: inline-block;
+            height: 10px;
+            background-color: rgb(232, 235, 237);
+            color: rgb(127, 133, 140);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: $font-size-xxs;
+            text-transform: uppercase;
+            text-shadow: white 0px 1px 0px;
+            box-shadow: $color-gray-05 0px 1px 2px;
+            overflow: hidden;
+            border-width: 1px;
+            border-style: solid;
+            border-color: $color-gray-03;
+            border-image: initial;
+            list-style: none;
+            border-radius: 3px;
+        }
+
+        &__description {
+            padding: 0px $space ;
+            align-items: initial;
+            border-bottom: 0px;
+        }
     }
 }
 

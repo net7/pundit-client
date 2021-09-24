@@ -4,10 +4,6 @@
         <div class="pnd-annotation__semantic-item-predicate">
             {{ triple?.predicate?.label }}
         </div>
-        
-        <div class="pnd-annotation__semantic-item-object">
-            {{ triple?.object?.label }}
-        </div>
 
         <ng-container [ngSwitch]="triple.object?.type">
             <ng-container *ngSwitchCase="'literal'">
@@ -18,12 +14,36 @@
 
             <ng-container *ngSwitchCase="'uri'">
                 <ng-container *ngIf="triple.object?.source === 'search'; else freeBlock">
-
-
-                    
+                    <div class="pnd-annotation__semantic-item-object ">
+                        <div class="pnd-annotation__header">
+                            <span class="pnd-annotation__header-thumb-wrapper">
+                                <img [src]="(imageDataService.images[triple.object?.depiction]?.data | async) || triple.object?.depiction"
+                                    onerror="this.style.display='none'" class="pnd-annotation__header-thumb-image" >
+                            </span>
+                            <div class="pnd-annotation__header-info">
+                                <div class="pnd-annotation__header-name">
+                                    <a [href]="triple.object?.uri" target="_blank">
+                                        <div class="pnd-icon-arrow-right">{{triple.object?.label}}</div>
+                                    </a>
+                                </div>
+                                <ng-container *ngIf="triple.object?.rdfTypes?.length">
+                                    <div class="pnd-annotation__header-types">
+                                        <a [href]="rdfType.uri" class="pnd-annotation__header-type" *ngFor="let rdfType of triple.object?.rdfTypes">
+                                            <span  >
+                                                {{ rdfType.label }}
+                                            </span>
+                                        </a>
+                                    </div>
+                                </ng-container>
+                            </div>
+                        </div>
+                        <div class="pnd-annotation__semantic-item-object__description">
+                                {{triple.object?.description}}
+                        </div>
+                    </div>
                 </ng-container>
-               
-                <ng-template  #freeBlock>
+
+                <ng-template #freeBlock>
                     <div class="pnd-annotation__semantic-item-object">
                         {{ triple.object?.uri }}
                     </div>

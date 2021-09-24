@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ImageDataService } from 'src/app/services/image-data.service';
 
 @Component({
   selector: 'pnd-semantic-annotation-section',
@@ -13,6 +14,9 @@ export class SemanticAnnotationSectionComponent implements OnInit {
   @Input() public data$: Subject<Annotation>;
 
   public semantic$: Observable<any>;
+
+  constructor(public imageDataService: ImageDataService) {
+  }
 
   ngOnInit(): void {
     this.semantic$ = this.data$.pipe(map(this.transformData));
