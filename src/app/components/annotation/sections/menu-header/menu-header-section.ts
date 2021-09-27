@@ -239,12 +239,14 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     this.ref.detectChanges();
   };
 
+  // TODO REMOVE AFTER SEMANTIC ANNOTATION IMPLEMENTATION
   private blockEditAction(annotation: Annotation) {
     if (annotation.type !== 'Linking') {
       return false;
     }
     const triples = annotation.content;
-    const objectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
-    return !!objectUri;
+    const hasObjectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
+    const hasDate = triples.find((t) => t.objectType === 'date');
+    return !!hasObjectUri || !!hasDate;
   }
 }

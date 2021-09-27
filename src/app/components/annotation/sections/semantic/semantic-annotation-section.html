@@ -52,7 +52,7 @@
 
             <ng-container *ngSwitchCase="'date'">
                 <div class="pnd-annotation__semantic-item-object">
-                    {{ triple.object?.label }}
+                    {{ triple.object?.date | date:'M/d/yy, h:mm a' }}
                 </div>
             </ng-container>
         </ng-container>
