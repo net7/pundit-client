@@ -1,6 +1,8 @@
+import { TextPosition, TextRange } from '../text-range';
+import { getPageTextContent } from './getPageContext';
 import { getPageView } from './getPageView';
-import { RenderingStates } from '../pdfjs-rendering-states';
-import { TextPosition, TextRange } from './text-range';
+import { createPlaceholder } from './placeholder';
+import { RenderingStates } from './types';
 
 /**
  * Locate the DOM Range which a position selector refers to.
@@ -16,8 +18,13 @@ import { TextPosition, TextRange } from './text-range';
  * @param {number} end - Character offset within the page's text
  * @return {Promise<Range>}
  */
-export async function anchorByPosition(pageIndex, start, end) {
-  const page = await getPageView(pageIndex);
+export async function anchorByPosition(
+  pageIndex: number, start: number, end: number
+): Promise<Range> {
+  const [page, pageText] = await Promise.all([
+    getPageView(pageIndex),
+    getPageTextContent(pageIndex),
+  ]);
 
   if (
     page.renderingState === RenderingStates.FINISHED
@@ -26,6 +33,17 @@ export async function anchorByPosition(pageIndex, start, end) {
   ) {
     // The page has been rendered. Locate the position in the text layer.
     const root = page.textLayer.textLayerDiv;
+
+    // Do a sanity check to verify that the page text extracted by `getPageTextContent`
+    // matches the transparent text layer.
+    //
+    // See https://github.com/hypothesis/client/issues/3674.
+    if (pageText !== root.textContent) {
+      console.warn(
+        'PDF text layer content does not match page text. This will cause anchoring misalignment.'
+      );
+    }
+
     const startPos = new TextPosition(root, start);
     const endPos = new TextPosition(root, end);
     return new TextRange(startPos, endPos).toRange();
@@ -33,13 +51,7 @@ export async function anchorByPosition(pageIndex, start, end) {
 
   // The page has not been rendered yet. Create a placeholder element and
   // anchor to that instead.
-  let placeholder = page.div.querySelector('.annotator-placeholder');
-  if (!placeholder) {
-    placeholder = document.createElement('span');
-    placeholder.classList.add('annotator-placeholder');
-    placeholder.textContent = 'Loading annotations…';
-    page.div.appendChild(placeholder);
-  }
+  const placeholder = createPlaceholder(page.div);
   const range = document.createRange();
   range.setStartBefore(placeholder);
   range.setEndAfter(placeholder);

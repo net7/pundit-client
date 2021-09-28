@@ -1,4 +1,5 @@
 import { getPdfViewer } from './getPdfViewer';
+import { PDFPageView } from './types';
 
 /**
  * Returns the view into which a PDF page is drawn.
@@ -10,7 +11,7 @@ import { getPdfViewer } from './getPdfViewer';
  * @param {number} pageIndex
  * @return {Promise<PDFPageView>}
  */
-export async function getPageView(pageIndex) {
+export async function getPageView(pageIndex: number): Promise<PDFPageView> {
   const pdfViewer = getPdfViewer();
   let pageView = pdfViewer.getPageView(pageIndex);
 
@@ -42,5 +43,5 @@ export async function getPageView(pageIndex) {
     });
   }
 
-  return /** @type {PDFPageView} */ (pageView);
+  return pageView;
 }

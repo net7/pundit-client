@@ -4,7 +4,7 @@
  * @param {Node|Element} node
  * @return {Element|null}
  */
-export function getNodeTextLayer(node) {
+export function getNodeTextLayer(node: Node): Node {
   const el = 'closest' in node ? node : node.parentElement;
-  return el?.closest('.textLayer') ?? null;
+  return (el as Element)?.closest('.textLayer') ?? null;
 }

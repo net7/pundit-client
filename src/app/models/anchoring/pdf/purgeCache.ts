@@ -1,5 +1,4 @@
-import { PageTextCache } from './pageTextCache';
-import { QuotePositionCache } from './quotePositionCache';
+import { pageTextCache, quotePositionCache } from './state';
 
 /**
  * Clear this module's internal caches.
@@ -7,6 +6,6 @@ import { QuotePositionCache } from './quotePositionCache';
  * This exists mainly as a helper for use in tests.
  */
 export function purgeCache() {
-  PageTextCache.data = {};
-  QuotePositionCache.data = {};
+  pageTextCache.clear();
+  quotePositionCache.clear();
 }

@@ -1,8 +1,9 @@
 import { TextQuoteAnchor } from '../anchors';
-import { TextPosition, TextRange } from './text-range';
 import { getNodeTextLayer } from './getNodeTextLayer';
 import { getPageOffset } from './getPageOffset';
 import { getSiblingIndex } from './getSiblingIndex';
+import { SelectorWithType, TextPositionSelectorWithType } from '../types';
+import { TextPosition, TextRange } from '../text-range';
 
 /**
  * Convert a DOM Range object into a set of selectors.
@@ -15,18 +16,18 @@ import { getSiblingIndex } from './getSiblingIndex';
  * @param {Range} range
  * @return {Promise<Selector[]>}
  */
-export async function describe(root, range) {
+export async function describe(root: HTMLElement, range: Range): Promise<SelectorWithType[]> {
+  let currentRange;
   // "Shrink" the range so that the start and endpoints are at offsets within
   // text nodes rather than any containing nodes.
   try {
-    // eslint-disable-next-line no-param-reassign
-    range = TextRange.fromRange(range).toRange();
+    currentRange = TextRange.fromRange(range).toRange();
   } catch {
     throw new Error('Selection does not contain text');
   }
 
-  const startTextLayer = getNodeTextLayer(range.startContainer);
-  const endTextLayer = getNodeTextLayer(range.endContainer);
+  const startTextLayer = getNodeTextLayer(currentRange.startContainer);
+  const endTextLayer = getNodeTextLayer(currentRange.endContainer);
 
   if (!startTextLayer || !endTextLayer) {
     throw new Error('Selection is outside page text');
@@ -37,28 +38,27 @@ export async function describe(root, range) {
   }
 
   const startPos = TextPosition.fromPoint(
-    range.startContainer,
-    range.startOffset
+    currentRange.startContainer,
+    currentRange.startOffset
   ).relativeTo(startTextLayer);
 
   const endPos = TextPosition.fromPoint(
-    range.endContainer,
-    range.endOffset
+    currentRange.endContainer,
+    currentRange.endOffset
   ).relativeTo(endTextLayer);
 
   const startPageIndex = getSiblingIndex(
-    /** @type {Node} */(startTextLayer.parentNode)
+    startTextLayer.parentNode
   );
   const pageOffset = await getPageOffset(startPageIndex);
 
-  /** @type {TextPositionSelector} */
-  const position = {
+  const position: TextPositionSelectorWithType = {
     type: 'TextPositionSelector',
     start: pageOffset + startPos.offset,
     end: pageOffset + endPos.offset,
   };
 
-  const quote = TextQuoteAnchor.fromRange(root, range).toSelector();
+  const quote = TextQuoteAnchor.fromRange(root, currentRange).toSelector();
 
   return [position, quote];
 }

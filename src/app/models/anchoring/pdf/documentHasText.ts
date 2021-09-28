@@ -4,7 +4,7 @@ import { getPdfViewer } from './getPdfViewer';
 /**
  * Return true if the document has selectable text.
  */
-export async function documentHasText() {
+export async function documentHasText(): Promise<boolean> {
   const viewer = getPdfViewer();
   let hasText = false;
   for (let i = 0; i < viewer.pagesCount; i += 1) {

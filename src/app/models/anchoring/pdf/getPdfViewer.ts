@@ -1,3 +1,5 @@
+import { PDFViewer, PDFViewerApplication as PDFViewerApp } from './types';
+
 declare let PDFViewerApplication;
 
 /**
@@ -5,6 +7,6 @@ declare let PDFViewerApplication;
  *
  * @return {PDFViewer}
  */
-export function getPdfViewer() {
-  return PDFViewerApplication.pdfViewer;
+export function getPdfViewer(): PDFViewer {
+  return (PDFViewerApplication as PDFViewerApp).pdfViewer;
 }

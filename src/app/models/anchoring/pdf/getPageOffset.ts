@@ -1,23 +1,23 @@
-import { getPageTextContent } from './getPageContext';
+import { getPageTextContent } from './getPageTextContent';
+import { getPdfViewer } from './getPdfViewer';
 
 /**
- * Return the offset in the text for the whole document at which the text for
- * `pageIndex` begins.
+ * Find the offset within the document's text at which a page begins.
  *
  * @param {number} pageIndex
- * @return {Promise<number>} - Character position at which page text starts
+ * @return {Promise<number>} - Offset of page's text within document text
  */
-export function getPageOffset(pageIndex) {
-  let index = -1;
-
-  const next = (offset) => {
-    index += 1;
-    if (index === pageIndex) {
-      return Promise.resolve(offset);
-    }
-
-    return getPageTextContent(index).then((textContent) => next(offset + textContent.length));
-  };
-
-  return next(0);
+export async function getPageOffset(pageIndex: number): Promise<number> {
+  const viewer = getPdfViewer();
+  if (pageIndex >= viewer.pagesCount) {
+    /* istanbul ignore next - This should never be triggered */
+    throw new Error('Invalid page index');
+  }
+  let offset = 0;
+  for (let i = 0; i < pageIndex; i += 1) {
+    // eslint-disable-next-line no-await-in-loop
+    const text = await getPageTextContent(i);
+    offset += text.length;
+  }
+  return offset;
 }
