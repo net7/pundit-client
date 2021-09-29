@@ -52,15 +52,22 @@
                 </ul>
             </div>
         </ng-container>
-        <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
-            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
-               (click)="lb.eventHandler.emitInner('notebookpanel')">
-                <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
+        <div  class="pnd-sidebar__actions">
+            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.annotationService.showPageAnnotations$ | async) ? 'is-active' : ''}}" 
+            (click)="lb.eventHandler.emitInner('pageannotationpanel')">
+                <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
             </a>
-            <a class="pnd-sidebar__action pnd-sidebar__close-button"
-               (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
-            </a>
+            <ng-container *ngIf="ds.userService.logged$ | async">
+                <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
+                (click)="lb.eventHandler.emitInner('notebookpanel')">
+                 <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
+             </a>
+             <a class="pnd-sidebar__action pnd-sidebar__close-button"
+                (click)="lb.eventHandler.emitInner('sidebarclose')">
+                 <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
+             </a>
+            </ng-container>
+        
         </div>
     </div>
     <!-- END // Header -->

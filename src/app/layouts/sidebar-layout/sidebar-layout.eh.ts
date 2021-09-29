@@ -73,6 +73,15 @@ export class SidebarLayoutEH extends EventHandler {
             this.dataSource.notebookEditor.next(!state);
           }
           break;
+        case SidebarLayoutEvent.ClickPageAnnotationPanel:
+          {
+            const state = this.annotationService.showPageAnnotations$.getValue();
+            this.annotationService.showPageAnnotations$.next(!state);
+            this.appEvent$.next({
+              type: AppEvent.ShowPageAnnotations,
+            });
+          }
+          break;
         case SidebarLayoutEvent.Close:
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);

@@ -19,7 +19,8 @@ export class HighlightAnnotationSectionComponent implements OnInit {
   }
 
   private transformData = (annotation: Annotation): any => {
-    const { text } = annotation?.subject?.selected;
+    const { subject } = annotation;
+    const text = subject?.selected?.text || subject?.pageTitle || subject?.pageContext;
     return { text };
   };
 }

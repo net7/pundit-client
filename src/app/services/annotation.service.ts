@@ -36,6 +36,8 @@ export class AnnotationService {
 
   public totalChanged$: Subject<number> = new Subject();
 
+  public showPageAnnotations$: BehaviorSubject<boolean> = new BehaviorSubject(false);
+
   constructor(
     private userService: UserService,
     private notebookService: NotebookService
@@ -145,19 +147,22 @@ export class AnnotationService {
   }
 
   getAnnotations() {
-    return this.annotations.sort((a, b) => {
-      const aAnnotation = a.data$.getValue();
-      const bAnnotation = b.data$.getValue();
-      const aCreated = aAnnotation.created;
-      const bCreated = bAnnotation.created;
-      const aStartPosition = aAnnotation.subject.selected.textPositionSelector.start;
-      const bStartPosition = bAnnotation.subject.selected.textPositionSelector.start;
+    const showPageAnnotations = this.showPageAnnotations$.getValue();
+    return this.annotations
+      .filter((a) => !!a.data$.getValue().subject?.selected === !showPageAnnotations)
+      .sort((a, b) => {
+        const aAnnotation = a.data$.getValue();
+        const bAnnotation = b.data$.getValue();
+        const aCreated = aAnnotation.created;
+        const bCreated = bAnnotation.created;
+        const aStartPosition = aAnnotation.subject.selected?.textPositionSelector?.start;
+        const bStartPosition = bAnnotation.subject.selected?.textPositionSelector?.start;
 
-      if (aStartPosition === bStartPosition) {
-        return new Date(aCreated).getTime() - new Date(bCreated).getTime();
-      }
-      return aStartPosition - bStartPosition;
-    });
+        if (aStartPosition === bStartPosition) {
+          return new Date(aCreated).getTime() - new Date(bCreated).getTime();
+        }
+        return aStartPosition - bStartPosition;
+      });
   }
 
   getAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
