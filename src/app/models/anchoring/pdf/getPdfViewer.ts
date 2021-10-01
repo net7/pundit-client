@@ -8,5 +8,10 @@ declare let PDFViewerApplication;
  * @return {PDFViewer}
  */
 export function getPdfViewer(): PDFViewer {
+  console.log(
+    'PDFViewerApplication----------------------------->',
+    PDFViewerApplication.pdfViewer,
+    (window as any).PDFViewerApplication.pdfViewer
+  );
   return (PDFViewerApplication as PDFViewerApp).pdfViewer;
 }

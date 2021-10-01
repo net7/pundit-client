@@ -1,5 +1,5 @@
 import { TextPosition, TextRange } from '../text-range';
-import { getPageTextContent } from './getPageContext';
+import { getPageTextContent } from './getPageTextContent';
 import { getPageView } from './getPageView';
 import { createPlaceholder } from './placeholder';
 import { RenderingStates } from './types';
