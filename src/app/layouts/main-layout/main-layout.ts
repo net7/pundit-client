@@ -15,6 +15,7 @@ import { StorageService } from 'src/app/services/storage-service/storage.service
 import { TagService } from 'src/app/services/tag.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { AppEventData } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
 
@@ -47,7 +48,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     public tagService: TagService,
     public socialService: SocialService,
     public semanticPredicateService: SemanticPredicateService,
-    private userService: UserService
+    private userService: UserService,
+    private pdfService: PdfService
   ) {
     super(config);
   }
@@ -67,7 +69,8 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       toastService: this.toastService,
       tagService: this.tagService,
       socialService: this.socialService,
-      semanticPredicateService: this.semanticPredicateService
+      semanticPredicateService: this.semanticPredicateService,
+      pdfService: this.pdfService
     };
   }
 

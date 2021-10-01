@@ -14,6 +14,7 @@ import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
 import { TagService } from 'src/app/services/tag.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
 
 export class SidebarLayoutEH extends EventHandler {
@@ -35,6 +36,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   public tagService: TagService;
 
+  public pdfService: PdfService;
+
   public changeDetectorRef: ChangeDetectorRef;
 
   public dataSource: SidebarLayoutDS;
@@ -51,6 +54,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.punditLoginService = payload.punditLoginService;
           this.toastService = payload.toastService;
           this.tagService = payload.tagService;
+          this.pdfService = payload.pdfService;
           this.changeDetectorRef = payload.changeDetectorRef;
 
           this.dataSource.onInit(payload);
@@ -160,7 +164,15 @@ export class SidebarLayoutEH extends EventHandler {
   }
 
   private onResize() {
-    const { scrollHeight } = document.body;
+    let { scrollHeight } = document.body;
+
+    // check if document is pdf
+    if (this.pdfService.isActive()) {
+      const pdfDocumentContainer = this.pdfService.getDocumentContainer();
+      if (pdfDocumentContainer) {
+        scrollHeight = pdfDocumentContainer.scrollHeight;
+      }
+    }
     // check orphans
     this.anchorService.checkOrphans();
 

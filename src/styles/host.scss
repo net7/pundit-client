@@ -28,3 +28,11 @@ body.pnd-annotation-sidebar-expanded {
     margin-right: 326px;
     width: auto;
 }
+
+body.pnd-document-is-pdf {
+    overflow: hidden;
+
+    .pnd-sidebar__content {
+        overflow: hidden;
+    }
+}

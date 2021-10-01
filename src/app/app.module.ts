@@ -25,6 +25,7 @@ import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
 import { TagService } from './services/tag.service';
 import { SemanticPredicateService } from './services/semantic-predicate.service';
+import { PdfService } from './services/pdf.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -87,6 +88,7 @@ const providers: any[] = [
   StorageChromeExtService,
   ImageDataService,
   SemanticPredicateService,
+  PdfService,
   { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
