@@ -111,6 +111,7 @@ export default {
   'annotation#editcomment': 'Edit',
   'annotation#addsemantic': 'Add semantic',
   'annotation#editsemantic': 'Edit',
+  'annotation#editfullpage': 'Edit',
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',

@@ -7,6 +7,7 @@ export enum SidebarLayoutEvent {
   ClickLogout = 'sidebar-layout.clicklogout',
   ClickNotebookPanel = 'sidebar-layout.notebookpanel',
   ClickPageAnnotationPanel = 'sidebar-layout.pageannotationpanel',
+  ClickNewFullPageAnnotation = 'sidebar-layout.newfullpage',
   ClickUsername = 'sidebar-layout.clickusername',
   Close = 'sidebar-layout.sidebarclose',
   Destroy = 'sidebar-layout.destroy',

@@ -164,13 +164,17 @@ export class MainLayoutDS extends LayoutDataSource {
    * @param sections (required) modal form sections
    * @param saveButtonLabel (optional) save button label
    */
-  public openEditModal({ textQuote, saveButtonLabel, sections }: EditModalParams) {
+  public openEditModal({
+    textQuote, saveButtonLabel, sections, validation
+  }: EditModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
 
     // update component
-    this.one('edit-modal').update({ textQuote, saveButtonLabel, sections });
+    this.one('edit-modal').update({
+      textQuote, saveButtonLabel, sections, validation
+    });
   }
 
   public setAnonymousSelectionRange() {

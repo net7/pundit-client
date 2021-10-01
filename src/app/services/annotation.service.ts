@@ -207,6 +207,19 @@ export class AnnotationService {
     });
   }
 
+  getFullPageAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
+    const userId = this.userService.whoami().id;
+    const selectedNotebookId = this.notebookService.getSelected().id;
+    const options = {};
+    return createRequestPayload({
+      userId,
+      type,
+      options,
+      notebookId: selectedNotebookId,
+      selection: undefined,
+    });
+  }
+
   clear() {
     this.annotations = [];
   }

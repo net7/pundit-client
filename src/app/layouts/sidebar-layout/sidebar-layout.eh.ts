@@ -82,6 +82,11 @@ export class SidebarLayoutEH extends EventHandler {
             });
           }
           break;
+        case SidebarLayoutEvent.ClickNewFullPageAnnotation:
+          this.appEvent$.next({
+            type: AppEvent.AnnotationNewFullPage,
+          });
+          break;
         case SidebarLayoutEvent.Close:
           // Close the sidebar
           this.dataSource.isCollapsed.next(true);

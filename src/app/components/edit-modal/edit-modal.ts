@@ -27,6 +27,11 @@ export interface EditModalData {
     cancel: EditModalAction;
     save: EditModalAction;
   };
+  validation?: {
+    required?: {
+      condition: 'AND' | 'OR';
+    };
+  };
   hideActions?: boolean;
   _setDraggableInstance: (instance: any) => void;
   _internalId: string;
@@ -152,22 +157,29 @@ export class EditModalComponent implements AfterContentChecked {
   }
 
   private updateSaveButtonState() {
-    const { sections } = this.data;
-    let disabled = false;
-    Object.keys(sections).forEach((key) => {
+    const { sections, validation } = this.data;
+    const sectionErrors: boolean[] = [];
+    const requiredErrors: boolean[] = [];
+    Object.keys(sections).forEach((key, index) => {
       // check for errors
-      const sectionErrors = this.formState[key]?.errors;
-      if (Array.isArray(sectionErrors) && sectionErrors.length) {
-        disabled = true;
-      }
+      const currentSectionErrors = this.formState[key]?.errors;
+      sectionErrors[index] = !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
 
       // check required
       const sectionValue = this.formState[key]?.value;
-      if (sections[key].required && isEmpty(sectionValue)) {
-        disabled = true;
-      }
+      requiredErrors[index] = !!(sections[key].required && isEmpty(sectionValue));
     });
 
+    const hasSectionErrors = !!sectionErrors.find((value) => !!value);
+    const hasRequiredErrors = !!requiredErrors.find((value) => !!value);
+    let disabled = false;
+    if (hasSectionErrors) {
+      disabled = true;
+    } else if (hasRequiredErrors) {
+      const numOfErrors = requiredErrors.filter((value) => !!value).length;
+      const isOrCondition = validation?.required.condition === 'OR';
+      disabled = !!(isOrCondition ? numOfErrors === (requiredErrors.length - 1) : numOfErrors);
+    }
     // update save button
     const saveAction = this.data.actions.save;
     saveAction.disabled = disabled;

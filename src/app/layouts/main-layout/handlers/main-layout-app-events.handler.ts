@@ -4,7 +4,7 @@ import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@n7-frontend/core';
-import { SemanticTripleType } from '@pundit/communication';
+import { HighlightAnnotation, SemanticTripleType } from '@pundit/communication';
 import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -44,6 +44,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           break;
         case AppEvent.AnnotationEditSemantic:
           this.onAnnotationEdit(payload, 'semantic');
+          break;
+        case AppEvent.AnnotationEditFullPage:
+          this.onAnnotationEdit(payload, 'fullpage');
+          break;
+        case AppEvent.AnnotationNewFullPage:
+          this.onFullPageAnnotationCreate();
           break;
         case AppEvent.SidebarCollapse:
           this.onSidebarCollapse(payload);
@@ -87,7 +93,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
+  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic' | 'fullpage') {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
@@ -102,6 +108,11 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         value: annotation.notebookId
       }],
       textQuote: annotation.subject?.selected?.text,
+      validation: {
+        required: {
+          condition: mode === 'fullpage' ? 'OR' : 'AND'
+        }
+      }
     } as EditModalParams;
 
     if (mode === 'comment') {
@@ -117,12 +128,19 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         focus: true
       });
       params.saveButtonLabel = _t('editmodal#save_semantic');
+    } else if (mode === 'fullpage') {
+      params.sections[0].required = true;
+      params.sections.push({
+        id: 'comment',
+        value: annotation.type === 'Commenting' ? annotation.content?.comment : undefined,
+        focus: true,
+        required: true
+      });
     } else {
       // focus on input tags
       params.sections[0].focus = true;
       params.saveButtonLabel = _t('editmodal#save_tags');
     }
-
     this.layoutDS.openEditModal(params);
   }
 
@@ -220,5 +238,36 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
     }
     this.layoutDS.hasLoaded$.next(true);
+  }
+
+  private onFullPageAnnotationCreate = () => {
+    this.layoutDS.state.annotation.pendingPayload = (
+      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
+      this.layoutDS.pendingAnnotationId,
+      this.layoutDS.state.annotation.pendingPayload
+    );
+    this.layoutDS.removePendingAnnotation();
+    this.layoutDS.anchorService.add(pendingAnnotation);
+
+    this.layoutDS.openEditModal({
+      textQuote: pendingAnnotation.subject.pageTitle || pendingAnnotation.subject.pageContext,
+      validation: {
+        required: {
+          condition: 'OR'
+        }
+      },
+      sections: [{
+        id: 'comment',
+        required: true,
+        focus: true
+      }, {
+        id: 'tags',
+        required: true,
+      }, {
+        id: 'notebook'
+      }]
+    });
   }
 }
