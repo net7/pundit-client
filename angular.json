@@ -88,6 +88,16 @@
                 }
               ]
             },
+            "pdf": {
+              "baseHref": "/pdf-example/",
+              "outputPath": "dist/pdf",
+              "fileReplacements": [
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/pdf.html"
+                }
+              ]
+            },
             "chrome-ext-prod": {
               "outputPath": "dist/chrome-ext-prod",
               "optimization": true,
@@ -200,6 +210,9 @@
             },
             "scroll": {
               "browserTarget": "pnd:build:scroll"
+            },
+            "pdf": {
+              "browserTarget": "pnd:build:pdf"
             },
             "chrome-ext-prod": {
               "browserTarget": "pnd:build:chrome-ext-prod"

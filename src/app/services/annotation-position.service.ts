@@ -1,14 +1,18 @@
 import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
+import { PdfService } from './pdf.service';
 
 const TOP_MARGIN = 60;
+
+const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
 
 @Injectable()
 export class AnnotationPositionService {
   constructor(
     private annotationService: AnnotationService,
-    private anchorService: AnchorService
+    private anchorService: AnchorService,
+    private pdfService: PdfService
   ) {}
 
   /** Recalculate the position and order of each annotation present in the sidebar */
@@ -20,7 +24,14 @@ export class AnnotationPositionService {
     }
 
     const { shadowRoot } = rootElement;
-    const bodyTop = document.body.getBoundingClientRect().top;
+    let containerTop = document.body.getBoundingClientRect().top;
+    // pdf document check
+    if (this.pdfService.isActive()) {
+      const pdfDocumentContainer = this.pdfService.getDocumentContainer();
+      if (pdfDocumentContainer) {
+        containerTop = pdfDocumentContainer.getBoundingClientRect().top - PDF_VIEWER_TOOLBAR_HEIGHT;
+      }
+    }
     // get all annotations (creation date and anchor)
     const annotations = this.annotationService.getAnnotations().map(
       ({ data$, id }) => ({
@@ -41,7 +52,7 @@ export class AnnotationPositionService {
           .filter((highlightEl) => highlightEl.offsetHeight > 0)
           .map(
             // get vertical offset of the corresponding highlight
-            (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
+            (highlightEl) => highlightEl.getBoundingClientRect().top - containerTop
           );
         if (tops.length) {
           // the first highlight
