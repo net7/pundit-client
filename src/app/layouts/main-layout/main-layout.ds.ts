@@ -284,6 +284,20 @@ export class MainLayoutDS extends LayoutDataSource {
       this.anchorService.remove(annotationId);
     });
   }
+
+  public addPendingAnnotation() {
+    this.state.annotation.pendingPayload = (
+      this.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+      this.pendingAnnotationId,
+      this.state.annotation.pendingPayload
+    );
+    this.removePendingAnnotation();
+    this.anchorService.add(pendingAnnotation);
+
+    return pendingAnnotation;
+  }
 }
 
 export type OpenModalParams = {

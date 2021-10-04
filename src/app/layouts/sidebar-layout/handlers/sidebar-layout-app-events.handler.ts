@@ -22,9 +22,26 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       takeUntil(this.layoutEH.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
-        case AppEvent.ShowPageAnnotations:
+        case AppEvent.ShowPageAnnotations: {
+          const isPageAnnVisible = (
+            this.layoutEH.annotationService.showPageAnnotations$.getValue()
+          );
+          if (!isPageAnnVisible) {
+            this.layoutEH.annotationService.showPageAnnotations$.next(true);
+          }
           this.layoutDS.updateAnnotations(true);
           break;
+        }
+        case AppEvent.HidePageAnnotations: {
+          const isPageAnnVisible = (
+            this.layoutEH.annotationService.showPageAnnotations$.getValue()
+          );
+          if (isPageAnnVisible) {
+            this.layoutEH.annotationService.showPageAnnotations$.next(false);
+          }
+          this.layoutDS.updateAnnotations(true);
+          break;
+        }
         case AppEvent.SearchAnnotationResponse:
           this.layoutDS.updateAnnotations(true);
           break;
@@ -50,6 +67,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           break;
         case AppEvent.AnchorClick:
           this.layoutEH.emitOuter(getEventType(SidebarLayoutEvent.AnchorClick), payload);
+          this.layoutEH.appEvent$.next({ type: AppEvent.HidePageAnnotations });
           this.layoutDS.isCollapsed.next(false);
           this.layoutDS.updateAnnotations();
           break;

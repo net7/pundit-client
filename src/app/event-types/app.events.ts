@@ -24,5 +24,6 @@ export enum AppEvent {
   SearchAnnotationResponse = 'app.searchannotationresponse',
   SelectedNotebookChanged = 'app.selectednotebookchanged',
   SidebarCollapse = 'app.sidebarcollapse',
-  ShowPageAnnotations = 'app.showpageannotations'
+  ShowPageAnnotations = 'app.showpageannotations',
+  HidePageAnnotations = 'app.hidepageannotations'
 }

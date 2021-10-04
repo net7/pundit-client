@@ -160,4 +160,6 @@ export default {
   'texteditor#link_cancel': 'Cancel',
   'texteditor#link_label': 'Enter link:',
   'texteditor#link_placeholder': 'https://',
+  // fullpage annotations
+  'fullpage#add': 'Add Page Annotation'
 };

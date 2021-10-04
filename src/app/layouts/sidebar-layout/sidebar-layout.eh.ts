@@ -78,7 +78,7 @@ export class SidebarLayoutEH extends EventHandler {
             const state = this.annotationService.showPageAnnotations$.getValue();
             this.annotationService.showPageAnnotations$.next(!state);
             this.appEvent$.next({
-              type: AppEvent.ShowPageAnnotations,
+              type: state ? AppEvent.HidePageAnnotations : AppEvent.ShowPageAnnotations
             });
           }
           break;

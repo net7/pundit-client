@@ -126,10 +126,7 @@ export class AnnotationEH extends EventHandler {
           const annotationID = payload;
           const annotation = this.annotationService.getAnnotationById(annotationID);
           if (!annotation) { return; }
-          const { state$ } = annotation;
-          const currentState = state$.getValue();
-          const newState = { isCollapsed: !currentState.isCollapsed };
-          this.annotationService.updateAnnotationState(annotationID, newState);
+          this.updateAnnotationState(annotation);
           break;
         }
         default:
@@ -163,5 +160,12 @@ export class AnnotationEH extends EventHandler {
 
   private closeAnnotationMenu(id: string) {
     this.annotationService.updateAnnotationState(id, { activeMenu: undefined });
+  }
+
+  private updateAnnotationState = (annotation) => {
+    const { state$ } = annotation;
+    const currentState = state$.getValue();
+    const newState = { isCollapsed: !currentState.isCollapsed };
+    this.annotationService.updateAnnotationState(annotation.id, newState);
   }
 }

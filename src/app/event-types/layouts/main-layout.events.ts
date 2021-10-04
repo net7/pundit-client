@@ -7,4 +7,5 @@ export enum MainLayoutEvent {
   KeyUpEscape = 'main-layout.keyupescape',
   SelectionChange = 'main-layout.selectionchange',
   UpdateNotebookSelect = 'main-layout.updatenotebookselect',
+  ClickTooltip = 'main-layout.clicktooltip'
 }

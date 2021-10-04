@@ -4,7 +4,7 @@ import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@n7-frontend/core';
-import { HighlightAnnotation, SemanticTripleType } from '@pundit/communication';
+import { SemanticTripleType } from '@pundit/communication';
 import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -241,13 +241,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onFullPageAnnotationCreate = () => {
-    this.layoutDS.state.annotation.pendingPayload = (
-      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
-    );
-    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
-      this.layoutDS.pendingAnnotationId,
-      this.layoutDS.state.annotation.pendingPayload
-    );
+    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
 

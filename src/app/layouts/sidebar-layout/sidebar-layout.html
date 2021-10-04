@@ -88,7 +88,7 @@
          <ng-container *ngIf="(ds.userService.logged$ | async) &&
           (ds.annotationService.showPageAnnotations$ | async)">
             <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage')"  *ngIf="!(ds.isCollapsed | async)">
-                Add Page Annotation
+              {{ds?.fullpage?.label}}
             </a> 
          </ng-container>
          <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
