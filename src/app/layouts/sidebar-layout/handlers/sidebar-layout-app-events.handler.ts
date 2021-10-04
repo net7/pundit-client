@@ -58,7 +58,11 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           this.layoutDS.updateNotebookPanel();
           break;
         case AppEvent.PdfViewerChanged:
-          this.layoutDS.updateAnnotations();
+          this.layoutEH.anchorService.checkOrphans();
+          setTimeout(() => {
+            this.layoutDS.updateAnnotations();
+            this.layoutEH.detectChanges();
+          });
           break;
         default:
           break;

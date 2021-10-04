@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { from, Subject } from 'rxjs';
-import { first } from 'rxjs/operators';
+import { from, fromEvent, Subject } from 'rxjs';
+import { debounceTime, first } from 'rxjs/operators';
 import { PdfViewerEvents } from '../event-types';
 import { PDFViewerApplication as PDFViewerApp } from '../models/anchoring/pdf/types';
 
@@ -57,7 +57,9 @@ export class PdfService {
   private listenScroll() {
     const scrollContainer = this.getScrollContainer();
     if (scrollContainer) {
-      scrollContainer.addEventListener('scroll', this.onScroll);
+      fromEvent(scrollContainer, 'scroll').pipe(
+        debounceTime(10) // symbolic delay
+      ).subscribe(this.onScroll);
     }
   }
 
