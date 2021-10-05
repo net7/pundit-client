@@ -145,6 +145,11 @@
                   "glob": "**/*",
                   "input": "src/chrome-ext/assets/img",
                   "output": "/assets/img"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",

@@ -48,6 +48,16 @@ const copyChromeExtFiles = (dist, src) => fs.copy(src, dist).catch((err) => {
   throw new Error('copy chrome ext files fail');
 });
 
+const copyEmbedBuildFile = (dist, context) => {
+  const embedDirName = context.replace('chrome-ext', 'embed');
+  const fileSrc = path.join(path.dirname(fs.realpathSync(__filename)), `../dist/${embedDirName}/pundit.embed.js`);
+  const fileDist = `${dist}/pundit.embed.js`;
+  return fs.copy(fileSrc, fileDist).catch((err) => {
+    console.log('copy embed build file error:', err);
+    throw new Error('copy embed build file fail');
+  });
+};
+
 const createManifestFile = (dist, context) => {
   const basePath = path.join(path.dirname(fs.realpathSync(__filename)), '../src/chrome-ext');
   const manifestCommonPath = `${basePath}/manifest.json`;
@@ -68,8 +78,9 @@ const buildExt = (context, dist) => {
   const src = path.join(path.dirname(fs.realpathSync(__filename)), '../dist/chrome-ext-tmp/');
   // init
   copyChromeExtFiles(dist, src)
+    .then(() => copyEmbedBuildFile(dist, context))
     .then(() => createManifestFile(dist, context))
-    .then(() => fs.remove(src))
+    // .then(() => fs.remove(src))
     .then(() => {
       console.log('Chrome extension files updated');
     })

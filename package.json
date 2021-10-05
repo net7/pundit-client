@@ -11,7 +11,7 @@
     "e2e": "ng e2e",
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
     "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
-    "build:chrome-ext-stage": "ng build -c chrome-ext-stage --single-bundle",
+    "build:chrome-ext-stage": "npm run build:embed-stage && ng build -c chrome-ext-stage --single-bundle",
     "postbuild:chrome-ext-stage": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-stage",
     "build:chrome-ext-prod": "ng build -c chrome-ext-prod --single-bundle",
     "postbuild:chrome-ext-prod": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-prod",
