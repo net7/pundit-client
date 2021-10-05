@@ -1,5 +1,5 @@
 <div class="pnd-annotation__highlight" *ngIf="(highlight$ | async)?.text as text">
-    <span class="pnd-annotation__highlight-text">
-        {{ text }}
+    <span class="pnd-annotation__highlight-text" >
+        {{ text }} {{ (highlight$ | async)?.date | date:'dd/MM/yyyy hh:mm:ss'}}
     </span>
 </div>

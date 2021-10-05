@@ -1,5 +1,10 @@
 <div *ngIf="(state$ | async) as state" class="pnd-annotation {{ state?.classes || ''}}"
-    [ngClass]="{'is-collapsed': state?.isCollapsed, 'is-expanded': !state?.isCollapsed, 'has-comment': (data$ | async)?.type === 'Commenting'}"
+    [ngClass]="{
+        'is-collapsed': state?.isCollapsed,
+        'is-expanded': !state?.isCollapsed,
+        'has-comment': (data$ | async)?.type === 'Commenting',
+        'is-fullpage': !(data$ | async)?.subject?.selected
+    }"
     (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
 
     <ng-container *ngIf="!state.isCollapsed">
@@ -31,5 +36,7 @@
 
 <ng-template #collapsed>
     <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
-    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+    <ng-container *ngIf="(data$ | async)?.subject.selected">
+        <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+    </ng-container>
 </ng-template>
