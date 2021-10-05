@@ -9,7 +9,9 @@
     "128": "assets/icons/pundit-icon-128-close.png"
   },
   "background" : {
-    "scripts" : ["background.bundle.js"]
+    "scripts" : [
+      "background.bundle.js"
+    ]
   },
   "content_scripts": [
     {
@@ -22,6 +24,11 @@
     "default_icon": "assets/icons/pundit-icon-38.png",
     "default_title": "Launch Pundit Annotator"
   },
-  "web_accessible_resources": ["pundit.chrome-ext.js"],
-  "permissions": ["activeTab", "storage"]
+  "web_accessible_resources": [
+    "assets/pdf/*",
+    "pundit.chrome-ext.js",
+    "pdf-viewer.html"
+  ],
+  "permissions": ["activeTab", "storage"],
+  "content_security_policy": "script-src 'self'; object-src 'self'"
 }

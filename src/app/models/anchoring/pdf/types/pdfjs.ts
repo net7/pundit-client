@@ -203,6 +203,7 @@ export type PDFViewerApplication = {
   initialized: boolean;
   initializedPromise: Promise<void>;
   url: string;
+  open: (config: object) => void;
 }
 
 /**

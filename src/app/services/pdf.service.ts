@@ -14,6 +14,11 @@ const PDF_BODY_CLASS = 'pnd-document-is-pdf';
 export class PdfService {
   private pdfApp: PDFViewerApp;
 
+  // PDF through proxy to work around CORS restrictions
+  private documentUrl: string;
+
+  private originalUrl: string;
+
   private allowedEvents: PdfViewerEvents[] = [
     PdfViewerEvents.PageRendered,
     PdfViewerEvents.PageChanging
@@ -30,9 +35,17 @@ export class PdfService {
       // add body class
       document.body.classList.add(PDF_BODY_CLASS);
       // pdf app init
+      document.addEventListener('webviewerloaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const source = urlParams.get('source');
+        // FIXME: update proxy url
+        this.documentUrl = `${source}`;
+        this.originalUrl = source;
+      });
       from(this.pdfApp.initializedPromise).pipe(
         first(),
       ).subscribe(() => {
+        this.load();
         this.listenPdfViewer();
         this.listenScroll();
       });
@@ -44,6 +57,14 @@ export class PdfService {
   getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID);
 
   getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID);
+
+  private load() {
+    (window as any).PDFViewerApplicationOptions.set('defaultUrl', '');
+    this.pdfApp.open({
+      url: this.documentUrl,
+      originalUrl: this.originalUrl,
+    });
+  }
 
   private listenPdfViewer() {
     // pdf viewer events
