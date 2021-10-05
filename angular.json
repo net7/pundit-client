@@ -93,7 +93,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/index.html",
-                  "with": "src/chrome-ext/src/pdf-viewer.html"
+                  "with": "src/html-examples/pdf-viewer.html"
                 }
               ]
             },

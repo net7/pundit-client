@@ -27,25 +27,12 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta name="google" content="notranslate">
     <title>PDF.js viewer</title>
 
-
-    <script src="/assets/pdfjs/pdfjs-init.js"></script>
     <link rel="stylesheet" href="/assets/pdfjs/web/viewer.css">
 
-
-<!-- This snippet is used in production (included from viewer.html) -->
-<link rel="resource" type="application/l10n" href="/assets/pdfjs/web/locale/locale.properties">
-<script src="/assets/pdfjs/build/pdf.js"></script>
-
-
-  <script src="/assets/pdfjs/web/viewer.js"></script>
-
-
-<script>
-window.DOCUMENT_URL = '/';
-window.PDF_URL = '/assets/pdfjs/examples/budlong.pdf';
-// window.CLIENT_URL = '/'.replace('{current_host}', document.location.hostname);
-</script>
-
+    <!-- This snippet is used in production (included from viewer.html) -->
+    <link rel="resource" type="application/l10n" href="/assets/pdfjs/web/locale/locale.properties">
+    <script src="/assets/pdfjs/build/pdf.js"></script>
+    <script src="/assets/pdfjs/web/viewer.js"></script>
   </head>
 
   <body tabindex="1">

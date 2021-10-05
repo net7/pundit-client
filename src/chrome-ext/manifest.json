@@ -25,10 +25,8 @@
     "default_title": "Launch Pundit Annotator"
   },
   "web_accessible_resources": [
-    "assets/pdf/*",
     "pundit.chrome-ext.js",
     "pdf-viewer.html"
   ],
-  "permissions": ["activeTab", "storage"],
-  "content_security_policy": "script-src 'self'; object-src 'self'"
+  "permissions": ["activeTab", "storage"]
 }
