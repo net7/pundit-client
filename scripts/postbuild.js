@@ -24,7 +24,8 @@ if (['chrome-ext-stage', 'chrome-ext-prod'].includes(context)) {
     'assets',
     'background.bundle.js',
     'content.bundle.js',
-    'manifest.json'
+    'manifest.json',
+    'pdf-viewer.html'
   ];
   buildExt(context, basePath);
 }

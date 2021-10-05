@@ -89,12 +89,11 @@
               ]
             },
             "pdf": {
-              "baseHref": "/pdf-example/",
               "outputPath": "dist/pdf",
               "fileReplacements": [
                 {
                   "replace": "src/index.html",
-                  "with": "src/html-examples/pdf.html"
+                  "with": "src/chrome-ext/src/pdf-viewer.html"
                 }
               ]
             },
@@ -151,6 +150,11 @@
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/stage",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
