@@ -1,6 +1,8 @@
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
-import { updateExtensionIcon } from '.';
+import {
+  isPdfDocument, isPdfViewer, redirectToOriginalPdfUrl, redirectToPdfViewer, updateExtensionIcon
+} from '.';
 import { CommonEventType } from '../../../../common/types';
 
 export const checkActiveState = (tabId: number) => {
@@ -17,11 +19,18 @@ export const checkActiveState = (tabId: number) => {
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
-            const payload = { active };
-            chrome.tabs.sendMessage(tabId, {
-              payload,
-              type: CommonEventType.StateChanged,
-            });
+            const { url: tabUrl } = tab;
+            if (active && isPdfDocument(tabUrl)) {
+              redirectToPdfViewer(tabUrl);
+            } else if (!active && isPdfViewer(tabUrl)) {
+              redirectToOriginalPdfUrl(tabUrl);
+            } else {
+              const payload = { active };
+              chrome.tabs.sendMessage(tabId, {
+                payload,
+                type: CommonEventType.StateChanged,
+              });
+            }
             updateExtensionIcon(tabId, active);
           });
       });
