@@ -22,5 +22,6 @@ export enum AppEvent {
   SearchAnnotationResponse = 'app.searchannotationresponse',
   SelectedNotebookChanged = 'app.selectednotebookchanged',
   SidebarCollapse = 'app.sidebarcollapse',
-  PdfViewerChanged = 'app.pdfviewerchanged',
+  PdfViewerPageChanged = 'app.pdfviewerpagechanged',
+  PdfViewerHtmlChanged = 'app.pdfviewerhtmlchanged',
 }

@@ -34,6 +34,8 @@ export type AnnotationConfig = {
 export class AnnotationService {
   private annotations: AnnotationConfig[] = [];
 
+  private rawAnnotations: Annotation[] = [];
+
   public totalChanged$: Subject<number> = new Subject();
 
   constructor(
@@ -85,6 +87,7 @@ export class AnnotationService {
         isCollapsed: true,
       });
       this.annotations.push({ id, data$, state$ });
+      this.rawAnnotations.push(rawAnnotation);
     }
     // emit signal
     this.totalChanged$.next(this.annotations.length);
@@ -159,6 +162,8 @@ export class AnnotationService {
       return aStartPosition - bStartPosition;
     });
   }
+
+  getRawAnnotations = () => this.rawAnnotations;
 
   getAnnotationFromPayload(id: string, payload: AnnotationAttributes) {
     const {

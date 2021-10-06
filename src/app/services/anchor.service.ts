@@ -7,6 +7,7 @@ import { AnchorEvent } from '../event-types';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
+import { AnnotationService } from './annotation.service';
 
 const HOVER_CLASS = 'is-hovered';
 
@@ -23,6 +24,10 @@ export class AnchorService {
 
   // fix analytics duplicates
   private analyticsOrphansIds: string[] = [];
+
+  constructor(
+    private annotationService: AnnotationService
+  ) {}
 
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
@@ -115,6 +120,16 @@ export class AnchorService {
 
   clear() {
     this.removeAll();
+  }
+
+  refresh() {
+    // clear
+    this.clear();
+    // reload
+    setTimeout(() => {
+      const rawAnnotations = this.annotationService.getRawAnnotations();
+      this.load(rawAnnotations);
+    });
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {

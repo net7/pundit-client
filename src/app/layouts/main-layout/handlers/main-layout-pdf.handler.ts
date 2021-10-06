@@ -15,7 +15,15 @@ export class MainLayoutPdfHandler implements LayoutHandler {
         case PdfViewerEvents.PageRendered:
         case PdfViewerEvents.PageChanging:
           this.layoutEH.appEvent$.next({
-            type: AppEvent.PdfViewerChanged
+            type: AppEvent.PdfViewerPageChanged
+          });
+          break;
+        case PdfViewerEvents.Resize:
+        case PdfViewerEvents.ZoomIn:
+        case PdfViewerEvents.ZoomOut:
+        case PdfViewerEvents.ZoomReset:
+          this.layoutEH.appEvent$.next({
+            type: AppEvent.PdfViewerHtmlChanged
           });
           break;
         default:

@@ -21,7 +21,11 @@ export class PdfService {
 
   private allowedEvents: PdfViewerEvents[] = [
     PdfViewerEvents.PageRendered,
-    PdfViewerEvents.PageChanging
+    PdfViewerEvents.PageChanging,
+    PdfViewerEvents.Resize,
+    PdfViewerEvents.ZoomIn,
+    PdfViewerEvents.ZoomOut,
+    PdfViewerEvents.ZoomReset,
   ];
 
   public events$: Subject<{
