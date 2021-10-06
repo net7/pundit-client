@@ -80,7 +80,7 @@ const buildExt = (context, dist) => {
   copyChromeExtFiles(dist, src)
     .then(() => copyEmbedBuildFile(dist, context))
     .then(() => createManifestFile(dist, context))
-    // .then(() => fs.remove(src))
+    .then(() => fs.remove(src))
     .then(() => {
       console.log('Chrome extension files updated');
     })
