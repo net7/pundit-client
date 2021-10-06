@@ -95,6 +95,13 @@
                   "replace": "src/index.html",
                   "with": "src/html-examples/pdf-viewer.html"
                 }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
+                }
               ]
             },
             "chrome-ext-prod": {
