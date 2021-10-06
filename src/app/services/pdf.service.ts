@@ -10,6 +10,8 @@ const PDF_SCROLL_CONTAINER_ID = 'viewerContainer';
 
 const PDF_BODY_CLASS = 'pnd-document-is-pdf';
 
+const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
+
 @Injectable()
 export class PdfService {
   private pdfApp: PDFViewerApp;
@@ -62,6 +64,8 @@ export class PdfService {
 
   getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID);
 
+  getViewerToolbarHeight = () => PDF_VIEWER_TOOLBAR_HEIGHT;
+
   private load() {
     (window as any).PDFViewerApplicationOptions.set('defaultUrl', '');
     this.pdfApp.open({
@@ -83,7 +87,7 @@ export class PdfService {
     const scrollContainer = this.getScrollContainer();
     if (scrollContainer) {
       fromEvent(scrollContainer, 'scroll').pipe(
-        debounceTime(10) // symbolic delay
+        debounceTime(1) // symbolic delay
       ).subscribe(this.onScroll);
     }
   }

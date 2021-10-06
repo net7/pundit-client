@@ -169,8 +169,9 @@ export class SidebarLayoutEH extends EventHandler {
     // check if document is pdf
     if (this.pdfService.isActive()) {
       const pdfDocumentContainer = this.pdfService.getDocumentContainer();
+      const toolbarHeight = this.pdfService.getViewerToolbarHeight();
       if (pdfDocumentContainer) {
-        scrollHeight = pdfDocumentContainer.scrollHeight;
+        scrollHeight = pdfDocumentContainer.scrollHeight + toolbarHeight;
       }
     }
     // check orphans

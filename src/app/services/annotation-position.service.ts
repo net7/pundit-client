@@ -5,8 +5,6 @@ import { PdfService } from './pdf.service';
 
 const TOP_MARGIN = 60;
 
-const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
-
 @Injectable()
 export class AnnotationPositionService {
   constructor(
@@ -29,7 +27,9 @@ export class AnnotationPositionService {
     if (this.pdfService.isActive()) {
       const pdfDocumentContainer = this.pdfService.getDocumentContainer();
       if (pdfDocumentContainer) {
-        containerTop = pdfDocumentContainer.getBoundingClientRect().top - PDF_VIEWER_TOOLBAR_HEIGHT;
+        const viewerTop = pdfDocumentContainer.getBoundingClientRect().top;
+        const viewerToolbarHeight = this.pdfService.getViewerToolbarHeight();
+        containerTop = viewerTop - viewerToolbarHeight;
       }
     }
     // get all annotations (creation date and anchor)
