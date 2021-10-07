@@ -25,7 +25,7 @@ See https://github.com/adobe-type-tools/cmap-resources
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <meta name="google" content="notranslate">
-    <title>PDF.js viewer</title>
+    <title>PDF Viewer Example</title>
 
     <link rel="stylesheet" href="/assets/pdfjs/web/viewer.css">
 
@@ -33,9 +33,66 @@ See https://github.com/adobe-type-tools/cmap-resources
     <link rel="resource" type="application/l10n" href="/assets/pdfjs/web/locale/locale.properties">
     <script src="/assets/pdfjs/build/pdf.js"></script>
     <script src="/assets/pdfjs/web/viewer.js"></script>
+
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const source = urlParams.get('source');
+            const pdfList = document.getElementById('pdf-list');
+            if (source) {
+                pdfList.remove();
+            } else {
+                const punditRoot = document.querySelector('pnd-root');
+                punditRoot.style.visibility = 'hidden';
+            }
+        }
+    </script>
+    <style>
+        #pdf-list {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            z-index: 999999;
+            background: white;
+            display: flex;
+            align-items: center;
+        }
+        #pdf-list ul {
+            width: 100%;
+            text-align: center;
+        }
+        #pdf-list ul li a {
+            font-size: 50px;
+            padding: 25px;
+            color: #2e5bff;
+            text-decoration: none;
+            display: block;
+        }
+        #pdf-list ul li a:hover {
+            background: #f0f0f0;
+            color: rgb(26, 64, 204);
+        }
+        #pdf-list ul li a:visited {
+            color: #2e5bff;
+        }
+        #pdf-list ul li a .pnd-mark {
+            background: none;
+        }
+    </style>
   </head>
 
   <body tabindex="1">
+    <div id="pdf-list">
+        <ul>
+            <li><a href="/?source=http%3A%2F%2Flocalhost%3A4200%2Fassets%2Fpdfjs%2Fexamples%2Fbudlong.pdf">budlong</a></li>
+            <li><a href="/?source=http%3A%2F%2Flocalhost%3A4200%2Fassets%2Fpdfjs%2Fexamples%2Fgatsby.pdf">gatsby</a></li>
+            <li><a href="/?source=http%3A%2F%2Flocalhost%3A4200%2Fassets%2Fpdfjs%2Fexamples%2Fnils-olav.pdf">nils-olav</a></li>
+            <li><a href="/?source=http%3A%2F%2Flocalhost%3A4200%2Fassets%2Fpdfjs%2Fexamples%2Fpainting.pdf">painting</a></li>
+            <li><a href="/?source=http%3A%2F%2Flocalhost%3A4200%2Fassets%2Fpdfjs%2Fexamples%2Fwiddershins.pdf">widdershins</a></li>
+        </ul>
+    </div>
     <div id="outerContainer">
 
       <div id="sidebarContainer">

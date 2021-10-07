@@ -46,15 +46,15 @@ export class PdfService {
         const urlParams = new URLSearchParams(window.location.search);
         const source = urlParams.get('source');
         // FIXME: update proxy url
-        this.documentUrl = `${source}`;
-        this.originalUrl = source;
-      });
-      from(this.pdfApp.initializedPromise).pipe(
-        first(),
-      ).subscribe(() => {
-        this.load();
-        this.listenPdfViewer();
-        this.listenScroll();
+        this.originalUrl = source || '/no-pdf-file.pdf';
+        this.documentUrl = `${this.originalUrl}`;
+        from(this.pdfApp.initializedPromise).pipe(
+          first(),
+        ).subscribe(() => {
+          this.load();
+          this.listenPdfViewer();
+          this.listenScroll();
+        });
       });
     }
   }
