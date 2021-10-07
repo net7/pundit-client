@@ -39,4 +39,5 @@ export enum PdfViewerEvents {
   UpdateFindControlState = 'updatefindcontrolstate',
   FileInputChange = 'fileinputchange',
   OpenFile = 'openfile',
+  TextLayerRendered = 'textlayerrendered'
 }

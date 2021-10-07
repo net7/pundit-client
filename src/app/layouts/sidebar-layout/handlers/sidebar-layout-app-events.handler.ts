@@ -71,6 +71,9 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
             this.layoutEH.detectChanges();
           });
           break;
+        case AppEvent.PdfViewerLoaded:
+          this.layoutEH.updateSidebarHeight();
+          break;
         default:
           break;
       }

@@ -24,4 +24,5 @@ export enum AppEvent {
   SidebarCollapse = 'app.sidebarcollapse',
   PdfViewerPageChanged = 'app.pdfviewerpagechanged',
   PdfViewerHtmlChanged = 'app.pdfviewerhtmlchanged',
+  PdfViewerLoaded = 'app.pdfviewerloaded',
 }

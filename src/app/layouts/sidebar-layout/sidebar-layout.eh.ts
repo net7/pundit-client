@@ -164,8 +164,20 @@ export class SidebarLayoutEH extends EventHandler {
   }
 
   private onResize() {
-    let { scrollHeight } = document.body;
+    // update sidebar height
+    this.updateSidebarHeight();
+    // check orphans
+    this.anchorService.checkOrphans();
+    setTimeout(() => {
+      this.detectChanges();
+      this.dataSource.updateAnnotations();
+    });
+  }
 
+  public updateSidebarHeight() {
+    const documentHeight = document.documentElement.scrollHeight;
+    let { scrollHeight } = document.body;
+    scrollHeight = documentHeight > scrollHeight ? documentHeight : scrollHeight;
     // check if document is pdf
     if (this.pdfService.isActive()) {
       const pdfDocumentContainer = this.pdfService.getDocumentContainer();
@@ -174,15 +186,8 @@ export class SidebarLayoutEH extends EventHandler {
         scrollHeight = pdfDocumentContainer.scrollHeight + toolbarHeight;
       }
     }
-    // check orphans
-    this.anchorService.checkOrphans();
-
-    this.dataSource.height$.next(`${scrollHeight}px`);
     // fix update sidebar height
-    setTimeout(() => {
-      this.detectChanges();
-      this.dataSource.updateAnnotations();
-    });
+    this.dataSource.height$.next(`${scrollHeight}px`);
   }
 
   /**

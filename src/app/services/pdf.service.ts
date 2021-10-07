@@ -28,6 +28,7 @@ export class PdfService {
     PdfViewerEvents.ZoomIn,
     PdfViewerEvents.ZoomOut,
     PdfViewerEvents.ZoomReset,
+    PdfViewerEvents.TextLayerRendered,
   ];
 
   public events$: Subject<{
@@ -104,7 +105,7 @@ export class PdfService {
     this.allowedEvents.forEach((type: PdfViewerEvents) => {
       this.pdfApp.eventBus.off(type, (e) => {
         // do nothing
-        console.log('closed event----------------------------->', e);
+        console.warn('pdf service destroy----------------------------->', e);
       });
     });
 

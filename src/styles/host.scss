@@ -31,6 +31,13 @@ body.pnd-annotation-sidebar-expanded {
 
 body.pnd-document-is-pdf {
     overflow: hidden;
+    position: static;
+    margin-right: 15px;
+    width: auto;
+    
+    &.pnd-annotation-sidebar-expanded {
+        margin-right: 326px;
+    }
 
     .pnd-sidebar__content {
         overflow: hidden;

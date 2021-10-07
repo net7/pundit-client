@@ -26,6 +26,11 @@ export class MainLayoutPdfHandler implements LayoutHandler {
             type: AppEvent.PdfViewerHtmlChanged
           });
           break;
+        case PdfViewerEvents.TextLayerRendered:
+          this.layoutEH.appEvent$.next({
+            type: AppEvent.PdfViewerLoaded
+          });
+          break;
         default:
           break;
       }
