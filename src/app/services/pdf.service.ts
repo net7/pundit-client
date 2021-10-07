@@ -67,6 +67,8 @@ export class PdfService {
 
   getViewerToolbarHeight = () => PDF_VIEWER_TOOLBAR_HEIGHT;
 
+  getOriginalUrl = () => this.originalUrl;
+
   private load() {
     (window as any).PDFViewerApplicationOptions.set('defaultUrl', '');
     this.pdfApp.open({

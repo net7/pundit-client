@@ -10,6 +10,7 @@ import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 import { AnnotationModel } from '../../common/models';
 import { createRequestPayload } from '../models/annotation';
+import { PdfService } from './pdf.service';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -40,7 +41,8 @@ export class AnnotationService {
 
   constructor(
     private userService: UserService,
-    private notebookService: NotebookService
+    private notebookService: NotebookService,
+    private pdfService: PdfService
   ) { }
 
   load(rawAnnotations: Annotation[]) {
@@ -54,6 +56,10 @@ export class AnnotationService {
    * and add it to the local cache.
    */
   create(attributes: AnnotationAttributes) {
+    // pdf check
+    if (this.pdfService.isActive()) {
+      attributes.subject.pageContext = this.pdfService.getOriginalUrl();
+    }
     return from(AnnotationModel.create(attributes)).pipe(
       tap(({ data }) => {
         const { id } = data;

@@ -96,7 +96,7 @@ export class MainLayoutDS extends LayoutDataSource {
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    const uri = getDocumentHref();
+    const uri = this.getUri();
     return from(AnnotationModel.search(uri, true)).pipe(
       tap((response) => {
         const { data: searchData } = response;
@@ -113,7 +113,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   getUserAnnotations() {
-    const uri = getDocumentHref();
+    const uri = this.getUri();
     return from(AnnotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
         // TODO REMOVE AFTER FIX
@@ -293,6 +293,12 @@ export class MainLayoutDS extends LayoutDataSource {
     const { annotations } = searchData;
     const data = annotations.filter((a) => !!a?.subject?.selected);
     searchData.annotations = data;
+  }
+
+  private getUri() {
+    return this.pdfService.isActive()
+      ? this.pdfService.getOriginalUrl()
+      : getDocumentHref();
   }
 }
 
