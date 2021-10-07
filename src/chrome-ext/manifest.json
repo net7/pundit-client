@@ -24,5 +24,6 @@
     "default_icon": "assets/icons/pundit-icon-38.png",
     "default_title": "Launch Pundit Annotator"
   },
+  "web_accessible_resources": ["pundit.chrome-ext.js"],
   "permissions": ["activeTab", "storage"]
 }
