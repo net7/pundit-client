@@ -11,7 +11,20 @@
  * that the client uses. The names of types should match the corresponding
  * JSDoc types or classes in the PDF.js source where possible.
  */
-import { RenderingStates } from './global';
+
+/**
+ * Enum values for page rendering states (IRenderableView#renderingState)
+ * in PDF.js. Taken from web/pdf_rendering_queue.js in the PDF.js library.
+ *
+ * Reproduced here because this enum is not exported consistently across
+ * different versions of PDF.js
+ */
+export enum RenderingStates {
+  INITIAL,
+  RUNNING,
+  PAUSED,
+  FINISHED,
+}
 
 /**
  * Document metadata parsed from the PDF's _metadata stream_.
