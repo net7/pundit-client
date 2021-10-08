@@ -145,8 +145,12 @@ export class AnnotationService {
   }
 
   removeCached(annotationId: string) {
+    // update annotations array
     const index = this.annotations.map(({ id }) => id).indexOf(annotationId);
     this.annotations.splice(index, 1);
+    // update rawAnnotations array
+    const rawIndex = this.rawAnnotations.map(({ id }) => id).indexOf(annotationId);
+    this.rawAnnotations.splice(rawIndex, 1);
     // emit signal
     this.totalChanged$.next(this.annotations.length);
   }
