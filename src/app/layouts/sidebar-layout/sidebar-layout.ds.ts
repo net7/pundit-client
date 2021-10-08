@@ -46,6 +46,10 @@ export class SidebarLayoutDS extends LayoutDataSource {
     ]
   }
 
+  public fullpage = {
+    label: _t('fullpage#add')
+  }
+
   onInit(payload) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
@@ -71,7 +75,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   updateAnnotations(load = false) {
     if (load) {
-      this.annotations = this.annotationService.getAnnotations();
+      this.annotations = this.annotationService.getAnnotationsToShow();
     }
 
     // fix elements load delay

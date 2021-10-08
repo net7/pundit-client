@@ -52,6 +52,10 @@ export class AnnotationEH extends EventHandler {
               this.closeAnnotationMenu(id);
               this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
               break;
+            case 'action-fullpage': // click on the "edit tag" button
+              this.closeAnnotationMenu(id);
+              this.emitOuter(getEventType(AnnotationEvent.EditFullPage), id);
+              break;
             case 'menu-header': { // annotation update menu header
               const newState = { activeMenu: currentState?.activeMenu ? undefined : 'actions' };
               this.annotationService.updateAnnotationState(id, newState);
@@ -122,10 +126,7 @@ export class AnnotationEH extends EventHandler {
           const annotationID = payload;
           const annotation = this.annotationService.getAnnotationById(annotationID);
           if (!annotation) { return; }
-          const { state$ } = annotation;
-          const currentState = state$.getValue();
-          const newState = { isCollapsed: !currentState.isCollapsed };
-          this.annotationService.updateAnnotationState(annotationID, newState);
+          this.updateAnnotationState(annotation);
           break;
         }
         default:
@@ -159,5 +160,12 @@ export class AnnotationEH extends EventHandler {
 
   private closeAnnotationMenu(id: string) {
     this.annotationService.updateAnnotationState(id, { activeMenu: undefined });
+  }
+
+  private updateAnnotationState = (annotation) => {
+    const { state$ } = annotation;
+    const currentState = state$.getValue();
+    const newState = { isCollapsed: !currentState.isCollapsed };
+    this.annotationService.updateAnnotationState(annotation.id, newState);
   }
 }

@@ -293,6 +293,36 @@
     }
 }
 
+.pnd-sidebar__content {
+
+    &__action {
+        margin: 70px  $space $space $space;
+        width: auto;
+        display: flex;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: $font-size-m;
+        color: $color-text-light;
+        // transition: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
+
+        &.is-active {
+            color: $color-text-link;
+            border-bottom: 3px solid $color-main;
+        }
+
+        .pnd-svg-icon svg {
+            width: 20px;
+            height: auto;
+        }
+    }
+}
+
 
 /* ------------------------------------ *\
     ANIMATIONS

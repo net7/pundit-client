@@ -653,6 +653,10 @@ annotation {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.is-fullpage {
+            text-overflow: unset;
+        }
     }
 
     /* Hover */
@@ -731,6 +735,15 @@ annotation {
             border-right-color: $annotation-comment-background-color;
             border-left-width: 0;
         }
+    }
+}
+
+.pnd-annotation.is-fullpage {
+    
+    &.has-comment.is-collapsed{}
+
+    .pnd-annotation__highlight-text {
+        background-color: transparent;
     }
 }
 

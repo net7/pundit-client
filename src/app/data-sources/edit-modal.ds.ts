@@ -14,6 +14,7 @@ export class EditModalDS extends DataSource {
       textQuote,
       saveButtonLabel,
       sections,
+      validation
     } = data;
 
     const formSections: {
@@ -55,6 +56,7 @@ export class EditModalDS extends DataSource {
         const { x, y } = this.draggableInstance.get();
         this.defaultPosition = { x, y };
       },
+      validation
     };
   }
 

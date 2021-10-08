@@ -63,6 +63,11 @@ export type EditModalParams = {
     required?: boolean;
     focus?: boolean;
   }[];
+  validation?: {
+    required?: {
+      condition: 'AND' | 'OR';
+    };
+  };
 }
 
 export interface FormSection<T, U> {

@@ -68,14 +68,20 @@ const createTextPositionSelector = (selectors: any): TextPositionSelector => {
   return selector;
 };
 const createWebPageFragment = (selection: Range, root: HTMLElement = document.body): WebPage => {
-  const selectors = describe(root, selection);
-  const rangeSelector = createRangeSelector(selectors);
-  const textPositionSelctor = createTextPositionSelector(selectors);
-  const textQuoteSelector = createTextQuoteSelector(selectors);
   const pageBuilder = new WebPageBuilder();
-  pageBuilder.pageContext(getDocumentHref())
-    .pageTitle(getDocumentTitle())
-    .selected(textQuoteSelector.exact, rangeSelector, textPositionSelctor, textQuoteSelector);
+  pageBuilder.pageContext(getDocumentHref()).pageTitle(getDocumentTitle());
+  if (selection) {
+    const selectors = describe(root, selection);
+    const rangeSelector = createRangeSelector(selectors);
+    const textPositionSelctor = createTextPositionSelector(selectors);
+    const textQuoteSelector = createTextQuoteSelector(selectors);
+    pageBuilder.selected(
+      textQuoteSelector.exact,
+      rangeSelector,
+      textPositionSelctor,
+      textQuoteSelector
+    );
+  }
   const page = pageBuilder.build();
   return page;
 };

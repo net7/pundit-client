@@ -2,7 +2,7 @@ import {
   ChangeDetectorRef, Component, Input, OnDestroy, OnInit
 } from '@angular/core';
 import { _t } from '@n7-frontend/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation, AnnotationType } from '@pundit/communication';
 import {
   BehaviorSubject, Observable, Subject
 } from 'rxjs';
@@ -14,6 +14,15 @@ import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
+
+type ButtonConfigType = AnnotationType | 'FullPage';
+
+interface ActionButtonConfig {
+  id: string;
+  type: ButtonConfigType;
+  hasTags?: boolean;
+  avoidEdit?: boolean;
+}
 
 @Component({
   selector: 'pnd-menu-header-section',
@@ -118,22 +127,17 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   private getMenuData(annotation: Annotation) {
     const { id } = annotation;
     const user = this.userService.getUserById(annotation.userId);
-    const hasComment = annotation.type === 'Commenting';
-    const hasTags = annotation.tags?.length;
-    const hasSemantic = annotation.type === 'Linking';
-    // TODO REMOVE AFTER SEMANTIC IMPLEMENTATION
-    const avoidEdit = this.blockEditAction(annotation);
+    const buttonConfig: ActionButtonConfig = {
+      id,
+      type: annotation.subject?.selected ? annotation.type : 'FullPage',
+      hasTags: !!annotation.tags?.length,
+      avoidEdit: this.blockEditAction(annotation)
+    };
     const currentUser = this.userService.whoami();
     const currentUserNotebooks = currentUser
       ? this.notebookService.getByUserId(currentUser.id)
       : [];
-    const actions = this.createActionButtons(
-      id,
-      hasComment,
-      hasTags,
-      hasSemantic,
-      avoidEdit
-    );
+    const actions = this.createActionButtons(buttonConfig);
     return this.isCurrentUser(user)
       ? {
         icon: {
@@ -165,7 +169,8 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       : null;
   }
 
-  private createActionButtons(id: string, hasComment, hasTags, hasSemanticLiteral, avoidEdit) {
+  private createActionButtons(config: ActionButtonConfig) {
+    const { id, type } = config;
     const actions = [
       {
         label: _t('annotation#changenotebook'),
@@ -177,16 +182,17 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     ];
 
     // TODO REMOVE AFTER SEMANTIC MODAL IMPLEMENTATION
-    if (!avoidEdit) {
-      // annotation types actions logic
-      if (hasComment) {
+    if (!config?.avoidEdit) {
+      if (type === 'Commenting') {
         actions.push(this.getActionButton(id, 'comment', 'edit'));
-      } else if (hasSemanticLiteral) {
+      } else if (type === 'Linking') {
         actions.push(this.getActionButton(id, 'semantic', 'edit'));
-      } else {
+      } else if (type === 'Highlighting') {
         actions.push(this.getActionButton(id, 'comment', 'add'));
         actions.push(this.getActionButton(id, 'semantic', 'add'));
-        actions.push(this.getActionButton(id, 'tags', hasTags ? 'edit' : 'add'));
+        actions.push(this.getActionButton(id, 'tags', config?.hasTags ? 'edit' : 'add'));
+      } else {
+        actions.push(this.getActionButton(id, 'fullpage', 'edit'));
       }
     }
 
@@ -203,7 +209,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getActionButton(
     id: string,
-    type: 'comment' | 'tags' | 'semantic',
+    type: 'comment' | 'tags' | 'semantic' | 'fullpage',
     action: 'add' | 'edit'
   ) {
     return {
@@ -240,13 +246,14 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   };
 
   // TODO REMOVE AFTER SEMANTIC ANNOTATION IMPLEMENTATION
-  private blockEditAction(annotation: Annotation) {
+  private blockEditAction(annotation: Annotation): boolean {
     if (annotation.type !== 'Linking') {
       return false;
     }
     const triples = annotation.content;
     const hasObjectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
     const hasDate = triples.find((t) => t.objectType === 'date');
-    return !!hasObjectUri || !!hasDate;
+    const isFullpage = !!annotation.subject?.selected;
+    return !!hasObjectUri || !!hasDate || isFullpage;
   }
 }

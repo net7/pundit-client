@@ -3,6 +3,7 @@ import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 
 const TOP_MARGIN = 60;
+const TOP_MARGIN_FULLPAGE = 110;
 
 @Injectable()
 export class AnnotationPositionService {
@@ -22,7 +23,8 @@ export class AnnotationPositionService {
     const { shadowRoot } = rootElement;
     const bodyTop = document.body.getBoundingClientRect().top;
     // get all annotations (creation date and anchor)
-    const annotations = this.annotationService.getAnnotations().map(
+    const showFullPage = this.annotationService.showPageAnnotations$.getValue();
+    const annotations = this.annotationService.getAnnotationsToShow().map(
       ({ data$, id }) => ({
         created: data$.getValue().created,
         anchor: this.anchorService.getHighlightById(id)
@@ -68,7 +70,8 @@ export class AnnotationPositionService {
       // or the previous annotation offset (lastEnd)
       const { el, anchorPosition } = positionData;
       const { offsetHeight } = el;
-      const lastEnd = index ? positions[index - 1].end : TOP_MARGIN;
+      const firstMargin = showFullPage ? TOP_MARGIN_FULLPAGE : TOP_MARGIN;
+      const lastEnd = index ? positions[index - 1].end : firstMargin;
       const start = anchorPosition < lastEnd
         ? lastEnd
         : anchorPosition;

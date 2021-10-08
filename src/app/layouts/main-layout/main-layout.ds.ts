@@ -96,8 +96,6 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(AnnotationModel.search(uri, true)).pipe(
       tap((response) => {
         const { data: searchData } = response;
-        // TODO REMOVE AFTER FIX
-        this.removePageAnnotation(searchData);
         // remove private annotations
         this.removePrivateAnnotations(searchData);
         // handle response
@@ -112,8 +110,6 @@ export class MainLayoutDS extends LayoutDataSource {
     const uri = getDocumentHref();
     return from(AnnotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
-        // TODO REMOVE AFTER FIX
-        this.removePageAnnotation(searchData);
         this.handleSearchResponse(searchData);
         this.hasLoaded$.next(true);
       })
@@ -168,13 +164,17 @@ export class MainLayoutDS extends LayoutDataSource {
    * @param sections (required) modal form sections
    * @param saveButtonLabel (optional) save button label
    */
-  public openEditModal({ textQuote, saveButtonLabel, sections }: EditModalParams) {
+  public openEditModal({
+    textQuote, saveButtonLabel, sections, validation
+  }: EditModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
 
     // update component
-    this.one('edit-modal').update({ textQuote, saveButtonLabel, sections });
+    this.one('edit-modal').update({
+      textQuote, saveButtonLabel, sections, validation
+    });
   }
 
   public setAnonymousSelectionRange() {
@@ -285,10 +285,18 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  private removePageAnnotation(searchData: {annotations: Annotation[]}) {
-    const { annotations } = searchData;
-    const data = annotations.filter((a) => !!a?.subject?.selected);
-    searchData.annotations = data;
+  public addPendingAnnotation() {
+    this.state.annotation.pendingPayload = (
+      this.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+    );
+    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+      this.pendingAnnotationId,
+      this.state.annotation.pendingPayload
+    );
+    this.removePendingAnnotation();
+    this.anchorService.add(pendingAnnotation);
+
+    return pendingAnnotation;
   }
 }
 

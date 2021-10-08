@@ -8,6 +8,8 @@ export enum AppEvent {
   AnnotationEditComment = 'app.annotationeditcomment',
   AnnotationEditTags = 'app.annotationedittags',
   AnnotationEditSemantic = 'app.annotationeditsemantic',
+  AnnotationEditFullPage = 'app.annotationeditfullpage',
+  AnnotationNewFullPage = 'app.annotationenewfullpage',
   AnnotationMouseEnter = 'app.annotationmouseenter',
   AnnotationMouseLeave = 'app.annotationmouseleave',
   AnnotationUpdateNotebook = 'app.annotationupdatenotebook',
@@ -22,4 +24,6 @@ export enum AppEvent {
   SearchAnnotationResponse = 'app.searchannotationresponse',
   SelectedNotebookChanged = 'app.selectednotebookchanged',
   SidebarCollapse = 'app.sidebarcollapse',
+  ShowPageAnnotations = 'app.showpageannotations',
+  HidePageAnnotations = 'app.hidepageannotations'
 }

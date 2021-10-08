@@ -3,7 +3,8 @@
      [ngClass]="{
         'is-collapsed': (ds.isCollapsed | async),
         'is-expanded': !(ds.isCollapsed | async),
-        'has-notebook-panel-open': (lb.dataSource.notebookEditor | async)
+        'has-notebook-panel-open': (lb.dataSource.notebookEditor | async),
+        'has-fullpage-open': (ds.annotationService.showPageAnnotations$ | async)
     }">
     
     <!-- Pundit Logo toggle -->
@@ -52,15 +53,22 @@
                 </ul>
             </div>
         </ng-container>
-        <div *ngIf="ds.userService.logged$ | async" class="pnd-sidebar__actions">
-            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
-               (click)="lb.eventHandler.emitInner('notebookpanel')">
-                <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
+        <div  class="pnd-sidebar__actions">
+            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.annotationService.showPageAnnotations$ | async) ? 'is-active' : ''}}" 
+            (click)="lb.eventHandler.emitInner('pageannotationpanel')">
+                <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
             </a>
-            <a class="pnd-sidebar__action pnd-sidebar__close-button"
-               (click)="lb.eventHandler.emitInner('sidebarclose')">
-                <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
-            </a>
+            <ng-container *ngIf="ds.userService.logged$ | async">
+                <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
+                (click)="lb.eventHandler.emitInner('notebookpanel')">
+                 <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
+             </a>
+             <a class="pnd-sidebar__action pnd-sidebar__close-button"
+                (click)="lb.eventHandler.emitInner('sidebarclose')">
+                 <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
+             </a>
+            </ng-container>
+        
         </div>
     </div>
     <!-- END // Header -->
@@ -77,6 +85,12 @@
     <!-- Sidebar content -->
     <div class="pnd-sidebar__content"
          [style.height]="ds.height$ | async">
+         <ng-container *ngIf="(ds.userService.logged$ | async) &&
+          (ds.annotationService.showPageAnnotations$ | async)">
+            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage')"  *ngIf="!(ds.isCollapsed | async)">
+              {{ds?.fullpage?.label}}
+            </a> 
+         </ng-container>
          <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
             <ng-container *ngFor="let annotation of lb.dataSource.annotations">
                 <annotation [ngClass]="annotation"

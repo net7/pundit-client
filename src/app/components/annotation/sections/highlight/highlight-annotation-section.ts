@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { _t } from '@n7-frontend/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,7 +20,16 @@ export class HighlightAnnotationSectionComponent implements OnInit {
   }
 
   private transformData = (annotation: Annotation): any => {
-    const { text } = annotation?.subject?.selected;
-    return { text };
+    const { subject } = annotation;
+    const isFullpage = !subject?.selected;
+    let text;
+    let date;
+    if (isFullpage) {
+      text = _t('fullpage#label');
+      date = annotation.created;
+    } else {
+      text = subject?.selected?.text;
+    }
+    return { text, isFullpage, date };
   };
 }

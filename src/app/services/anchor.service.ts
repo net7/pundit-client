@@ -118,7 +118,7 @@ export class AnchorService {
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {
-    if (!annotation || !annotation.subject?.selected) return [];
+    if (!annotation || !annotation.subject?.selected) return [{ start: 0, end: 0, type: 'TextPositionSelector' }];
     const target = annotation.subject.selected;
     const selectors: SelectorWithType[] = [];
     if (target.rangeSelector) {

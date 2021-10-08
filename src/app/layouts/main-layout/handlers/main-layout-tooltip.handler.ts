@@ -1,9 +1,10 @@
 import { _t } from '@n7-frontend/core';
-import { HighlightAnnotation } from '@pundit/communication';
 import { EMPTY } from 'rxjs';
 import { catchError, filter, withLatestFrom } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
-import { AppEvent, TooltipEvent } from 'src/app/event-types';
+import {
+  AppEvent, TooltipEvent
+} from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
@@ -50,6 +51,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
             // reset previous payload
             this.layoutDS.state.annotation.pendingPayload = null;
             this.layoutDS.state.annotation.updatePayload = null;
+            this.layoutEH.appEvent$.next({ type: AppEvent.HidePageAnnotations, payload });
             if (payload === 'highlight') {
               // toast "working..."
               const workingToast = this.layoutDS.toastService.working();
@@ -115,10 +117,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    this.layoutDS.state.annotation.pendingPayload = (
-      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
-    );
-    const pendingAnnotation = this.addPendingAnnotation();
+    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
@@ -135,10 +134,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipTag() {
-    this.layoutDS.state.annotation.pendingPayload = (
-      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
-    );
-    const pendingAnnotation = this.addPendingAnnotation();
+    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
@@ -154,10 +150,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipSemantic() {
-    this.layoutDS.state.annotation.pendingPayload = (
-      this.layoutDS.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
-    );
-    const pendingAnnotation = this.addPendingAnnotation();
+    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
 
     this.layoutDS.openEditModal({
       textQuote: pendingAnnotation.subject.selected.text,
@@ -172,16 +165,5 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
         id: 'notebook'
       }]
     });
-  }
-
-  private addPendingAnnotation() {
-    const pendingAnnotation = this.layoutDS.annotationService.getAnnotationFromPayload(
-      this.layoutDS.pendingAnnotationId,
-      this.layoutDS.state.annotation.pendingPayload
-    );
-    this.layoutDS.removePendingAnnotation();
-    this.layoutDS.anchorService.add(pendingAnnotation);
-
-    return pendingAnnotation;
   }
 }
