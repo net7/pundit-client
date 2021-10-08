@@ -2,7 +2,7 @@
     [ngClass]="{
         'is-collapsed': state?.isCollapsed,
         'is-expanded': !state?.isCollapsed,
-        'has-comment': (data$ | async)?.type === 'Commenting',
+        'has-comment': (data$ | async)?.subject?.selected && (data$ | async)?.type === 'Commenting',
         'is-fullpage': !(data$ | async)?.subject?.selected
     }"
     (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
