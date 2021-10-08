@@ -2,16 +2,18 @@ import { _t } from '@n7-frontend/core';
 import {
   Annotation, CommentAnnotation, HighlightAnnotation, LinkAnnotation
 } from '@pundit/communication';
-import { catchError, takeUntil } from 'rxjs/operators';
+import { catchError, debounceTime, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
-import { EMPTY } from 'rxjs';
+import { EMPTY, Subject } from 'rxjs';
 import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
 export class SidebarLayoutAppEventsHandler implements LayoutHandler {
+  private pdfViewerChanged$: Subject<void> = new Subject();
+
   constructor(
     private layoutDS: SidebarLayoutDS,
     private layoutEH: SidebarLayoutEH
@@ -58,27 +60,27 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           this.layoutDS.updateNotebookPanel();
           break;
         case AppEvent.PdfViewerPageChanged:
-          this.layoutEH.anchorService.checkOrphans();
-          setTimeout(() => {
-            this.layoutDS.updateAnnotations();
-            this.layoutEH.detectChanges();
-          });
-          break;
         case AppEvent.PdfViewerHtmlChanged:
-          this.layoutEH.anchorService.refresh();
-          setTimeout(() => {
-            this.layoutDS.updateAnnotations();
-            this.layoutEH.detectChanges();
-          });
-          break;
         case AppEvent.PdfViewerLoaded:
-          this.layoutEH.updateSidebarHeight();
+          this.pdfViewerChanged$.next();
           break;
         default:
           break;
       }
 
       this.layoutEH.detectChanges();
+    });
+
+    // listen pdf viewer
+    this.pdfViewerChanged$.pipe(
+      debounceTime(500),
+    ).subscribe(() => {
+      this.layoutEH.updateSidebarHeight();
+      this.layoutEH.anchorService.refresh();
+      setTimeout(() => {
+        this.layoutDS.updateAnnotations();
+        this.layoutEH.detectChanges();
+      });
     });
   }
 
