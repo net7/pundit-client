@@ -1,6 +1,8 @@
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
-import { updateExtensionIcon } from '.';
+import {
+  isPdfDocument, isPdfViewer, redirectToOriginalPdfUrl, redirectToPdfViewer, updateExtensionIcon
+} from '.';
 import { CommonEventType } from '../../../../common/types';
 
 export const checkActiveState = (tabId: number) => {
@@ -9,19 +11,28 @@ export const checkActiveState = (tabId: number) => {
       // do nothing
     } else {
       const { windowId } = tab;
-      chrome.windows.get(windowId, ({ type }) => {
+      chrome.windows.get(windowId, (window) => {
         // popup check
-        if (type === 'popup') {
+        if (window.type === 'popup') {
           return;
         }
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
-            const payload = { active };
-            chrome.tabs.sendMessage(tabId, {
-              payload,
-              type: CommonEventType.StateChanged,
-            });
+            const { url: tabUrl } = tab;
+            const isPdf = isPdfDocument(tabUrl);
+            const isViewer = isPdfViewer(tabUrl);
+            if (active && isPdf) {
+              redirectToPdfViewer(tabUrl);
+            } else if (!active && isViewer) {
+              redirectToOriginalPdfUrl(tabUrl);
+            } else {
+              const payload = { active };
+              chrome.tabs.sendMessage(tabId, {
+                payload,
+                type: CommonEventType.StateChanged,
+              });
+            }
             updateExtensionIcon(tabId, active);
           });
       });

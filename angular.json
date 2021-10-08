@@ -88,6 +88,22 @@
                 }
               ]
             },
+            "pdf": {
+              "outputPath": "dist/pdf",
+              "fileReplacements": [
+                {
+                  "replace": "src/index.html",
+                  "with": "src/html-examples/pdf-viewer.html"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
+                }
+              ]
+            },
             "chrome-ext-prod": {
               "outputPath": "dist/chrome-ext-prod",
               "optimization": true,
@@ -106,13 +122,18 @@
               "assets": [
                 {
                   "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/prod",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -134,13 +155,18 @@
               "assets": [
                 {
                   "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/stage",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -200,6 +226,9 @@
             },
             "scroll": {
               "browserTarget": "pnd:build:scroll"
+            },
+            "pdf": {
+              "browserTarget": "pnd:build:pdf"
             },
             "chrome-ext-prod": {
               "browserTarget": "pnd:build:chrome-ext-prod"

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
+import { PdfService } from './pdf.service';
 
 const TOP_MARGIN = 60;
 const TOP_MARGIN_FULLPAGE = 110;
@@ -9,7 +10,8 @@ const TOP_MARGIN_FULLPAGE = 110;
 export class AnnotationPositionService {
   constructor(
     private annotationService: AnnotationService,
-    private anchorService: AnchorService
+    private anchorService: AnchorService,
+    private pdfService: PdfService
   ) {}
 
   /** Recalculate the position and order of each annotation present in the sidebar */
@@ -21,7 +23,16 @@ export class AnnotationPositionService {
     }
 
     const { shadowRoot } = rootElement;
-    const bodyTop = document.body.getBoundingClientRect().top;
+    let containerTop = document.body.getBoundingClientRect().top;
+    // pdf document check
+    if (this.pdfService.isActive()) {
+      const pdfDocumentContainer = this.pdfService.getDocumentContainer();
+      if (pdfDocumentContainer) {
+        const viewerTop = pdfDocumentContainer.getBoundingClientRect().top;
+        const viewerToolbarHeight = this.pdfService.getViewerToolbarHeight();
+        containerTop = viewerTop - viewerToolbarHeight;
+      }
+    }
     // get all annotations (creation date and anchor)
     const showFullPage = this.annotationService.showPageAnnotations$.getValue();
     const annotations = this.annotationService.getAnnotationsToShow().map(
@@ -43,7 +54,7 @@ export class AnnotationPositionService {
           .filter((highlightEl) => highlightEl.offsetHeight > 0)
           .map(
             // get vertical offset of the corresponding highlight
-            (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
+            (highlightEl) => highlightEl.getBoundingClientRect().top - containerTop
           );
         if (tops.length) {
           // the first highlight

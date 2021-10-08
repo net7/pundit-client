@@ -25,5 +25,8 @@ export enum AppEvent {
   SelectedNotebookChanged = 'app.selectednotebookchanged',
   SidebarCollapse = 'app.sidebarcollapse',
   ShowPageAnnotations = 'app.showpageannotations',
-  HidePageAnnotations = 'app.hidepageannotations'
+  HidePageAnnotations = 'app.hidepageannotations',
+  PdfViewerPageChanged = 'app.pdfviewerpagechanged',
+  PdfViewerHtmlChanged = 'app.pdfviewerhtmlchanged',
+  PdfViewerLoaded = 'app.pdfviewerloaded',
 }

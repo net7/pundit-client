@@ -23,6 +23,7 @@ import { EditModalParams } from 'src/app/types';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
 import { SocialService } from 'src/app/services/social.service';
 import { ReplyService } from 'src/app/services/reply.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -59,6 +60,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public storageService: StorageService;
 
+  public pdfService: PdfService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -87,12 +90,13 @@ export class MainLayoutDS extends LayoutDataSource {
     this.toastService = payload.toastService;
     this.storageService = payload.storageService;
     this.semanticPredicateService = payload.semanticPredicateService;
+    this.pdfService = payload.pdfService;
   }
 
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    const uri = getDocumentHref();
+    const uri = this.getUri();
     return from(AnnotationModel.search(uri, true)).pipe(
       tap((response) => {
         const { data: searchData } = response;
@@ -107,7 +111,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   getUserAnnotations() {
-    const uri = getDocumentHref();
+    const uri = this.getUri();
     return from(AnnotationModel.search(uri)).pipe(
       tap(({ data: searchData }) => {
         this.handleSearchResponse(searchData);
@@ -297,6 +301,12 @@ export class MainLayoutDS extends LayoutDataSource {
     this.anchorService.add(pendingAnnotation);
 
     return pendingAnnotation;
+  }
+
+  private getUri() {
+    return this.pdfService.isActive()
+      ? this.pdfService.getOriginalUrl()
+      : getDocumentHref();
   }
 }
 
