@@ -25,5 +25,5 @@
     "default_title": "Launch Pundit Annotator"
   },
   "web_accessible_resources": ["pundit.chrome-ext.js"],
-  "permissions": ["activeTab", "storage"]
+  "permissions": ["activeTab", "tabs", "storage"]
 }

@@ -11,18 +11,20 @@ export const checkActiveState = (tabId: number) => {
       // do nothing
     } else {
       const { windowId } = tab;
-      chrome.windows.get(windowId, ({ type }) => {
+      chrome.windows.get(windowId, (window) => {
         // popup check
-        if (type === 'popup') {
+        if (window.type === 'popup') {
           return;
         }
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
             const { url: tabUrl } = tab;
-            if (active && isPdfDocument(tabUrl)) {
+            const isPdf = isPdfDocument(tabUrl);
+            const isViewer = isPdfViewer(tabUrl);
+            if (active && isPdf) {
               redirectToPdfViewer(tabUrl);
-            } else if (!active && isPdfViewer(tabUrl)) {
+            } else if (!active && isViewer) {
               redirectToOriginalPdfUrl(tabUrl);
             } else {
               const payload = { active };

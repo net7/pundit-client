@@ -13,7 +13,7 @@
     "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
     "build:chrome-ext-stage": "npm run build:embed-stage && ng build -c chrome-ext-stage --single-bundle",
     "postbuild:chrome-ext-stage": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-stage",
-    "build:chrome-ext-prod": "ng build -c chrome-ext-prod --single-bundle",
+    "build:chrome-ext-prod": "npm run build:embed-prod && ng build -c chrome-ext-prod --single-bundle",
     "postbuild:chrome-ext-prod": "webpack --config webpack.chrome-ext.js && node ./scripts/postbuild.js -c chrome-ext-prod",
     "build:embed-stage": "ng build -c embed-stage --single-bundle",
     "watch:embed-stage": "npm run build:embed-stage -- --watch",

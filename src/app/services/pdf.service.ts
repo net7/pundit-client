@@ -39,15 +39,16 @@ export class PdfService {
   constructor() {
     this.pdfApp = (window as any).PDFViewerApplication;
     if (this.pdfApp) {
+      // set urls
+      const urlParams = new URLSearchParams(window.location.search);
+      const source = urlParams.get('source');
+      // FIXME: update proxy url
+      this.originalUrl = source || '/no-pdf-file.pdf';
+      this.documentUrl = `${this.originalUrl}`;
       // add body class
       document.body.classList.add(PDF_BODY_CLASS);
       // pdf app init
       document.addEventListener('webviewerloaded', () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const source = urlParams.get('source');
-        // FIXME: update proxy url
-        this.originalUrl = source || '/no-pdf-file.pdf';
-        this.documentUrl = `${this.originalUrl}`;
         from(this.pdfApp.initializedPromise).pipe(
           first(),
         ).subscribe(() => {
