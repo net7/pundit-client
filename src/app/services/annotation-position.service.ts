@@ -24,7 +24,7 @@ export class AnnotationPositionService {
     const bodyTop = document.body.getBoundingClientRect().top;
     // get all annotations (creation date and anchor)
     const showFullPage = this.annotationService.showPageAnnotations$.getValue();
-    const annotations = this.annotationService.getAnnotations().map(
+    const annotations = this.annotationService.getAnnotationsToShow().map(
       ({ data$, id }) => ({
         created: data$.getValue().created,
         anchor: this.anchorService.getHighlightById(id)

@@ -75,7 +75,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   updateAnnotations(load = false) {
     if (load) {
-      this.annotations = this.annotationService.getAnnotations();
+      this.annotations = this.annotationService.getAnnotationsToShow();
     }
 
     // fix elements load delay

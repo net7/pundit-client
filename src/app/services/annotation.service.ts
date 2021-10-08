@@ -147,6 +147,17 @@ export class AnnotationService {
   }
 
   getAnnotations() {
+    return this.annotations
+      .sort((a, b) => {
+        const aAnnotation = a.data$.getValue();
+        const bAnnotation = b.data$.getValue();
+        const aCreated = aAnnotation.created;
+        const bCreated = bAnnotation.created;
+        return new Date(aCreated).getTime() - new Date(bCreated).getTime();
+      });
+  }
+
+  getAnnotationsToShow() {
     const showPageAnnotations = this.showPageAnnotations$.getValue();
     return this.annotations
       .filter((a) => !!a.data$.getValue().subject?.selected === !showPageAnnotations)
