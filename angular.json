@@ -122,13 +122,18 @@
               "assets": [
                 {
                   "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/prod",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -148,11 +153,6 @@
                 }
               ],
               "assets": [
-                {
-                  "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
-                },
                 {
                   "glob": "**/*",
                   "input": "src/chrome-ext/assets/pdfjs",
