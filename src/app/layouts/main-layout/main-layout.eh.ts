@@ -1,14 +1,16 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import {
-  Subject, ReplaySubject, EMPTY, of, Observable
+  Subject, ReplaySubject, EMPTY, of, Observable, forkJoin
 } from 'rxjs';
 import {
   catchError, delay, switchMap, tap
 } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
+import { StorageKey } from 'src/common/types';
 import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
 import { LoginUser } from '@pundit/communication';
+import { setTokenFromStorage } from 'src/common/helpers';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -58,6 +60,19 @@ export class MainLayoutEH extends EventHandler {
                   const user = val.user as LoginUser;
                   this.dataSource.notebookService.setSelected(user.current_notebook);
                 }
+              }),
+              switchMap((val) => {
+                if ('user' in val) {
+                  return forkJoin({
+                    user: this.dataSource.storageService.set(StorageKey.User, val.user),
+                    token: this.dataSource.storageService.set(StorageKey.Token, val.token)
+                  }).pipe(
+                    tap(() => {
+                      setTokenFromStorage();
+                    })
+                  );
+                }
+                return of(true);
               })
             );
           }
