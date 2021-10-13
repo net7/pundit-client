@@ -55,7 +55,7 @@
         </ng-container>
         <div  class="pnd-sidebar__actions">
             <ng-container *ngIf="ds.userService.logged$ | async">
-                <a [href]="" class="pnd-sidebar__action {{ (ds.userService.dashboardNotifications$ | async) ? 'is-active' : ''}}">
+                <a [href]="" class="pnd-sidebar__action is-bell {{ (ds.userService.dashboardNotifications$ | async) ? 'is-active' : ''}}">
                     <pnd-svg-icon [data]="{ id: 'bell' }">
                     </pnd-svg-icon>
                     <ng-container *ngIf="(ds.userService.dashboardNotifications$ | async)">

@@ -194,7 +194,11 @@
             width: 18px;
             height: auto;
         }
-
+        
+        &.is-bell {
+            position: relative;
+            border-bottom: transparent
+        }
         &__badge {
             background-color: $color-main;
             color: white;
@@ -205,8 +209,8 @@
             border-radius: 50%;
             border: 1px solid ;
             position: absolute;
-            top: 0px;
-            right: 0px;
+            top: 17px;
+            right: 5px;
             padding: 2px;
             font-size: xx-small;
             display: flex;
