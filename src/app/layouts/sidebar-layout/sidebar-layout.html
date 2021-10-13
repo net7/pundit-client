@@ -54,7 +54,16 @@
             </div>
         </ng-container>
         <div  class="pnd-sidebar__actions">
-            <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.annotationService.showPageAnnotations$ | async) ? 'is-active' : ''}}" 
+            <ng-container *ngIf="ds.userService.logged$ | async">
+                <a [href]="" class="pnd-sidebar__action {{ (ds.userService.dashboardNotifications$ | async) ? 'is-active' : ''}}">
+                    <pnd-svg-icon [data]="{ id: 'bell' }">
+                    </pnd-svg-icon>
+                    <ng-container *ngIf="(ds.userService.dashboardNotifications$ | async)">
+                        <span class="pnd-sidebar__action__badge">{{ds.userService.dashboardNotifications$ | async}}</span>
+                    </ng-container>
+                </a>
+            </ng-container>
+            <a class="pnd-sidebar__action {{ (ds.annotationService.showPageAnnotations$ | async) ? 'is-active' : ''}}" 
             (click)="lb.eventHandler.emitInner('pageannotationpanel')">
                 <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
             </a>

@@ -194,6 +194,25 @@
             width: 18px;
             height: auto;
         }
+
+        &__badge {
+            background-color: $color-main;
+            color: white;
+            width: 8px;
+            height: 8px;
+            margin: 0;
+            text-align: center;
+            border-radius: 50%;
+            border: 1px solid ;
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            padding: 2px;
+            font-size: xx-small;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
 }
 

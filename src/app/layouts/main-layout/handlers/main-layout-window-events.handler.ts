@@ -46,6 +46,8 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
         if ('user' in resp) {
           const { user, token } = resp as SuccessLoginResponse;
           let source$: Observable<unknown> = of(true);
+          const notificationNum = user?.notifications?.total || 0;
+          this.layoutDS.userService.dashboardNotifications$.next(notificationNum);
           const isSameUser = resp.user.id === currentUser?.id;
           const isSameNotebook = resp.user.current_notebook === selectedNotebook?.id;
           if (!isSameUser || !isSameNotebook) {
@@ -62,6 +64,7 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
             this.checkStateFromStorage();
           });
         } else if ('error' in resp && resp.error === 'Unauthorized') {
+          this.layoutDS.userService.dashboardNotifications$.next(0);
           forkJoin({
             user: this.layoutDS.storageService.remove(StorageKey.User),
             token: this.layoutDS.storageService.remove(StorageKey.Token)

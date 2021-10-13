@@ -25,6 +25,8 @@ export class UserService {
 
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  public dashboardNotifications$: BehaviorSubject<number> = new BehaviorSubject(0);
+
   constructor(
     private storageService: StorageService,
     private imageDataService: ImageDataService,
@@ -83,6 +85,7 @@ export class UserService {
 
   logout() {
     this.logged$.next(false);
+    this.dashboardNotifications$.next(0);
 
     // storage sync
     this.storageService.remove(StorageKey.User).subscribe(() => {

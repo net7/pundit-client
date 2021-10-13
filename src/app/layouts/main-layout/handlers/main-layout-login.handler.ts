@@ -105,6 +105,9 @@ export class MainLayoutLoginHandler implements LayoutHandler {
         ...user,
         id: `${user.id}`,
       });
+      // set notification number
+      const notificationNumber = user?.notificaitons?.total || 0;
+      this.layoutDS.userService.dashboardNotifications$.next(notificationNumber);
       // close login modal
       this.layoutDS.punditLoginService.stop();
       // if there is an anonymous (before login) selection
