@@ -798,6 +798,10 @@ annotation {
         .pnd-annotation__notebook {
             display: none;
         }
+        
+        pnd-social-annotation-section {
+            display: none;
+        }
 
         &.is-hovered, &:hover {
             .pnd-annotation__highlight {
