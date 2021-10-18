@@ -55,6 +55,9 @@ class Editor {
       }
     });
 
+    // first menu state check
+    this.updateMenuState();
+
     // listen
     this.listen();
   }
