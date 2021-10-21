@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  from, Subject, ReplaySubject, EMPTY
+  from, Subject, EMPTY
 } from 'rxjs';
 import { Notebook, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
@@ -21,8 +21,6 @@ export type NotebookUpdate = {
 
 @Injectable()
 export class NotebookService {
-  public ready$: ReplaySubject<void> = new ReplaySubject();
-
   private notebooks: NotebookData[] = [];
 
   private selectedId: string;
@@ -31,9 +29,7 @@ export class NotebookService {
 
   constructor(
     private userService: UserService
-  ) {
-    this.ready$.next();
-  }
+  ) {}
 
   public getSelected = () => this.getNotebookById(this.selectedId);
 

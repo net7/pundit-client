@@ -1,9 +1,8 @@
-import { AuthToken, CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from '@pundit/communication';
 import mixpanel from 'mixpanel-browser';
-import { CommonEventType, StorageKey } from '../../../../common/types';
+import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
-import { ChromeExtStorage } from '../storage';
 
 type RuntimeMessage = {
   type: string;
@@ -24,17 +23,8 @@ export const onContentScriptMessage = (
     case CommonEventType.RootElementExists:
       onBrowserActionClicked(tab);
       break;
-    case CommonEventType.StorageRequest:
-      helpers.doStorageRequest(tab, payload);
-      break;
     case CommonEventType.CrossMsgRequest:
       helpers.doCrossMessageRequest(tab, payload);
-      break;
-    case CommonEventType.SetTokenFromStorage:
-      ChromeExtStorage.get(StorageKey.Token).then((storageToken) => {
-        // FIXME: controllare communication token type
-        CommunicationSettings.token = storageToken as AuthToken | null;
-      });
       break;
     case CommonEventType.InitCommunicationSettings:
       // communication config

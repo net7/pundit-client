@@ -7,3 +7,4 @@ export * from './main-layout-anchor.handler';
 export * from './main-layout-login.handler';
 export * from './main-layout-window-events.handler';
 export * from './main-layout-pdf.handler';
+export * from './main-layout-identity.handler';

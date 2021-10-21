@@ -1,16 +1,15 @@
 import { ChangeDetectorRef } from '@angular/core';
 import { EventHandler } from '@n7-frontend/core';
 import {
-  Subject, ReplaySubject, EMPTY, of, Observable, forkJoin
+  Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
 import {
-  catchError, delay, switchMap, tap
+  catchError, delay, switchMap
 } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
-import { StorageKey } from 'src/common/types';
-import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
-import { LoginUser } from '@pundit/communication';
-import { setTokenFromStorage } from 'src/common/helpers';
+import {
+  AppEvent, getEventType, MainLayoutEvent,
+} from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -52,33 +51,7 @@ export class MainLayoutEH extends EventHandler {
           });
           break;
         case MainLayoutEvent.GetUserData: {
-          let notebook$: Observable<any> = of(true);
-          if (payload?.getNotebookInfo) {
-            notebook$ = this.dataSource.punditLoginService.sso().pipe(
-              tap((val) => {
-                if ('user' in val) {
-                  const user = val.user as LoginUser;
-                  this.dataSource.notebookService.setSelected(user.current_notebook);
-                }
-              }),
-              switchMap((val) => {
-                if ('user' in val) {
-                  return forkJoin({
-                    user: this.dataSource.storageService.set(StorageKey.User, val.user),
-                    token: this.dataSource.storageService.set(StorageKey.Token, val.token)
-                  }).pipe(
-                    tap(() => {
-                      setTokenFromStorage();
-                    })
-                  );
-                }
-                return of(true);
-              })
-            );
-          }
-
-          notebook$.pipe(
-            switchMap(() => this.dataSource.getUserNotebooks()),
+          this.dataSource.getUserNotebooks().pipe(
             switchMap(() => {
               // set default notebook
               this.dataSource.setDefaultNotebook();
@@ -139,12 +112,23 @@ export class MainLayoutEH extends EventHandler {
   }
 
   public handleError(error) {
-    const { status } = error.response;
+    let { status } = error;
+    if (error.response) {
+      status = error.response.status;
+    }
     switch (status) {
       // Unauthorized
       case 403:
       case 401:
-        this.appEvent$.next({ type: AppEvent.Logout });
+        this.appEvent$.next({
+          type: AppEvent.Logout,
+          payload: {
+            callback: () => {
+              // emit signal
+              this.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+            }
+          }
+        });
         break;
       default:
         console.warn('FIXME: error handler', error);

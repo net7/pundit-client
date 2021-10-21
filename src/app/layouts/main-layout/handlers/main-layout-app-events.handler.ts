@@ -5,7 +5,6 @@ import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@n7-frontend/core';
 import { SemanticTripleType } from '@pundit/communication';
-import { StorageKey } from '../../../../common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -53,6 +52,17 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
           break;
         case AppEvent.SidebarCollapse:
           this.onSidebarCollapse(payload);
+          break;
+        case AppEvent.SidebarLogoutClick:
+          this.layoutEH.appEvent$.next({
+            type: AppEvent.Logout,
+            payload: {
+              callback: () => {
+                // emit signal
+                this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+              }
+            }
+          });
           break;
         case AppEvent.Logout:
           this.onLogout(payload);
@@ -191,7 +201,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onLogout(payload) {
-    this.resetAppDataAndEmit(payload);
+    this.resetAppData(payload);
     if (!payload?.skipRequest) {
       this.layoutDS.punditLoginService.logout().catch((error) => {
         console.warn(error);
@@ -199,28 +209,24 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private resetAppDataAndEmit = (payload) => {
-    // reset
-    this.layoutDS.storageService.remove(StorageKey.Token).subscribe(() => {
-      this.layoutDS.userService.clear();
-      this.layoutDS.notebookService.clear();
-      this.layoutDS.tagService.clear();
-      this.layoutDS.semanticPredicateService.clear();
-      this.layoutDS.userService.logout();
+  private resetAppData = (payload) => {
+    this.layoutDS.userService.clear();
+    this.layoutDS.notebookService.clear();
+    this.layoutDS.tagService.clear();
+    this.layoutDS.semanticPredicateService.clear();
+    this.layoutDS.userService.logout();
 
-      // close verify toast
-      this.layoutDS.closeEmailVerifiedToast();
+    // close verify toast
+    this.layoutDS.closeEmailVerifiedToast();
 
-      // emit signals
-      this.layoutDS.annotationService.totalChanged$.next(0);
-      this.layoutDS.hasLoaded$.next(true);
-      this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+    // emit signals
+    this.layoutDS.annotationService.totalChanged$.next(0);
+    this.layoutDS.hasLoaded$.next(true);
 
-      // callback check
-      if (payload?.callback) {
-        payload.callback();
-      }
-    });
+    // callback check
+    if (payload?.callback) {
+      payload.callback();
+    }
   }
 
   private onRefresh() {
