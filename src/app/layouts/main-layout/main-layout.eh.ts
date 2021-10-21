@@ -123,6 +123,7 @@ export class MainLayoutEH extends EventHandler {
         this.appEvent$.next({
           type: AppEvent.Logout,
           payload: {
+            skipRequest: true,
             callback: () => {
               // emit signal
               this.emitInner(getEventType(MainLayoutEvent.GetPublicData));
