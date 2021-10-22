@@ -19,13 +19,6 @@ export const listen = () => {
         }
         break;
       }
-      case CommonEventType.StorageResponse: {
-        const signal = new CustomEvent(CommonEventType.StorageResponse, {
-          detail: payload
-        });
-        window.dispatchEvent(signal);
-        break;
-      }
       case CommonEventType.CrossMsgResponse: {
         const signal = new CustomEvent(CommonEventType.CrossMsgResponse, {
           detail: payload

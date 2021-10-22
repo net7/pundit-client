@@ -29,4 +29,5 @@ export enum AppEvent {
   PdfViewerPageChanged = 'app.pdfviewerpagechanged',
   PdfViewerHtmlChanged = 'app.pdfviewerhtmlchanged',
   PdfViewerLoaded = 'app.pdfviewerloaded',
+  SidebarLogoutClick = 'app.sidebarlogoutclick',
 }

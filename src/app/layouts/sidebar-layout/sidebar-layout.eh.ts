@@ -100,7 +100,7 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case SidebarLayoutEvent.ClickLogout:
           this.appEvent$.next({
-            type: AppEvent.Logout,
+            type: AppEvent.SidebarLogoutClick,
           });
           break;
         case SidebarLayoutEvent.RequestLogin:
