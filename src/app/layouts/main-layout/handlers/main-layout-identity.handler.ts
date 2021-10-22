@@ -119,22 +119,25 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           // other user or no user on client
           } else if (currentUser?.id !== user.id) {
             // trigger logout
-            this.layoutEH.appEvent$.next({
-              type: AppEvent.Logout,
-              payload: {
-                skipRequest: true,
-                callback: () => {
+            if (!this.layoutDS.state.identitySyncLoading) {
+              this.layoutDS.state.identitySyncLoading = true;
+              this.layoutEH.appEvent$.next({
+                type: AppEvent.Logout,
+                payload: {
+                  skipRequest: true,
+                  callback: () => {
                   // clear toasts
-                  this.layoutDS.toastService.clear();
-                  // trigger auto-login
-                  this.layoutDS.userService.iam(user);
-                  // set default notebook
-                  this.layoutDS.notebookService.setSelected(user.current_notebook);
-                  // emit signal
-                  this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+                    this.layoutDS.toastService.clear();
+                    // trigger auto-login
+                    this.layoutDS.userService.iam(user);
+                    // set default notebook
+                    this.layoutDS.notebookService.setSelected(user.current_notebook);
+                    // emit signal
+                    this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
+                  }
                 }
-              }
-            });
+              });
+            }
           }
 
           // check user verify

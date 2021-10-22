@@ -40,11 +40,13 @@ export class MainLayoutEH extends EventHandler {
         case MainLayoutEvent.GetPublicData:
           this.dataSource.getPublicData().pipe(
             catchError((err) => {
+              this.dataSource.state.identitySyncLoading = false;
               console.warn('PublicData error:', err);
               return of(null);
             })
           ).subscribe(() => {
             // signal
+            this.dataSource.state.identitySyncLoading = false;
             this.appEvent$.next({
               type: AppEvent.SearchAnnotationResponse
             });
@@ -66,10 +68,12 @@ export class MainLayoutEH extends EventHandler {
             switchMap(() => this.dataSource.getUserTags()),
             switchMap(() => this.dataSource.getUserSemanticPredicates()),
             catchError((e) => {
+              this.dataSource.state.identitySyncLoading = false;
               this.handleError(e);
               return EMPTY;
             }),
           ).subscribe(() => {
+            this.dataSource.state.identitySyncLoading = false;
             this.appEvent$.next({
               type: AppEvent.SearchAnnotationResponse
             });
@@ -120,16 +124,19 @@ export class MainLayoutEH extends EventHandler {
       // Unauthorized
       case 403:
       case 401:
-        this.appEvent$.next({
-          type: AppEvent.Logout,
-          payload: {
-            skipRequest: true,
-            callback: () => {
-              // emit signal
-              this.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+        if (!this.dataSource.state.identitySyncLoading) {
+          this.dataSource.state.identitySyncLoading = true;
+          this.appEvent$.next({
+            type: AppEvent.Logout,
+            payload: {
+              skipRequest: true,
+              callback: () => {
+                // emit signal
+                this.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+              }
             }
-          }
-        });
+          });
+        }
         break;
       default:
         console.warn('FIXME: error handler', error);

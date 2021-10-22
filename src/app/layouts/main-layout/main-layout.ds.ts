@@ -34,6 +34,7 @@ type MainLayoutState = {
   };
   anonymousSelectionRange: Range;
   emailVerifiedToast: ToastInstance;
+  identitySyncLoading: boolean;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -72,7 +73,8 @@ export class MainLayoutDS extends LayoutDataSource {
       deleteId: null
     },
     anonymousSelectionRange: null,
-    emailVerifiedToast: null
+    emailVerifiedToast: null,
+    identitySyncLoading: false
   };
 
   onInit(payload) {
