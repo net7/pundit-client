@@ -41,6 +41,8 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           const { user } = resp;
           // set user
           this.layoutDS.userService.iam(user);
+          // set notifications
+          this.layoutDS.userService.dashboardNotifications$.next(user?.notifications?.total || 0);
           // set default notebook
           this.layoutDS.notebookService.setSelected(user.current_notebook);
           // emit signal
@@ -64,6 +66,9 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
             ...user,
             id: `${user.id}`,
           });
+          // set notifications
+          this.layoutDS.userService.dashboardNotifications$.next(user?.notifications?.total || 0);
+
           if (this.layoutDS.state.anonymousSelectionRange) {
             const {
               anonymousSelectionRange: lastSelectionRange,
@@ -109,9 +114,10 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
         const currentUser = this.layoutDS.userService.whoami();
         if ('user' in resp) {
           const { user } = resp as SuccessLoginResponse;
-
           // same user
           if (currentUser && currentUser.id === user.id) {
+            // set notifications
+            this.layoutDS.userService.dashboardNotifications$.next(user?.notifications?.total || 0);
             this.layoutDS.notebookService.setSelected(user.current_notebook);
             this.layoutEH.appEvent$.next({
               type: AppEvent.SelectedNotebookChanged
@@ -130,6 +136,9 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
                     this.layoutDS.toastService.clear();
                     // trigger auto-login
                     this.layoutDS.userService.iam(user);
+                    // set notifications
+                    this.layoutDS.userService.dashboardNotifications$
+                      .next(user?.notifications?.total || 0);
                     // set default notebook
                     this.layoutDS.notebookService.setSelected(user.current_notebook);
                     // emit signal

@@ -36,6 +36,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   public userLink = _c('userLink');
 
+  public notificationsLink = _c('notificationsLink');
+
   /** Data for the popover that appears when clicking on the user name */
   public userPopover = {
     isOpen: new BehaviorSubject(false),

@@ -19,6 +19,8 @@ export class UserService {
 
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  public dashboardNotifications$: BehaviorSubject<number> = new BehaviorSubject(0);
+
   constructor(
     private imageDataService: ImageDataService,
   ) {}
@@ -61,6 +63,7 @@ export class UserService {
 
   logout() {
     this.logged$.next(false);
+    this.dashboardNotifications$.next(0);
   }
 
   clear() {
