@@ -17,9 +17,6 @@ import { SocialService } from './services/social.service';
 import { AnchorService } from './services/anchor.service';
 import { AnnotationPositionService } from './services/annotation-position.service';
 import { ToastService } from './services/toast.service';
-import { StorageService } from './services/storage-service/storage.service';
-import { StorageEmbedService } from './services/storage-service/storage-embed.service';
-import { StorageChromeExtService } from './services/storage-service/storage-chrome-ext.service';
 import { ChromeExtService } from './services/chrome-ext.service';
 import { EmbedService } from './services/embed.service';
 import { ImageDataService } from './services/image-data.service';
@@ -81,11 +78,8 @@ const providers: any[] = [
   AnchorService,
   AnnotationPositionService,
   ToastService,
-  StorageService,
-  StorageEmbedService,
   EmbedService,
   ChromeExtService,
-  StorageChromeExtService,
   ImageDataService,
   SemanticPredicateService,
   PdfService,

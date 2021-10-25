@@ -12,7 +12,6 @@ import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
-import { StorageService } from 'src/app/services/storage-service/storage.service';
 import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
@@ -35,6 +34,7 @@ type MainLayoutState = {
   };
   anonymousSelectionRange: Range;
   emailVerifiedToast: ToastInstance;
+  identitySyncLoading: boolean;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -58,8 +58,6 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public toastService: ToastService;
 
-  public storageService: StorageService;
-
   public pdfService: PdfService;
 
   /** Let other layouts know that all services are ready */
@@ -75,7 +73,8 @@ export class MainLayoutDS extends LayoutDataSource {
       deleteId: null
     },
     anonymousSelectionRange: null,
-    emailVerifiedToast: null
+    emailVerifiedToast: null,
+    identitySyncLoading: false
   };
 
   onInit(payload) {
@@ -88,7 +87,6 @@ export class MainLayoutDS extends LayoutDataSource {
     this.anchorService = payload.anchorService;
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
-    this.storageService = payload.storageService;
     this.semanticPredicateService = payload.semanticPredicateService;
     this.pdfService = payload.pdfService;
   }

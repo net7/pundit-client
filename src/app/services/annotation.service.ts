@@ -83,6 +83,11 @@ export class AnnotationService {
     // if annotation exists update auth related info
     if (currentAnnotation) {
       const { data$ } = this.getAnnotationById(rawAnnotation.id);
+      // reset state classes
+      this.updateAnnotationState(rawAnnotation.id, {
+        classes: AnnotationCssClass.Empty
+      });
+      // update annotation data
       data$.next(rawAnnotation);
     } else {
       const { id } = rawAnnotation;

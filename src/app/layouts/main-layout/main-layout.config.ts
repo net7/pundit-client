@@ -11,7 +11,8 @@ import {
   MainLayoutSelectionHandler,
   MainLayoutTooltipHandler,
   MainLayoutWindowEventsHandler,
-  MainLayoutPdfHandler
+  MainLayoutPdfHandler,
+  MainLayoutIdentityHandler
 } from './handlers';
 
 export const MainLayoutConfig = {
@@ -38,7 +39,8 @@ export const MainLayoutConfig = {
     MainLayoutAnchorHandler,
     MainLayoutLoginHandler,
     MainLayoutWindowEventsHandler,
-    MainLayoutPdfHandler
+    MainLayoutPdfHandler,
+    MainLayoutIdentityHandler
   ],
   widgetsDataSources: DS,
   widgetsEventHandlers: EH,

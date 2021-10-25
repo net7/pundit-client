@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
-import { initCommunicationSettings, setTokenFromStorage } from '../../common/helpers';
+import { initCommunicationSettings } from '../../common/helpers';
 import { AnalyticsAction, CommonEventType } from '../../common/types';
 import { SIDEBAR_EXPANDED_CLASS } from '../layouts/main-layout/handlers';
 import { config } from '../models/config';
@@ -23,9 +23,6 @@ export class ChromeExtService {
         config.set('chromeExtUrl', `chrome-extension://${id}`);
         this.listenExtensionEvents();
         this.listenAnnotationUpdates();
-
-        // set token from storage on init
-        setTokenFromStorage();
         // init communication settings
         initCommunicationSettings();
         // analytics

@@ -1,11 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '@pundit/communication';
-import {
-  BehaviorSubject, Observable, of, ReplaySubject
-} from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
-import { StorageKey } from '../../common/types';
-import { StorageService } from './storage-service/storage.service';
 import { _c } from '../models/config';
 import { ImageDataService } from './image-data.service';
 
@@ -17,8 +13,6 @@ export type UserData = {
 
 @Injectable()
 export class UserService {
-  public ready$: ReplaySubject<void> = new ReplaySubject();
-
   private me: UserData;
 
   private users: UserData[] = [];
@@ -28,34 +22,18 @@ export class UserService {
   public dashboardNotifications$: BehaviorSubject<number> = new BehaviorSubject(0);
 
   constructor(
-    private storageService: StorageService,
     private imageDataService: ImageDataService,
-  ) {
-    this.storageService.get(StorageKey.User).subscribe((user: UserData) => {
-      if (user) {
-        this.iam(user, false);
-      }
-      // emit signal
-      this.ready$.next();
-    });
-  }
+  ) {}
 
-  public iam({ id, username, thumb }: UserData, sync = true) {
+  public iam({ id, username, thumb }: UserData) {
     this.add({ id, username, thumb });
     this.me = this.getUserById(id);
-    let source$: Observable<boolean> = of(true);
-    // storage sync
-    if (sync) {
-      source$ = this.storageService.set(StorageKey.User, this.me);
-    }
 
     // set analytics user
     AnalyticsModel.userId = id;
 
-    source$.subscribe(() => {
-      // emit signal
-      this.logged$.next(true);
-    });
+    // emit signal
+    this.logged$.next(true);
   }
 
   public whoami = () => this.me;
@@ -86,11 +64,6 @@ export class UserService {
   logout() {
     this.logged$.next(false);
     this.dashboardNotifications$.next(0);
-
-    // storage sync
-    this.storageService.remove(StorageKey.User).subscribe(() => {
-      // do nothing
-    });
   }
 
   clear() {

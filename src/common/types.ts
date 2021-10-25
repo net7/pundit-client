@@ -41,28 +41,14 @@ export enum CrossMsgRequestId {
 export enum CommonEventType {
   AnnotationsUpdate = 'annotationsupdate',
   RootElementExists = 'rootelementexists',
-  StorageRequest = 'storage.request',
-  StorageResponse = 'storage.response',
   StateChanged = 'statechanged',
   CrossMsgRequest = 'crossmessage.request',
   CrossMsgResponse = 'crossmessage.response',
   PunditLoaded = 'punditloaded',
   PunditDestroy = 'punditdestroy',
-  SetTokenFromStorage = 'settokenfromstorage',
   InitCommunicationSettings = 'initcommunicationsettings',
   ImageDataRequest = 'imagedata.request',
   ImageDataResponse = 'imagedata.response',
-}
-
-export enum StorageKey {
-  User = 'pundit-user',
-  Token = 'pundit-token'
-}
-
-export enum StorageOperationType {
-  Get = 'get',
-  Set = 'set',
-  Remove = 'remove'
 }
 
 export type AnalyticsData = {
