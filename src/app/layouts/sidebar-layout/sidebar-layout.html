@@ -55,7 +55,11 @@
         </ng-container>
         <div  class="pnd-sidebar__actions">
             <ng-container *ngIf="ds.userService.logged$ | async">
-                <a [href]="ds.notificationsLink" target="_blank" class="pnd-sidebar__action is-bell {{ (ds.userService.dashboardNotifications$ | async) ? 'is-active' : ''}}">
+                <a [href]="ds.notificationsLink" target="_blank" class="pnd-sidebar__action is-bell"
+                [title]="ds.labels.notifications.show"
+                [ngClass]="{
+                    'is-active': ds.userService.dashboardNotifications$ | async
+                }">
                     <pnd-svg-icon [data]="{ id: 'bell' }">
                     </pnd-svg-icon>
                     <ng-container *ngIf="(ds.userService.dashboardNotifications$ | async)">
@@ -63,16 +67,25 @@
                     </ng-container>
                 </a>
             </ng-container>
-            <a class="pnd-sidebar__action {{ (ds.annotationService.showPageAnnotations$ | async) ? 'is-active' : ''}}" 
+            <a class="pnd-sidebar__action"
+            [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
+            [ngClass]="{
+                'is-active': ds.annotationService.showPageAnnotations$ | async
+            }" 
             (click)="lb.eventHandler.emitInner('pageannotationpanel')">
                 <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
             </a>
             <ng-container *ngIf="ds.userService.logged$ | async">
-                <a class="pnd-sidebar__action pnd-sidebar__notebook-panel {{ (ds.notebookEditor | async) ? 'is-active' : ''}}"
+                <a class="pnd-sidebar__action pnd-sidebar__notebook-panel"
+                [title]="(ds.notebookEditor | async) ? ds.labels.notebookpanel.hide : ds.labels.notebookpanel.show"
+                [ngClass]="{
+                    'is-active': ds.notebookEditor | async
+                }"
                 (click)="lb.eventHandler.emitInner('notebookpanel')">
                  <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
              </a>
              <a class="pnd-sidebar__action pnd-sidebar__close-button"
+                [title]="ds.labels.collapse"
                 (click)="lb.eventHandler.emitInner('sidebarclose')">
                  <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
              </a>

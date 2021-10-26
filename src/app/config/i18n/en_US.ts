@@ -162,5 +162,11 @@ export default {
   'texteditor#link_placeholder': 'https://',
   // fullpage annotations
   'fullpage#add': 'Add Page Annotation',
-  'fullpage#label': 'Page Annotation'
+  'fullpage#label': 'Page Annotation',
+  'sidebaractions#fullpage_show': 'Show full page annotations',
+  'sidebaractions#fullpage_hide': 'Hide full page annotations',
+  'sidebaractions#notebookpanel_show': 'Open notebook settings',
+  'sidebaractions#notebookpanel_hide': 'Close notebook settings',
+  'sidebaractions#notifications_show': 'View user notifications',
+  'sidebaractions#collapse': 'Close sidebar'
 };
