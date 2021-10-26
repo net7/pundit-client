@@ -52,6 +52,21 @@ export class SidebarLayoutDS extends LayoutDataSource {
     label: _t('fullpage#add')
   }
 
+  public labels = {
+    fullpage: {
+      show: _t('sidebaractions#fullpage_show'),
+      hide: _t('sidebaractions#fullpage_hide')
+    },
+    notebookpanel: {
+      show: _t('sidebaractions#notebookpanel_show'),
+      hide: _t('sidebaractions#notebookpanel_hide')
+    },
+    notifications: {
+      show: _t('sidebaractions#notifications_show')
+    },
+    collapse: _t('sidebaractions#collapse')
+  }
+
   onInit(payload) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
