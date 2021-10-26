@@ -153,34 +153,40 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     return rawSemantic.length ? rawSemantic.map((triple) => {
       const { predicate } = triple;
       let object = null;
+      let objectType = null;
       // literal
       if ('text' in triple.object) {
         object = {
           label: triple.object.text,
           uri: null
         };
+        objectType = 'literal';
         // uri as free-text
       } else if ('uri' in triple.object && triple.object.source === 'free-text') {
         object = {
           label: triple.object.uri,
           uri: triple.object.uri,
         };
+        objectType = 'uri';
         // uri
       } else if ('uri' in triple.object && triple.object.source === 'search') {
         object = {
           label: triple.object.label,
           uri: triple.object.uri,
         };
+        objectType = 'uri';
         // web page
       } else if ('pageTitle' in triple.object) {
         object = {
           label: triple.object.pageTitle,
-          uri: null
+          uri: null,
         };
+        // TODO: add webpage object type
+        // objectType = '';
       } else {
         console.warn('No handler for semantic object', triple.object);
       }
-      return { predicate, object };
+      return { predicate, object, objectType };
     }) : undefined;
   }
 
