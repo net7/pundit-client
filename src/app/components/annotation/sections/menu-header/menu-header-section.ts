@@ -15,11 +15,9 @@ import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
 
-type ButtonConfigType = AnnotationType | 'FullPage';
-
 interface ActionButtonConfig {
   id: string;
-  type: ButtonConfigType;
+  type: AnnotationType;
   hasTags?: boolean;
   avoidEdit?: boolean;
 }
@@ -129,7 +127,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     const user = this.userService.getUserById(annotation.userId);
     const buttonConfig: ActionButtonConfig = {
       id,
-      type: annotation.subject?.selected ? annotation.type : 'FullPage',
+      type: annotation.type,
       hasTags: !!annotation.tags?.length,
       avoidEdit: this.blockEditAction(annotation)
     };
@@ -191,8 +189,6 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
         actions.push(this.getActionButton(id, 'comment', 'add'));
         actions.push(this.getActionButton(id, 'semantic', 'add'));
         actions.push(this.getActionButton(id, 'tags', config?.hasTags ? 'edit' : 'add'));
-      } else {
-        actions.push(this.getActionButton(id, 'fullpage', 'edit'));
       }
     }
 
@@ -209,7 +205,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getActionButton(
     id: string,
-    type: 'comment' | 'tags' | 'semantic' | 'fullpage',
+    type: 'comment' | 'tags' | 'semantic',
     action: 'add' | 'edit'
   ) {
     return {
@@ -253,7 +249,6 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     const triples = annotation.content;
     const hasObjectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
     const hasDate = triples.find((t) => t.objectType === 'date');
-    const isFullpage = !!annotation.subject?.selected;
-    return !!hasObjectUri || !!hasDate || isFullpage;
+    return !!hasObjectUri || !!hasDate;
   }
 }

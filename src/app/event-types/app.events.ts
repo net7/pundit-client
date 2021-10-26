@@ -8,7 +8,6 @@ export enum AppEvent {
   AnnotationEditComment = 'app.annotationeditcomment',
   AnnotationEditTags = 'app.annotationedittags',
   AnnotationEditSemantic = 'app.annotationeditsemantic',
-  AnnotationEditFullPage = 'app.annotationeditfullpage',
   AnnotationNewFullPage = 'app.annotationenewfullpage',
   AnnotationMouseEnter = 'app.annotationmouseenter',
   AnnotationMouseLeave = 'app.annotationmouseleave',

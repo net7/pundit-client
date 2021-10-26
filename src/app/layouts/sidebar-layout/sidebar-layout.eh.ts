@@ -89,6 +89,7 @@ export class SidebarLayoutEH extends EventHandler {
         case SidebarLayoutEvent.ClickNewFullPageAnnotation:
           this.appEvent$.next({
             type: AppEvent.AnnotationNewFullPage,
+            payload
           });
           break;
         case SidebarLayoutEvent.Close:

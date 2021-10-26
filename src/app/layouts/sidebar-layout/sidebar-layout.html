@@ -96,9 +96,15 @@
          [style.height]="ds.height$ | async">
          <ng-container *ngIf="(ds.userService.logged$ | async) &&
           (ds.annotationService.showPageAnnotations$ | async)">
-            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage')"  *ngIf="!(ds.isCollapsed | async)">
+            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage','tagging')"  *ngIf="!(ds.isCollapsed | async)">
               {{ds?.fullpage?.label}}
             </a> 
+            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage', 'commenting')"  *ngIf="!(ds.isCollapsed | async)">
+                {{ds?.fullpage?.label}}
+              </a> 
+              <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage', 'linking')"  *ngIf="!(ds.isCollapsed | async)">
+                {{ds?.fullpage?.label}}
+              </a> 
          </ng-container>
          <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
             <ng-container *ngFor="let annotation of lb.dataSource.annotations">

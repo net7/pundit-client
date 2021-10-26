@@ -5,7 +5,6 @@ export enum AnnotationEvent {
   EditComment = 'annotation.editcomment',
   EditTags = 'annotation.edittags',
   EditSemantic = 'annotation.editsemantic',
-  EditFullPage = 'annotation.editfullpage',
   MouseEnter = 'annotation.mouseenter',
   MouseLeave = 'annotation.mouseleave',
   ToggleCollapsed = 'annotation.togglecollapsed',
