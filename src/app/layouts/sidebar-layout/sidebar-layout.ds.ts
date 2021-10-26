@@ -49,13 +49,19 @@ export class SidebarLayoutDS extends LayoutDataSource {
   }
 
   public fullpage = {
-    label: _t('fullpage#add')
+    isExpanded: false
   }
 
   public labels = {
     fullpage: {
       show: _t('sidebaractions#fullpage_show'),
-      hide: _t('sidebaractions#fullpage_hide')
+      hide: _t('sidebaractions#fullpage_hide'),
+      add: _t('fullpage#add'),
+      options: {
+        tagging: _t('tooltip#tag'),
+        commenting: _t('tooltip#comment'),
+        linking: _t('tooltip#semantic')
+      }
     },
     notebookpanel: {
       show: _t('sidebaractions#notebookpanel_show'),
@@ -104,5 +110,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
   onUsernameClick(ev: MouseEvent) {
     ev.stopImmediatePropagation();
     this.userPopover.isOpen.next(!this.userPopover.isOpen.getValue());
+  }
+
+  onFullpageDropdownToggle() {
+    this.fullpage.isExpanded = !this.fullpage.isExpanded;
   }
 }

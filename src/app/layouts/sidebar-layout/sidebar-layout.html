@@ -107,17 +107,39 @@
     <!-- Sidebar content -->
     <div class="pnd-sidebar__content"
          [style.height]="ds.height$ | async">
-         <ng-container *ngIf="(ds.userService.logged$ | async) &&
-          (ds.annotationService.showPageAnnotations$ | async)">
-            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage','tagging')"  *ngIf="!(ds.isCollapsed | async)">
-              {{ds?.fullpage?.label}}
-            </a> 
-            <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage', 'commenting')"  *ngIf="!(ds.isCollapsed | async)">
-                {{ds?.fullpage?.label}}
-              </a> 
-              <a class="pnd-btn pnd-btn-light pnd-sidebar__content__action" (click)="lb.eventHandler.emitInner('newfullpage', 'linking')"  *ngIf="!(ds.isCollapsed | async)">
-                {{ds?.fullpage?.label}}
-              </a> 
+         <ng-container *ngIf="
+            (ds.userService.logged$ | async) 
+            && (ds.annotationService.showPageAnnotations$ | async)
+            && !(ds.isCollapsed | async)
+        ">
+            <div class="pnd-dropdown {{ ds.fullpage.isExpanded ? 'is-expanded' : '' }}">
+                <!-- Selected element -->
+                <button class="pnd-dropdown__selected"
+                    (click)="ds.onFullpageDropdownToggle()">
+                    <div class="pnd-dropdown__selected-label" title="{{ ds.labels.fullpage.add }}">
+                        {{ ds.labels.fullpage.add }}
+                    </div>
+                    <div class="pnd-dropdown__selected-right-icon">
+                        <pnd-svg-icon *ngIf="!ds.fullpage.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+                        <pnd-svg-icon *ngIf="ds.fullpage.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+                    </div>
+                </button>
+                <!-- END // Selected element -->
+                
+                <!-- Dropdown items -->
+                <div class="pnd-dropdown__list-wrapper">
+                    <!-- list of predicate options -->
+                    <div class="pnd-dropdown__list-items">
+                        <ng-container *ngFor="let type of ['tagging', 'commenting', 'linking']">
+                            <div class="pnd-dropdown__item"
+                            (click)="lb.eventHandler.emitInner('newfullpage', type)">
+                                {{ ds.labels.fullpage.options[type] }}
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+                <!-- END // Dropdown items -->
+            </div>
          </ng-container>
          <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
             <ng-container *ngFor="let annotation of lb.dataSource.annotations">
