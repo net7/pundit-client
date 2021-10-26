@@ -52,10 +52,6 @@ export class AnnotationEH extends EventHandler {
               this.closeAnnotationMenu(id);
               this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
               break;
-            case 'action-fullpage': // click on the "edit tag" button
-              this.closeAnnotationMenu(id);
-              this.emitOuter(getEventType(AnnotationEvent.EditFullPage), id);
-              break;
             case 'menu-header': { // annotation update menu header
               const newState = { activeMenu: currentState?.activeMenu ? undefined : 'actions' };
               this.annotationService.updateAnnotationState(id, newState);

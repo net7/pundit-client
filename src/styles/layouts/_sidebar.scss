@@ -346,6 +346,15 @@
     }
 }
 
+// FULLPAGE DROPDOWN SELECT
+.pnd-sidebar__content {
+    .pnd-dropdown {
+        position: absolute;
+        margin: 70px $space;
+        width: calc(100% - 16px);
+    }
+}
+
 
 /* ------------------------------------ *\
     ANIMATIONS

@@ -4,7 +4,7 @@ import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@n7-frontend/core';
-import { SemanticTripleType } from '@pundit/communication';
+import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -44,11 +44,8 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         case AppEvent.AnnotationEditSemantic:
           this.onAnnotationEdit(payload, 'semantic');
           break;
-        case AppEvent.AnnotationEditFullPage:
-          this.onAnnotationEdit(payload, 'fullpage');
-          break;
         case AppEvent.AnnotationNewFullPage:
-          this.onFullPageAnnotationCreate();
+          this.onFullPageAnnotationCreate(payload);
           break;
         case AppEvent.SidebarCollapse:
           this.onSidebarCollapse(payload);
@@ -103,24 +100,25 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic' | 'fullpage') {
+  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.annotation.updatePayload = annotation;
-
+    const isFullPage = !annotation.subject?.selected;
     const params = {
       sections: [{
         id: 'tags',
-        value: annotation.tags
+        value: annotation.tags,
+        required: isFullPage,
       }, {
         id: 'notebook',
         value: annotation.notebookId
       }],
-      textQuote: annotation.subject?.selected?.text,
+      textQuote: isFullPage ? undefined : annotation.subject?.selected?.text,
       validation: {
         required: {
-          condition: mode === 'fullpage' ? 'OR' : 'AND'
+          condition: isFullPage ? 'OR' : 'AND'
         }
       }
     } as EditModalParams;
@@ -129,23 +127,17 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       params.sections.push({
         id: 'comment',
         value: annotation.type === 'Commenting' ? annotation.content?.comment : undefined,
-        focus: true
+        focus: true,
+        required: isFullPage,
       });
     } else if (mode === 'semantic') {
       params.sections.push({
         id: 'semantic',
         value: annotation.type === 'Linking' ? this.getSemanticData(annotation.content) : undefined,
-        focus: true
+        focus: true,
+        required: isFullPage,
       });
       params.saveButtonLabel = _t('editmodal#save_semantic');
-    } else if (mode === 'fullpage') {
-      params.sections[0].required = true;
-      params.sections.push({
-        id: 'comment',
-        value: annotation.type === 'Commenting' ? annotation.content?.comment : undefined,
-        focus: true,
-        required: true
-      });
     } else {
       // focus on input tags
       params.sections[0].focus = true;
@@ -161,34 +153,40 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     return rawSemantic.length ? rawSemantic.map((triple) => {
       const { predicate } = triple;
       let object = null;
+      let objectType = null;
       // literal
       if ('text' in triple.object) {
         object = {
           label: triple.object.text,
           uri: null
         };
+        objectType = 'literal';
         // uri as free-text
       } else if ('uri' in triple.object && triple.object.source === 'free-text') {
         object = {
           label: triple.object.uri,
           uri: triple.object.uri,
         };
+        objectType = 'uri';
         // uri
       } else if ('uri' in triple.object && triple.object.source === 'search') {
         object = {
           label: triple.object.label,
           uri: triple.object.uri,
         };
+        objectType = 'uri';
         // web page
       } else if ('pageTitle' in triple.object) {
         object = {
           label: triple.object.pageTitle,
-          uri: null
+          uri: null,
         };
+        // TODO: add webpage object type
+        // objectType = '';
       } else {
         console.warn('No handler for semantic object', triple.object);
       }
-      return { predicate, object };
+      return { predicate, object, objectType };
     }) : undefined;
   }
 
@@ -246,28 +244,46 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.hasLoaded$.next(true);
   }
 
-  private onFullPageAnnotationCreate = () => {
+  private onFullPageAnnotationCreate = (payload: any) => {
     const pendingAnnotation = this.layoutDS.addPendingAnnotation();
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.anchorService.add(pendingAnnotation);
 
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.pageTitle || pendingAnnotation.subject.pageContext,
-      validation: {
-        required: {
-          condition: 'OR'
-        }
-      },
-      sections: [{
+    const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
+    this.layoutDS.openEditModal(openModalConfig);
+  }
+
+  private buildEditModalConf = (pendingAnnotation: Annotation, type: string): EditModalParams => {
+    const isTagging = type !== 'tagging ';
+
+    const sections = [{
+      id: 'tags',
+      required: true,
+      focus: isTagging
+    }, {
+      id: 'notebook'
+    }];
+    if (type === 'commenting') {
+      sections.push({
         id: 'comment',
         required: true,
         focus: true
-      }, {
-        id: 'tags',
+      });
+    } else if (type === 'linking') {
+      sections.push({
+        id: 'semantic',
         required: true,
-      }, {
-        id: 'notebook'
-      }]
-    });
+        focus: true
+      });
+    }
+    return {
+      textQuote: pendingAnnotation.subject.pageTitle || pendingAnnotation.subject.pageContext,
+      validation: {
+        required: {
+          condition: isTagging ? 'OR' : 'AND'
+        }
+      },
+      sections
+    };
   }
 }
