@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
+const webpack = require('webpack');
 
 const common = {
   mode: 'production',
@@ -20,7 +21,12 @@ const common = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      API_BASE_URL: JSON.stringify('https://api.thepund.it')
+    })
+  ]
 };
 
 module.exports = [{
