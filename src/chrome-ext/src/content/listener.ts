@@ -1,3 +1,4 @@
+import { getDocumentHref } from '../../../app/models/annotation/html-util';
 import { CommonEventType } from '../../../common/types';
 import { RuntimeMessage } from '../types';
 import { destroyExtension } from './destroyExtension';
@@ -31,6 +32,14 @@ export const listen = () => {
           detail: payload
         });
         window.dispatchEvent(signal);
+        break;
+      }
+      case CommonEventType.DocumentUrlRequest: {
+        const documentUrl = getDocumentHref();
+        chrome.runtime.sendMessage({
+          type: CommonEventType.DocumentUrlResponse,
+          payload: documentUrl
+        });
         break;
       }
       default:

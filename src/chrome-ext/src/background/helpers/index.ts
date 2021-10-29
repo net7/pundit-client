@@ -9,3 +9,4 @@ export * from './isPdfViewer';
 export * from './redirectToPdfViewer';
 export * from './redirectToOriginalPdfUrl';
 export * from './getPdfViewerPath';
+export * from './doPageAnnotationsRequest';
