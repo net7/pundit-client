@@ -41,6 +41,7 @@ export const onContentScriptMessage = (
       break;
     case CommonEventType.DocumentUrlResponse:
       CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
+      CommunicationSettings.token = null;
       helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, response }) => {
         if (tabId === tab.id) {
           const { stats } = response.data;
