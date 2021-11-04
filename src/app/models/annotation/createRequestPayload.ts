@@ -14,18 +14,21 @@ import {
   CommentAnnotation,
   CommentAnnotationBuilder,
 } from '@pundit/communication';
+import { DocumentInfoPdf } from 'src/app/services/document-info/document-info-pdf.service';
+import { DocumentInfoWebpage } from 'src/app/services/document-info/document-info-webpage.service';
 import { describe } from '../anchoring/html';
 import { _c } from '../config';
-import {
-  getDocumentHref,
-  getDocumentTitle
-} from './html-util';
+// import {
+//   getDocumentHref,
+//   getDocumentTitle
+// } from './html-util';
 
 type AnnotationPayload = {
   userId: string;
   notebookId: string;
   selection: Range;
   type: AnnotationType;
+  documentInfo: DocumentInfoWebpage | DocumentInfoPdf;
   root?: HTMLElement;
   options: {
     content?: {
@@ -67,9 +70,16 @@ const createTextPositionSelector = (selectors: any): TextPositionSelector => {
     .build();
   return selector;
 };
-const createWebPageFragment = (selection: Range, root: HTMLElement = document.body): WebPage => {
+const createWebPageFragment = (
+  selection: Range,
+  documentInfo: DocumentInfoWebpage | DocumentInfoPdf,
+  root: HTMLElement = document.body
+): WebPage => {
   const pageBuilder = new WebPageBuilder();
-  pageBuilder.pageContext(getDocumentHref()).pageTitle(getDocumentTitle());
+  console.log('todo: add annotation metadata----------------------------->', documentInfo);
+  const { title, url } = documentInfo;
+  // pageBuilder.pageContext(getDocumentHref()).pageTitle(getDocumentTitle());
+  pageBuilder.pageContext(url).pageTitle(title);
   if (selection) {
     const selectors = describe(root, selection);
     const rangeSelector = createRangeSelector(selectors);
@@ -89,11 +99,12 @@ const highlightAnnotationPayload = ({
   userId,
   notebookId,
   selection,
+  documentInfo,
   root = document.body
 }: AnnotationPayload): HighlightAnnotation => {
   const serializer = _c('serializer');
   const annotationBuilder = new HighlightAnnotationBuilder();
-  const pageFragment = createWebPageFragment(selection, root);
+  const pageFragment = createWebPageFragment(selection, documentInfo, root);
   annotationBuilder.serializedBy(serializer)
     .userId(userId)
     .notebookId(notebookId)
@@ -105,11 +116,12 @@ const commentAnnotationPayload = ({
   notebookId,
   selection,
   options,
+  documentInfo,
   root = document.body
 }: AnnotationPayload): CommentAnnotation => {
   const serializer = _c('serializer');
   const annotationBuilder = new CommentAnnotationBuilder();
-  const pageFragment = createWebPageFragment(selection, root);
+  const pageFragment = createWebPageFragment(selection, documentInfo, root);
   let comment = '';
   if (options.content) {
     comment = (options.content as {

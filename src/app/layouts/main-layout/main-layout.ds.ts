@@ -15,7 +15,7 @@ import { UserService } from 'src/app/services/user.service';
 import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
-import { getDocumentHref } from 'src/app/models/annotation/html-util';
+// import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
@@ -23,6 +23,7 @@ import { SemanticPredicateService } from 'src/app/services/semantic-predicate.se
 import { SocialService } from 'src/app/services/social.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -60,6 +61,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public pdfService: PdfService;
 
+  public documentInfoService: DocumentInfoService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -89,31 +92,44 @@ export class MainLayoutDS extends LayoutDataSource {
     this.toastService = payload.toastService;
     this.semanticPredicateService = payload.semanticPredicateService;
     this.pdfService = payload.pdfService;
+    this.documentInfoService = payload.documentInfoService;
   }
 
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    const uri = this.getUri();
-    return from(AnnotationModel.search(uri, true)).pipe(
-      tap((response) => {
-        const { data: searchData } = response;
-        // remove private annotations
-        this.removePrivateAnnotations(searchData);
-        // handle response
-        this.handleSearchResponse(searchData);
-        // emit loaded signal
-        this.hasLoaded$.next(true);
+    // const uri = this.getUri();
+    return this.documentInfoService.get().pipe(
+      switchMap((info) => {
+        console.log('todo: passing metadata to search----------------------------->', info);
+        const { url } = info;
+        return from(AnnotationModel.search(url, true)).pipe(
+          tap((response) => {
+            const { data: searchData } = response;
+            // remove private annotations
+            this.removePrivateAnnotations(searchData);
+            // handle response
+            this.handleSearchResponse(searchData);
+            // emit loaded signal
+            this.hasLoaded$.next(true);
+          })
+        );
       })
     );
   }
 
   getUserAnnotations() {
-    const uri = this.getUri();
-    return from(AnnotationModel.search(uri)).pipe(
-      tap(({ data: searchData }) => {
-        this.handleSearchResponse(searchData);
-        this.hasLoaded$.next(true);
+    // const uri = this.getUri();
+    return this.documentInfoService.get().pipe(
+      switchMap((info) => {
+        console.log('todo: passing metadata to search----------------------------->', info);
+        const { url } = info;
+        return from(AnnotationModel.search(url)).pipe(
+          tap(({ data: searchData }) => {
+            this.handleSearchResponse(searchData);
+            this.hasLoaded$.next(true);
+          })
+        );
       })
     );
   }
@@ -301,11 +317,11 @@ export class MainLayoutDS extends LayoutDataSource {
     return pendingAnnotation;
   }
 
-  private getUri() {
-    return this.pdfService.isActive()
-      ? this.pdfService.getOriginalUrl()
-      : getDocumentHref();
-  }
+  // private getUri() {
+  //   return this.pdfService.isActive()
+  //     ? this.pdfService.getOriginalUrl()
+  //     : getDocumentHref();
+  // }
 }
 
 export type OpenModalParams = {

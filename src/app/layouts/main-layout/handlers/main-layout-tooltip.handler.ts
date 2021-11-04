@@ -1,6 +1,8 @@
 import { _t } from '@n7-frontend/core';
 import { EMPTY } from 'rxjs';
-import { catchError, filter, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError, filter, switchMap, withLatestFrom
+} from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import {
   AppEvent, TooltipEvent
@@ -112,8 +114,9 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload();
-    return this.layoutDS.saveAnnotation(requestPayload);
+    return this.layoutDS.annotationService.getAnnotationRequestPayload$().pipe(
+      switchMap((requestPayload) => this.layoutDS.saveAnnotation(requestPayload))
+    );
   }
 
   private onTooltipComment() {

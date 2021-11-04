@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
-import { from, fromEvent, Subject } from 'rxjs';
-import { debounceTime, first } from 'rxjs/operators';
+import {
+  from, fromEvent, Observable, ReplaySubject, Subject, of
+} from 'rxjs';
+import { debounceTime, first, switchMap } from 'rxjs/operators';
 import { PdfViewerEvents } from '../event-types';
 import { PDFViewerApplication as PDFViewerApp } from '../models/anchoring/pdf/types';
 
@@ -36,6 +38,8 @@ export class PdfService {
     payload?: any;
   }> = new Subject();
 
+  public loaded$: ReplaySubject<void> = new ReplaySubject();
+
   constructor() {
     this.pdfApp = (window as any).PDFViewerApplication;
     if (this.pdfApp) {
@@ -70,12 +74,30 @@ export class PdfService {
 
   getOriginalUrl = () => this.originalUrl;
 
+  getFingerprint(): string {
+    const { pdfDocument } = this.pdfApp;
+    if (Array.isArray(pdfDocument.fingerprints)) {
+      return pdfDocument.fingerprints[0];
+    }
+    return pdfDocument.fingerprint;
+  }
+
+  getTitle$(): Observable<string> {
+    const { pdfDocument } = this.pdfApp;
+    return from(pdfDocument.getMetadata()).pipe(
+      switchMap(({ info }) => of(info.Title || this.getFileNameFromUrl()))
+    );
+  }
+
   private load() {
     (window as any).PDFViewerApplicationOptions.set('defaultUrl', '');
     this.pdfApp.open({
       url: this.documentUrl,
       originalUrl: this.originalUrl,
     });
+
+    // emit signal
+    this.loaded$.next();
   }
 
   private listenPdfViewer() {
@@ -94,6 +116,12 @@ export class PdfService {
         debounceTime(1) // symbolic delay
       ).subscribe(this.onScroll);
     }
+  }
+
+  private getFileNameFromUrl() {
+    const parsed = new URL(this.originalUrl);
+    const pathSegments = parsed.pathname.split('/');
+    return pathSegments[pathSegments.length - 1];
   }
 
   onScroll({ target }) {
