@@ -15,7 +15,6 @@ import { UserService } from 'src/app/services/user.service';
 import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
-// import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
@@ -98,12 +97,10 @@ export class MainLayoutDS extends LayoutDataSource {
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    // const uri = this.getUri();
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
-        console.log('todo: passing metadata to search----------------------------->', info);
-        const { pageContext } = info;
-        return from(AnnotationModel.search(pageContext, true)).pipe(
+        const { pageContext, pageMetadata } = info;
+        return from(AnnotationModel.search(pageContext, pageMetadata, true)).pipe(
           tap((response) => {
             const { data: searchData } = response;
             // remove private annotations
@@ -119,12 +116,10 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   getUserAnnotations() {
-    // const uri = this.getUri();
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
-        console.log('todo: passing metadata to search----------------------------->', info);
-        const { pageContext } = info;
-        return from(AnnotationModel.search(pageContext)).pipe(
+        const { pageContext, pageMetadata } = info;
+        return from(AnnotationModel.search(pageContext, pageMetadata)).pipe(
           tap(({ data: searchData }) => {
             this.handleSearchResponse(searchData);
             this.hasLoaded$.next(true);
@@ -317,12 +312,6 @@ export class MainLayoutDS extends LayoutDataSource {
       })
     );
   }
-
-  // private getUri() {
-  //   return this.pdfService.isActive()
-  //     ? this.pdfService.getOriginalUrl()
-  //     : getDocumentHref();
-  // }
 }
 
 export type OpenModalParams = {

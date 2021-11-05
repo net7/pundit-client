@@ -18,10 +18,6 @@ import { DocumentInfoPdf } from 'src/app/services/document-info/document-info-pd
 import { DocumentInfoWebpage } from 'src/app/services/document-info/document-info-webpage.service';
 import { describe } from '../anchoring/html';
 import { _c } from '../config';
-// import {
-//   getDocumentHref,
-//   getDocumentTitle
-// } from './html-util';
 
 type AnnotationPayload = {
   userId: string;
@@ -76,10 +72,14 @@ const createWebPageFragment = (
   root: HTMLElement = document.body
 ): WebPage => {
   const pageBuilder = new WebPageBuilder();
-  console.log('todo: add annotation metadata----------------------------->', documentInfo);
-  const { pageTitle, pageContext } = documentInfo;
-  // pageBuilder.pageContext(getDocumentHref()).pageTitle(getDocumentTitle());
-  pageBuilder.pageContext(pageContext).pageTitle(pageTitle);
+  const { pageTitle, pageContext, pageMetadata } = documentInfo;
+  pageBuilder
+    .pageContext(pageContext)
+    .pageTitle(pageTitle)
+    .pageMetadata(pageMetadata);
+  if ('pageFavicon' in documentInfo) {
+    pageBuilder.pageFavicon(documentInfo.pageFavicon);
+  }
   if (selection) {
     const selectors = describe(root, selection);
     const rangeSelector = createRangeSelector(selectors);
@@ -134,7 +134,6 @@ const commentAnnotationPayload = ({
     .comment(comment)
     .subject(pageFragment);
 
-  console.warn('TODO: aggiungere comment a payload', options);
   return annotationBuilder.build();
 };
 const annotationPayload = (

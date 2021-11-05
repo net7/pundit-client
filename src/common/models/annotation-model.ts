@@ -24,8 +24,15 @@ export class AnnotationModel {
   }
 
   @CrossMessage(CrossMsgRequestId.AnnotationSearch)
-  static search(uri: string, publicSearch?: boolean) {
-    const payload = AnnotationModel.searchAnnotationPayload(uri);
+  static search(
+    uri: string,
+    pageMetadata: {
+      key: string;
+      value: string;
+    }[],
+    publicSearch?: boolean
+  ) {
+    const payload = AnnotationModel.searchAnnotationPayload(uri, pageMetadata);
     if (publicSearch) {
       return annotation.publicSearch(payload);
     }
@@ -37,10 +44,17 @@ export class AnnotationModel {
     return annotation.update(id, data);
   }
 
-  static searchAnnotationPayload = (uri: string): SearchAnnotationParams => {
+  static searchAnnotationPayload = (
+    uri: string,
+    pageMetadata: {
+      key: string;
+      value: string;
+    }[]
+  ): SearchAnnotationParams => {
     const searchRequestBuilder = new SearchAnnotationParamsBuilder();
     searchRequestBuilder.size(200)
-      .uri(uri);
+      .uri(uri)
+      .pageMetadata(pageMetadata);
     const params = searchRequestBuilder.build();
     return params;
   };

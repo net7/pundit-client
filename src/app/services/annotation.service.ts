@@ -67,10 +67,6 @@ export class AnnotationService {
    * and add it to the local cache.
    */
   create(attributes: AnnotationAttributes) {
-    // pdf check
-    if (this.pdfService.isActive()) {
-      attributes.subject.pageContext = this.pdfService.getOriginalUrl();
-    }
     return from(AnnotationModel.create(attributes)).pipe(
       tap(({ data }) => {
         const { id } = data;
