@@ -245,12 +245,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onFullPageAnnotationCreate = (payload: any) => {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-    this.layoutDS.removePendingAnnotation();
-    this.layoutDS.anchorService.add(pendingAnnotation);
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.removePendingAnnotation();
+      this.layoutDS.anchorService.add(pendingAnnotation);
 
-    const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
-    this.layoutDS.openEditModal(openModalConfig);
+      const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
+      this.layoutDS.openEditModal(openModalConfig);
+    });
   }
 
   private buildEditModalConf = (pendingAnnotation: Annotation, type: string): EditModalParams => {

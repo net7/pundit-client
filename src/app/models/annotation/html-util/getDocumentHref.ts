@@ -1,7 +1,6 @@
 // Get the true URI record when it's masked via a different protocol.
 // This happens when an href is set with a uri using the 'blob:' protocol
 // but the document can set a different uri through a <base> tag.
-
 export function getDocumentHref(document = window.document): string {
   const { href } = document.location;
   const { baseURI } = document;

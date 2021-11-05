@@ -1,6 +1,6 @@
 import { LayoutDataSource, _t } from '@n7-frontend/core';
 import {
-  from, of, BehaviorSubject
+  from, of, BehaviorSubject, Observable
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
@@ -15,7 +15,6 @@ import { UserService } from 'src/app/services/user.service';
 import { ToastInstance, ToastService } from 'src/app/services/toast.service';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
-import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagModel } from 'src/common/models/tag-model';
 import { TagService } from 'src/app/services/tag.service';
 import { EditModalParams } from 'src/app/types';
@@ -23,6 +22,7 @@ import { SemanticPredicateService } from 'src/app/services/semantic-predicate.se
 import { SocialService } from 'src/app/services/social.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -60,6 +60,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public pdfService: PdfService;
 
+  public documentInfoService: DocumentInfoService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -89,31 +91,40 @@ export class MainLayoutDS extends LayoutDataSource {
     this.toastService = payload.toastService;
     this.semanticPredicateService = payload.semanticPredicateService;
     this.pdfService = payload.pdfService;
+    this.documentInfoService = payload.documentInfoService;
   }
 
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    const uri = this.getUri();
-    return from(AnnotationModel.search(uri, true)).pipe(
-      tap((response) => {
-        const { data: searchData } = response;
-        // remove private annotations
-        this.removePrivateAnnotations(searchData);
-        // handle response
-        this.handleSearchResponse(searchData);
-        // emit loaded signal
-        this.hasLoaded$.next(true);
+    return this.documentInfoService.get().pipe(
+      switchMap((info) => {
+        const { pageContext, pageMetadata } = info;
+        return from(AnnotationModel.search(pageContext, pageMetadata, true)).pipe(
+          tap((response) => {
+            const { data: searchData } = response;
+            // remove private annotations
+            this.removePrivateAnnotations(searchData);
+            // handle response
+            this.handleSearchResponse(searchData);
+            // emit loaded signal
+            this.hasLoaded$.next(true);
+          })
+        );
       })
     );
   }
 
   getUserAnnotations() {
-    const uri = this.getUri();
-    return from(AnnotationModel.search(uri)).pipe(
-      tap(({ data: searchData }) => {
-        this.handleSearchResponse(searchData);
-        this.hasLoaded$.next(true);
+    return this.documentInfoService.get().pipe(
+      switchMap((info) => {
+        const { pageContext, pageMetadata } = info;
+        return from(AnnotationModel.search(pageContext, pageMetadata)).pipe(
+          tap(({ data: searchData }) => {
+            this.handleSearchResponse(searchData);
+            this.hasLoaded$.next(true);
+          })
+        );
       })
     );
   }
@@ -287,24 +298,19 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  public addPendingAnnotation() {
-    this.state.annotation.pendingPayload = (
-      this.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+  public addPendingAnnotation$(): Observable<Annotation> {
+    return this.annotationService.getAnnotationRequestPayload$().pipe(
+      switchMap((pendingPayload: HighlightAnnotation) => {
+        this.state.annotation.pendingPayload = pendingPayload;
+        const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+          this.pendingAnnotationId,
+          this.state.annotation.pendingPayload
+        );
+        this.removePendingAnnotation();
+        this.anchorService.add(pendingAnnotation);
+        return of(pendingAnnotation);
+      })
     );
-    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-      this.pendingAnnotationId,
-      this.state.annotation.pendingPayload
-    );
-    this.removePendingAnnotation();
-    this.anchorService.add(pendingAnnotation);
-
-    return pendingAnnotation;
-  }
-
-  private getUri() {
-    return this.pdfService.isActive()
-      ? this.pdfService.getOriginalUrl()
-      : getDocumentHref();
   }
 }
 

@@ -1,6 +1,8 @@
 import { _t } from '@n7-frontend/core';
 import { EMPTY } from 'rxjs';
-import { catchError, filter, withLatestFrom } from 'rxjs/operators';
+import {
+  catchError, filter, switchMap, withLatestFrom
+} from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import {
   AppEvent, TooltipEvent
@@ -112,58 +114,59 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipHighlight() {
-    const requestPayload = this.layoutDS.annotationService.getAnnotationRequestPayload();
-    return this.layoutDS.saveAnnotation(requestPayload);
+    return this.layoutDS.annotationService.getAnnotationRequestPayload$().pipe(
+      switchMap((requestPayload) => this.layoutDS.saveAnnotation(requestPayload))
+    );
   }
 
   private onTooltipComment() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      sections: [{
-        id: 'comment',
-        required: true,
-        focus: true
-      }, {
-        id: 'tags',
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        sections: [{
+          id: 'comment',
+          required: true,
+          focus: true
+        }, {
+          id: 'tags',
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 
   private onTooltipTag() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('editmodal#save_tags'),
-      sections: [{
-        id: 'tags',
-        required: true,
-        focus: true
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        saveButtonLabel: _t('editmodal#save_tags'),
+        sections: [{
+          id: 'tags',
+          required: true,
+          focus: true
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 
   private onTooltipSemantic() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('editmodal#save_semantic'),
-      sections: [{
-        id: 'semantic',
-        required: true,
-        focus: true
-      }, {
-        id: 'tags',
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        saveButtonLabel: _t('editmodal#save_semantic'),
+        sections: [{
+          id: 'semantic',
+          required: true,
+          focus: true
+        }, {
+          id: 'tags',
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 }

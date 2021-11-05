@@ -23,6 +23,9 @@ import { ImageDataService } from './services/image-data.service';
 import { TagService } from './services/tag.service';
 import { SemanticPredicateService } from './services/semantic-predicate.service';
 import { PdfService } from './services/pdf.service';
+import { DocumentInfoService } from './services/document-info/document-info.service';
+import { DocumentInfoPdfService } from './services/document-info/document-info-pdf.service';
+import { DocumentInfoWebpageService } from './services/document-info/document-info-webpage.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -83,6 +86,9 @@ const providers: any[] = [
   ImageDataService,
   SemanticPredicateService,
   PdfService,
+  DocumentInfoService,
+  DocumentInfoPdfService,
+  DocumentInfoWebpageService,
   { provide: APP_BASE_HREF, useValue: '/' },
 ];
 

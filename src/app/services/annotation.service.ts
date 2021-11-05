@@ -1,9 +1,16 @@
 import { Injectable } from '@angular/core';
 import {
-  Annotation, AnnotationAttributes, AnnotationType, CommentAnnotation, LinkAnnotation
+  Annotation,
+  AnnotationAttributes,
+  AnnotationType,
+  CommentAnnotation,
+  HighlightAnnotation,
+  LinkAnnotation
 } from '@pundit/communication';
-import { Subject, from, BehaviorSubject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import {
+  Subject, from, BehaviorSubject, Observable, of
+} from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
@@ -11,6 +18,7 @@ import { UserService } from './user.service';
 import { AnnotationModel } from '../../common/models';
 import { createRequestPayload } from '../models/annotation';
 import { PdfService } from './pdf.service';
+import { DocumentInfoService } from './document-info/document-info.service';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -44,7 +52,8 @@ export class AnnotationService {
   constructor(
     private userService: UserService,
     private notebookService: NotebookService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private documentInfoService: DocumentInfoService,
   ) { }
 
   load(rawAnnotations: Annotation[]) {
@@ -58,10 +67,6 @@ export class AnnotationService {
    * and add it to the local cache.
    */
   create(attributes: AnnotationAttributes) {
-    // pdf check
-    if (this.pdfService.isActive()) {
-      attributes.subject.pageContext = this.pdfService.getOriginalUrl();
-    }
     return from(AnnotationModel.create(attributes)).pipe(
       tap(({ data }) => {
         const { id } = data;
@@ -224,32 +229,37 @@ export class AnnotationService {
     return newAnnotation;
   }
 
-  getAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
+  getAnnotationRequestPayload$(
+    type: AnnotationType = 'Highlighting'
+  ): Observable<HighlightAnnotation | CommentAnnotation> {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
     const selectedNotebookId = this.notebookService.getSelected().id;
     const options = {};
-    return createRequestPayload({
-      userId,
-      type,
-      options,
-      notebookId: selectedNotebookId,
-      selection: range,
-    });
+    return this.documentInfoService.get().pipe(
+      switchMap((documentInfo) => of(createRequestPayload({
+        userId,
+        type,
+        options,
+        documentInfo,
+        notebookId: selectedNotebookId,
+        selection: range,
+      })))
+    );
   }
 
-  getFullPageAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
-    const userId = this.userService.whoami().id;
-    const selectedNotebookId = this.notebookService.getSelected().id;
-    const options = {};
-    return createRequestPayload({
-      userId,
-      type,
-      options,
-      notebookId: selectedNotebookId,
-      selection: undefined,
-    });
-  }
+  // getFullPageAnnotationRequestPayload(type: AnnotationType = 'Highlighting') {
+  //   const userId = this.userService.whoami().id;
+  //   const selectedNotebookId = this.notebookService.getSelected().id;
+  //   const options = {};
+  //   return createRequestPayload({
+  //     userId,
+  //     type,
+  //     options,
+  //     notebookId: selectedNotebookId,
+  //     selection: undefined,
+  //   });
+  // }
 
   clear() {
     this.annotations = [];
