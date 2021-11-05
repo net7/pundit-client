@@ -49,8 +49,8 @@ export enum CommonEventType {
   InitCommunicationSettings = 'initcommunicationsettings',
   ImageDataRequest = 'imagedata.request',
   ImageDataResponse = 'imagedata.response',
-  DocumentUrlRequest = 'documenturl.request',
-  DocumentUrlResponse = 'documenturl.response',
+  DocumentInfoRequest = 'documentinfo.request',
+  DocumentInfoResponse = 'documentinfo.response',
 }
 
 export type AnalyticsData = {

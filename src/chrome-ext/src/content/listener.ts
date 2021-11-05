@@ -1,4 +1,4 @@
-import { getDocumentHref } from '../../../app/models/annotation/html-util';
+import { getDocumentCanonicalUrl, getDocumentHref } from '../../../app/models/annotation/html-util';
 import { CommonEventType } from '../../../common/types';
 import { RuntimeMessage } from '../types';
 import { destroyExtension } from './destroyExtension';
@@ -34,11 +34,19 @@ export const listen = () => {
         window.dispatchEvent(signal);
         break;
       }
-      case CommonEventType.DocumentUrlRequest: {
-        const documentUrl = getDocumentHref();
+      case CommonEventType.DocumentInfoRequest: {
+        const pageContext = getDocumentHref();
+        const canonical = getDocumentCanonicalUrl();
+        let pageMetadata = null;
+        if (canonical) {
+          pageMetadata = [{
+            key: 'canonical',
+            value: canonical
+          }];
+        }
         chrome.runtime.sendMessage({
-          type: CommonEventType.DocumentUrlResponse,
-          payload: documentUrl
+          type: CommonEventType.DocumentInfoResponse,
+          payload: { pageContext, pageMetadata }
         });
         break;
       }

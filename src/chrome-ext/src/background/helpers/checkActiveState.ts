@@ -31,7 +31,7 @@ export const checkActiveState = (tabId: number) => {
               // to request annotations total
               if (!active && tabStatus === 'complete') {
                 chrome.tabs.sendMessage(tabId, {
-                  type: CommonEventType.DocumentUrlRequest,
+                  type: CommonEventType.DocumentInfoRequest,
                 });
               }
               const payload = { active };

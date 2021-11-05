@@ -39,7 +39,7 @@ export const onContentScriptMessage = (
     case CommonEventType.ImageDataRequest:
       helpers.doImageDataRequest(tab, payload);
       break;
-    case CommonEventType.DocumentUrlResponse:
+    case CommonEventType.DocumentInfoResponse:
       CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
       CommunicationSettings.token = null;
       helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, response }) => {
