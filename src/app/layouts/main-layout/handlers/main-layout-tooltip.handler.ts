@@ -120,53 +120,53 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   }
 
   private onTooltipComment() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      sections: [{
-        id: 'comment',
-        required: true,
-        focus: true
-      }, {
-        id: 'tags',
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        sections: [{
+          id: 'comment',
+          required: true,
+          focus: true
+        }, {
+          id: 'tags',
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 
   private onTooltipTag() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('editmodal#save_tags'),
-      sections: [{
-        id: 'tags',
-        required: true,
-        focus: true
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        saveButtonLabel: _t('editmodal#save_tags'),
+        sections: [{
+          id: 'tags',
+          required: true,
+          focus: true
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 
   private onTooltipSemantic() {
-    const pendingAnnotation = this.layoutDS.addPendingAnnotation();
-
-    this.layoutDS.openEditModal({
-      textQuote: pendingAnnotation.subject.selected.text,
-      saveButtonLabel: _t('editmodal#save_semantic'),
-      sections: [{
-        id: 'semantic',
-        required: true,
-        focus: true
-      }, {
-        id: 'tags',
-      }, {
-        id: 'notebook'
-      }]
+    this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
+      this.layoutDS.openEditModal({
+        textQuote: pendingAnnotation.subject.selected.text,
+        saveButtonLabel: _t('editmodal#save_semantic'),
+        sections: [{
+          id: 'semantic',
+          required: true,
+          focus: true
+        }, {
+          id: 'tags',
+        }, {
+          id: 'notebook'
+        }]
+      });
     });
   }
 }

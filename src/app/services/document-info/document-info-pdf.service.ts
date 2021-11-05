@@ -1,13 +1,11 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { PdfService } from '../pdf.service';
+import { DocumentInfo } from './document-info.service';
 
-export type DocumentInfoPdf = {
-  title: string;
-  url: string;
-  fingerprint: string;
-};
+export interface DocumentInfoPdf extends DocumentInfo {}
 
 @Injectable()
 export class DocumentInfoPdfService {
@@ -21,11 +19,14 @@ export class DocumentInfoPdfService {
     if (!this.cache) {
       return this.pdfService.loaded$.pipe(
         switchMap(() => this.pdfService.getTitle$()),
-        switchMap((title: string) => {
+        switchMap((pageTitle: string) => {
           this.cache = {
-            title,
-            url: this.pdfService.getOriginalUrl(),
-            fingerprint: this.pdfService.getFingerprint(),
+            pageTitle,
+            pageContext: this.pdfService.getOriginalUrl(),
+            pageMetadata: [{
+              key: 'fingerprint',
+              value: this.pdfService.getFingerprint()
+            }]
           };
           return of(this.cache);
         })

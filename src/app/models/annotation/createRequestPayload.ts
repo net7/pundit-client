@@ -77,9 +77,9 @@ const createWebPageFragment = (
 ): WebPage => {
   const pageBuilder = new WebPageBuilder();
   console.log('todo: add annotation metadata----------------------------->', documentInfo);
-  const { title, url } = documentInfo;
+  const { pageTitle, pageContext } = documentInfo;
   // pageBuilder.pageContext(getDocumentHref()).pageTitle(getDocumentTitle());
-  pageBuilder.pageContext(url).pageTitle(title);
+  pageBuilder.pageContext(pageContext).pageTitle(pageTitle);
   if (selection) {
     const selectors = describe(root, selection);
     const rangeSelector = createRangeSelector(selectors);

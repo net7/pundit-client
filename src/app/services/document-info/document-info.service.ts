@@ -4,6 +4,15 @@ import { PdfService } from '../pdf.service';
 import { DocumentInfoPdf, DocumentInfoPdfService } from './document-info-pdf.service';
 import { DocumentInfoWebpage, DocumentInfoWebpageService } from './document-info-webpage.service';
 
+export interface DocumentInfo {
+  pageTitle: string;
+  pageContext: string;
+  pageMetadata: {
+    key: string;
+    value: string;
+  }[];
+}
+
 @Injectable()
 export class DocumentInfoService {
   constructor(

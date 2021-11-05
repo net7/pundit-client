@@ -1,6 +1,6 @@
 import { LayoutDataSource, _t } from '@n7-frontend/core';
 import {
-  from, of, BehaviorSubject
+  from, of, BehaviorSubject, Observable
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
@@ -102,8 +102,8 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         console.log('todo: passing metadata to search----------------------------->', info);
-        const { url } = info;
-        return from(AnnotationModel.search(url, true)).pipe(
+        const { pageContext } = info;
+        return from(AnnotationModel.search(pageContext, true)).pipe(
           tap((response) => {
             const { data: searchData } = response;
             // remove private annotations
@@ -123,8 +123,8 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         console.log('todo: passing metadata to search----------------------------->', info);
-        const { url } = info;
-        return from(AnnotationModel.search(url)).pipe(
+        const { pageContext } = info;
+        return from(AnnotationModel.search(pageContext)).pipe(
           tap(({ data: searchData }) => {
             this.handleSearchResponse(searchData);
             this.hasLoaded$.next(true);
@@ -303,18 +303,19 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  public addPendingAnnotation() {
-    this.state.annotation.pendingPayload = (
-      this.annotationService.getAnnotationRequestPayload() as HighlightAnnotation
+  public addPendingAnnotation$(): Observable<Annotation> {
+    return this.annotationService.getAnnotationRequestPayload$().pipe(
+      switchMap((pendingPayload: HighlightAnnotation) => {
+        this.state.annotation.pendingPayload = pendingPayload;
+        const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
+          this.pendingAnnotationId,
+          this.state.annotation.pendingPayload
+        );
+        this.removePendingAnnotation();
+        this.anchorService.add(pendingAnnotation);
+        return of(pendingAnnotation);
+      })
     );
-    const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-      this.pendingAnnotationId,
-      this.state.annotation.pendingPayload
-    );
-    this.removePendingAnnotation();
-    this.anchorService.add(pendingAnnotation);
-
-    return pendingAnnotation;
   }
 
   // private getUri() {

@@ -6,13 +6,11 @@ import {
   getDocumentHref,
   getDocumentTitle
 } from 'src/app/models/annotation/html-util';
+import { DocumentInfo } from './document-info.service';
 
-export type DocumentInfoWebpage = {
-  title: string;
-  favicon: string;
-  url: string;
-  canonicalUrl: string;
-};
+export interface DocumentInfoWebpage extends DocumentInfo {
+  pageFavicon: string;
+}
 
 @Injectable()
 export class DocumentInfoWebpageService {
@@ -21,10 +19,13 @@ export class DocumentInfoWebpageService {
   get(): Observable<DocumentInfoWebpage> {
     if (!this.cache) {
       this.cache = {
-        title: getDocumentTitle(),
-        favicon: getDocumentFavicon(),
-        url: getDocumentHref(),
-        canonicalUrl: getDocumentCanonicalUrl()
+        pageTitle: getDocumentTitle(),
+        pageFavicon: getDocumentFavicon(),
+        pageContext: getDocumentHref(),
+        pageMetadata: [{
+          key: 'canonical',
+          value: getDocumentCanonicalUrl()
+        }]
       };
     }
     return of(this.cache);
