@@ -21,12 +21,15 @@ export class DocumentInfoWebpageService {
       this.cache = {
         pageTitle: getDocumentTitle(),
         pageFavicon: getDocumentFavicon(),
-        pageContext: getDocumentHref(),
-        pageMetadata: [{
-          key: 'canonical',
-          value: getDocumentCanonicalUrl()
-        }]
+        pageContext: getDocumentHref()
       };
+      const canonical = getDocumentCanonicalUrl();
+      if (canonical) {
+        this.cache.pageMetadata = [{
+          key: 'canonical',
+          value: canonical
+        }];
+      }
     }
     return of(this.cache);
   }

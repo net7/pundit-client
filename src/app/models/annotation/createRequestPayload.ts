@@ -75,9 +75,13 @@ const createWebPageFragment = (
   const { pageTitle, pageContext, pageMetadata } = documentInfo;
   pageBuilder
     .pageContext(pageContext)
-    .pageTitle(pageTitle)
-    .pageMetadata(pageMetadata);
-  if ('pageFavicon' in documentInfo) {
+    .pageTitle(pageTitle);
+  // check metadata
+  if (pageMetadata) {
+    pageBuilder.pageMetadata(pageMetadata);
+  }
+  // check favicon
+  if ('pageFavicon' in documentInfo && documentInfo.pageFavicon) {
     pageBuilder.pageFavicon(documentInfo.pageFavicon);
   }
   if (selection) {

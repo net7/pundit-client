@@ -7,7 +7,7 @@ import { DocumentInfoWebpage, DocumentInfoWebpageService } from './document-info
 export interface DocumentInfo {
   pageTitle: string;
   pageContext: string;
-  pageMetadata: {
+  pageMetadata?: {
     key: string;
     value: string;
   }[];

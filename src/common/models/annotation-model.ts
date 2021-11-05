@@ -53,8 +53,10 @@ export class AnnotationModel {
   ): SearchAnnotationParams => {
     const searchRequestBuilder = new SearchAnnotationParamsBuilder();
     searchRequestBuilder.size(200)
-      .uri(uri)
-      .pageMetadata(pageMetadata);
+      .uri(uri);
+    if (pageMetadata) {
+      searchRequestBuilder.pageMetadata(pageMetadata);
+    }
     const params = searchRequestBuilder.build();
     return params;
   };
