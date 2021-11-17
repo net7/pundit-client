@@ -96,8 +96,10 @@ export class PdfService {
       originalUrl: this.originalUrl,
     });
 
-    // emit signal
-    this.loaded$.next();
+    setTimeout(() => {
+      // emit signal
+      this.loaded$.next();
+    }, 1000);
   }
 
   private listenPdfViewer() {
