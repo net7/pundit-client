@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import {
   from, fromEvent, Observable, ReplaySubject, Subject, of
 } from 'rxjs';
-import { debounceTime, first, switchMap } from 'rxjs/operators';
+import {
+  debounceTime, filter, first, switchMap
+} from 'rxjs/operators';
 import { PdfViewerEvents } from '../event-types';
 import { PDFViewerApplication as PDFViewerApp } from '../models/anchoring/pdf/types';
 
@@ -95,11 +97,6 @@ export class PdfService {
       url: this.documentUrl,
       originalUrl: this.originalUrl,
     });
-
-    setTimeout(() => {
-      // emit signal
-      this.loaded$.next();
-    }, 1000);
   }
 
   private listenPdfViewer() {
@@ -108,6 +105,13 @@ export class PdfService {
       this.pdfApp.eventBus.on(type, () => {
         this.events$.next({ type });
       });
+    });
+
+    this.events$.pipe(
+      filter(({ type }) => type === PdfViewerEvents.PageRendered),
+      first()
+    ).subscribe(() => {
+      this.loaded$.next();
     });
   }
 
