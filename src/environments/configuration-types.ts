@@ -8,6 +8,7 @@ export type LocalConfig = {
     notebookLink: string;
     notificationsLink: string;
     userDefaultThumb: string;
+    baseDereferenceURL: string;
     analytics: {
         mixpanel: {
           token: string;

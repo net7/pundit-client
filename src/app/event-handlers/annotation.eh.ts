@@ -53,9 +53,21 @@ export class AnnotationEH extends EventHandler {
               this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
               break;
             case 'menu-header': { // annotation update menu header
-              const newState = { activeMenu: currentState?.activeMenu ? undefined : 'actions' };
+              const newState = { activeMenu: 'actions' };
               this.annotationService.updateAnnotationState(id, newState);
               this.listenDocumentClicks(annotation.id);
+              break;
+            }
+            case 'menu-share': { // annotation update menu header
+              const newState = { activeMenu: 'share' };
+              this.annotationService.updateAnnotationState(id, newState);
+              this.listenDocumentClicks(annotation.id);
+              break;
+            }
+            case 'copy-url': { // annotation update menu header
+              this.emitOuter(getEventType(AnnotationEvent.ShareLinkCopied), id);
+              navigator.clipboard.writeText(payload?.data);
+              this.closeAnnotationMenu(id);
               break;
             }
             case 'document': // annotation update menu header

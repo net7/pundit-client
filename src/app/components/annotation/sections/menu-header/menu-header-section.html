@@ -3,16 +3,27 @@
         *ngIf="(menu$ | async)?.menuData as menuData" (click)="onClick($event, menuData.icon['payload'])">
         <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
     </button>
+    <button class="pnd-annotation__header-menu-button {{ shareData.classes || '' }}" [ngClass]="shareData.icon['id']"
+        *ngIf="(menu$ | async)?.shareData as shareData" (click)="onClick($event, shareData.icon['payload'])">
+        <pnd-svg-icon [data]="{ id: 'share' }"></pnd-svg-icon>
+    </button>
+    
     <button class="pnd-annotation__header-menu-button"
         (click)="onClick($event, {id: annotationId, source: 'compress'})">
         <pnd-svg-icon [data]="{ id: 'compress' }"></pnd-svg-icon>
     </button>
 
     <div *ngIf="(state$ | async)?.activeMenu as activeMenu" class="pnd-annotation__menu-dropdown"
-        [ngClass]="{'has-notebooks': activeMenu === 'notebooks' }">
+        [ngClass]="{'has-notebooks': activeMenu === 'notebooks', 'share': activeMenu === 'share' }">
         <!-- menu actions -->
         <div class="pnd-annotation__menu-dropdown-actions" *ngIf="activeMenu === 'actions'">
             <div *ngFor="let action of (menu$ | async)?.menuData?.actions" (click)="onClick($event, action.payload)"
+                class="pnd-annotation__menu-dropdown-action">
+                {{ action.label }}
+            </div>
+        </div>
+        <div class="pnd-annotation__menu-dropdown-actions__share" *ngIf="activeMenu === 'share-actions'">
+            <div *ngFor="let action of (menu$ | async)?.shareData?.actions" (click)="onClick($event, action.payload)"
                 class="pnd-annotation__menu-dropdown-action">
                 {{ action.label }}
             </div>
@@ -27,6 +38,20 @@
                 <notebook-selector [data]="notebookSelectorData" [emit]="onNotebookSelection">
                 </notebook-selector>
             </div>
+        </div>
+        <!-- share actions -->
+        <div class="pnd-annotation__menu-dropdown-actions__share" *ngIf="activeMenu === 'share'">
+            <ng-container *ngFor="let action of (menu$ | async)?.shareData?.actions">
+                <div *ngIf="action.type === 'link'; else elseBlock" class="pnd-annotation__menu-dropdown-action">
+                    <a [href]="action?.payload?.url" target="_blank">{{ action.label }}</a>
+                </div>
+                <ng-template #elseBlock>
+                    <div *ngIf="action.type === 'action'" (click)="onClick($event, action.payload)"
+                        class="pnd-annotation__menu-dropdown-action">
+                        {{ action.label }}
+                    </div>
+                </ng-template>
+            </ng-container>
         </div>
     </div>
 </div>
