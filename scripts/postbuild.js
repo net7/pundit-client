@@ -29,6 +29,14 @@ if (['chrome-ext-stage', 'chrome-ext-prod'].includes(context)) {
   ];
   buildExt(context, basePath);
 }
+// pdf standalone check
+if (['pdf-standalone-stage', 'pdf-standalone-prod'].includes(context)) {
+  allowedFiles = [
+    ...allowedFiles,
+    'assets',
+    'index.html'
+  ];
+}
 
 // merge in one file
 concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath)

@@ -21,6 +21,7 @@ const config: LocalConfig = {
   notebookLink: 'https://pundit.work/notebook',
   notificationsLink: 'https://pundit.work/notifications',
   userDefaultThumb: 'https://static.pundit.work/user-thumb-default.png',
+  baseDereferenceURL: '<dereference-url>',
   analytics: {
     mixpanel: {
       token: '123456879a54a6sd4a65d4',
