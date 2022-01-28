@@ -209,6 +209,60 @@
                   "with": "src/html-examples/embed.html"
                 }
               ]
+            },
+            "pdf-standalone-prod": {
+              "outputPath": "dist/pdf-standalone-prod",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.prod.ts"
+                },
+                {
+                  "replace": "src/index.html",
+                  "with": "src/chrome-ext/src/pdf-viewer.html"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
+                }
+              ]
+            },
+            "pdf-standalone-stage": {
+              "outputPath": "dist/pdf-standalone-stage",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.stage.ts"
+                },
+                {
+                  "replace": "src/index.html",
+                  "with": "src/chrome-ext/src/pdf-viewer.html"
+                }
+              ],
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
+                }
+              ]
             }
           }
         },
@@ -241,6 +295,12 @@
             },
             "embed-stage": {
               "browserTarget": "pnd:build:embed-stage"
+            },
+            "pdf-standalone-prod": {
+              "browserTarget": "pnd:build:pdf-standalone-prod"
+            },
+            "pdf-standalone-stage": {
+              "browserTarget": "pnd:build:pdf-standalone-stage"
             }
           }
         },

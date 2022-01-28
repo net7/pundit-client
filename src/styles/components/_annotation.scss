@@ -224,6 +224,11 @@ annotation {
         .pnd-notebook-selector {
             width: 100%;
         }
+
+        &.share {
+            right: $space/2;
+        }
+
     }
 
     &__menu-notebooks-header {
@@ -243,6 +248,11 @@ annotation {
 
         &:hover {
             color: $color-text-link;
+        }
+        
+        & a {
+            display: block;
+            text-decoration: none;
         }
     }
 }

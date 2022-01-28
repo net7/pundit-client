@@ -105,6 +105,8 @@ export default {
   'toast#annotation_reply_delete_error_title': 'Oops! Something went wrong',
   'toast#annotation_reply_delete_error_text':
           "Pundit couldn't delete your reply, please try again later.",
+  'toast#annotation_share_link_copied_title':
+            'Annotation link copied to clipboard.',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
@@ -114,6 +116,11 @@ export default {
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
+  // share
+  'share#twitter': 'Twitter',
+  'share#facebook': 'Facebook',
+  'share#linkedin': 'Linkedin',
+  'share#copy': 'Copy Link',
   // social
   'social#reply': 'Reply',
   'social#like': 'Like',

@@ -93,7 +93,12 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         case AnnotationEvent.ReplyChanged:
           this.layoutDS.updateAnnotations();
           break;
-
+        case AnnotationEvent.ShareLinkCopied:
+          this.layoutEH.toastService.success({
+            title: _t('toast#annotation_share_link_copied_title'),
+            autoClose: true
+          });
+          break;
         default:
           break;
       }

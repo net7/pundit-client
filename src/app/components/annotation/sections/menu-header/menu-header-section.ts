@@ -1,8 +1,7 @@
 import {
   ChangeDetectorRef, Component, Input, OnDestroy, OnInit
 } from '@angular/core';
-import { _t } from '@n7-frontend/core';
-import { Annotation, AnnotationType } from '@pundit/communication';
+import { Annotation } from '@pundit/communication';
 import {
   BehaviorSubject, Observable, Subject
 } from 'rxjs';
@@ -14,13 +13,10 @@ import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
-
-interface ActionButtonConfig {
-  id: string;
-  type: AnnotationType;
-  hasTags?: boolean;
-  avoidEdit?: boolean;
-}
+import {
+  ActionButtonConfig, blockEditAction, menuActionButtons, menuIconButton, menuNotebookSection
+} from './menu-data.helper';
+import { shareActionButtons, shareButton } from './menu-share.helper';
 
 @Component({
   selector: 'pnd-menu-header-section',
@@ -48,22 +44,19 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private notebookService: NotebookService,
     public imageDataService: ImageDataService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
-    this.menu$ = this.data$.pipe(
-      map(this.transformData)
-    );
-    this.state$.pipe(
-      withLatestFrom(this.data$),
-      takeUntil(this.destroy$)
-    ).subscribe(([state, data]) => {
-      if (!this.notebookSelectorData) {
-        this.notebookSelectorData = this.newNotebookSelector(data, state);
-      } else {
-        this.notebookSelectorData = this.updateNotebookSelector(data, state);
-      }
-    });
+    this.menu$ = this.data$.pipe(map(this.transformData));
+    this.state$
+      .pipe(withLatestFrom(this.data$), takeUntil(this.destroy$))
+      .subscribe(([state, data]) => {
+        if (!this.notebookSelectorData) {
+          this.notebookSelectorData = this.newNotebookSelector(data, state);
+        } else {
+          this.notebookSelectorData = this.updateNotebookSelector(data, state);
+        }
+      });
   }
 
   ngOnDestroy(): void {
@@ -73,10 +66,12 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private transformData = (annotation: Annotation) => {
     const menuData = this.getMenuData(annotation);
+    const shareData = this.getShareData(annotation);
     return {
-      menuData
+      menuData,
+      shareData
     };
-  }
+  };
 
   newNotebookSelector(annotation: Annotation, state: any) {
     const notebook = this.notebookService.getNotebookById(
@@ -129,92 +124,34 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       id,
       type: annotation.type,
       hasTags: !!annotation.tags?.length,
-      avoidEdit: this.blockEditAction(annotation)
+      avoidEdit: blockEditAction(annotation),
     };
     const currentUser = this.userService.whoami();
     const currentUserNotebooks = currentUser
       ? this.notebookService.getByUserId(currentUser.id)
       : [];
-    const actions = this.createActionButtons(buttonConfig);
     return this.isCurrentUser(user)
       ? {
-        icon: {
-          id: 'ellipsis-v',
-          payload: {
-            id,
-            source: 'menu-header',
-          },
-        },
-        actions,
-        notebooks: {
-          header: {
-            label: _t('annotation#changenotebook'),
-            payload: {
-              id,
-              source: 'notebooks-header',
-            },
-          },
-          items: currentUserNotebooks.map(({ id: itemId, label }) => ({
-            label,
-            payload: {
-              id,
-              notebookId: itemId,
-              source: 'notebook-item',
-            },
-          })),
-        },
+        icon: menuIconButton(id),
+        actions: menuActionButtons(buttonConfig),
+        notebooks: menuNotebookSection(id, currentUserNotebooks),
       }
       : null;
   }
 
-  private createActionButtons(config: ActionButtonConfig) {
-    const { id, type } = config;
-    const actions = [
-      {
-        label: _t('annotation#changenotebook'),
-        payload: {
-          id,
-          source: 'action-notebooks',
-        },
-      },
-    ];
-
-    // TODO REMOVE AFTER SEMANTIC MODAL IMPLEMENTATION
-    if (!config?.avoidEdit) {
-      if (type === 'Commenting') {
-        actions.push(this.getActionButton(id, 'comment', 'edit'));
-      } else if (type === 'Linking') {
-        actions.push(this.getActionButton(id, 'semantic', 'edit'));
-      } else if (type === 'Highlighting') {
-        actions.push(this.getActionButton(id, 'comment', 'add'));
-        actions.push(this.getActionButton(id, 'semantic', 'add'));
-        actions.push(this.getActionButton(id, 'tags', config?.hasTags ? 'edit' : 'add'));
-      }
-    }
-
-    // and delete action
-    actions.push({
-      label: _t('annotation#delete'),
-      payload: {
-        id,
-        source: 'action-delete',
-      },
-    });
-    return actions;
-  }
-
-  private getActionButton(
-    id: string,
-    type: 'comment' | 'tags' | 'semantic',
-    action: 'add' | 'edit'
-  ) {
-    return {
-      label: _t(`annotation#${action}${type}`),
-      payload: {
-        id,
-        source: `action-${type}`,
-      },
+  private getShareData(annotation: Annotation) {
+    const { id } = annotation;
+    const actionsConfig = {
+      id,
     };
+    const isPrivate = this.notebookService.getNotebookById(annotation.notebookId)?.sharingMode
+      !== 'public';
+    return isPrivate
+      ? null
+      : {
+        icon: shareButton(id),
+        actions: shareActionButtons(actionsConfig),
+      };
   }
 
   onClick(ev: Event, payload) {
@@ -240,15 +177,4 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     // trigger change detector
     this.ref.detectChanges();
   };
-
-  // TODO REMOVE AFTER SEMANTIC ANNOTATION IMPLEMENTATION
-  private blockEditAction(annotation: Annotation): boolean {
-    if (annotation.type !== 'Linking') {
-      return false;
-    }
-    const triples = annotation.content;
-    const hasObjectUri = triples.find((t) => t.objectType === 'uri' && t.object.source === 'search');
-    const hasDate = triples.find((t) => t.objectType === 'date');
-    return !!hasObjectUri || !!hasDate;
-  }
 }

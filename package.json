@@ -1,6 +1,6 @@
 {
   "name": "pundit",
-  "version": "1.7.2",
+  "version": "1.8.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -16,11 +16,13 @@
     "build:chrome-ext-prod": "npm run build:embed-prod && ng build -c chrome-ext-prod --single-bundle",
     "postbuild:chrome-ext-prod": "webpack --config webpack.chrome-ext.prod.js && node ./scripts/postbuild.js -c chrome-ext-prod",
     "build:embed-stage": "ng build -c embed-stage --single-bundle",
-    "watch:embed-stage": "npm run build:embed-stage -- --watch",
     "postbuild:embed-stage": "node ./scripts/postbuild.js -c embed-stage",
     "build:embed-prod": "ng build -c embed-prod --single-bundle",
-    "watch:embed-prod": "npm run build:embed-prod -- --watch",
     "postbuild:embed-prod": "node ./scripts/postbuild.js -c embed-prod",
+    "build:pdf-standalone-stage": "ng build -c pdf-standalone-stage --single-bundle",
+    "postbuild:pdf-standalone-stage": "node ./scripts/postbuild.js -c pdf-standalone-stage",
+    "build:pdf-standalone-prod": "ng build -c pdf-standalone-prod --single-bundle",
+    "postbuild:pdf-standalone-prod": "node ./scripts/postbuild.js -c pdf-standalone-prod",
     "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @n7-frontend/core @n7-frontend/icon-font"
   },
   "private": true,

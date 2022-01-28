@@ -10,4 +10,5 @@ export enum AnnotationEvent {
   ToggleCollapsed = 'annotation.togglecollapsed',
   UpdateNotebook = 'annotation.option',
   ReplyChanged = 'annotation.replychanged',
+  ShareLinkCopied = 'annotation.sharelinkcopied'
 }
