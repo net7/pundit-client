@@ -20,7 +20,7 @@ export class DocumentInfoWebpageService {
     if (!this.cache) {
       this.cache = {
         pageTitle: getDocumentTitle(),
-        pageFavicon: getDocumentFavicon(),
+        pageFavicon: this.getFaviconURL(),
         pageContext: getDocumentHref()
       };
       const canonical = getDocumentCanonicalUrl();
@@ -32,5 +32,21 @@ export class DocumentInfoWebpageService {
       }
     }
     return of(this.cache);
+  }
+
+  private getFaviconURL() {
+    const faviconPath = getDocumentFavicon();
+    const pageContextPath = getDocumentHref();
+    const { origin, protocol } = new URL(pageContextPath);
+    if (faviconPath?.startsWith('//')) {
+      return `${protocol}${faviconPath}`;
+    }
+    try {
+      const faviconURL = new URL(faviconPath, origin);
+      return faviconURL.toJSON();
+    } catch (error) {
+      console.warn(error);
+    }
+    return faviconPath;
   }
 }
