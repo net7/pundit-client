@@ -19,7 +19,7 @@ export const checkActiveState = (tabId: number) => {
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
-            const { url: tabUrl } = tab;
+            const { url: tabUrl, status: tabStatus } = tab;
             const isPdf = isPdfDocument(tabUrl);
             const isViewer = isPdfViewer(tabUrl);
             if (active && isPdf) {
@@ -28,14 +28,14 @@ export const checkActiveState = (tabId: number) => {
               redirectToOriginalPdfUrl(tabUrl);
             } else {
               // if inactive get document/page url
-              // to request annotations total
-              // FIX ME: TOO MANY LAMBDA REQUESTS
-              // if (!active && tabStatus === 'complete') {
-              //   chrome.tabs.sendMessage(tabId, {
-              //     type: CommonEventType.DocumentInfoRequest,
-              //   });
-              // }
+              // total annotations number
               const payload = { active };
+              if (tabStatus === 'complete') {
+                chrome.tabs.sendMessage(tabId, {
+                  payload,
+                  type: CommonEventType.DocumentInfoRequest,
+                });
+              }
               chrome.tabs.sendMessage(tabId, {
                 payload,
                 type: CommonEventType.StateChanged,

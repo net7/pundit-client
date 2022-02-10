@@ -42,10 +42,9 @@ export const onContentScriptMessage = (
     case CommonEventType.DocumentInfoResponse:
       CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
       CommunicationSettings.token = null;
-      helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, response }) => {
-        if (tabId === tab.id) {
-          const { stats } = response.data;
-          helpers.updateBadgeText(tab.id, stats.total);
+      helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, total }) => {
+        if (tabId === tab.id && total !== null) {
+          helpers.updateBadgeText(tab.id, total);
         }
       }).catch((err) => {
         console.warn('Annotations request: ', err);

@@ -37,6 +37,7 @@ export const listen = () => {
       case CommonEventType.DocumentInfoRequest: {
         const pageContext = getDocumentHref();
         const canonical = getDocumentCanonicalUrl();
+        const { active } = payload;
         let pageMetadata = null;
         if (canonical) {
           pageMetadata = [{
@@ -46,7 +47,7 @@ export const listen = () => {
         }
         chrome.runtime.sendMessage({
           type: CommonEventType.DocumentInfoResponse,
-          payload: { pageContext, pageMetadata }
+          payload: { pageContext, pageMetadata, active }
         });
         break;
       }
