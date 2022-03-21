@@ -34,7 +34,7 @@ if (['pdf-standalone-stage', 'pdf-standalone-prod'].includes(context)) {
   allowedFiles = [
     ...allowedFiles,
     'assets',
-    'index.html'
+    'pdf-viewer.html',
   ];
 }
 
