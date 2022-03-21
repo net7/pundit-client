@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import {
   Reply,
   ReplyAttributes, SocialType

@@ -1,4 +1,4 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { NotebookPanelDS } from '../data-sources';
 import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from '../event-types';
 

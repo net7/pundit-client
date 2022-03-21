@@ -1,4 +1,4 @@
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { takeUntil } from 'rxjs/operators';
 import { getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';

@@ -1,4 +1,4 @@
-import { DataSource, _t } from '@n7-frontend/core';
+import { DataSource, _t } from '@net7/core';
 import { DeleteModalData } from '../components/delete-modal/delete-modal';
 
 export class DeleteModalDS extends DataSource {

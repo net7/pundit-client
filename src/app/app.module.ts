@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { APP_INITIALIZER, NgModule } from '@angular/core';
-import { translate } from '@n7-frontend/core';
+import { translate } from '@net7/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { environment as env } from 'src/environments/environment';
 import { config } from './models/config';

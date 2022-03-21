@@ -6,7 +6,7 @@ import {
   ViewChild,
   OnDestroy,
 } from '@angular/core';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

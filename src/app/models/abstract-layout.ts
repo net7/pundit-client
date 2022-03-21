@@ -1,4 +1,4 @@
-import { LayoutBuilder } from '@n7-frontend/core';
+import { LayoutBuilder } from '@net7/core';
 
 export abstract class AbstractLayout {
   protected config: any;

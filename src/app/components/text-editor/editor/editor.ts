@@ -4,7 +4,7 @@ import { DOMParser, DOMSerializer } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { Subject } from 'rxjs';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import getDefaultPlugins from './plugins';
 import editorConfig from './editor.config';
 import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-editor-menu/text-editor-menu';

@@ -1,4 +1,4 @@
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { LoginResponse, SuccessLoginResponse } from '@pundit/communication';
 import { delay, filter, first } from 'rxjs/operators';
 import {

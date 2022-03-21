@@ -2,7 +2,7 @@ import { LayoutHandler } from 'src/app/types';
 import {
   AnnotationEvent, AppEvent, getEventType, SidebarLayoutEvent
 } from 'src/app/event-types';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { _c } from 'src/app/models/config';

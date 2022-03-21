@@ -1,4 +1,4 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { EditModalDS } from '../data-sources';
 import {
   EditModalEvent, getEventType, MainLayoutEvent

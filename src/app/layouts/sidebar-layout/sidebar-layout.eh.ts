@@ -1,5 +1,5 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { Subject, ReplaySubject } from 'rxjs';
 import { delay, takeUntil, withLatestFrom } from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';

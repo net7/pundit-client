@@ -23,7 +23,7 @@
     "postbuild:pdf-standalone-stage": "node ./scripts/postbuild.js -c pdf-standalone-stage",
     "build:pdf-standalone-prod": "ng build -c pdf-standalone-prod --single-bundle",
     "postbuild:pdf-standalone-prod": "node ./scripts/postbuild.js -c pdf-standalone-prod",
-    "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @n7-frontend/core @n7-frontend/icon-font"
+    "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @net7/core @n7-frontend/icon-font"
   },
   "private": true,
   "dependencies": {
@@ -36,7 +36,7 @@
     "@angular/platform-browser": "~9.1.11",
     "@angular/platform-browser-dynamic": "~9.1.11",
     "@angular/router": "~9.1.11",
-    "@n7-frontend/core": "git+ssh://git@github.com/net7/n7-frontend-core.git#master",
+    "@net7/core": "^3.0.0",
     "@popperjs/core": "^2.6.0",
     "@pundit/anchoring": "git+ssh://git@github.com/net7/pundit-anchoring.git#develop",
     "@pundit/common": "git+ssh://git@github.com/net7/pundit-common.git#develop",
@@ -63,7 +63,7 @@
     "prosemirror-state": "^1.3.4",
     "prosemirror-view": "^1.19.3",
     "resize-observer-polyfill": "^1.5.1",
-    "rxjs": "6.5.5",
+    "rxjs": "~6.6.0",
     "seedrandom": "^3.0.5",
     "tippy.js": "^6.2.7",
     "tslib": "^1.10.0",

@@ -3,7 +3,7 @@ import {
   Component,
   Input,
 } from '@angular/core';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { NotebookSelectorData } from 'src/app/components/notebook-selector/notebook-selector';

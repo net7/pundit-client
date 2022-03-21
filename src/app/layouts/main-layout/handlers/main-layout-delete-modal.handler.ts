@@ -1,6 +1,6 @@
 import { EMPTY } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { _c } from 'src/app/models/config';
 import { AppEvent, DeleteModalEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';

@@ -1,4 +1,4 @@
-import { DataSource, _t } from '@n7-frontend/core';
+import { DataSource, _t } from '@net7/core';
 import { TooltipData } from '../components/tooltip/tooltip';
 
 export class TooltipDS extends DataSource {

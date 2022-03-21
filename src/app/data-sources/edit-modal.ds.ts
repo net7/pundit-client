@@ -1,4 +1,4 @@
-import { DataSource, _t } from '@n7-frontend/core';
+import { DataSource, _t } from '@net7/core';
 import { uniqueId } from 'lodash';
 import { Subject } from 'rxjs';
 import { EditModalData } from '../components/edit-modal/edit-modal';

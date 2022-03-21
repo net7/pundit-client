@@ -1,4 +1,4 @@
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { EMPTY } from 'rxjs';
 import {
   catchError, filter, switchMap, withLatestFrom

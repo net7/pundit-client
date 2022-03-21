@@ -3,7 +3,7 @@ import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';

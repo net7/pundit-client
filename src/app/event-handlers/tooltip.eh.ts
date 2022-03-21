@@ -1,4 +1,4 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { TooltipDS } from '../data-sources';
 import { getEventType, MainLayoutEvent, TooltipEvent } from '../event-types';
 

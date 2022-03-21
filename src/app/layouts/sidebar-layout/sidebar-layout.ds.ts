@@ -1,4 +1,4 @@
-import { LayoutDataSource, _t } from '@n7-frontend/core';
+import { LayoutDataSource, _t } from '@net7/core';
 import {
   BehaviorSubject, Subject
 } from 'rxjs';

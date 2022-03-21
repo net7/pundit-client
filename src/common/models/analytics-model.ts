@@ -1,4 +1,4 @@
-import { analytics } from '@n7-frontend/core';
+import { analytics } from '@net7/core';
 import mixpanel from 'mixpanel-browser';
 import { AnalyticsAction, AnalyticsData, CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
