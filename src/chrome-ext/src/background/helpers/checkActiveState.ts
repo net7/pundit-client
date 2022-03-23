@@ -1,9 +1,16 @@
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
 import {
-  isPdfDocument, isPdfViewer, redirectToOriginalPdfUrl, redirectToPdfViewer, updateExtensionIcon
+  isPdfDocument,
+  isPdfViewer,
+  isFeedPdfUrl,
+  redirectToOriginalPdfUrl,
+  redirectToPdfViewer,
+  updateExtensionIcon,
+  getFeedPdfSource
 } from '.';
 import { CommonEventType } from '../../../../common/types';
+import { onBrowserActionClicked } from '../handlers/onBrowserActionClicked';
 
 export const checkActiveState = (tabId: number) => {
   chrome.tabs.get(tabId, (tab) => {
@@ -22,7 +29,20 @@ export const checkActiveState = (tabId: number) => {
             const { url: tabUrl, status: tabStatus } = tab;
             const isPdf = isPdfDocument(tabUrl);
             const isViewer = isPdfViewer(tabUrl);
-            if (active && isPdf) {
+            const isFeed = isFeedPdfUrl(tabUrl);
+            if (isPdf && isFeed) {
+              const pdfSource = getFeedPdfSource(tabUrl);
+              // redirect
+              chrome.tabs.update({
+                url: decodeURIComponent(pdfSource)
+              });
+              // trigger click
+              if (!active) {
+                setTimeout(() => {
+                  onBrowserActionClicked(tab);
+                });
+              }
+            } else if (active && isPdf) {
               redirectToPdfViewer(tabUrl);
             } else if (!active && isViewer) {
               redirectToOriginalPdfUrl(tabUrl);

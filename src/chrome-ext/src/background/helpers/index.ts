@@ -10,3 +10,5 @@ export * from './redirectToPdfViewer';
 export * from './redirectToOriginalPdfUrl';
 export * from './getPdfViewerPath';
 export * from './doPageAnnotationsRequest';
+export * from './isFeedPdfUrl';
+export * from './getFeedPdfSource';
