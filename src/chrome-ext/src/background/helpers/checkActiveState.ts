@@ -7,7 +7,9 @@ import {
   redirectToOriginalPdfUrl,
   redirectToPdfViewer,
   updateExtensionIcon,
-  getFeedPdfSource
+  getFeedPdfSource,
+  getFeedWebSource,
+  isFeedWebUrl
 } from '.';
 import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '../handlers/onBrowserActionClicked';
@@ -29,8 +31,21 @@ export const checkActiveState = (tabId: number) => {
             const { url: tabUrl, status: tabStatus } = tab;
             const isPdf = isPdfDocument(tabUrl);
             const isViewer = isPdfViewer(tabUrl);
-            const isFeed = isFeedPdfUrl(tabUrl);
-            if (isPdf && isFeed) {
+            const isFeedWeb = isFeedWebUrl(tabUrl);
+            const isFeedPdf = isFeedPdfUrl(tabUrl);
+            if (isFeedWeb) {
+              const webDocumentSource = getFeedWebSource(tabUrl);
+              // redirect
+              chrome.tabs.update({
+                url: decodeURIComponent(webDocumentSource)
+              });
+              // trigger click
+              if (!active) {
+                setTimeout(() => {
+                  onBrowserActionClicked(tab);
+                });
+              }
+            } else if (isPdf && isFeedPdf) {
               const pdfSource = getFeedPdfSource(tabUrl);
               // redirect
               chrome.tabs.update({

@@ -11,4 +11,6 @@ export * from './redirectToOriginalPdfUrl';
 export * from './getPdfViewerPath';
 export * from './doPageAnnotationsRequest';
 export * from './isFeedPdfUrl';
+export * from './isFeedWebUrl';
 export * from './getFeedPdfSource';
+export * from './getFeedWebSource';
