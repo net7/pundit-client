@@ -28,7 +28,10 @@ export const checkActiveState = (tabId: number) => {
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey)
           .then((active: boolean) => {
-            const { url: tabUrl, status: tabStatus } = tab;
+            const {
+              url: tabUrl,
+              // status: tabStatus
+            } = tab;
             const isPdf = isPdfDocument(tabUrl);
             const isViewer = isPdfViewer(tabUrl);
             const isFeedWeb = isFeedWebUrl(tabUrl);
@@ -65,12 +68,12 @@ export const checkActiveState = (tabId: number) => {
               // if inactive get document/page url
               // total annotations number
               const payload = { active };
-              if (tabStatus === 'complete') {
-                chrome.tabs.sendMessage(tabId, {
-                  payload,
-                  type: CommonEventType.DocumentInfoRequest,
-                });
-              }
+              // if (tabStatus === 'complete') {
+              //   chrome.tabs.sendMessage(tabId, {
+              //     payload,
+              //     type: CommonEventType.DocumentInfoRequest,
+              //   });
+              // }
               chrome.tabs.sendMessage(tabId, {
                 payload,
                 type: CommonEventType.StateChanged,
