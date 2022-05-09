@@ -4,7 +4,8 @@ import {
   getDocumentCanonicalUrl,
   getDocumentFavicon,
   getDocumentHref,
-  getDocumentTitle
+  getDocumentTitle,
+  getFeedThePundUrl
 } from 'src/app/models/annotation/html-util';
 import { DocumentInfo } from './document-info.service';
 
@@ -24,11 +25,25 @@ export class DocumentInfoWebpageService {
         pageContext: getDocumentHref()
       };
       const canonical = getDocumentCanonicalUrl();
+      const feedThePundUrl = getFeedThePundUrl();
+      const pageMetadata = [];
       if (canonical) {
-        this.cache.pageMetadata = [{
+        pageMetadata.push({
           key: 'canonical',
           value: canonical
-        }];
+        });
+      }
+      if (feedThePundUrl) {
+        pageMetadata.push({
+          key: 'isFeedThePund',
+          value: this.cache.pageContext
+        });
+        if (!canonical) {
+          this.cache.pageContext = feedThePundUrl;
+        }
+      }
+      if (pageMetadata.length) {
+        this.cache.pageMetadata = pageMetadata;
       }
     }
     return of(this.cache);
