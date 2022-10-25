@@ -1,4 +1,4 @@
-import { createPopper } from '@popperjs/core';
+import { createPopper, VirtualElement } from '@popperjs/core';
 import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from './range-util';
 
@@ -69,7 +69,7 @@ class TooltipModel {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     this.tooltipWrapper = shadowRoot.getElementById('pnd-tooltip');
 
-    this.instance = createPopper(this.virtualTarget, this.tooltipWrapper, {
+    this.instance = createPopper(this.virtualTarget as VirtualElement, this.tooltipWrapper, {
       placement: 'top',
       modifiers: [
         { name: 'eventListeners', options: { scroll: false, } }

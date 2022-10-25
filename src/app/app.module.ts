@@ -150,8 +150,7 @@ if (env.chromeExt) {
     PunditLoginModule.forRoot(env.auth)
   ],
   providers,
-  bootstrap: [AppComponent],
-  entryComponents: [AppComponent]
+  bootstrap: [AppComponent]
 })
 
 export class AppModule {}
