@@ -38,7 +38,7 @@ export const getSelectionMarks = (state: EditorState): Mark[] => {
   } = state;
 
   if (empty) {
-    marks = storedMarks || $from.marks();
+    marks = (storedMarks || $from.marks()) as Mark[];
   } else {
     state.doc.nodesBetween(from, to, (node) => {
       marks = [...marks, ...node.marks];

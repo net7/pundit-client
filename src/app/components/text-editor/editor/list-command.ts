@@ -1,7 +1,6 @@
 import { NodeType, Schema } from 'prosemirror-model';
-import { EditorState, Transaction } from 'prosemirror-state';
+import { EditorState, Transaction, Command } from 'prosemirror-state';
 import { liftListItem, wrapInList } from 'prosemirror-schema-list';
-import { Command } from 'prosemirror-commands';
 import { isNodeActive } from './helpers';
 
 // source project: https://github.com/sibiraj-s/ngx-editor

@@ -10,6 +10,7 @@
 .tagify {
     padding: $space/4 $space/4;
     border-radius: $form-border-radius;
+    width: 100%;
 
     &:focus, &.tagify--focus {
         border-color: $color-main;
@@ -52,6 +53,10 @@
     border-top-width: 1px;
     border-color: $color-border-normal;
     border-radius: $form-border-radius;
+}
+
+.tagify__dropdown__item {
+    padding: $space;
 }
 
 /* ------------------------------------ *\

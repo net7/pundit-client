@@ -96,7 +96,7 @@ const customSchema = {
   }
 };
 
-const marks = baseSchema.spec.marks.append(customSchema.marks);
+const marks = baseSchema.spec.marks.append(customSchema.marks as any);
 let nodes = baseSchema.spec.nodes.append(customSchema.nodes);
 
 // clean up unused
