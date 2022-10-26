@@ -72,30 +72,24 @@
             },
             "shake": {
               "outputPath": "dist/shake",
-              "fileReplacements": [
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/shakespeare.html"
-                }
-              ]
+              "index": {
+                "input": "src/html-examples/shakespeare.html",
+                "output": "index.html"
+              }
             },
             "scroll": {
               "outputPath": "dist/scroll",
-              "fileReplacements": [
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/shakespeare-scroll.html"
-                }
-              ]
+              "index": {
+                "input": "src/html-examples/shakespeare-scroll.html",
+                "output": "index.html"
+              }
             },
             "pdf": {
               "outputPath": "dist/pdf",
-              "fileReplacements": [
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/pdf-viewer.html"
-                }
-              ],
+              "index": {
+                "input": "src/html-examples/pdf-viewer.html",
+                "output": "index.html"
+              },
               "assets": [
                 {
                   "glob": "**/*",
