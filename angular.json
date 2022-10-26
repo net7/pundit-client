@@ -177,12 +177,12 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.prod.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/embed.html"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/html-examples/embed.html",
+                "output": "index.html"
+              }
             },
             "embed-stage": {
               "outputPath": "dist/embed-stage",
@@ -197,15 +197,14 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.stage.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/embed.html"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/html-examples/embed.html",
+                "output": "index.html"
+              }
             },
             "pdf-standalone-prod": {
-              "index": "",
               "outputPath": "dist/pdf-standalone-prod",
               "optimization": true,
               "sourceMap": false,
@@ -218,12 +217,12 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.prod.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/chrome-ext/src/pdf-viewer.html"
                 }
               ],
+              "index": {
+                "input": "src/chrome-ext/src/pdf-viewer.html",
+                "output": "index.html"
+              },
               "assets": [
                 {
                   "glob": "**/*",
@@ -238,7 +237,6 @@
               ]
             },
             "pdf-standalone-stage": {
-              "index": "",
               "outputPath": "dist/pdf-standalone-stage",
               "optimization": true,
               "sourceMap": false,
@@ -251,12 +249,12 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.stage.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/chrome-ext/src/pdf-viewer.html"
                 }
               ],
+              "index": {
+                "input": "src/chrome-ext/src/pdf-viewer.html",
+                "output": "index.html"
+              },
               "assets": [
                 {
                   "glob": "**/*",
