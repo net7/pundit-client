@@ -38,8 +38,22 @@ if (['pdf-standalone-stage', 'pdf-standalone-prod'].includes(context)) {
   ];
 }
 
-// merge in one file
-concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath)
+// create styles.js file
+const createStylesJsFile = () => fs.readFile(`${basePath}/styles.css`, 'utf8')
+  .then((data) => {
+    const fileContent = `
+        const style = document.createElement("style");
+        style.textContent = \`
+          ${data}
+        \`;
+        document.head.appendChild(style);
+      `;
+    return fs.writeFile(`${basePath}/styles.js`, fileContent);
+  });
+
+createStylesJsFile()
+  // merge in one file
+  .then(() => concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath))
   .then(() => {
     console.log(`Dist updated with merged file ${outputFile}`);
     return fs.readdir(basePath);
