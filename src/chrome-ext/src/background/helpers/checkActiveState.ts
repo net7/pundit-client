@@ -36,6 +36,7 @@ export const checkActiveState = (tabId: number) => {
             const isViewer = isPdfViewer(tabUrl);
             const isFeedWeb = isFeedWebUrl(tabUrl);
             const isFeedPdf = isFeedPdfUrl(tabUrl);
+            let skipIconUpdate = false;
             if (isFeedWeb) {
               const webDocumentSource = getFeedWebSource(tabUrl);
               // redirect
@@ -51,13 +52,12 @@ export const checkActiveState = (tabId: number) => {
             } else if (isPdf && isFeedPdf) {
               const pdfSource = getFeedPdfSource(tabUrl);
               // redirect
-              chrome.tabs.update({
-                url: decodeURIComponent(pdfSource)
-              });
-              // trigger click
+              redirectToPdfViewer(pdfSource);
               if (!active) {
+                skipIconUpdate = true;
                 setTimeout(() => {
-                  onBrowserActionClicked(tab);
+                  onBrowserActionClicked(tab, true);
+                  updateExtensionIcon(tab.id, true);
                 });
               }
             } else if (active && isPdf) {
@@ -79,7 +79,9 @@ export const checkActiveState = (tabId: number) => {
                 type: CommonEventType.StateChanged,
               });
             }
-            updateExtensionIcon(tabId, active);
+            if (!skipIconUpdate) {
+              updateExtensionIcon(tabId, active);
+            }
           });
       });
     }
