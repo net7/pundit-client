@@ -42,11 +42,14 @@ if (['pdf-standalone-stage', 'pdf-standalone-prod'].includes(context)) {
 const createStylesJsFile = () => fs.readFile(`${basePath}/styles.css`, 'utf8')
   .then((data) => {
     const fileContent = `
-        const style = document.createElement("style");
-        style.textContent = \`
-          ${data}
-        \`;
-        document.head.appendChild(style);
+        if (!document.getElementById("pundit-host-styles")) {
+          const style = document.createElement("style");
+          style.setAttribute("id", "pundit-host-styles");
+          style.textContent = \`
+            ${data}
+          \`;
+          document.head.appendChild(style);
+        }
       `;
     return fs.writeFile(`${basePath}/styles.js`, fileContent);
   });
