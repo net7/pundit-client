@@ -21,11 +21,17 @@ export class MainLayoutPdfErrorModalHandler implements LayoutHandler {
     });
 
     // listen for modal events
-    this.layoutEH.outerEvents$.subscribe(({ type, payload }) => {
-      console.log('pdf-error----------------------->', type, payload);
+    this.layoutEH.outerEvents$.subscribe(({ type }) => {
       switch (type) {
-        case PdfErrorModalEvent.Confirm:
-          break;
+        case PdfErrorModalEvent.Confirm: {
+          const extensionId = chrome?.runtime?.id;
+          if (!extensionId) {
+            console.warn('Extension settings not found:', extensionId);
+          } else {
+            const settingsUrl = `chrome://extensions/?id=${extensionId}`;
+            chrome.tabs.update({ url: settingsUrl });
+          }
+        } break;
         case PdfErrorModalEvent.Close:
           break;
         default:

@@ -12,9 +12,7 @@
             </div>
             
             <div class="pnd-modal__body">
-                <div class="pnd-modal__body-text">
-                    {{ data.body.text }}
-                </div>
+                <div class="pnd-modal__body-text" [innerHTML]="data.body.text"></div>
             </div>
             
             <div class="pnd-modal__actions">

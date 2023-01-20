@@ -27,7 +27,7 @@ export default {
   // pdf error modal
   'pdferrormodal#label': 'PDF load error',
   'pdferrormodal#text':
-    'To annotate a local file, you need to grant Pundit the access by turning on Allow access to file URLs in extension settings.',
+    'To annotate a local file, you need to grant Pundit the access by turning on <b>Allow access to file URLs</b> in extension settings.',
   'pdferrormodal#cancel': 'Cancel',
   'pdferrormodal#ok': 'Go to setting',
   // toast

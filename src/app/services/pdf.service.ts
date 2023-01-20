@@ -108,7 +108,7 @@ export class PdfService {
         type: err.name,
         payload: this.pdfApp
       });
-      console.warn('PDF open error------>', err);
+      console.warn('PDF open() error', err);
     }
   }
 
