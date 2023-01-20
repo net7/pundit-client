@@ -8,3 +8,4 @@ export * from './main-layout-login.handler';
 export * from './main-layout-window-events.handler';
 export * from './main-layout-pdf.handler';
 export * from './main-layout-identity.handler';
+export * from './main-layout-pdf-error-modal.handler';

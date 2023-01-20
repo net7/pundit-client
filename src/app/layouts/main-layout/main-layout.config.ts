@@ -12,7 +12,8 @@ import {
   MainLayoutTooltipHandler,
   MainLayoutWindowEventsHandler,
   MainLayoutPdfHandler,
-  MainLayoutIdentityHandler
+  MainLayoutIdentityHandler,
+  MainLayoutPdfErrorModalHandler
 } from './handlers';
 
 export const MainLayoutConfig = {
@@ -20,6 +21,10 @@ export const MainLayoutConfig = {
   widgets: [
     {
       id: 'delete-modal',
+      hasStaticData: true
+    },
+    {
+      id: 'pdf-error-modal',
       hasStaticData: true
     },
     {
@@ -40,7 +45,8 @@ export const MainLayoutConfig = {
     MainLayoutLoginHandler,
     MainLayoutWindowEventsHandler,
     MainLayoutPdfHandler,
-    MainLayoutIdentityHandler
+    MainLayoutIdentityHandler,
+    MainLayoutPdfErrorModalHandler,
   ],
   widgetsDataSources: DS,
   widgetsEventHandlers: EH,

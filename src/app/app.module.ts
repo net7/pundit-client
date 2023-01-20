@@ -53,6 +53,7 @@ import { HeaderAnnotationSectionComponent } from './components/annotation/sectio
 import { MenuHeaderSectionComponent } from './components/annotation/sections/menu-header/menu-header-section';
 import { TextEditorComponent } from './components/text-editor/text-editor';
 import { TextEditorMenuComponent } from './components/text-editor/sections/text-editor-menu/text-editor-menu';
+import { PdfErrorModalComponent } from './components/pdf-error-modal/pdf-error-modal';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -142,6 +143,7 @@ if (env.chromeExt) {
     MenuHeaderSectionComponent,
     TextEditorComponent,
     TextEditorMenuComponent,
+    PdfErrorModalComponent,
     // PIPES
     SortByPipe,
   ],

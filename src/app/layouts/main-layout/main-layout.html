@@ -13,6 +13,10 @@
     <pnd-delete-modal [data]="lb.widgets['delete-modal'].ds.out$ | async"
                       [emit]="lb.widgets['delete-modal'].emit">
     </pnd-delete-modal>
+    <!-- Pdf error modal -->
+    <pnd-pdf-error-modal [data]="lb.widgets['pdf-error-modal'].ds.out$ | async"
+                      [emit]="lb.widgets['pdf-error-modal'].emit">
+    </pnd-pdf-error-modal>
     <!-- Toast template -->
     <pnd-toast [data]="toastService.data$ | async"
                [emit]="toastService.componentEmit.bind(toastService)">

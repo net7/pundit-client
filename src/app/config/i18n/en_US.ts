@@ -24,6 +24,12 @@ export default {
     'Are you sure you want to delete this annotation? Please be aware that deleted annotations cannot be recovered.',
   'deletemodal#cancel': 'Cancel',
   'deletemodal#ok': 'Confirm',
+  // pdf error modal
+  'pdferrormodal#label': 'PDF load error',
+  'pdferrormodal#text':
+    'To annotate a local file, you need to grant Pundit the access by turning on Allow access to file URLs in extension settings.',
+  'pdferrormodal#cancel': 'Cancel',
+  'pdferrormodal#ok': 'Go to setting',
   // toast
   'toast#login_retry_action': 'RETRY',
   'toast#login_warn_title': 'Please log in or register',

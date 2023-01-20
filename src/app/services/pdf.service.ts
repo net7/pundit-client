@@ -42,6 +42,11 @@ export class PdfService {
 
   public loaded$: ReplaySubject<void> = new ReplaySubject();
 
+  public error$: Subject<{
+    type: string;
+    payload: PDFViewerApp;
+  }> = new Subject();
+
   constructor() {
     this.pdfApp = (window as any).PDFViewerApplication;
     if (this.pdfApp) {
@@ -91,12 +96,20 @@ export class PdfService {
     );
   }
 
-  private load() {
+  private async load() {
     (window as any).PDFViewerApplicationOptions.set('defaultUrl', '');
-    this.pdfApp.open({
-      url: this.documentUrl,
-      originalUrl: this.originalUrl,
-    });
+    try {
+      await this.pdfApp.open({
+        url: this.documentUrl,
+        originalUrl: this.originalUrl,
+      });
+    } catch (err) {
+      this.error$.next({
+        type: err.name,
+        payload: this.pdfApp
+      });
+      console.warn('PDF open error------>', err);
+    }
   }
 
   private listenPdfViewer() {
