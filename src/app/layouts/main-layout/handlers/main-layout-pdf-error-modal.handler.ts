@@ -28,8 +28,14 @@ export class MainLayoutPdfErrorModalHandler implements LayoutHandler {
           if (!extensionId) {
             console.warn('Extension settings not found:', extensionId);
           } else {
-            const settingsUrl = `chrome://extensions/?id=${extensionId}`;
-            chrome.tabs.update({ url: settingsUrl });
+            chrome.extension.isAllowedFileSchemeAccess(
+              (isAllowedAccess) => {
+                if (!isAllowedAccess) {
+                  const settingsUrl = `chrome://extensions/?id=${extensionId}`;
+                  chrome.tabs.update({ url: settingsUrl });
+                }
+              }
+            );
           }
         } break;
         case PdfErrorModalEvent.Close:
