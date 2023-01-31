@@ -19,6 +19,7 @@ import { AnnotationModel } from '../../common/models';
 import { createRequestPayload } from '../models/annotation';
 import { PdfService } from './pdf.service';
 import { DocumentInfoService } from './document-info/document-info.service';
+import { getHostDocumentBody } from '../models/annotation/html-util/getHostDocumentBody';
 
 export enum AnnotationCssClass {
   Empty = '',
@@ -244,6 +245,7 @@ export class AnnotationService {
         documentInfo,
         notebookId: selectedNotebookId,
         selection: range,
+        root: getHostDocumentBody()
       })))
     );
   }

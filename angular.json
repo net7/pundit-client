@@ -98,6 +98,35 @@
                 }
               ]
             },
+            "tei": {
+              "outputPath": "dist/tei",
+              "index": {
+                "input": "src/html-examples/tei-viewer.html",
+                "output": "index.html"
+              },
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "./node_modules/@teipublisher/pb-components/dist",
+                  "output": "/assets/pb-components/dist"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "./node_modules/@teipublisher/pb-components/lib",
+                  "output": "/assets/pb-components/lib"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "./node_modules/@teipublisher/pb-components/images",
+                  "output": "/assets/pb-components/images"
+                },
+                {
+                  "glob": "**/*",
+                  "input": "./node_modules/@teipublisher/pb-components/i18n",
+                  "output": "/assets/pb-components/i18n"
+                }
+              ]
+            },
             "chrome-ext-prod": {
               "outputPath": "dist/chrome-ext-prod",
               "optimization": true,
@@ -287,6 +316,9 @@
             },
             "pdf": {
               "browserTarget": "pnd:build:pdf"
+            },
+            "tei": {
+              "browserTarget": "pnd:build:tei"
             },
             "chrome-ext-prod": {
               "browserTarget": "pnd:build:chrome-ext-prod"

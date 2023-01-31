@@ -1,4 +1,7 @@
 /* eslint-disable no-cond-assign */
+
+import { getHostDocument } from './annotation/html-util/getHostDocument';
+
 /**
  * Returns true if the start point of a selection occurs after the end point,
  * in document order.
@@ -110,7 +113,11 @@ export function getTextBoundingBoxes(range) {
  * @return {DOMRect|null}
  */
 export function selectionFocusRect(selection) {
-  if (selection.isCollapsed) {
+  const hostDocument = getHostDocument();
+
+  // fix isCollapsed check for shadow root host
+  // source: https://stackoverflow.com/a/70025282
+  if (!(hostDocument instanceof ShadowRoot) && selection.isCollapsed) {
     return null;
   }
   const textBoxes = getTextBoundingBoxes(selection.getRangeAt(0));

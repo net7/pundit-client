@@ -6,6 +6,7 @@ import { AnalyticsAction } from 'src/common/types';
 import { AnchorEvent } from '../event-types';
 import { anchor } from '../models/anchoring/html';
 import { SelectorWithType } from '../models/anchoring/types';
+import { getHostDocumentBody } from '../models/annotation/html-util/getHostDocumentBody';
 import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
 import { AnnotationService } from './annotation.service';
 
@@ -39,7 +40,7 @@ export class AnchorService {
     if (!this.getHighlightById(annotation.id)) {
       try {
         const selectors = this.createSelectors(annotation);
-        const { range, type } = await anchor(document.body, selectors);
+        const { range, type } = await anchor(getHostDocumentBody(), selectors);
         const highlights = highlightRange(range);
         this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });

@@ -3,11 +3,13 @@
 import { config } from './app/models/config';
 
 const OVERRIDABLE_CONFIG_PARAMETERS = [
-  'tagsHint'
+  'tagsHint',
 ];
 
 const HOOKS = [
-  'onLoad'
+  'onLoad',
+  'onGetHostDocument',
+  'onGetHostDocumentBody',
 ];
 
 export const init = () => {

@@ -1,4 +1,5 @@
 import { fromEvent, Subject } from 'rxjs';
+import { getHostDocument } from '../annotation/html-util/getHostDocument';
 
 /**
  * Handles document selectionchange event
@@ -25,14 +26,15 @@ class SelectionModel {
   }
 
   public clearSelection() {
-    if (window.getSelection) {
-      if (window.getSelection().empty) { // Chrome
-        window.getSelection().empty();
-      } else if (window.getSelection().removeAllRanges) { // Firefox
-        window.getSelection().removeAllRanges();
+    const hostDocument = getHostDocument();
+    if (hostDocument.getSelection) {
+      if (hostDocument.getSelection().empty) { // Chrome
+        hostDocument.getSelection().empty();
+      } else if (hostDocument.getSelection().removeAllRanges) { // Firefox
+        hostDocument.getSelection().removeAllRanges();
       }
-    } else if ((document as any).selection) { // IE?
-      (document as any).selection.empty();
+    } else if ((hostDocument as any).selection) { // IE?
+      (hostDocument as any).selection.empty();
     }
   }
 
@@ -44,8 +46,9 @@ class SelectionModel {
   }
 
   public setSelectionFromRange(range: Range) {
-    const newSelection = window.getSelection();
-    const newRange = document.createRange();
+    const hostDocument = getHostDocument();
+    const newSelection = hostDocument.getSelection();
+    const newRange = hostDocument.createRange();
     newRange.setStart(range.startContainer, range.startOffset);
     newRange.setEnd(range.endContainer, range.endOffset);
     newSelection.removeAllRanges();
@@ -55,9 +58,10 @@ class SelectionModel {
   }
 
   private onSelectionChange() {
+    const hostDocument = getHostDocument();
     this.currentSelection = null;
     this.currentRange = null;
-    const selection = document.getSelection();
+    const selection = hostDocument.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       if (!range.collapsed) {

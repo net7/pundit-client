@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>pundit - shakespeare example</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <script type="module" src="/assets/pb-components/dist/pb-components-bundle.js"></script>
+    <style>
+        .n7-text-viewer {
+            margin: 100px;
+            width: 900px;
+            margin: 0 auto;
+        }
+    </style>
+    <script type="text/javascript">
+        var Pundit_API = Pundit_API || {};
+        Pundit_API.onGetHostDocument = () => document.getElementById('view1')?.shadowRoot;
+        Pundit_API.onGetHostDocumentBody = () => document.getElementById('view1')?.shadowRoot;
+        Pundit_API.onLoad = () => {
+            const shadowEl = document.getElementById('view1');
+            const shadowStyle = document.createElement('style');
+            shadowStyle.textContent = `
+                pnd-mark.pnd-mark {
+                    background-color: #fcfc0533;
+                    transition: none;
+                }
+
+                pnd-mark.pnd-mark:hover {
+                    cursor: pointer;
+                }
+
+                pnd-mark.pnd-mark.is-hovered {
+                    background-color: rgba(46, 230, 230, 0.4);
+                }
+            `;
+            shadowEl.shadowRoot.appendChild(shadowStyle);
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="n7-text-viewer">
+        
+
+    <pb-page endpoint="https://teipublisher.com/exist/apps/shakespeare-pm">
+        <pb-document path="F-mnd.xml" root-path="/db/apps/shakespeare-pm/data" view="page" odd="shakespeare" source-view="/exist/apps/eXide/index.html" id="document1"></pb-document>
+        <app-drawer-layout force-narrow="force-narrow" narrow="">
+        <app-drawer slot="drawer" align="right" position="right" style="transition-duration: 200ms; touch-action: pan-y;">
+<div class="drawer-content">
+    <pb-media-query query="max-width: 1023px">
+        <!-- language selector -->
+        <pb-lang name="lang" data-template="pages:languages">
+                            <paper-item value="uk" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Українська</paper-item>
+                            <paper-item value="it" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Italiano</paper-item>
+                            <paper-item value="no" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Norsk</paper-item>
+                            <paper-item value="he" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">עברית</paper-item>
+                            <paper-item value="cs" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Česky</paper-item>
+                            <paper-item value="de" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Deutsch</paper-item>
+                            <paper-item value="el" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">ελληνικά</paper-item>
+                            <paper-item value="fi" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Suomalainen</paper-item>
+                            <paper-item value="fr" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Français</paper-item>
+                            <paper-item value="en" role="option" tabindex="-1" aria-disabled="false" aria-selected="true" class="iron-selected">English</paper-item>
+                            <paper-item value="es" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Español</paper-item>
+                            <paper-item value="nl" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Nederlands</paper-item>
+                            <paper-item value="pl" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Polski</paper-item>
+                            <paper-item value="pt" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Português</paper-item>
+                        </pb-lang>
+        <pb-collapse>
+            <h3 slot="collapse-trigger">
+                <pb-i18n key="menu.documentation">Documentation</pb-i18n>
+            </h3>
+            <paper-listbox slot="collapse-content" role="listbox" tabindex="0">
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <a href="/exist/apps/shakespeare-pm/doc/documentation.xml?odd=docbook.odd" data-template="pages:parse-params">
+                        <pb-i18n key="menu.documentation">Documentation</pb-i18n>
+                    </a>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <a href="/exist/apps/shakespeare-pm/doc/documentation.xml?odd=docbook.odd&amp;id=faq" data-template="pages:parse-params">FAQ</a>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <a href="/exist/apps/shakespeare-pm/doc/blog/" data-template="pages:parse-params">
+                        <pb-i18n key="menu.news">News</pb-i18n>
+                    </a>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <a href="/exist/apps/shakespeare-pm/../pb-components-api/index.html" target="_blank" data-template="pages:parse-params">Webcomponents API</a>
+                </paper-item>
+            </paper-listbox>
+        </pb-collapse>
+        <pb-collapse>
+            <h3 slot="collapse-trigger">
+                <pb-i18n key="menu.download.title">Download</pb-i18n>
+            </h3>
+            <paper-listbox slot="collapse-content" role="listbox" tabindex="0">
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download type="tex" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-latex" title="PDF (LaTeX Version)" _target="_self" _href="F-mnd.xml.tex?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956">
+                        <pb-i18n key="menu.download.pdf-latex"></pb-i18n>
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download type="tex" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.latex-source" title="TeX Source" source="source" _target="_blank" _href="F-mnd.xml.tex?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956&amp;source=yes">
+                        <pb-i18n key="menu.download.latex-source"></pb-i18n>
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download type="pdf" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-fo" title="PDF (FO Version)" _target="_self" _href="F-mnd.xml.pdf?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956">
+                        <pb-i18n key="menu.download.pdf-fo"></pb-i18n>
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download type="pdf" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.fo-source" title="FO Source" source="source" _target="_blank" _href="F-mnd.xml.pdf?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956&amp;source=yes">
+                        <pb-i18n key="menu.download.fo-source"></pb-i18n>
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download type="epub" src="document1" data-i18n="[title]menu.download.epub" dialog="downloadDialog" _target="_self" _href="F-mnd.xml.epub?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956" title="menu.download.epub">
+                        ePUB
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-edit-xml src="document1" data-i18n="[title]menu.download.view-tei" title="View TEI XML">
+                        XML
+                    </pb-edit-xml>
+                </paper-item>
+            </paper-listbox>
+        </pb-collapse>
+        <pb-restricted login="login" style="display: none;">
+            <pb-collapse>
+                <h3 slot="collapse-trigger">
+                    <pb-i18n key="menu.admin.title">Admin</pb-i18n>
+                </h3>
+                <paper-listbox slot="collapse-content" role="listbox" tabindex="0">
+                    <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                        <pb-download url="/exist/apps/tei-publisher/odd-editor.html" source="source" params="root=/db/apps/shakespeare-pm/resources/odd&amp;output-root=/db/apps/shakespeare-pm/transform&amp;output=transform" data-template="pages:edit-odd-link" src="document1" _target="_blank" _href="/exist/apps/tei-publisher/odd-editor.html?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956&amp;root=/db/apps/shakespeare-pm/resources/odd&amp;output-root=/db/apps/shakespeare-pm/transform&amp;output=transform&amp;source=yes">
+                            <pb-i18n key="menu.admin.edit-odd">Edit ODD</pb-i18n>
+                        </pb-download>
+                    </paper-item>
+                    <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                        <a href="/exist/apps/shakespeare-pm/manage.html" data-template="pages:parse-params">
+                            <pb-i18n key="menu.admin.appGenerator"></pb-i18n>
+                        </a>
+                    </paper-item>
+                </paper-listbox>
+            </pb-collapse>
+        </pb-restricted>
+    </pb-media-query>
+    <div class="settings">
+        <h3>Settings</h3>
+        <pb-toggle-feature emit="transcription" subscribe="transcription" name="view" on="page" off="div" init-from-view="init-from-view">
+            <pb-i18n key="document.view-type">Page View</pb-i18n>
+        </pb-toggle-feature>
+        <pb-edit-xml src="document1">
+            <paper-button alt="Edit source" role="button" tabindex="0" animated="" elevation="0" aria-disabled="false">
+                <iron-icon icon="icons:code"></iron-icon> <pb-i18n key="menu.download.view-tei"></pb-i18n>
+            </paper-button>
+        </pb-edit-xml>
+    </div>
+</div>
+</app-drawer>
+        <app-header-layout>
+            <app-header slot="header" fixed="fixed" style="transition-duration: 0ms; transform: translate3d(0px, 0px, 0px); left: 0px; right: 0px;">
+                <app-toolbar class="menubar">
+<a href="/exist/apps/shakespeare-pm/index.html" class="logo" data-template="pages:parse-params">
+    <img src="resources/images/icon.png">
+</a>
+<pb-media-query query="min-width: 1024px" match="">
+    <a href="https://teipublisher.com/exist/apps/shakespeare-pm/index.html" data-template="pages:parse-params">Start</a>
+    <paper-menu-button role="group" aria-haspopup="true" horizontal-align="left" vertical-align="top" aria-disabled="false">
+        <a href="#" slot="dropdown-trigger" data-i18n="[title]menu.download.title" title="Download">
+            <pb-i18n key="menu.download.title">Download</pb-i18n>
+        </a>
+        <paper-listbox slot="dropdown-content" role="listbox" tabindex="0">
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-download type="tex" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-latex" title="PDF (LaTeX Version)" _target="_self" _href="F-mnd.xml.tex?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956">
+                    <pb-i18n key="menu.download.pdf-latex">Download</pb-i18n>
+                </pb-download>
+            </paper-item>
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-download type="tex" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-latex" title="PDF (LaTeX Version)" source="source" _target="_blank" _href="F-mnd.xml.tex?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956&amp;source=yes">
+                    <pb-i18n key="menu.download.latex-source"></pb-i18n>
+                </pb-download>
+            </paper-item>
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-download type="pdf" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.pdf-fo" title="PDF (FO Version)" _target="_self" _href="F-mnd.xml.pdf?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084335956">
+                    <pb-i18n key="menu.download.pdf-fo"></pb-i18n>
+                </pb-download>
+            </paper-item>
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-download type="pdf" src="document1" dialog="downloadDialog" data-i18n="[title]menu.download.fo-source" title="FO Source" source="source" _target="_blank" _href="F-mnd.xml.pdf?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084336753&amp;source=yes">
+                    <pb-i18n key="menu.download.fo-source"></pb-i18n>
+                </pb-download>
+            </paper-item>
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-download type="epub" src="document1" dialog="downloadDialog" _target="_self" _href="F-mnd.xml.epub?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084336753">
+                    ePUB
+                </pb-download>
+            </paper-item>
+            <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                <pb-edit-xml src="document1" data-i18n="[title]menu.download.view-tei" title="View TEI XML">
+                    XML
+                </pb-edit-xml>
+            </paper-item>
+        </paper-listbox>
+    </paper-menu-button>
+    <pb-restricted login="login" style="display: none;">
+        <paper-menu-button role="group" aria-haspopup="true" horizontal-align="left" vertical-align="top" aria-disabled="false">
+            <a href="#" slot="dropdown-trigger">
+                <pb-i18n key="menu.admin.title">Admin</pb-i18n>
+            </a>
+            <paper-listbox slot="dropdown-content" role="listbox" tabindex="0">
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download url="/exist/apps/tei-publisher/odd-editor.html" source="source" params="root=/db/apps/shakespeare-pm/resources/odd&amp;output-root=/db/apps/shakespeare-pm/transform&amp;output=transform" data-template="pages:edit-odd-link" src="document1" _target="_blank" _href="/exist/apps/tei-publisher/odd-editor.html?odd=shakespeare.odd&amp;cache=no&amp;token=1334845084336753&amp;root=/db/apps/shakespeare-pm/resources/odd&amp;output-root=/db/apps/shakespeare-pm/transform&amp;output=transform&amp;source=yes">
+                        <pb-i18n key="menu.admin.edit-odd">Edit ODD</pb-i18n>
+                    </pb-download>
+                </paper-item>
+                <paper-item role="option" tabindex="-1" aria-disabled="false" aria-selected="false">
+                    <pb-download url="modules/lib/app-download.xql" _target="_self" _href="./modules/lib/app-download.xql?odd=undefined&amp;cache=no&amp;token='1334845084336753">
+                        <pb-i18n key="appgen.xar-download">Download App as .xar</pb-i18n>
+                    </pb-download>
+                </paper-item>
+            </paper-listbox>
+        </paper-menu-button>
+    </pb-restricted>
+</pb-media-query>
+<a href="https://github.com/eeditiones/shakespeare" title="View code on GitHub" class="gitlab">
+    <img src="resources/images/github.svg">
+</a>
+<!-- Search input -->
+<pb-search action="/exist/apps/shakespeare-pm/search.html" data-template="pages:parse-params" value="" redirect="redirect"></pb-search>
+<pb-media-query query="min-width: 1024px" match="">
+   <!-- language selector -->
+   <pb-lang name="lang" data-template="pages:languages">
+                                <paper-item value="uk" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Українська</paper-item>
+                                <paper-item value="it" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Italiano</paper-item>
+                                <paper-item value="no" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Norsk</paper-item>
+                                <paper-item value="he" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">עברית</paper-item>
+                                <paper-item value="cs" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Česky</paper-item>
+                                <paper-item value="de" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Deutsch</paper-item>
+                                <paper-item value="el" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">ελληνικά</paper-item>
+                                <paper-item value="fi" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Suomalainen</paper-item>
+                                <paper-item value="fr" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Français</paper-item>
+                                <paper-item value="en" role="option" tabindex="-1" aria-disabled="false" aria-selected="true" class="iron-selected">English</paper-item>
+                                <paper-item value="es" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Español</paper-item>
+                                <paper-item value="nl" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Nederlands</paper-item>
+                                <paper-item value="pl" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Polski</paper-item>
+                                <paper-item value="pt" role="option" tabindex="-1" aria-disabled="false" aria-selected="false">Português</paper-item>
+                            </pb-lang>
+</pb-media-query>
+<pb-login id="login" group="tei" login-label="login.login" logout-label="login.as">
+</pb-login>
+<paper-dialog id="downloadDialog" role="dialog" tabindex="-1" aria-hidden="true" style="outline: none; display: none;">
+    <h2>
+        <pb-i18n key="dialogs.generatingFile">Generating file ...</pb-i18n>
+    </h2>
+    <paper-dialog-scrollable class="no-padding scrolled-to-bottom">
+        <pb-i18n key="dialogs.downloadMessage"></pb-i18n>
+    </paper-dialog-scrollable>
+    <div class="buttons">
+        <paper-button dialog-confirm="dialog-confirm" autofocus="" role="button" tabindex="0" animated="" elevation="0" aria-disabled="false">
+            <pb-i18n key="dialogs.close">Close</pb-i18n>
+        </paper-button>
+    </div>
+</paper-dialog>
+</app-toolbar>
+                <app-toolbar class="toolbar" sticky="sticky" style="transform: translate3d(0px, 0px, 0px);">
+                    <paper-icon-button id="tocToggle" class="toc-toggle" icon="icons:view-list" role="button" tabindex="0" aria-disabled="false"></paper-icon-button>
+                    <pb-toggle-feature name="norm" selector="br" emit="transcription" default="on" subscribe="transcription">
+                        <pb-i18n key="document.normalized">Normalized View</pb-i18n>
+                    </pb-toggle-feature>
+                    <pb-restricted login="login" style="display: none;">
+                        <pb-ajax subscribe="transcription" emit="transcription" url="/exist/apps/shakespeare-pm/modules/lib/regenerate.xql" data-template="pages:parse-params" event="pb-refresh" title="Recompile ODD" data-i18n="[title]menu.admin.recompile">
+                            <h3 slot="title">
+                                <pb-i18n key="menu.admin.recompile"></pb-i18n>
+                            </h3>
+                            <paper-icon-button icon="icons:refresh" role="button" tabindex="0" aria-disabled="false"></paper-icon-button>
+                        </pb-ajax>
+                    </pb-restricted>
+                    <pb-zoom emit="transcription" direction="in" icon="icons:zoom-in"></pb-zoom>
+                    <pb-zoom emit="transcription" direction="out" icon="icons:zoom-out"></pb-zoom>
+                    <pb-navigation emit="transcription" keyboard="left" subscribe="transcription" direction="backward" unit="page" disabled="">
+                        <paper-icon-button icon="icons:chevron-left" role="button" tabindex="0" aria-disabled="false"></paper-icon-button>
+                    </pb-navigation>
+                    <pb-navigation emit="transcription" keyboard="right" subscribe="transcription" direction="forward" unit="page">
+                        <paper-icon-button icon="icons:chevron-right" role="button" tabindex="0" aria-disabled="false"></paper-icon-button>
+                    </pb-navigation>
+                    <paper-icon-button icon="icons:menu" drawer-toggle="drawer-toggle" role="button" tabindex="0" aria-disabled="false"></paper-icon-button>
+                    <pb-progress subscribe="transcription" indeterminate="" bottom-item="bottom-item" style="visibility: hidden;"></pb-progress>
+                </app-toolbar>
+            </app-header>
+            <pb-drawer toggle="tocToggle" class="toc overlay" emit="toc" subscribe="transcription">
+                <div class="drawer-content">
+                    <h3>
+                        <pb-i18n key="document.contents">Contents</pb-i18n>
+                    </h3>
+                    <pb-load id="toc" url="templates/toc.html?target=transcription&amp;icons=true" src="document1" subscribe="toc" load-once="load-once">
+                            <pb-i18n key="dialogs.loading">Loading</pb-i18n>
+                        </pb-load>
+                </div>
+            </pb-drawer>
+            <section class="breadcrumbs">
+                <pb-view id="title-view1" src="document1" xpath="//teiHeader/fileDesc/titleStmt" view="single">
+                    <pb-param name="mode" value="title"></pb-param>
+                </pb-view>
+            </section>
+            <main class="content-body">
+                <pb-view id="view1" src="document1" column-separator=".tei-cb" append-footnotes="append-footnotes" subscribe="transcription" emit="transcription" wait-for="#facsimile"></pb-view>
+                <pb-facsimile id="facsimile" base-uri="https://apps.existsolutions.com/cantaloupe/iiif/2/" default-zoom-level="0" show-navigation-control="show-navigation-control" show-navigator="show-navigator" subscribe="transcription"></pb-facsimile>
+            </main>
+        </app-header-layout>
+    </app-drawer-layout>
+    </pb-page>
+
+</div>
+
+    <!-- <div class="n7-text-viewer">
+  <pb-page endpoint="https://teipublisher.com/exist/apps/shakespeare-pm" api-version="1.0.0">
+    <pb-document
+        path="petrarca/de-viris_i_23_3_2022_1648127195.xml"
+        odd="petrarca_1-1"
+        id="seniles">
+    </pb-document>
+
+    <app-drawer-layout force-narrow="force-narrow" narrow="">
+      <app-header-layout>
+        <app-header
+          fixed="fixed"
+          data-template="browse:fix-links"
+          style="
+            transition-duration: 0ms;
+            transform: translate3d(0px, 0px, 0px);
+            left: 0px;
+            right: 0.399994px;
+          ">
+          <app-toolbar
+            class="toolbar"
+            sticky="sticky"
+            style="transform: translate3d(0px, 0px, 0px)">
+            <paper-icon-button
+              id="tocToggle"
+              class="toc-toggle"
+              icon="icons:view-list"
+              role="button"
+              tabindex="0"
+              aria-disabled="false"></paper-icon-button>
+
+            <pb-toggle-feature
+              name="highlight1"
+              selector="tei-app,pb-popover,pb-highlight"
+              default="off"
+              action="disable"
+              emit="transcription"
+              subscribe="transcription">view</pb-toggle-feature>
+
+              <pb-zoom
+                emit="transcription"
+                direction="in"
+                icon="icons:zoom-in"></pb-zoom>
+              <pb-zoom
+                emit="transcription"
+                direction="out"
+                icon="icons:zoom-out"></pb-zoom>
+
+              <div class="n7-text-viewer__toolbar-container-flex">
+                <pb-download
+                  type="xml"
+                  src="seniles"
+                  url="http://staging.teipublisher.netseven.it/exist/apps/tei-publisher/api/document/mambrino%2Fsm1_source_def_1647334393.xml"
+                  dialog="downloadDialog"
+                  title="Download">
+                  <paper-button raised="">Download</paper-button>
+                </pb-download>
+              </div>
+
+            <pb-progress
+              subscribe="transcription"
+              indeterminate=""
+              bottom-item="bottom-item"
+              style="visibility: hidden"></pb-progress>
+          </app-toolbar>
+        </app-header>
+
+        <pb-drawer
+          toggle="tocToggle"
+          class="tocDrawer"
+          emit="toc"
+          subscribe="transcription">
+          <div class="drawer-content">
+            <h3>table of contents</h3>
+            <pb-load
+              id="toc"
+              url="api/document/{doc}/contents?target=transcription&amp;icons=true"
+              src="seniles"
+              subscribe="toc"
+              emit="toc"
+              expand="expand"
+              auto="auto">loading</pb-load>
+          </div>
+        </pb-drawer>
+        <main class="content-body">
+          <pb-facsimile
+            id="facsimile"
+            base-uri="https://dh.dlls.univr.it/iiif/3/mambrino%2famadis-13_1-1558BNE%2f"
+            subscribe="transcription"
+            default-zoom-level="0"
+            show-navigation-control="show-navigation-control"
+            show-navigator="show-navigator">
+          </pb-facsimile>
+            <pb-view
+                id="view0"
+                src="seniles"
+                subscribe="transcription"
+                emit="transcription"
+                wait-for="#facsimile"
+                column-separator=".tei-cb"
+                append-footnotes="append-footnotes"
+                view="div"
+                url="api/mrcparts">
+                <pb-param name="url" value="http://petrarca-sls.netseven.it/search_text_hl?root=1.4.2.2.6.8&query-text=kempen&resource-id=5&xml=petrarca/petrarca_seniles-1_1654626178-1_1665152343.xml&searchId=xml_text"></pb-param>
+            </pb-view>
+        </main>
+      </app-header-layout>
+    </app-drawer-layout>
+  </pb-page>
+</div> -->
+</body>
+
+</html>
