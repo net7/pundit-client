@@ -180,5 +180,10 @@ export default {
   'sidebaractions#notebookpanel_show': 'Open notebook settings',
   'sidebaractions#notebookpanel_hide': 'Close notebook settings',
   'sidebaractions#notifications_show': 'View user notifications',
-  'sidebaractions#collapse': 'Close sidebar'
+  'sidebaractions#collapse': 'Close sidebar',
+  // notebook share
+  'notebookshare#modal_title': 'Share notebook: {label}',
+  'notebookshare#modal_text': 'Users you share the notebook with can write annotations in it and view the annotations even if the notebook is private. Search users by their email.',
+  'notebookshare#modal_ok': 'Done',
+  'notebookshare#modal_cancel': 'Cancel',
 };

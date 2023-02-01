@@ -17,6 +17,10 @@
     <pnd-pdf-error-modal [data]="lb.widgets['pdf-error-modal'].ds.out$ | async"
                       [emit]="lb.widgets['pdf-error-modal'].emit">
     </pnd-pdf-error-modal>
+    <!-- Notebook share modal -->
+    <pnd-notebook-share-modal [data]="lb.widgets['notebook-share-modal'].ds.out$ | async"
+                      [emit]="lb.widgets['notebook-share-modal'].emit">
+    </pnd-notebook-share-modal>
     <!-- Toast template -->
     <pnd-toast [data]="toastService.data$ | async"
                [emit]="toastService.componentEmit.bind(toastService)">

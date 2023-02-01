@@ -9,3 +9,4 @@ export * from './main-layout-window-events.handler';
 export * from './main-layout-pdf.handler';
 export * from './main-layout-identity.handler';
 export * from './main-layout-pdf-error-modal.handler';
+export * from './main-layout-notebook-share-modal.handler';

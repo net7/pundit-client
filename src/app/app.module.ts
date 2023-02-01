@@ -54,6 +54,7 @@ import { MenuHeaderSectionComponent } from './components/annotation/sections/men
 import { TextEditorComponent } from './components/text-editor/text-editor';
 import { TextEditorMenuComponent } from './components/text-editor/sections/text-editor-menu/text-editor-menu';
 import { PdfErrorModalComponent } from './components/pdf-error-modal/pdf-error-modal';
+import { NotebookShareModalComponent } from './components/notebook-share-modal/notebook-share-modal';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -144,6 +145,7 @@ if (env.chromeExt) {
     TextEditorComponent,
     TextEditorMenuComponent,
     PdfErrorModalComponent,
+    NotebookShareModalComponent,
     // PIPES
     SortByPipe,
   ],

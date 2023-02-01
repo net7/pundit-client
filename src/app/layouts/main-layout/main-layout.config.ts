@@ -13,7 +13,8 @@ import {
   MainLayoutWindowEventsHandler,
   MainLayoutPdfHandler,
   MainLayoutIdentityHandler,
-  MainLayoutPdfErrorModalHandler
+  MainLayoutPdfErrorModalHandler,
+  MainLayoutNotebookShareModalHandler,
 } from './handlers';
 
 export const MainLayoutConfig = {
@@ -31,6 +32,7 @@ export const MainLayoutConfig = {
       id: 'tooltip',
       hasStaticData: true
     },
+    { id: 'notebook-share-modal' },
     { id: 'edit-modal' },
   ],
   layoutDS: MainLayoutDS,
@@ -47,6 +49,7 @@ export const MainLayoutConfig = {
     MainLayoutPdfHandler,
     MainLayoutIdentityHandler,
     MainLayoutPdfErrorModalHandler,
+    MainLayoutNotebookShareModalHandler
   ],
   widgetsDataSources: DS,
   widgetsEventHandlers: EH,
