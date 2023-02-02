@@ -1,4 +1,4 @@
-<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal">
+<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal pnd-notebook-share-modal">
     <div class="pnd-modal__overlay" (click)="onClose($event.target)">
         <div class="pnd-modal__window">
             <div class="pnd-modal__close">
@@ -12,9 +12,46 @@
             </div>
             
             <div class="pnd-modal__body">
-                <div class="pnd-modal__body-text">
-                    {{ data.body.text }}
-                </div>
+                <!-- FORM SECTION -->
+                <ng-container *ngIf="!data.body.confirmSection">
+                    <ng-container *ngIf="data.body.formSection as form">
+                        <div class="pnd-modal__body-text">
+                            {{ form.text }}
+                        </div>
+                        <div *ngIf="form.autocomplete as autocomplete" class="pnd-notebook-share-modal__autocomplete">
+                            <div class="pnd-notebook-share-modal__input">
+                                <input type="text"
+                                    name="notebook-autocomplete"
+                                    class="small"
+                                    [placeholder]="autocomplete.input.placeholder"
+                                    (input)="onInput($event.target.value)">
+                            </div>
+                            <div class="pnd-notebook-share-modal__results">
+                                <div *ngFor="let item of autocomplete.results" 
+                                (click)="onAutocompleteClick(item)"
+                                class="pnd-notebook-share-modal__item">
+                                    <div class="pnd-notebook-share-modal__item-thumb">
+                                        <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
+                                            onerror="this.style.display='none'">
+                                    </div>
+                                    <div class="pnd-notebook-share-modal__item-content">
+                                        <div class="pnd-notebook-share-modal__item-label">{{ item.username }}</div>
+                                        <div class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </ng-container>
+                <!-- end/FORM SECTION -->
+
+                <!-- CONFIRM SECTION -->
+                <ng-container *ngIf="data.body.confirmSection as confirm">
+                    <div class="pnd-modal__body-text">
+                        {{ confirm.text }}
+                    </div>
+                </ng-container>
+                <!-- end/CONFIRM SECTION -->
             </div>
             
             <div class="pnd-modal__actions">

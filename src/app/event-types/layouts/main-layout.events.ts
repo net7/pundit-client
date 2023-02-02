@@ -10,4 +10,5 @@ export enum MainLayoutEvent {
   ClickTooltip = 'main-layout.clicktooltip',
   IdentityLogin = 'main-layout.identitylogin',
   IdentitySync = 'main-layout.identitysync',
+  NotebookShareAutocompleteResponse = 'main-layout.notebookshareautocompleteresponse',
 }

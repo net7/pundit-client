@@ -8,27 +8,25 @@ export class NotebookShareModalEH extends EventHandler {
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case NotebookShareModalEvent.Click: {
-          const { source } = payload;
-          if (['close-icon', 'action-cancel'].includes(source)) {
-            this.dataSource.close();
-            this.emitOuter(getEventType(NotebookShareModalEvent.Close));
-          } else if (source === 'action-ok') {
-            this.emitOuter(getEventType(NotebookShareModalEvent.Confirm));
-            this.dataSource.close();
-          }
+        case NotebookShareModalEvent.Click:
+          this.onClick(payload);
           break;
-        }
         case NotebookShareModalEvent.Close:
           this.dataSource.close();
           this.emitOuter(getEventType(NotebookShareModalEvent.Close));
+          break;
+        case NotebookShareModalEvent.Input:
+          this.emitOuter(getEventType(NotebookShareModalEvent.Input), payload);
+          break;
+        case NotebookShareModalEvent.AutocompleteClick:
+          this.dataSource.onAutocompleteClick(payload);
           break;
         default:
           break;
       }
     });
 
-    this.outerEvents$.subscribe(({ type }) => {
+    this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case MainLayoutEvent.KeyUpEscape:
           if (this.dataSource.isVisible()) {
@@ -36,12 +34,33 @@ export class NotebookShareModalEH extends EventHandler {
             this.emitOuter(getEventType(NotebookShareModalEvent.Close));
           }
           break;
-        case MainLayoutEvent.AnnotationDeleteClick:
-          this.dataSource.open();
+        case MainLayoutEvent.NotebookShareAutocompleteResponse:
+          this.dataSource.updateAutocompleteResults(payload);
           break;
         default:
           break;
       }
     });
+  }
+
+  private onClick(payload) {
+    const { source } = payload;
+    switch (source) {
+      case 'close-icon':
+      case 'action-cancel':
+        this.dataSource.close();
+        break;
+      case 'action-ok':
+        this.emitOuter(getEventType(NotebookShareModalEvent.Ok));
+        break;
+      case 'action-confirm-ok':
+        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm));
+        break;
+      case 'action-confirm-cancel':
+        this.dataSource.closeConfirm();
+        break;
+      default:
+        break;
+    }
   }
 }

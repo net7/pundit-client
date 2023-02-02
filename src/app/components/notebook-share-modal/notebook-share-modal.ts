@@ -1,4 +1,11 @@
 import { Component, Input } from '@angular/core';
+import { ImageDataService } from 'src/app/services/image-data.service';
+
+export type NotebookShareModalResult = {
+  username: string;
+  email: string;
+  thumb: string;
+};
 
 export type NotebookShareModalData = {
   visible: boolean;
@@ -6,7 +13,19 @@ export type NotebookShareModalData = {
     label: string;
   };
   body: {
-    text: string;
+    formSection: {
+      text: string;
+      autocomplete: {
+        input: {
+          placeholder: string;
+        };
+        results?: NotebookShareModalResult[];
+      };
+    };
+    confirmSection?: {
+      text: string;
+      selected: NotebookShareModalResult;
+    };
   };
   actions: {
     label: string;
@@ -24,10 +43,13 @@ export class NotebookShareModalComponent {
 
   @Input() emit: (type: string, payload?: unknown) => void;
 
+  constructor(
+    public imageDataService: ImageDataService
+  ) {}
+
   onClick(ev: Event, payload: any) {
-    if (!this.emit) {
-      return;
-    }
+    if (!this.emit) return;
+
     ev.stopImmediatePropagation();
     this.emit('click', payload);
   }
@@ -37,5 +59,17 @@ export class NotebookShareModalComponent {
       return;
     }
     this.emit('close');
+  }
+
+  onInput(payload) {
+    if (!this.emit) return;
+
+    this.emit('input', payload);
+  }
+
+  onAutocompleteClick(payload) {
+    if (!this.emit) return;
+
+    this.emit('autocompleteclick', payload);
   }
 }
