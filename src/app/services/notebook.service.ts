@@ -7,11 +7,31 @@ import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
 
+export enum NotebookUserRole {
+  Owner = 'owner',
+  Editor = 'editor'
+}
+
+export enum NotebookUserStatus {
+  Pending = 'pending',
+  Removed = 'removed',
+  Joined = 'joined',
+}
+
+export type NotebookUser = {
+  id: string;
+  username: string;
+  thumb: string;
+  role: NotebookUserRole;
+  status: NotebookUserStatus;
+}
+
 export type NotebookData = {
   id: string;
   label: string;
   sharingMode: string;
   userId: string;
+  users?: NotebookUser[];
 }
 
 export type NotebookUpdate = {

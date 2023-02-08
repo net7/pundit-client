@@ -17,6 +17,19 @@ export class NotebookShareModalDS extends DataSource {
               placeholder: _t('notebookshare#modal_input_placeholder')
             }
           }
+        },
+        listSection: {
+          title: _t('notebookshare#list_title'),
+          items: (data.users || []).map(({
+            id, username, thumb, role, status
+          }) => ({
+            id,
+            username,
+            thumb,
+            role,
+            status,
+            roleAsLabel: _t(`notebookshare#role_${role}`)
+          }))
         }
       },
       actions: this.getFormActions(),

@@ -183,10 +183,13 @@ export default {
   'sidebaractions#collapse': 'Close sidebar',
   // notebook share
   'notebookshare#modal_title': 'Share notebook: {label}',
+  'notebookshare#list_title': 'People with access',
   'notebookshare#modal_text': 'Users you share the notebook with can write annotations in it and view the annotations even if the notebook is private. Search users by their email.',
   'notebookshare#modal_ok': 'Done',
   'notebookshare#modal_cancel': 'Cancel',
   'notebookshare#modal_input_placeholder': 'Add people',
   'notebookshare#modal_confirm_ok': 'Invite to notebook',
   'notebookshare#modal_confirm_text': 'Invite { username } to your notebook. The user will be able to add annotations to the notebook and see all annotations.',
+  'notebookshare#role_owner': 'Owner',
+  'notebookshare#role_editor': 'Editor',
 };

@@ -1,10 +1,27 @@
 import { Component, Input } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
+import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 
 export type NotebookShareModalResult = {
   username: string;
   email: string;
   thumb: string;
+};
+
+export type NotebookShareListItem = {
+  id: string | number;
+  username: string;
+  thumb: string;
+  roleAsLabel: string;
+  role: NotebookUserRole;
+  status: NotebookUserStatus;
+  dropdown?: {
+    label: string;
+    actions: {
+      label: string;
+      payload: any;
+    }[];
+  };
 };
 
 export type NotebookShareModalData = {
@@ -21,6 +38,10 @@ export type NotebookShareModalData = {
         };
         results?: NotebookShareModalResult[];
       };
+    };
+    listSection: {
+      title: string;
+      items: NotebookShareListItem[];
     };
     confirmSection?: {
       text: string;

@@ -1,0 +1,117 @@
+/**
+ * NOTEBOOK SHARE MODAL
+ */
+
+/* ------------------------------------ *\
+   #NOTEBOOK SHARE MODAL
+\* ------------------------------------ */
+.pnd-notebook-share-modal {
+    &__input {
+        margin-top: $space;
+        input {
+            width: 100%;
+        }
+    }
+
+    &__results-wrapper {
+        position: relative;
+    }
+
+    &__results {
+        z-index: 10;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: $space;
+        background-color: $color-background-base;
+        border: 1px solid $color-border-normal;
+        border-radius: $border-radius;
+        @include cardShadow-1;
+        max-height: $notebook-selector-list-max-height;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    // autocomplete item
+    &__item {
+        display: flex;
+        align-items: center;
+        padding: $space * .5 $space;
+
+        &:hover {
+            cursor: pointer;
+            background-color: $color-background-light;
+        }
+    }
+    &__item-thumb {
+        img {
+            height: 24px;
+            width: 24px;
+            border-radius: $border-radius;
+        }
+        margin-right: $space;
+    }
+    &__item-content {
+        
+    }
+    &__item-label {
+        font-weight: $font-weight-bold;
+    }
+    &__item-email {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+    }
+
+    // users list
+    &__list {
+        margin-top: $space * 4;
+
+        .pnd-modal__body-title {
+            font-size: $font-size-l;
+            font-weight: $font-weight-bold;
+            margin-bottom: $space;
+        }
+    }
+
+    &__list-item {
+        display: flex;
+        align-items: center;
+        padding: $space * .5 0;
+    }
+
+    &__list-item-thumb {
+        img {
+            height: 32px;
+            width: 32px;
+            border-radius: $border-radius;
+        }
+        margin-right: $space;
+    }
+    &__list-item-label {
+        flex-grow: 1;
+        font-weight: $font-weight-bold;
+    }
+    &__list-item-role, &__list-item-dropdown {
+        font-size: $font-size-s;
+        padding: $space * .25 $space * .5;
+        background-color: $color-background-medium;
+        border-radius: $border-radius;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #MEDIA-QUERIES
+\* ------------------------------------ */
+@media all and (max-width: $breakpoint-laptop) {
+}
+
+@media all and (max-width: $breakpoint-ipad-portrait) {
+}
+
+@media all and (max-width: $breakpoint-smartphone-landscape) {
+}
+
+/* Retina */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}
