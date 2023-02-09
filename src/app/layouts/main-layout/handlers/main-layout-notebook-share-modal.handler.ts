@@ -3,7 +3,7 @@ import {
   Observable, of, Subject
 } from 'rxjs';
 import {
-  debounceTime, delay, distinctUntilChanged, switchMap
+  debounceTime, delay, distinctUntilChanged, first, switchMap
 } from 'rxjs/operators';
 import { getEventType, MainLayoutEvent, NotebookShareModalEvent } from 'src/app/event-types';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
@@ -36,7 +36,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   listen() {
     // FIXME: togliere
     this.layoutDS.userService.logged$.pipe(
-      delay(10000)
+      delay(10000),
+      first(),
     ).subscribe(() => {
       const notebook = this.layoutDS.notebookService.getSelected();
       // FIXME: togliere
@@ -55,6 +56,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       switch (type) {
         case NotebookShareModalEvent.Input:
           this.autocomplete$.next(payload);
+          break;
+        case NotebookShareModalEvent.ActionClick:
+          this.onActionClick(payload);
           break;
         default:
           break;
@@ -77,8 +81,30 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private doAutocompleteRequest$(value): Observable<any> {
-    if (value?.length < 3) return of(null);
-    return of(autocompleteMock());
+  private doAutocompleteRequest$ = (value): Observable<any> => {
+    const query = value?.length ? value.trim() : value;
+    if (query?.length < 3) return of(null);
+    return this.layoutDS.notebookService.userSearch(query);
+  }
+
+  private onActionClick = ({ id, action }) => {
+    const { notebookService } = this.layoutDS;
+    let request$;
+
+    switch (action) {
+      case 'remove':
+      case 'delete_invite':
+        request$ = notebookService.userRemove(id);
+        break;
+      case 'resend_invite':
+        request$ = notebookService.userInviteWithId(id);
+        break;
+      default:
+        break;
+    }
+
+    return request$.subscribe((actionResponse) => {
+      console.warn('FIXME: gestire risposta dell\'azione', id, action, actionResponse);
+    });
   }
 }

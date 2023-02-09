@@ -21,6 +21,9 @@ export class NotebookShareModalEH extends EventHandler {
         case NotebookShareModalEvent.AutocompleteClick:
           this.dataSource.onAutocompleteClick(payload);
           break;
+        case NotebookShareModalEvent.ActionClick:
+          this.emitOuter(getEventType(NotebookShareModalEvent.ActionClick), payload);
+          break;
         default:
           break;
       }

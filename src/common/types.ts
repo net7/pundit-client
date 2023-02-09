@@ -11,6 +11,10 @@ export enum CrossMsgRequestId {
   NotebookSearch = 'notebook.search',
   NotebookUpdate = 'notebook.update',
   NotebookSetDefault = 'notebook.setDefault',
+  NotebookUserSearch = 'notebook.userSearch',
+  NotebookUserInviteWithEmail = 'notebook.userInviteWithEmail',
+  NotebookUserInviteWithId = 'notebook.userInviteWithId',
+  NotebookUserRemove = 'notebook.userRemove',
   // annotation
   AnnotationCreate = 'annotation.create',
   AnnotationGet = 'annotation.get',

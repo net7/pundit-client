@@ -12,15 +12,16 @@ export type NotebookShareListItem = {
   id: string | number;
   username: string;
   thumb: string;
-  roleAsLabel: string;
   role: NotebookUserRole;
   status: NotebookUserStatus;
+  roleAsLabel: string;
+  statusAsLabel: string;
   dropdown?: {
-    label: string;
     actions: {
       label: string;
       payload: any;
     }[];
+    isExpanded?: boolean;
   };
 };
 
@@ -92,5 +93,15 @@ export class NotebookShareModalComponent {
     if (!this.emit) return;
 
     this.emit('autocompleteclick', payload);
+  }
+
+  onActionClick(payload) {
+    if (!this.emit) return;
+
+    this.emit('actionclick', payload);
+  }
+
+  dropdownToggle(item) {
+    item.dropdown.isExpanded = !item.dropdown.isExpanded;
   }
 }

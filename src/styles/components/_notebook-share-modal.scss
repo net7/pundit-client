@@ -91,11 +91,22 @@
         flex-grow: 1;
         font-weight: $font-weight-bold;
     }
-    &__list-item-role, &__list-item-dropdown {
+    &__list-item-role {
         font-size: $font-size-s;
         padding: $space * .25 $space * .5;
         background-color: $color-background-medium;
         border-radius: $border-radius;
+    }
+
+    // dropdown
+    .pnd-dropdown {
+        display: flex;
+        flex-direction: row-reverse;
+        min-width: 180px;
+
+        .pnd-dropdown__selected {
+            width: inherit;
+        }
     }
 }
 

@@ -149,6 +149,14 @@ export class NotebookService {
     );
   }
 
+  userSearch = (query: string) => from(NotebookModel.userSearch(query));
+
+  userInviteWithEmail = (email: string) => from(NotebookModel.userInviteWithEmail(email));
+
+  userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
+
+  userRemove = (id: string) => from(NotebookModel.userRemove(id));
+
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
   }

@@ -192,4 +192,11 @@ export default {
   'notebookshare#modal_confirm_text': 'Invite { username } to your notebook. The user will be able to add annotations to the notebook and see all annotations.',
   'notebookshare#role_owner': 'Owner',
   'notebookshare#role_editor': 'Editor',
+  'notebookshare#status_pending': 'Pending invitation',
+  'notebookshare#status_joined': 'Joined',
+  'notebookshare#status_removed': 'Removed',
+  'notebookshare#action_delete_invite': 'Delete invite',
+  'notebookshare#action_resend_invite': 'Resend invite email',
+  'notebookshare#action_remove': 'Remove from notebook',
+  'notebookshare#action_restore': 'Restore',
 };

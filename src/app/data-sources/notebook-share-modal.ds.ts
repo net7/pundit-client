@@ -1,6 +1,6 @@
 import { DataSource, _t } from '@net7/core';
 import { NotebookShareModalData } from '../components/notebook-share-modal/notebook-share-modal';
-import { NotebookData } from '../services/notebook.service';
+import { NotebookData, NotebookUserRole, NotebookUserStatus } from '../services/notebook.service';
 
 export class NotebookShareModalDS extends DataSource {
   transform(data: NotebookData): NotebookShareModalData {
@@ -28,7 +28,9 @@ export class NotebookShareModalDS extends DataSource {
             thumb,
             role,
             status,
-            roleAsLabel: _t(`notebookshare#role_${role}`)
+            roleAsLabel: _t(`notebookshare#role_${role}`),
+            statusAsLabel: _t(`notebookshare#status_${status}`),
+            dropdown: this.getDropdown(id, role, status)
           }))
         }
       },
@@ -96,5 +98,31 @@ export class NotebookShareModalDS extends DataSource {
         source: 'action-ok'
       }
     }];
+  }
+
+  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus) {
+    if (role === NotebookUserRole.Owner) return null;
+    const dropdown = {
+      actions: [],
+      isExpanded: false
+    };
+
+    let actionKeys = [];
+    if (status === NotebookUserStatus.Pending) {
+      actionKeys = ['delete_invite', 'resend_invite'];
+    } else if (status === NotebookUserStatus.Joined) {
+      actionKeys = ['remove'];
+    } else if (status === NotebookUserStatus.Removed) {
+      actionKeys = ['restore'];
+    }
+    dropdown.actions = actionKeys.map((action) => ({
+      label: _t(`notebookshare#action_${action}`),
+      payload: {
+        id,
+        action
+      }
+    }));
+
+    return dropdown;
   }
 }
