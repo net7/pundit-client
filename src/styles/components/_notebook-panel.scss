@@ -75,4 +75,12 @@
     .pnd-notebook-selector {
         width: 100%;
     }
+
+    &__share-button {
+        padding: 0 $space 0 $space * .5;
+        span.button-label {
+            margin-left: $space;
+            flex-grow: 1;
+        }
+    }
 }

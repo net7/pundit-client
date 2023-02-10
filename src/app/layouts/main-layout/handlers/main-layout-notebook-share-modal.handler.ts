@@ -3,9 +3,14 @@ import {
   Observable, of, Subject
 } from 'rxjs';
 import {
-  debounceTime, delay, distinctUntilChanged, first, switchMap
+  debounceTime,
+  distinctUntilChanged,
+  switchMap,
+  takeUntil
 } from 'rxjs/operators';
-import { getEventType, MainLayoutEvent, NotebookShareModalEvent } from 'src/app/event-types';
+import {
+  AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
+} from 'src/app/event-types';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -34,21 +39,16 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   ) { }
 
   listen() {
-    // FIXME: togliere
-    this.layoutDS.userService.logged$.pipe(
-      delay(10000),
-      first(),
-    ).subscribe(() => {
-      const notebook = this.layoutDS.notebookService.getSelected();
-      // FIXME: togliere
-      notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
-        username,
-        thumb,
-        id: `user-${index}`,
-        role: sample(userRoles),
-        status: sample(userStatus),
-      }));
-      this.layoutDS.one('notebook-share-modal').update(notebook);
+    this.layoutEH.appEvent$.pipe(
+      takeUntil(this.layoutEH.destroy$)
+    ).subscribe(({ type }) => {
+      switch (type) {
+        case AppEvent.NotebookOpenShareModal:
+          this.openShareModal();
+          break;
+        default:
+          break;
+      }
     });
 
     // listen for modal events
@@ -106,5 +106,18 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return request$.subscribe((actionResponse) => {
       console.warn('FIXME: gestire risposta dell\'azione', id, action, actionResponse);
     });
+  }
+
+  private openShareModal() {
+    const notebook = this.layoutDS.notebookService.getSelected();
+    // FIXME: togliere
+    notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
+      username,
+      thumb,
+      id: `user-${index}`,
+      role: sample(userRoles),
+      status: sample(userStatus),
+    }));
+    this.layoutDS.one('notebook-share-modal').update(notebook);
   }
 }

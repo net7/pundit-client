@@ -1,5 +1,7 @@
 import { _t } from '@net7/core';
-import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from 'src/app/event-types';
+import {
+  AppEvent, getEventType, NotebookPanelEvent, SidebarLayoutEvent
+} from 'src/app/event-types';
 import { NotebookUpdate } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
 import { catchError } from 'rxjs/operators';
@@ -74,6 +76,12 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
                 location: 'panel'
               }
             });
+          });
+          break;
+
+        case NotebookPanelEvent.OpenShareModal:
+          this.layoutEH.appEvent$.next({
+            type: AppEvent.NotebookOpenShareModal,
           });
           break;
 

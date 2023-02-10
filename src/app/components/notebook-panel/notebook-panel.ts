@@ -38,4 +38,9 @@ export class NotebookPanelComponent {
     if (!this.emit) return;
     this.emit('change', payload);
   }
+
+  onShareClick() {
+    if (!this.emit) return;
+    this.emit('opensharemodal');
+  }
 }

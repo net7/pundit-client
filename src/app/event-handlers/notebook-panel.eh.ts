@@ -19,6 +19,9 @@ export class NotebookPanelEH extends EventHandler {
           this.dataSource.changeNotebookSelectorLoadingState(true);
           this.emitOuter(getEventType(type), payload);
           break;
+        case NotebookPanelEvent.OpenShareModal:
+          this.emitOuter(getEventType(type), payload);
+          break;
         default:
           break;
       }

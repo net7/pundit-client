@@ -199,4 +199,7 @@ export default {
   'notebookshare#action_resend_invite': 'Resend invite email',
   'notebookshare#action_remove': 'Remove from notebook',
   'notebookshare#action_restore': 'Restore',
+  'notebookpanel#share_title': 'Share notebook',
+  'notebookpanel#button_label': 'Share',
+  'notebookpanel#share_description': 'Invite Pundit users to your notebook and allow them to add annotations.',
 };

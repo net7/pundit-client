@@ -22,6 +22,11 @@ export class NotebookPanelDS extends DataSource {
         description: _t('notebookpanel#status_shared_description'),
       },
     },
+    shareNotebook: {
+      title: _t('notebookpanel#share_title'),
+      button: _t('notebookpanel#button_label'),
+      description: _t('notebookpanel#share_description'),
+    },
     commingSoon: _t('notebookpanel#comingsoon')
   }
 
