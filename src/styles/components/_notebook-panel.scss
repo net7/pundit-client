@@ -82,5 +82,14 @@
             margin-left: $space;
             flex-grow: 1;
         }
+        span.button-icon {
+            display: block;
+            width: $font-size-s;
+            
+            .pnd-svg-icon-plus svg {
+                width: $font-size-s;
+                height: $font-size-s;
+            }
+        }
     }
 }

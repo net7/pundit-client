@@ -61,7 +61,9 @@
         <section class="pnd-notebook-panel__section">
             <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.shareNotebook.title }}</div>
             <button (click)="onShareClick()" class="pnd-btn pnd-notebook-panel__share-button">
-                <pnd-svg-icon [data]="{ id: 'users' }"></pnd-svg-icon>
+                <span class="button-icon">
+                    <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
+                </span>
                 <span class="button-label">{{ data.labels.shareNotebook.button }}</span>
             </button>
             <p class="pnd-text-small">{{ data.labels.shareNotebook.description }}</p>
