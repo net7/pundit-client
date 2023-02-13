@@ -6,6 +6,7 @@ export type NotebookShareModalResult = {
   username: string;
   email: string;
   thumb: string;
+  hideEmail?: boolean;
 };
 
 export type NotebookShareListItem = {

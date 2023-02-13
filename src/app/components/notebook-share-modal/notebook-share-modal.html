@@ -32,13 +32,13 @@
                                     <div *ngFor="let item of autocomplete.results" 
                                     (click)="onAutocompleteClick(item)"
                                     class="pnd-notebook-share-modal__item">
-                                        <div class="pnd-notebook-share-modal__item-thumb">
+                                        <div *ngIf="item.thumb" class="pnd-notebook-share-modal__item-thumb">
                                             <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
                                                 onerror="this.style.display='none'">
                                         </div>
                                         <div class="pnd-notebook-share-modal__item-content">
                                             <div class="pnd-notebook-share-modal__item-label">{{ item.username }}</div>
-                                            <div class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
+                                            <div [hidden]="item.hideEmail" class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
                                         </div>
                                     </div>
                                 </div>

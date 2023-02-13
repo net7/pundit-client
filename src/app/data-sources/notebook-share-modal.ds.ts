@@ -1,3 +1,4 @@
+import { FormControl, Validators } from '@angular/forms';
 import { DataSource, _t } from '@net7/core';
 import { NotebookShareModalData } from '../components/notebook-share-modal/notebook-share-modal';
 import { NotebookData, NotebookUserRole, NotebookUserStatus } from '../services/notebook.service';
@@ -55,14 +56,25 @@ export class NotebookShareModalDS extends DataSource {
     this.output.actions = this.getFormActions();
   }
 
-  public updateAutocompleteResults(payload) {
+  public updateAutocompleteResults({ response, query }) {
     const { autocomplete } = this.output.body.formSection;
-    autocomplete.results = payload || [];
+    let results = response || [];
+    // check email format in query
+    if (results.length && this.validateEmail(query)) {
+      const email = query.trim();
+      results = [{
+        email,
+        username: email,
+        thumb: null,
+        hideEmail: true
+      }];
+    }
+    autocomplete.results = results || [];
   }
 
   public onAutocompleteClick(selected) {
     // clear results
-    this.updateAutocompleteResults(null);
+    this.updateAutocompleteResults({ response: null, query: null });
 
     // update section
     this.output.body.confirmSection = {
@@ -124,5 +136,10 @@ export class NotebookShareModalDS extends DataSource {
     }));
 
     return dropdown;
+  }
+
+  private validateEmail(email: string) {
+    const control = new FormControl(email, Validators.email);
+    return !control.errors?.email;
   }
 }

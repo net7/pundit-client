@@ -1,5 +1,6 @@
 import { sample } from 'lodash';
 import {
+  forkJoin,
   Observable, of, Subject
 } from 'rxjs';
 import {
@@ -72,11 +73,14 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     this.autocomplete$.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(this.doAutocompleteRequest$),
-    ).subscribe((response) => {
+      switchMap((query) => forkJoin({
+        query: of(query),
+        response: this.doAutocompleteRequest$(query)
+      })),
+    ).subscribe((data) => {
       this.layoutEH.emitOuter(
         getEventType(MainLayoutEvent.NotebookShareAutocompleteResponse),
-        response
+        data
       );
     });
   }
