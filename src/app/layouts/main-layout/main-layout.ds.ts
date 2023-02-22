@@ -156,7 +156,7 @@ export class MainLayoutDS extends LayoutDataSource {
     selectionModel.clearSelection();
     tooltipModel.hide();
 
-    const context = { payload };
+    const beforeContext = { payload };
 
     let source$: Observable<any> = of(null).pipe(
       tap(() => {
@@ -166,16 +166,23 @@ export class MainLayoutDS extends LayoutDataSource {
       }),
       switchMap(() => EMPTY)
     );
-    hookManager.trigger(PunditApiHook.AnnotationSaveBefore, context, () => {
+
+    // hook annotation save before
+    hookManager.trigger(PunditApiHook.AnnotationSaveBefore, beforeContext, () => {
       // request
-      source$ = this.annotationService.create(context.payload).pipe(
+      source$ = this.annotationService.create(beforeContext.payload).pipe(
         switchMap(({ data }) => {
           const { id } = data;
           const newAnnotation = this.annotationService.getAnnotationFromPayload(
-            id, context.payload
+            id, beforeContext.payload
           );
           this.anchorService.add(newAnnotation);
           this.removePendingAnnotation();
+
+          // hook annotation save after
+          hookManager.trigger(PunditApiHook.AnnotationSaveAfter, {
+            annotation: newAnnotation
+          }, () => null);
           return of(newAnnotation);
         })
       );
