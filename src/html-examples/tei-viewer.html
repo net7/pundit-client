@@ -53,11 +53,19 @@
             Pundit_API.on('annotation.saveBefore', (ctx, next) => {
                 const { type } = ctx.payload;
                 if (type === 'Linking') {
-                    console.log('semantic---->', ctx);
+                    console.log('annotation.saveBefore---->', ctx);
                 } else {
                     next();
                 }
             });
+            Pundit_API.on('annotation.saveAfter', (ctx, next) => {
+                console.log('annotation.saveAfter', ctx);
+                next();
+            });
+
+            document.addEventListener('pb-navigate',(ev) => {
+                Pundit_API.refresh();
+            }, false);
         }
     </script>
 </head>

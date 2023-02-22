@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
+import { AppEvent } from './app/event-types';
 import { config } from './app/models/config';
 import { hookManager } from './app/models/hook-manager';
 
@@ -18,6 +19,13 @@ const HOOKS = [
 // method hooks
 Pundit_API.on = (type, fn) => {
   hookManager.on(type, fn);
+};
+
+// manual update trigger
+Pundit_API.refresh = () => {
+  // emit signal
+  const signal = new CustomEvent(AppEvent.PunditApiRefreshRequest, { detail: null });
+  window.dispatchEvent(signal);
 };
 
 export const init = () => {

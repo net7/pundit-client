@@ -79,6 +79,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
       this.layoutEH.detectChanges();
     });
+
+    // listen external events
+    this.listenExternalEvents();
   }
 
   private onKeyupEscape() {
@@ -286,5 +289,17 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       },
       sections
     };
+  }
+
+  private listenExternalEvents() {
+    const handlers = {
+      [AppEvent.PunditApiRefreshRequest]: () => {
+        this.onRefresh();
+      }
+    };
+
+    Object.keys(handlers).forEach((key) => {
+      window.addEventListener(key, handlers[key], false);
+    });
   }
 }

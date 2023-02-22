@@ -29,4 +29,5 @@ export enum AppEvent {
   PdfViewerHtmlChanged = 'app.pdfviewerhtmlchanged',
   PdfViewerLoaded = 'app.pdfviewerloaded',
   SidebarLogoutClick = 'app.sidebarlogoutclick',
+  PunditApiRefreshRequest = 'app.punditapirefreshrequest',
 }
