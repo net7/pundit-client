@@ -153,7 +153,9 @@ export class AnnotationEH extends EventHandler {
     fromEvent(document, 'click') // listen for clicks on the document
       .pipe(takeUntil(this.onMenuFocusLost)) // keep listening until the menu is closed
       .subscribe((e: PointerEvent) => {
-        const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
+        const clickedElement: Element = (
+          (e as any).path || []
+        )[0] || {}; // get the element that was clicked
         // only act if the clicked item is NOT the notebook-selector component
         if (
           typeof clickedElement.className === 'string'
