@@ -1,21 +1,29 @@
 /* eslint-disable @typescript-eslint/camelcase */
 
 import { config } from './app/models/config';
+import { hookManager } from './app/models/hook-manager';
+
+declare let Pundit_API: {
+  [key: string]: any;
+};
 
 const OVERRIDABLE_CONFIG_PARAMETERS = [
   'tagsHint',
 ];
 
 const HOOKS = [
-  'onLoad',
-  'onGetHostDocument',
-  'onGetHostDocumentBody',
+  'onLoad'
 ];
+
+// method hooks
+Pundit_API.on = (type, fn) => {
+  hookManager.on(type, fn);
+};
 
 export const init = () => {
   // config api
-  (window as any).Pundit_API = (window as any).Pundit_API || {};
-  (window as any).Pundit_API.config = (hostConfig: {
+  Pundit_API = Pundit_API || {};
+  Pundit_API.config = (hostConfig: {
         [key: string]: unknown;
       }) => {
     Object.keys(hostConfig).forEach((key) => {
@@ -26,8 +34,8 @@ export const init = () => {
     });
   };
 
-  // hooks
+  // initial hooks
   HOOKS.forEach((hook) => {
-    (window as any).Pundit_API[hook] = (window as any).Pundit_API[hook] || (() => null);
+    Pundit_API[hook] = Pundit_API[hook] || (() => null);
   });
 };

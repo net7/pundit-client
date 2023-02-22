@@ -1,6 +1,6 @@
 import { LayoutDataSource, _t } from '@net7/core';
 import {
-  from, of, BehaviorSubject, Observable
+  from, of, BehaviorSubject, Observable, EMPTY
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
@@ -23,6 +23,8 @@ import { SocialService } from 'src/app/services/social.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
+import { hookManager } from 'src/app/models/hook-manager';
+import { PunditApiHook } from 'src/common/types';
 import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
@@ -153,18 +155,33 @@ export class MainLayoutDS extends LayoutDataSource {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
-    // request
-    return this.annotationService.create(payload).pipe(
-      switchMap(({ data }) => {
-        const { id } = data;
-        const newAnnotation = this.annotationService.getAnnotationFromPayload(
-          id, payload
-        );
-        this.anchorService.add(newAnnotation);
+
+    const context = { payload };
+
+    let source$: Observable<any> = of(null).pipe(
+      tap(() => {
+        // clear
+        this.toastService.clear();
         this.removePendingAnnotation();
-        return of(newAnnotation);
-      })
+      }),
+      switchMap(() => EMPTY)
     );
+    hookManager.trigger(PunditApiHook.AnnotationSaveBefore, context, () => {
+      // request
+      source$ = this.annotationService.create(context.payload).pipe(
+        switchMap(({ data }) => {
+          const { id } = data;
+          const newAnnotation = this.annotationService.getAnnotationFromPayload(
+            id, context.payload
+          );
+          this.anchorService.add(newAnnotation);
+          this.removePendingAnnotation();
+          return of(newAnnotation);
+        })
+      );
+    });
+
+    return source$;
   }
 
   public removePendingAnnotation() {

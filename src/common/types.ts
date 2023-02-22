@@ -99,3 +99,10 @@ export enum AnalyticsAction {
   SocialReport = 'social-report',
   SocialComment = 'social-comment',
 }
+
+export enum PunditApiHook {
+  HostGetDocument = 'host.getDocument',
+  HostGetDocumentBody = 'host.getDocumentBody',
+  AnnotationSaveBefore = 'annotation.saveBefore',
+  AnnotationSaveAfter = 'annotation.saveAfter',
+}

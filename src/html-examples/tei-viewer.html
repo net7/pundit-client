@@ -17,8 +17,13 @@
     </style>
     <script type="text/javascript">
         var Pundit_API = Pundit_API || {};
-        Pundit_API.onGetHostDocument = () => document.getElementById('view1')?.shadowRoot;
-        Pundit_API.onGetHostDocumentBody = () => document.getElementById('view1')?.shadowRoot;
+        // Pundit_API.beforeAnnotationSave = (payload, next) => {
+        //     console.log('beforeAnnotationSave----->', payload);
+        //     if (payload === 'Highlighting') {
+        //         return next();
+        //     }
+        //     return Promise.resolve(null);
+        // } 
         Pundit_API.onLoad = () => {
             const shadowEl = document.getElementById('view1');
             const shadowStyle = document.createElement('style');
@@ -37,6 +42,22 @@
                 }
             `;
             shadowEl.shadowRoot.appendChild(shadowStyle);
+
+            // hooks
+            Pundit_API.on('host.getDocument', (ctx, next) => {
+                ctx.document = document.getElementById('view1')?.shadowRoot;
+            });
+            Pundit_API.on('host.getDocumentBody', (ctx, next) => {
+                ctx.body = document.getElementById('view1')?.shadowRoot;
+            });
+            Pundit_API.on('annotation.saveBefore', (ctx, next) => {
+                const { type } = ctx.payload;
+                if (type === 'Linking') {
+                    console.log('semantic---->', ctx);
+                } else {
+                    next();
+                }
+            });
         }
     </script>
 </head>
@@ -46,8 +67,8 @@
     <div class="n7-text-viewer">
         
 
-    <pb-page endpoint="https://teipublisher.com/exist/apps/shakespeare-pm">
-        <pb-document path="F-mnd.xml" root-path="/db/apps/shakespeare-pm/data" view="page" odd="shakespeare" source-view="/exist/apps/eXide/index.html" id="document1"></pb-document>
+    <pb-page endpoint="https://serica.unipi.it:8182/exist/apps/tei-publisher/">
+        <pb-document path="serica/prova-documento-a-stampa_20230219054620.docx.xml" odd="docx-output-muruca" root-path="/db/apps/tei-publisher/data" view="page" source-view="/exist/apps/eXide/index.html" id="document1"></pb-document>
         <app-drawer-layout force-narrow="force-narrow" narrow="">
         <app-drawer slot="drawer" align="right" position="right" style="transition-duration: 200ms; touch-action: pan-y;">
 <div class="drawer-content">

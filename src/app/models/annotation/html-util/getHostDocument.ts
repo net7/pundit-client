@@ -1,3 +1,12 @@
+import { PunditApiHook } from 'src/common/types';
+import { hookManager } from '../../hook-manager';
+
 export function getHostDocument() {
-  return (window as any).Pundit_API.onGetHostDocument() || document;
+  const context = {
+    document: null
+  };
+  hookManager.trigger(PunditApiHook.HostGetDocument, context, () => {
+    context.document = document;
+  });
+  return context.document;
 }
