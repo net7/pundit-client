@@ -105,4 +105,5 @@ export enum PunditApiHook {
   HostGetDocumentBody = 'host.getDocumentBody',
   AnnotationSaveBefore = 'annotation.saveBefore',
   AnnotationSaveAfter = 'annotation.saveAfter',
+  DocumentInfoGet = 'documentinfo.get',
 }

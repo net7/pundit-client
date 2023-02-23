@@ -59,11 +59,16 @@
                 }
             });
             Pundit_API.on('annotation.saveAfter', (ctx, next) => {
-                console.log('annotation.saveAfter', ctx);
+                console.log('annotation.saveAfter----->', ctx);
+                next();
+            });
+            Pundit_API.on('documentinfo.get', (ctx, next) => {
+                console.log('documentinfo.get----->', ctx);
+                ctx.info.pageContext = 'http://localhost:4200/?id';
                 next();
             });
 
-            document.addEventListener('pb-navigate',(ev) => {
+            document.addEventListener('pb-navigate', (ev) => {
                 Pundit_API.refresh();
             }, false);
         }
