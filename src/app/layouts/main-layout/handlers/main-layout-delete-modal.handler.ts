@@ -5,6 +5,8 @@ import { _c } from 'src/app/models/config';
 import { AppEvent, DeleteModalEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
 import { AnnotationCssClass } from 'src/app/services/annotation.service';
+import { hookManager } from 'src/app/models/hook-manager';
+import { PunditApiHook } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -75,6 +77,10 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
         this.layoutDS.socialService.removeCachedAndStats(deleteId);
         this.layoutDS.replyService.removeCachedByAnnotationId(deleteId);
         this.layoutDS.anchorService.remove(deleteId);
+
+        // hook
+        const context = { id: deleteId };
+        hookManager.trigger(PunditApiHook.AnnotationDelete, context, () => null);
       })
     );
   }
