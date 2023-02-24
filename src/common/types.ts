@@ -103,7 +103,9 @@ export enum AnalyticsAction {
 export enum PunditApiHook {
   HostGetDocument = 'host.getDocument',
   HostGetDocumentBody = 'host.getDocumentBody',
+  TooltipClick = 'tooltip.click',
   AnnotationSaveBefore = 'annotation.saveBefore',
   AnnotationSaveAfter = 'annotation.saveAfter',
+  AnnotationDelete = 'annotation.delete',
   DocumentInfoGet = 'documentinfo.get',
 }

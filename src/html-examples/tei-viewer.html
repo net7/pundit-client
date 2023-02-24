@@ -50,16 +50,29 @@
             Pundit_API.on('host.getDocumentBody', (ctx, next) => {
                 ctx.body = document.getElementById('view1')?.shadowRoot;
             });
-            Pundit_API.on('annotation.saveBefore', (ctx, next) => {
-                const { type } = ctx.payload;
-                if (type === 'Linking') {
-                    console.log('annotation.saveBefore---->', ctx);
+            Pundit_API.on('tooltip.click', (ctx, next) => {
+                if (ctx.payload === 'semantic') {
+                    setTimeout(() => {
+                        console.log('tooltip.click----->', ctx);
+                        next();
+                    }, 3000);
                 } else {
                     next();
                 }
             });
+            Pundit_API.on('annotation.saveBefore', (ctx, next) => {
+                const { type } = ctx.payload;
+                if (type === 'Linking') {
+                    console.log('annotation.saveBefore---->', ctx);
+                } 
+                next();
+            });
             Pundit_API.on('annotation.saveAfter', (ctx, next) => {
                 console.log('annotation.saveAfter----->', ctx);
+                next();
+            });
+            Pundit_API.on('annotation.delete', (ctx, next) => {
+                console.log('annotation.delete----->', ctx);
                 next();
             });
             Pundit_API.on('documentinfo.get', (ctx, next) => {
