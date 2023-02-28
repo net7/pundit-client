@@ -52,23 +52,50 @@
             });
             Pundit_API.on('tooltip.click', (ctx, next) => {
                 if (ctx.payload === 'semantic') {
-                    setTimeout(() => {
-                        console.log('tooltip.click----->', ctx);
-                        next();
-                    }, 3000);
+                    if (!!confirm('Add semantic values?')) {
+                        delete ctx.data.id;
+                        delete ctx.data.created;
+                        ctx.skipModal = true;
+                        ctx.data.type = 'Linking';
+                        ctx.data.content = [
+                            {
+                                "predicate": {
+                                    "label": "is related to",
+                                    "uri": "http://www.w3.org/2004/02/skos/core#related"
+                                },
+                                "objectType": "literal",
+                                "object": {
+                                    "text": "hello"
+                                }
+                            },
+                            {
+                                "predicate": {
+                                    "label": "identifies",
+                                    "uri": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
+                                },
+                                "objectType": "literal",
+                                "object": {
+                                    "text": "world"
+                                }
+                            }
+                        ];
+                    }
+                    next();
                 } else {
                     next();
                 }
             });
             Pundit_API.on('annotation.saveBefore', (ctx, next) => {
-                const { type } = ctx.payload;
-                if (type === 'Linking') {
-                    console.log('annotation.saveBefore---->', ctx);
-                } 
+                console.log('annotation.saveBefore---->', ctx);
                 next();
             });
             Pundit_API.on('annotation.saveAfter', (ctx, next) => {
-                console.log('annotation.saveAfter----->', ctx);
+                const { type, id } = ctx.annotation;
+                if (type === 'Linking') {
+                    localStorage.setItem(id, JSON.stringify(ctx.annotation));
+                    // trigger refresh
+                    Pundit_API.refresh();
+                } 
                 next();
             });
             Pundit_API.on('annotation.delete', (ctx, next) => {

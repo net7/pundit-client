@@ -81,10 +81,18 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     };
     if (methodMap[payload]) {
       source$.subscribe((data) => {
-        const context = { data, payload };
+        const context = {
+          data,
+          payload,
+          skipModal: false
+        };
         // hook
         hookManager.trigger(PunditApiHook.TooltipClick, context, () => {
-          methodMap[payload](context.data);
+          if (context.skipModal) {
+            this.onTooltipHighlight(context.data);
+          } else {
+            methodMap[context.payload](context.data);
+          }
         });
       });
     }
