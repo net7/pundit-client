@@ -51,13 +51,13 @@
                 ctx.body = document.getElementById('view1')?.shadowRoot;
             });
             Pundit_API.on('tooltip.click', (ctx, next) => {
-                if (ctx.payload === 'semantic') {
-                    if (!!confirm('Add semantic values?')) {
-                        delete ctx.data.id;
-                        delete ctx.data.created;
-                        ctx.skipModal = true;
-                        ctx.data.type = 'Linking';
-                        ctx.data.content = [
+                if (ctx.type === 'semantic' && confirm('Add semantic values?')) {
+                    const annotationData = {
+                        ...ctx.data,
+                        id: undefined,
+                        created: undefined,
+                        type: 'Linking',
+                        content: [
                             {
                                 "predicate": {
                                     "label": "is related to",
@@ -78,9 +78,40 @@
                                     "text": "world"
                                 }
                             }
-                        ];
-                    }
+                        ]
+                    };
+                    ctx.save(annotationData).then((response) => {
+                        localStorage.setItem(response.id, JSON.stringify(response));
+                        // trigger refresh
+                        Pundit_API.refresh();
+                    });
+                } else {
                     next();
+                }
+            });
+            Pundit_API.on('annotation.editClick', (ctx, next) => {
+                if (ctx.type === 'semantic' && confirm('Update semantic values?')) {
+                    const annotationData = {
+                        ...ctx.data,
+                        created: undefined,
+                        changed: undefined,
+                        uri: undefined,
+                        content: [
+                            {
+                                "predicate": {
+                                    "label": "identifies",
+                                    "uri": "http://www.w3.org/2000/01/rdf-schema#isDefinedBy"
+                                },
+                                "objectType": "literal",
+                                "object": {
+                                    "text": "world"
+                                }
+                            }
+                        ]
+                    };
+                    ctx.save(annotationData).then(({ data }) => {
+                        localStorage.setItem(data.id, JSON.stringify(annotationData));
+                    });
                 } else {
                     next();
                 }
@@ -90,12 +121,7 @@
                 next();
             });
             Pundit_API.on('annotation.saveAfter', (ctx, next) => {
-                const { type, id } = ctx.annotation;
-                if (type === 'Linking') {
-                    localStorage.setItem(id, JSON.stringify(ctx.annotation));
-                    // trigger refresh
-                    Pundit_API.refresh();
-                } 
+                console.log('annotation.saveAfter----->', ctx);
                 next();
             });
             Pundit_API.on('annotation.delete', (ctx, next) => {

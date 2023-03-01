@@ -5,6 +5,8 @@ import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
 import { _t } from '@net7/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
+import { hookManager } from 'src/app/models/hook-manager';
+import { PunditApiHook } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -106,8 +108,26 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
     const annotation = data$.getValue();
-    this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.annotation.updatePayload = annotation;
+    const context = {
+      data: annotation,
+      type: mode,
+      save: (editPayload) => this.layoutDS.annotationService.update(
+        editPayload.id, {
+          ...editPayload,
+          id: undefined
+        }
+      ).toPromise()
+    };
+
+    // hook
+    hookManager.trigger(PunditApiHook.AnnotationEditClick, context, () => {
+      this.layoutDS.removePendingAnnotation();
+      this.layoutDS.state.annotation.updatePayload = context.data;
+      this.loadEditModal(context.data, mode);
+    });
+  }
+
+  private loadEditModal(annotation, mode) {
     const isFullPage = !annotation.subject?.selected;
     const params = {
       sections: [{
