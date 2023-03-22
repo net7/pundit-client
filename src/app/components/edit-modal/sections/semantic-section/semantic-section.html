@@ -29,7 +29,13 @@
                         <ng-container *ngFor="let option of row.predicate.options">
                             <div (click)="onPredicateChange($i, option.value)"
                                 class="pnd-dropdown__item {{ option.selected ? 'is-current' : '' }}">
-                                {{ option.label }}
+                                <span class="item-label">{{ option.label }}</span>
+                                <span class="item-link">
+                                    <a (click)="onPredicateLinkClick($event)" [href]="option.value" target="_blank">
+                                        <span class="item-link-label">{{ option.uriLabel }}</span>
+                                        <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
+                                    </a>
+                                </span>
                             </div>
                         </ng-container>
                     </div>

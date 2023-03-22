@@ -199,6 +199,30 @@
         .pnd-dropdown__list-items {
             max-height: 250px;
         }
+        .pnd-dropdown__list-wrapper {
+            width: 300px;
+        }
+        .pnd-dropdown__item {
+            display: flex;
+            align-items: center;
+
+            .item-label {
+                flex-grow: 1;
+            }
+
+            .item-link {
+                a {
+                    font-weight: $font-weight-normal;
+                    text-decoration: none;
+                    font-size: $font-size-xs;
+                    color: $color-text-light;
+                }
+            }
+            .item-link-label {
+                text-decoration: underline;
+                margin-right: $space * .5;
+            }
+        }
     }
 
     &__list-wrapper {

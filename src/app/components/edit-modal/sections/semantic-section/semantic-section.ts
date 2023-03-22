@@ -153,8 +153,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       predicate: {
         label: predicate.label || defaultPredicate.label,
         providerId: predicateProviderId,
-        options: predicateProvider.items.map(({ label, uri }) => ({
+        options: predicateProvider.items.map(({ label, uri, uriLabel }) => ({
           label,
+          uriLabel,
           value: uri,
           selected: uri === (predicate.uri || defaultPredicate.uri)
         })),
@@ -208,6 +209,10 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
     // trigger form change
     this.triggerChange();
+  }
+
+  onPredicateLinkClick(ev: Event) {
+    ev.stopImmediatePropagation();
   }
 
   onObjectChange(rowIndex, inputValue) {

@@ -79,6 +79,7 @@ export interface FormSection<T, U> {
 export type SemanticItem = {
   label: string;
   uri: string;
+  uriLabel?: string;
   description?: string;
   providerId?: string;
 }
