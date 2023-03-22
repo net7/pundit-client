@@ -313,8 +313,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   private listenExternalEvents() {
     const handlers = {
-      [AppEvent.PunditApiRefreshRequest]: () => {
-        this.onRefresh();
+      [AppEvent.PunditApiRefreshRequest]: (ev) => {
+        const { hardReload } = ev.detail || {};
+        if (hardReload) {
+          this.onRefresh();
+        } else {
+          this.layoutDS.annotationPositionService.update();
+        }
       }
     };
 

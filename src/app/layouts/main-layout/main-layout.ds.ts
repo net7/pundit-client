@@ -9,6 +9,7 @@ import {
 } from '@pundit/communication';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
@@ -45,6 +46,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public notebookService: NotebookService;
 
   public annotationService: AnnotationService;
+
+  public annotationPositionService: AnnotationPositionService;
 
   public tagService: TagService;
 
@@ -85,6 +88,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
+    this.annotationPositionService = payload.annotationPositionService;
     this.tagService = payload.tagService;
     this.socialService = payload.socialService;
     this.replyService = payload.replyService;

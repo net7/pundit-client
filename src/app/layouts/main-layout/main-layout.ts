@@ -7,6 +7,7 @@ import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AnnotationService } from 'src/app/services/annotation.service';
+import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
@@ -38,6 +39,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   constructor(
     private anchorService: AnchorService,
     private annotationService: AnnotationService,
+    private annotationPositionService: AnnotationPositionService,
     private changeDetectorRef: ChangeDetectorRef,
     private replyService: ReplyService,
     private loginService: PunditLoginService,
@@ -58,6 +60,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     return {
       anchorService: this.anchorService,
       annotationService: this.annotationService,
+      annotationPositionService: this.annotationPositionService,
       changeDetectorRef: this.changeDetectorRef,
       replyService: this.replyService,
       appEvent$: this.appEvent$,

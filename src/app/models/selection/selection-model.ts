@@ -26,7 +26,7 @@ class SelectionModel {
   }
 
   public clearSelection() {
-    const hostDocument = getHostDocument();
+    const hostDocument = this.getListenToElement();
     if (hostDocument.getSelection) {
       if (hostDocument.getSelection().empty) { // Chrome
         hostDocument.getSelection().empty();
@@ -46,7 +46,7 @@ class SelectionModel {
   }
 
   public setSelectionFromRange(range: Range) {
-    const hostDocument = getHostDocument();
+    const hostDocument = this.getListenToElement();
     const newSelection = hostDocument.getSelection();
     const newRange = hostDocument.createRange();
     newRange.setStart(range.startContainer, range.startOffset);
@@ -58,7 +58,7 @@ class SelectionModel {
   }
 
   private onSelectionChange() {
-    const hostDocument = getHostDocument();
+    const hostDocument = this.getListenToElement();
     this.currentSelection = null;
     this.currentRange = null;
     const selection = hostDocument.getSelection();
@@ -70,6 +70,14 @@ class SelectionModel {
       }
     }
     this.changed$.next();
+  }
+
+  private getListenToElement(): Document {
+    const el = getHostDocument();
+    if (el instanceof ShadowRoot) {
+      return el as any;
+    }
+    return document;
   }
 }
 

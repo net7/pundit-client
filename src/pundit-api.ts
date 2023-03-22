@@ -16,21 +16,21 @@ const HOOKS = [
   'onLoad'
 ];
 
+(window as any).Pundit_API = (window as any).Pundit_API || {};
+
 // method hooks
 Pundit_API.on = (type, fn) => {
   hookManager.on(type, fn);
 };
 
 // manual update trigger
-Pundit_API.refresh = () => {
+Pundit_API.refresh = (options?) => {
   // emit signal
-  const signal = new CustomEvent(AppEvent.PunditApiRefreshRequest, { detail: null });
+  const signal = new CustomEvent(AppEvent.PunditApiRefreshRequest, { detail: options });
   window.dispatchEvent(signal);
 };
 
 export const init = () => {
-  // config api
-  Pundit_API = Pundit_API || {};
   Pundit_API.config = (hostConfig: {
         [key: string]: unknown;
       }) => {

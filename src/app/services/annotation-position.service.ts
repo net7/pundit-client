@@ -23,6 +23,7 @@ export class AnnotationPositionService {
     }
 
     const { shadowRoot } = rootElement;
+    const contentWrapperTop = shadowRoot.querySelector('.pnd-sidebar__content').getBoundingClientRect().top;
     let containerTop = document.body.getBoundingClientRect().top;
     // pdf document check
     if (this.pdfService.isActive()) {
@@ -81,7 +82,7 @@ export class AnnotationPositionService {
       // or the previous annotation offset (lastEnd)
       const { el, anchorPosition } = positionData;
       const { offsetHeight } = el;
-      const firstMargin = showFullPage ? TOP_MARGIN_FULLPAGE : TOP_MARGIN;
+      const firstMargin = (showFullPage ? TOP_MARGIN_FULLPAGE : TOP_MARGIN) + contentWrapperTop;
       const lastEnd = index ? positions[index - 1].end : firstMargin;
       const start = anchorPosition < lastEnd
         ? lastEnd

@@ -5,8 +5,11 @@ import { initCommunicationSettings } from '../../common/helpers';
 export class EmbedService {
   load(): Promise<void> {
     return new Promise((resolve) => {
-      const appRoot = document.createElement('pnd-root');
-      document.body.appendChild(appRoot);
+      // add pundit element
+      if (!document.querySelector('pnd-root')) {
+        const appRoot = document.createElement('pnd-root');
+        document.body.appendChild(appRoot);
+      }
       // init communication settings
       initCommunicationSettings();
       // api onload hook

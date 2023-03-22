@@ -17,13 +17,6 @@
     </style>
     <script type="text/javascript">
         var Pundit_API = Pundit_API || {};
-        // Pundit_API.beforeAnnotationSave = (payload, next) => {
-        //     console.log('beforeAnnotationSave----->', payload);
-        //     if (payload === 'Highlighting') {
-        //         return next();
-        //     }
-        //     return Promise.resolve(null);
-        // } 
         Pundit_API.onLoad = () => {
             const shadowEl = document.getElementById('view1');
             const shadowStyle = document.createElement('style');
