@@ -18,6 +18,7 @@ export default {
   'editmodal#semantic_remove': 'Remove relation',
   'editmodal#semantic_clear': 'Clear relation',
   'editmodal#save_semantic': 'Save',
+  'editmodal#semantic_default_option': 'Use <b>"{value}"</b> as',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':

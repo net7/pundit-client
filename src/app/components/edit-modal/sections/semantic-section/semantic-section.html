@@ -22,7 +22,7 @@
                 </button>
                 <!-- END // Selected element -->
         
-                <!-- Dropdown items -->
+                <!-- Dropdown (predicate) items -->
                 <div class="pnd-dropdown__list-wrapper">
                     <!-- list of predicate options -->
                     <div class="pnd-dropdown__list-items">
@@ -31,7 +31,7 @@
                                 class="pnd-dropdown__item {{ option.selected ? 'is-current' : '' }}">
                                 <span class="item-label">{{ option.label }}</span>
                                 <span class="item-link">
-                                    <a (click)="onPredicateLinkClick($event)" [href]="option.value" target="_blank">
+                                    <a (click)="onLinkClick($event)" [href]="option.value" target="_blank">
                                         <span class="item-link-label">{{ option.uriLabel }}</span>
                                         <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
                                     </a>
@@ -40,7 +40,7 @@
                         </ng-container>
                     </div>
                 </div>
-                <!-- END // Dropdown items -->
+                <!-- END // Dropdown (predicate) items -->
 
             </div>
         </div>
@@ -49,14 +49,51 @@
         <!-- Object Input -->
         <div class="pnd-edit-modal__semantic-object">
             <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
-                <p class="pnd-edit-modal__semantic-object-type">
-                    {{ row.object.type }}
-                </p>
-                <input [attr.id]="'object-input-' + $i" type="text" 
-                    class="pnd-edit-modal__semantic-object-input small"
-                    (input)="onObjectChange($i, $event.target.value)" 
-                    [value]="row.object.value"
-                    [placeholder]="row.object.placeholder" />
+                <div class="pnd-edit-modal__input-wrapper">
+                    <p class="pnd-edit-modal__semantic-object-type item-type__{{ row.object.type }}">
+                        {{ row.object.type }}
+                    </p>
+                    <input [attr.id]="'object-input-' + $i" type="text" 
+                        class="pnd-edit-modal__semantic-object-input small"
+                        (input)="onObjectChange($i, $event.target.value)" 
+                        [value]="row.object.value"
+                        [placeholder]="row.object.placeholder" />
+                </div>
+                
+                <!-- Dropdown (object) items -->
+                <div class="pnd-dropdown {{ row.object.isExpanded ? 'is-expanded' : '' }}">
+                    <div class="pnd-dropdown__list-wrapper">
+                        <!-- list of predicate options -->
+                        <div class="pnd-dropdown__list-items">
+                            <ng-container *ngFor="let option of row.object.options">
+                                <div (click)="onObjectClick(row, option)"
+                                    class="pnd-dropdown__item">
+                                    <span class="item-label">{{ option.label }}</span>
+                                    <span class="item-link">
+                                        <a (click)="onLinkClick($event)" [href]="option.uri" target="_blank">
+                                            <span class="item-link-label">{{ option.uriLabel }}</span>
+                                            <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
+                                        </a>
+                                    </span>
+                                    <span class="item-type" class="item-type__{{ option.type }}">
+                                        <span>{{ option.type }}</span>
+                                    </span>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div *ngIf="row.object.defaultOption as defaultOption" class="pnd-dropdown__default-option">
+                            <div (click)="onObjectClick(row, defaultOption)"
+                                class="pnd-dropdown__item">
+                                <span class="item-label" [innerHTML]="defaultOption.altLabel"></span>
+                                <span class="item-type" class="item-type__{{ defaultOption.type }}">
+                                    <span>{{ defaultOption.type }}</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- END // Dropdown (object) items -->
+
             </ng-container>
         </div>    
         <!-- END // Object Input -->

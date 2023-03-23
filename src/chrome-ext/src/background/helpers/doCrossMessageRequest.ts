@@ -7,7 +7,8 @@ import {
   TagModel,
   SemanticPredicateModel,
   SocialModel,
-  ReplyModel
+  ReplyModel,
+  SemanticObjectModel
 } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
@@ -98,6 +99,11 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.SemanticPredicateGet:
       request$ = SemanticPredicateModel.get.apply(null, args);
+      break;
+    // SEMANTIC OBJECT REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SemanticObjectSearch:
+      request$ = SemanticObjectModel.search.apply(null, args);
       break;
     default:
       break;

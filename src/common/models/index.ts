@@ -5,4 +5,5 @@ export * from './auth-model';
 export * from './analytics-model';
 export * from './tag-model';
 export * from './semantic-predicate-model';
+export * from './semantic-object-model';
 export * from './reply-model';

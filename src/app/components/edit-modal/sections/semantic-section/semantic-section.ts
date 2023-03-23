@@ -5,13 +5,18 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { _t } from '@net7/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import {
+  forkJoin, from, of, Subject
+} from 'rxjs';
+import {
+  debounceTime, distinctUntilChanged, switchMap, takeUntil
+} from 'rxjs/operators';
 import { SemanticGenericProvider, SemanticTextProvider } from 'src/app/models/semantic';
 import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
 import {
   FormSection, FormSectionData, SemanticConfig, SemanticItem
 } from 'src/app/types';
+import { SemanticObjectModel } from 'src/common/models';
 
 export const DEFAULT_PROVIDER_ID = 'pundit-basic';
 
@@ -40,6 +45,18 @@ export type SemanticFormRow = {
     providerId: string;
     type?: 'literal' | 'uri';
     placeholder?: string;
+    options: {
+      label: string;
+      uri: string;
+      uriLabel: string;
+      type?: string;
+    }[];
+    defaultOption?: {
+      label: string;
+      altLabel: string;
+      type?: string;
+    };
+    isExpanded: boolean;
   };
   actions: {
     isExpanded: boolean;
@@ -92,6 +109,8 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   private destroy$: Subject<void> = new Subject();
 
+  private autocomplete$: Subject<{ query: string; row: SemanticFormRow }> = new Subject();
+
   public rows: SemanticFormRow[] = [];
 
   constructor(
@@ -109,6 +128,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       label: 'Basic Object',
       items: []
     }));
+
+    // listen autocomplete
+    this.listenAutocomplete();
   }
 
   ngAfterViewInit() {
@@ -164,7 +186,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       object: {
         value: objectValue,
         providerId: objectProviderId,
-        placeholder: _t('editmodal#semantic_object_placeholder')
+        placeholder: _t('editmodal#semantic_object_placeholder'),
+        options: [],
+        isExpanded: false
       },
       actions: {
         isExpanded: false
@@ -211,16 +235,28 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.triggerChange();
   }
 
-  onPredicateLinkClick(ev: Event) {
+  onLinkClick(ev: Event) {
     ev.stopImmediatePropagation();
   }
 
   onObjectChange(rowIndex, inputValue) {
-    const currentRow = this.rows[rowIndex];
-    const value = typeof inputValue === 'string' ? inputValue.trim() : inputValue;
-    currentRow.object.value = value;
-    if (currentRow.object.providerId === DEFAULT_PROVIDER_ID) {
-      currentRow.object.type = getObjectType(value);
+    const row = this.rows[rowIndex];
+    const query = typeof inputValue === 'string' ? inputValue.trim() : inputValue;
+    if (query?.length > 2) {
+      this.autocomplete$.next({ query, row });
+    } else {
+      row.object.isExpanded = false;
+      row.object.defaultOption = null;
+      row.object.options = [];
+    }
+  }
+
+  onObjectClick(row, option) {
+    row.object.isExpanded = false;
+
+    row.object.value = option.label;
+    if (row.object.providerId === DEFAULT_PROVIDER_ID) {
+      row.object.type = option.type;
     }
     // trigger form change
     this.triggerChange();
@@ -322,5 +358,25 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     const inputs = shadowRoot.querySelectorAll('input.pnd-edit-modal__semantic-object-input');
     return inputs.length ? inputs[inputs.length - 1] as HTMLInputElement : null;
+  }
+
+  private listenAutocomplete() {
+    this.autocomplete$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(({ row, query }) => forkJoin({
+        query: of(query),
+        row: of(row),
+        response: from(SemanticObjectModel.search(query)),
+      })),
+    ).subscribe(({ query, row, response }) => {
+      row.object.isExpanded = true;
+      row.object.options = (response as any).data;
+      row.object.defaultOption = {
+        label: query,
+        altLabel: _t('editmodal#semantic_default_option', { value: query }),
+        type: getObjectType(query),
+      };
+    });
   }
 }

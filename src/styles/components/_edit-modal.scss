@@ -4,6 +4,11 @@
  * Style for the modal.
  */
 
+$type-class-color: #949400;
+$type-class-bgcolor: #ffffb8;
+$type-entity-color: #1f67ff;
+$type-entity-bgcolor: #ccddff; 
+
 /* ------------------------------------ *\
    #RESOURCE MODAL
 \* ------------------------------------ */
@@ -200,7 +205,7 @@
             max-height: 250px;
         }
         .pnd-dropdown__list-wrapper {
-            width: 300px;
+            width: 250px;
         }
         .pnd-dropdown__item {
             display: flex;
@@ -233,6 +238,83 @@
         position: relative;
         flex-grow: 2;
         margin: 0 $space;
+        
+        .pnd-edit-modal__input-wrapper {
+            position: relative;
+        }
+        
+        .pnd-dropdown {
+            width: 100%;
+        }
+
+        .pnd-dropdown__list-wrapper {
+            top: 2px;
+        }
+
+        .pnd-dropdown__list-items {
+            max-height: 400px;
+        }
+        .pnd-dropdown__item {
+            display: flex;
+            align-items: center;
+
+            .item-label {
+                flex-grow: 1;
+                font-weight: $font-weight-bold;
+            }
+
+            .item-link {
+                a {
+                    font-weight: $font-weight-normal;
+                    text-decoration: none;
+                    font-size: $font-size-xs;
+                    color: $color-text-light;
+                }
+            }
+
+            .item-link-label {
+                text-decoration: underline;
+                margin-right: $space * .5;
+            }
+            .item-type {
+                width: 60px;
+                text-align: center;
+                margin-left: $space * .5;
+
+                span {
+                    font-weight: $font-weight-bold;
+                    font-size: $font-size-xxs;
+                    color: $color-text-light;
+                    padding: 3px 6px;
+                    background-color: $color-background-light;
+                    text-transform: uppercase;
+                    border-radius: $border-radius;
+                }
+            }
+
+            .item-type__class span {
+                color: $type-class-color;
+                background-color: $type-class-bgcolor;
+            }
+            
+            .item-type__entity span {
+                color: $type-entity-color;
+                background-color: $type-entity-bgcolor;
+            }
+
+        }
+        .pnd-dropdown__default-option {
+            border-top: 2px solid $color-border-normal;
+
+            .pnd-dropdown__item {
+                .item-label {
+                    flex-grow: 0;
+                }
+                .item-type {
+                    width: inherit;
+                }
+            }
+        }
     }
 
     &__semantic-object-type {
@@ -248,7 +330,18 @@
         font-size: $font-size-xxs;
         font-weight: $font-weight-bold;
         border-radius: $border-radius;
+
+        &.item-type__class {
+            color: $type-class-color;
+            background-color: $type-class-bgcolor;
+        }
+        
+        &.item-type__entity {
+            color: $type-entity-color;
+            background-color: $type-entity-bgcolor;
+        }
     }
+
 
     &__semantic-object-input[type=text] {
         width: 100%;
