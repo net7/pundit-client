@@ -73,12 +73,22 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case SidebarLayoutEvent.ClickNotebookPanel:
           {
+            // check onthologies panel
+            const onthologiesEditorState = this.dataSource.onthologiesEditor.getValue();
+            if (onthologiesEditorState) {
+              this.dataSource.onthologiesEditor.next(false);
+            }
             const state = this.dataSource.notebookEditor.getValue();
             this.dataSource.notebookEditor.next(!state);
           }
           break;
         case SidebarLayoutEvent.ClickOnthologiesPanel:
           {
+            // check notebook panel
+            const notebookEditorState = this.dataSource.notebookEditor.getValue();
+            if (notebookEditorState) {
+              this.dataSource.notebookEditor.next(false);
+            }
             const state = this.dataSource.onthologiesEditor.getValue();
             this.dataSource.onthologiesEditor.next(!state);
           }
