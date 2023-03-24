@@ -26,6 +26,7 @@ import { PdfService } from './services/pdf.service';
 import { DocumentInfoService } from './services/document-info/document-info.service';
 import { DocumentInfoPdfService } from './services/document-info/document-info-pdf.service';
 import { DocumentInfoWebpageService } from './services/document-info/document-info-webpage.service';
+import { SemanticOnthologiesService } from './services/semantic-onthologies.service';
 // LAYOUTS
 import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 import { SidebarLayoutComponent } from './layouts/sidebar-layout/sidebar-layout';
@@ -54,6 +55,7 @@ import { MenuHeaderSectionComponent } from './components/annotation/sections/men
 import { TextEditorComponent } from './components/text-editor/text-editor';
 import { TextEditorMenuComponent } from './components/text-editor/sections/text-editor-menu/text-editor-menu';
 import { PdfErrorModalComponent } from './components/pdf-error-modal/pdf-error-modal';
+import { OnthologiesPanelComponent } from './components/onthologies-panel/onthologies-panel';
 // PIPES
 import { SortByPipe } from './pipes/sortby.pipe';
 
@@ -90,6 +92,7 @@ const providers: any[] = [
   DocumentInfoService,
   DocumentInfoPdfService,
   DocumentInfoWebpageService,
+  SemanticOnthologiesService,
   { provide: APP_BASE_HREF, useValue: '/' },
 ];
 
@@ -144,6 +147,7 @@ if (env.chromeExt) {
     TextEditorComponent,
     TextEditorMenuComponent,
     PdfErrorModalComponent,
+    OnthologiesPanelComponent,
     // PIPES
     SortByPipe,
   ],

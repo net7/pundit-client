@@ -114,6 +114,8 @@ export default {
           "Pundit couldn't delete your reply, please try again later.",
   'toast#annotation_share_link_copied_title':
             'Annotation link copied to clipboard.',
+  'toast#onthologiessetselected_success_title': 'Onthologies updated',
+  'toast#onthologiessetselected_success_text': 'You\'re ready to use in your semantic annotations',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
@@ -180,6 +182,12 @@ export default {
   'sidebaractions#fullpage_hide': 'Hide full page annotations',
   'sidebaractions#notebookpanel_show': 'Open notebook settings',
   'sidebaractions#notebookpanel_hide': 'Close notebook settings',
+  'sidebaractions#onthologiespanel_show': 'Open onthologies settings',
+  'sidebaractions#onthologiespanel_hide': 'Close onthologies settings',
   'sidebaractions#notifications_show': 'View user notifications',
-  'sidebaractions#collapse': 'Close sidebar'
+  'sidebaractions#collapse': 'Close sidebar',
+  // onthologies panel
+  'onthologiespanel#title': 'Onthologies',
+  'onthologiespanel#description': 'Select the vocabulareis you want to use as objects and predicates for you semantic annotations',
+  'onthologiespanel#types': 'TYPES',
 };

@@ -38,4 +38,10 @@ $color-object: #0084c8;
 $color-subject-text: lighten($color-subject, 27);
 $color-predicate-text: lighten($color-predicate, 25);
 $color-object-text: desaturate(lighten($color-object, 27), 30);
+$color-type-class: #949400;
+$bgcolor-type-class: #ffffb8;
+$color-type-entity: #1f67ff;
+$bgcolor-type-entity: #ccddff;
+$color-type-predicate: #a224d6;
+$bgcolor-type-predicate: #efd6fa;
 

@@ -77,6 +77,12 @@ export class SidebarLayoutEH extends EventHandler {
             this.dataSource.notebookEditor.next(!state);
           }
           break;
+        case SidebarLayoutEvent.ClickOnthologiesPanel:
+          {
+            const state = this.dataSource.onthologiesEditor.getValue();
+            this.dataSource.onthologiesEditor.next(!state);
+          }
+          break;
         case SidebarLayoutEvent.ClickPageAnnotationPanel:
           {
             const state = this.annotationService.showPageAnnotations$.getValue();

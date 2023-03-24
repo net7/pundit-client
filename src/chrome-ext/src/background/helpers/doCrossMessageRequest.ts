@@ -8,7 +8,8 @@ import {
   SemanticPredicateModel,
   SocialModel,
   ReplyModel,
-  SemanticObjectModel
+  SemanticObjectModel,
+  SemanticOnthologiesModel
 } from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
@@ -104,6 +105,14 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.SemanticObjectSearch:
       request$ = SemanticObjectModel.search.apply(null, args);
+      break;
+    // SEMANTIC ONTHOLOGIES REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SemanticOnthologiesGet:
+      request$ = SemanticOnthologiesModel.get.apply(null, args);
+      break;
+    case CrossMsgRequestId.SemanticOnthologiesSetSelected:
+      request$ = SemanticOnthologiesModel.setSelected.apply(null, args);
       break;
     default:
       break;

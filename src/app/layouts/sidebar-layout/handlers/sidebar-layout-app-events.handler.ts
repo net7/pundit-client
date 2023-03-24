@@ -50,6 +50,9 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         case AppEvent.SearchNotebookResponse:
           this.layoutDS.updateNotebookPanel();
           break;
+        case AppEvent.GetSemanticOnthologiesResponse:
+          this.layoutDS.updateOnthologiesPanel();
+          break;
         case AppEvent.AnnotationDeleteSuccess:
           this.layoutDS.updateAnnotations(true);
           break;

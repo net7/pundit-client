@@ -14,6 +14,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { TagService } from 'src/app/services/tag.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { SemanticOnthologiesService } from 'src/app/services/semantic-onthologies.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
 @Component({
@@ -36,6 +37,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private tagService: TagService,
     private pdfService: PdfService,
     private changeDetectorRef: ChangeDetectorRef,
+    private semanticOnthologiesService: SemanticOnthologiesService,
   ) {
     super(config);
 
@@ -55,6 +57,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       tagService: this.tagService,
       pdfService: this.pdfService,
       changeDetectorRef: this.changeDetectorRef,
+      semanticOnthologiesService: this.semanticOnthologiesService,
     };
   }
 

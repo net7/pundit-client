@@ -16,4 +16,5 @@ export enum SidebarLayoutEvent {
   NotebookSharingModeUpdated = 'sidebar-layout.notebookmodeupdated',
   RequestLogin = 'sidebar-layout.requestlogin',
   RequestRegister = 'sidebar-layout.requestregister',
+  ClickOnthologiesPanel = 'sidebar-layout.onthologiespanel',
 }

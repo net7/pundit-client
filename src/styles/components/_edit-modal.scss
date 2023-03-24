@@ -4,11 +4,6 @@
  * Style for the modal.
  */
 
-$type-class-color: #949400;
-$type-class-bgcolor: #ffffb8;
-$type-entity-color: #1f67ff;
-$type-entity-bgcolor: #ccddff; 
-
 /* ------------------------------------ *\
    #RESOURCE MODAL
 \* ------------------------------------ */
@@ -293,13 +288,13 @@ $type-entity-bgcolor: #ccddff;
             }
 
             .item-type__class span {
-                color: $type-class-color;
-                background-color: $type-class-bgcolor;
+                color: $color-type-class;
+                background-color: $bgcolor-type-class;
             }
             
             .item-type__entity span {
-                color: $type-entity-color;
-                background-color: $type-entity-bgcolor;
+                color: $color-type-entity;
+                background-color: $bgcolor-type-entity;
             }
 
         }
@@ -332,13 +327,13 @@ $type-entity-bgcolor: #ccddff;
         border-radius: $border-radius;
 
         &.item-type__class {
-            color: $type-class-color;
-            background-color: $type-class-bgcolor;
+            color: $color-type-class;
+            background-color: $bgcolor-type-class;
         }
         
         &.item-type__entity {
-            color: $type-entity-color;
-            background-color: $type-entity-bgcolor;
+            color: $color-type-entity;
+            background-color: $bgcolor-type-entity;
         }
     }
 

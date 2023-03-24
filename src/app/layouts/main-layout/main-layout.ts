@@ -17,6 +17,7 @@ import { UserService } from 'src/app/services/user.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
 import { AppEventData } from 'src/app/types';
+import { SemanticOnthologiesService } from 'src/app/services/semantic-onthologies.service';
 import { MainLayoutConfig as config } from './main-layout.config';
 
 @Component({
@@ -50,6 +51,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
     private userService: UserService,
     private pdfService: PdfService,
     private documentInfoService: DocumentInfoService,
+    private semanticOnthologiesService: SemanticOnthologiesService,
   ) {
     super(config);
   }
@@ -71,6 +73,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       semanticPredicateService: this.semanticPredicateService,
       pdfService: this.pdfService,
       documentInfoService: this.documentInfoService,
+      semanticOnthologiesService: this.semanticOnthologiesService,
     };
   }
 

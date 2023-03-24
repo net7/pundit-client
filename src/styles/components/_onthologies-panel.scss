@@ -1,0 +1,114 @@
+/**
+ * ONTHOLOGIES PANEL
+ *
+ * Panel to select the current onthologies and change status (public, private, shared)
+ */
+ 
+/* ------------------------------------ *\
+   #ONTHOLOGIES-PANEL
+\* ------------------------------------ */
+.pnd-onthologies-panel {
+    position: fixed;
+    box-sizing: border-box;
+    top: 56px;
+    right: 0;
+    padding: $space*2;
+    width: $sidebar-exploded-width;
+    z-index: $z-index-sidebar - 1;
+    background-color: $color-background-base;
+    color: $color-text;
+    border-bottom: 1px solid $color-border-normal;
+    @include cardShadow-1;
+
+    &__title {
+        font-weight: $font-weight-bold;
+        font-size: $font-size-s;
+        margin-bottom: $space;
+    }
+
+    &__description {
+        font-size: $font-size-s;
+        margin-bottom: $space * 2;
+    }
+    
+    &__item {
+        font-size: $font-size-s;
+        display: flex;
+        margin-bottom: $space;
+    }
+
+    &__item-icon {
+        width: 20px;
+        height: 20px;
+        box-sizing: border-box;
+        background: $color-gray-00;
+        border: 1px solid $color-gray-03;
+        box-shadow: inset 0px 0px 6px rgba(0, 0, 0, 0.2);
+        border-radius: $border-radius;
+        cursor: pointer;
+
+        svg {
+            height: 18px !important;
+            width: 18px !important;
+        }
+    }
+    &__item-info {
+        flex-grow: 1;
+        margin: 0 $space;
+    }
+
+    &__item-info-label {
+        font-weight: $font-weight-bold;
+        margin-bottom: $space * .25;
+    }
+
+    &__item-info-category {
+        color: $color-text-light;
+        font-size: $font-size-xs;
+    }
+
+    &__item-type-items {
+        max-width: 150px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: end;
+    }
+
+    &__item-type-label {
+        color: $color-text-light;
+        text-transform: uppercase;
+        font-size: $font-size-xxs;
+        text-align: right;
+    }
+
+    .item-type {
+        text-align: center;
+        margin-left: $space * .5;
+        margin-bottom: $space * .5;
+
+        span {
+            font-weight: $font-weight-bold;
+            font-size: $font-size-xxs;
+            color: $color-text-light;
+            padding: 3px 6px;
+            background-color: $color-background-light;
+            text-transform: uppercase;
+            border-radius: $border-radius;
+        }
+    }
+
+    .item-type__class span {
+        color: $color-type-class;
+        background-color: $bgcolor-type-class;
+    }
+    
+    .item-type__entity span {
+        color: $color-type-entity;
+        background-color: $bgcolor-type-entity;
+    }
+
+    .item-type__predicate span {
+        color: $color-type-predicate;
+        background-color: $bgcolor-type-predicate;
+    }
+}

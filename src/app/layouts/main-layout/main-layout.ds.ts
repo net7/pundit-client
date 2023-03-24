@@ -23,7 +23,8 @@ import { SocialService } from 'src/app/services/social.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
-import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
+import { SemanticOnthologiesService } from 'src/app/services/semantic-onthologies.service';
+import { AnnotationModel, SemanticOnthologiesModel, SemanticPredicateModel } from '../../../common/models';
 
 type MainLayoutState = {
   isLogged: boolean;
@@ -51,6 +52,8 @@ export class MainLayoutDS extends LayoutDataSource {
   public replyService: ReplyService;
 
   public semanticPredicateService: SemanticPredicateService;
+
+  public semanticOnthologiesService: SemanticOnthologiesService;
 
   public anchorService: AnchorService;
 
@@ -90,6 +93,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.punditLoginService = payload.punditLoginService;
     this.toastService = payload.toastService;
     this.semanticPredicateService = payload.semanticPredicateService;
+    this.semanticOnthologiesService = payload.semanticOnthologiesService;
     this.pdfService = payload.pdfService;
     this.documentInfoService = payload.documentInfoService;
   }
@@ -141,6 +145,14 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(SemanticPredicateModel.get()).pipe(
       tap(({ data }) => {
         this.semanticPredicateService.load(data);
+      })
+    );
+  }
+
+  getUserSemanticOnthologies() {
+    return from(SemanticOnthologiesModel.get()).pipe(
+      tap(({ data }) => {
+        this.semanticOnthologiesService.load(data);
       })
     );
   }

@@ -1,0 +1,23 @@
+<div *ngIf="data" class="pnd-onthologies-panel" [ngClass]="data.classes">
+    <div class="pnd-onthologies-panel__title">{{ data.title }}</div>
+    <div class="pnd-onthologies-panel__description">{{ data.description }}</div>
+    <div class="pnd-onthologies-panel__items">
+        <div *ngFor="let item of data.items" class="pnd-onthologies-panel__item">
+            <div (click)="onClick(item)" class="pnd-onthologies-panel__item-icon">
+                <pnd-svg-icon *ngIf="item.selected" [data]="{ id: 'checked' }"></pnd-svg-icon>
+            </div>
+            <div class="pnd-onthologies-panel__item-info">
+                <div class="pnd-onthologies-panel__item-info-label">{{ item.label }}</div>
+                <div class="pnd-onthologies-panel__item-info-category">{{ item.category }}</div>
+            </div>
+            <div class="pnd-onthologies-panel__item-type">
+                <div class="pnd-onthologies-panel__item-type-label">{{ labels.types }}</div>
+                <div class="pnd-onthologies-panel__item-type-items">
+                    <span *ngFor="let type of item.types" class="item-type" class="item-type__{{ type }}">
+                        <span>{{ type }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

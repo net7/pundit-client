@@ -83,7 +83,15 @@
                 }"
                 (click)="lb.eventHandler.emitInner('notebookpanel')">
                  <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
-             </a>
+            </a>
+            <a class="pnd-sidebar__action pnd-sidebar__onthologies-panel"
+                [title]="(ds.onthologiesEditor | async) ? ds.labels.onthologiespanel.hide : ds.labels.onthologiespanel.show"
+                [ngClass]="{
+                    'is-active': ds.onthologiesEditor | async
+                }"
+                (click)="lb.eventHandler.emitInner('onthologiespanel')">
+                <pnd-svg-icon [data]="{ id: 'onthologies' }"></pnd-svg-icon>
+            </a>
              <a class="pnd-sidebar__action pnd-sidebar__close-button"
                 [title]="ds.labels.collapse"
                 (click)="lb.eventHandler.emitInner('sidebarclose')">
@@ -103,6 +111,15 @@
         <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
     </ng-container>
     <!-- END // Notebook popover -->
+
+    <!-- Onthologies popover -->
+    <ng-container *ngIf="
+        (ds.userService.logged$ | async) && 
+        (lb.dataSource.onthologiesEditor | async)
+    ">
+        <ng-container *ngTemplateOutlet="onthologiespanel"></ng-container>
+    </ng-container>
+    <!-- END // Onthologies popover -->
 
     <!-- Sidebar content -->
     <div class="pnd-sidebar__content"
@@ -164,4 +181,9 @@
 <ng-template #notebookpanel>
     <notebook-panel [data]="lb.widgets['notebook-panel'].ds.out$ | async"
                     [emit]="lb.widgets['notebook-panel'].emit"></notebook-panel>
+</ng-template>
+
+<ng-template #onthologiespanel>
+    <onthologies-panel [data]="lb.widgets['onthologies-panel'].ds.out$ | async"
+    [emit]="lb.widgets['onthologies-panel'].emit"></onthologies-panel>
 </ng-template>

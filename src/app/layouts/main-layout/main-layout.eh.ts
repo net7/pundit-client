@@ -4,7 +4,7 @@ import {
   Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
 import {
-  catchError, delay, switchMap
+  catchError, delay, switchMap, tap
 } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
 import {
@@ -67,6 +67,14 @@ export class MainLayoutEH extends EventHandler {
             }),
             switchMap(() => this.dataSource.getUserTags()),
             switchMap(() => this.dataSource.getUserSemanticPredicates()),
+            switchMap(() => this.dataSource.getUserSemanticOnthologies().pipe(
+              tap(() => {
+                // emit signal for updates
+                this.appEvent$.next({
+                  type: AppEvent.GetSemanticOnthologiesResponse
+                });
+              })
+            )),
             catchError((e) => {
               this.dataSource.state.identitySyncLoading = false;
               this.handleError(e);

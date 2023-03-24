@@ -37,6 +37,8 @@ export enum CrossMsgRequestId {
   // semantic
   SemanticPredicateGet = 'semanticpredicate.get',
   SemanticObjectSearch = 'semanticobject.search',
+  SemanticOnthologiesGet = 'semanticonthologies.get',
+  SemanticOnthologiesSetSelected = 'semanticonthologies.setselected',
 }
 
 export enum CommonEventType {
