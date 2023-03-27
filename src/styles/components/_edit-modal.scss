@@ -185,7 +185,7 @@
     &__semantic-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: $space;
+        margin-bottom: -28px; // fix autocomplete
     }
     
     &__semantic-row:last-child {
