@@ -2,7 +2,19 @@ export type ChromeExtStorageData = {
   [key: string]: ChromeExtStorageValue;
 }
 
-export type ChromeExtStorageValue = string | object | boolean | null;
+export type ChromePageAnnotationCacheItem = {
+  key: string;
+  value: number;
+  created: string;
+}
+
+export type ChromeExtStorageValue = (
+  ChromePageAnnotationCacheItem[]
+  | string
+  | object
+  | boolean
+  | null
+);
 
 export enum ChromeExtStorageKey {
   Active = 'active',

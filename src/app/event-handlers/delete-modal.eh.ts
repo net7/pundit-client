@@ -1,4 +1,4 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { DeleteModalDS } from '../data-sources';
 import { DeleteModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 

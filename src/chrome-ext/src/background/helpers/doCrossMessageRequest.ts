@@ -1,7 +1,14 @@
-import { TagModel } from '../../../../common/models/tag-model';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
-import { AnnotationModel, AuthModel, NotebookModel } from '../../../../common/models';
+import {
+  AnnotationModel,
+  AuthModel,
+  NotebookModel,
+  TagModel,
+  SemanticPredicateModel,
+  SocialModel,
+  ReplyModel
+} from '../../../../common/models';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -41,6 +48,25 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.AnnotationUpdate:
       request$ = AnnotationModel.update.apply(null, args);
       break;
+    // SOCIAL REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SocialCreate:
+      request$ = SocialModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.SocialRemove:
+      request$ = SocialModel.remove.apply(null, args);
+      break;
+    // REPLY REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.ReplyCreate:
+      request$ = ReplyModel.create.apply(null, args);
+      break;
+    case CrossMsgRequestId.ReplyRemove:
+      request$ = ReplyModel.remove.apply(null, args);
+      break;
+    case CrossMsgRequestId.ReplyUpdate:
+      request$ = ReplyModel.update.apply(null, args);
+      break;
     // AUTH REQUEST
     // --------------------------------------------------->
     case CrossMsgRequestId.AuthSignup:
@@ -67,6 +93,11 @@ export const doCrossMessageRequest = (tab, payload) => {
     // --------------------------------------------------->
     case CrossMsgRequestId.TagGet:
       request$ = TagModel.get.apply(null, args);
+      break;
+    // SEMANTIC PREDICATE REQUEST
+    // --------------------------------------------------->
+    case CrossMsgRequestId.SemanticPredicateGet:
+      request$ = SemanticPredicateModel.get.apply(null, args);
       break;
     default:
       break;

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -9,6 +9,7 @@ import { LoginConfigurationService } from '../../services/configuration.service'
 import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
+import { environment as env } from '../../../../../environments/environment';
 
 @Component({
   selector: 'lib-pundit-login-signin',
@@ -24,7 +25,7 @@ export class SignInComponent {
 
   facebook: OAuthProvider;
 
-  loginForm: FormGroup;
+  loginForm: UntypedFormGroup;
 
   isLoading = false;
 
@@ -32,11 +33,13 @@ export class SignInComponent {
 
   terms: TermsParameters;
 
+  lostPasswordLink = `${env.userLink}password/reset`;
+
   constructor(
     private configService: LoginConfigurationService,
     private emailProviderService: EmailProviderService,
     private oauthProviderService: OauthProviderService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();

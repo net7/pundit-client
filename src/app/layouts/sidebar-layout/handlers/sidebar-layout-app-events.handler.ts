@@ -1,15 +1,19 @@
-import { _t } from '@n7-frontend/core';
-import { Annotation, CommentAnnotation, HighlightAnnotation } from '@pundit/communication';
-import { catchError, takeUntil } from 'rxjs/operators';
+import { _t } from '@net7/core';
+import {
+  Annotation, CommentAnnotation, HighlightAnnotation, LinkAnnotation
+} from '@pundit/communication';
+import { catchError, debounceTime, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
 import { LayoutHandler } from 'src/app/types';
-import { EMPTY } from 'rxjs';
-import { AnnotationCssClass } from 'src/app/data-sources';
+import { EMPTY, Subject } from 'rxjs';
+import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
 export class SidebarLayoutAppEventsHandler implements LayoutHandler {
+  private pdfViewerChanged$: Subject<void> = new Subject();
+
   constructor(
     private layoutDS: SidebarLayoutDS,
     private layoutEH: SidebarLayoutEH
@@ -20,6 +24,26 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       takeUntil(this.layoutEH.destroy$)
     ).subscribe(({ type, payload }) => {
       switch (type) {
+        case AppEvent.ShowPageAnnotations: {
+          const isPageAnnVisible = (
+            this.layoutEH.annotationService.showPageAnnotations$.getValue()
+          );
+          if (!isPageAnnVisible) {
+            this.layoutEH.annotationService.showPageAnnotations$.next(true);
+          }
+          this.layoutDS.updateAnnotations(true);
+          break;
+        }
+        case AppEvent.HidePageAnnotations: {
+          const isPageAnnVisible = (
+            this.layoutEH.annotationService.showPageAnnotations$.getValue()
+          );
+          if (isPageAnnVisible) {
+            this.layoutEH.annotationService.showPageAnnotations$.next(false);
+          }
+          this.layoutDS.updateAnnotations(true);
+          break;
+        }
         case AppEvent.SearchAnnotationResponse:
           this.layoutDS.updateAnnotations(true);
           break;
@@ -45,6 +69,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
           break;
         case AppEvent.AnchorClick:
           this.layoutEH.emitOuter(getEventType(SidebarLayoutEvent.AnchorClick), payload);
+          this.layoutEH.appEvent$.next({ type: AppEvent.HidePageAnnotations });
           this.layoutDS.isCollapsed.next(false);
           this.layoutDS.updateAnnotations();
           break;
@@ -55,11 +80,28 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         case AppEvent.NotebookCreateSuccess:
           this.layoutDS.updateNotebookPanel();
           break;
+        case AppEvent.PdfViewerPageChanged:
+        case AppEvent.PdfViewerHtmlChanged:
+        case AppEvent.PdfViewerLoaded:
+          this.pdfViewerChanged$.next();
+          break;
         default:
           break;
       }
 
       this.layoutEH.detectChanges();
+    });
+
+    // listen pdf viewer
+    this.pdfViewerChanged$.pipe(
+      debounceTime(500),
+    ).subscribe(() => {
+      this.layoutEH.updateSidebarHeight();
+      this.layoutEH.anchorService.refresh();
+      setTimeout(() => {
+        this.layoutDS.updateAnnotations();
+        this.layoutEH.detectChanges();
+      });
     });
   }
 
@@ -70,16 +112,24 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    * @param rawAnnotation Data for the annotation that must be updated
    */
   private updateAnnotationComment(rawAnnotation: Annotation) {
-    if (rawAnnotation.type === 'Commenting' || rawAnnotation.type === 'Highlighting') {
+    if (['Commenting', 'Highlighting', 'Linking'].includes(rawAnnotation.type)) {
       // toast "working..."
       const workingToast = this.layoutEH.toastService.working();
       // update loading state
-      this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-        cssClass: AnnotationCssClass.Edit
+      this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+        classes: AnnotationCssClass.Edit
       });
-      const data: CommentAnnotation | HighlightAnnotation = {
+      // fix typescript explicit
+      // annotation types
+      let content;
+      if (rawAnnotation.type === 'Commenting') {
+        content = rawAnnotation.content;
+      } else if (rawAnnotation.type === 'Linking') {
+        content = rawAnnotation.content;
+      }
+      const data: CommentAnnotation | HighlightAnnotation | LinkAnnotation = {
+        content,
         type: rawAnnotation.type,
-        content: rawAnnotation.type === 'Commenting' ? rawAnnotation.content : undefined,
         notebookId: rawAnnotation.notebookId,
         serializedBy: rawAnnotation.serializedBy,
         subject: rawAnnotation.subject,
@@ -101,8 +151,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         })
       ).subscribe(() => {
         // update loading state
-        this.layoutEH.annotationService.updateCached(rawAnnotation.id, {
-          cssClass: AnnotationCssClass.Empty
+        this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+          classes: AnnotationCssClass.Empty
         });
 
         // refresh sidedar annotations

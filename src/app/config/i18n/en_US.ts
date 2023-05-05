@@ -3,20 +3,33 @@ export default {
   'tooltip#highlight': 'Highlight',
   'tooltip#comment': 'Comment',
   'tooltip#tag': 'Tag',
+  'tooltip#semantic': 'Semantic annotation',
   // comment modal
-  'commentmodal#label': 'Your comment',
-  'commentmodal#notebook': 'Save comment in notebook',
-  'commentmodal#notebook_create': 'Create new notebook',
-  'commentmodal#cancel': 'Cancel',
-  'commentmodal#save': 'Save comment',
-  'commentmodal#save_tags': 'Save tags',
-  'commentmodal#add_tag': 'Add a tag',
+  'editmodal#label': 'Your comment',
+  'editmodal#notebook': 'Save comment in notebook',
+  'editmodal#notebook_create': 'Create new notebook',
+  'editmodal#cancel': 'Cancel',
+  'editmodal#save': 'Save comment',
+  'editmodal#save_tags': 'Save tags',
+  'editmodal#add_tag': 'Add a tag',
+  'editmodal#semantic_object_placeholder': 'Add an object',
+  'editmodal#semantic_label': 'Semantic relations',
+  'editmodal#semantic_add': 'Add relation',
+  'editmodal#semantic_remove': 'Remove relation',
+  'editmodal#semantic_clear': 'Clear relation',
+  'editmodal#save_semantic': 'Save',
   // delete modal
   'deletemodal#label': 'Delete Annotation',
   'deletemodal#text':
     'Are you sure you want to delete this annotation? Please be aware that deleted annotations cannot be recovered.',
   'deletemodal#cancel': 'Cancel',
   'deletemodal#ok': 'Confirm',
+  // pdf error modal
+  'pdferrormodal#label': 'PDF load error',
+  'pdferrormodal#text':
+    'To annotate a local file, you need to grant Pundit the access by turning on <b>Allow access to file URLs</b> in extension settings.',
+  'pdferrormodal#cancel': 'Cancel',
+  'pdferrormodal#ok': 'Go to setting',
   // toast
   'toast#login_retry_action': 'RETRY',
   'toast#login_warn_title': 'Please log in or register',
@@ -80,13 +93,52 @@ export default {
   'toast#verify_email_success_title': 'Email sent!',
   'toast#verify_email_success_text':
     'We have sent a verification email to { mail }',
+  'toast#annotation_reply_save_success_title': 'Reply created',
+  'toast#annotation_reply_save_success_text':
+    'Your reply was correctly saved.',
+  'toast#annotation_reply_edit_success_title': 'Reply edited',
+  'toast#annotation_reply_edit_success_text':
+    'Your reply was edited correctly.',
+  'toast#annotation_reply_save_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_save_error_text':
+      "Pundit couldn't save your reply, please try again later.",
+  'toast#annotation_reply_edit_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_edit_error_text':
+          "Pundit couldn't edit your reply, please try again later.",
+  'toast#annotation_reply_delete_success_title': 'Reply deleted',
+  'toast#annotation_reply_delete_success_text':
+    'Your reply was deleted correctly.',
+  'toast#annotation_reply_delete_error_title': 'Oops! Something went wrong',
+  'toast#annotation_reply_delete_error_text':
+          "Pundit couldn't delete your reply, please try again later.",
+  'toast#annotation_share_link_copied_title':
+            'Annotation link copied to clipboard.',
   // annotation
   'annotation#changenotebook': 'Change notebook',
   'annotation#addcomment': 'Add comment',
   'annotation#editcomment': 'Edit',
+  'annotation#addsemantic': 'Add semantic',
+  'annotation#editsemantic': 'Edit',
   'annotation#addtags': 'Add tags',
   'annotation#edittags': 'Edit tags',
   'annotation#delete': 'Delete',
+  // share
+  'share#twitter': 'Twitter',
+  'share#facebook': 'Facebook',
+  'share#linkedin': 'Linkedin',
+  'share#copy': 'Copy Link',
+  // social
+  'social#reply': 'Reply',
+  'social#like': 'Like',
+  'social#dislike': 'Dislike',
+  'social#report': 'Report',
+  'social#endorse': 'Endorse',
+  'social#remove_action': 'Remove { action }',
+  'social#reply_save': 'Reply',
+  'social#reply_cancel': 'Cancel',
+  'social#reply_edit': 'Edit',
+  'social#reply_delete': 'Delete',
+  'social#reply_placeholder': 'Reply to the annotation...',
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',
@@ -109,4 +161,24 @@ export default {
   'notebookpanel#sharedsoon': 'Shared notebooks will be available soon!',
   'notebookpanel#changecurrent': 'Change current notebook:',
   'notebookpanel#comingsoon': 'Coming soon!',
+  'texteditor#bold': 'Bold',
+  'texteditor#italic': 'Italic',
+  'texteditor#underline': 'Underline',
+  'texteditor#strikethrough': 'Strikethrough',
+  'texteditor#ul': 'Unordered list',
+  'texteditor#ol': 'Ordered list',
+  'texteditor#link': 'Add Link',
+  'texteditor#link_save': 'Save',
+  'texteditor#link_cancel': 'Cancel',
+  'texteditor#link_label': 'Enter link:',
+  'texteditor#link_placeholder': 'https://',
+  // fullpage annotations
+  'fullpage#add': 'Add Page Annotation',
+  'fullpage#label': 'Page Annotation',
+  'sidebaractions#fullpage_show': 'Show full page annotations',
+  'sidebaractions#fullpage_hide': 'Hide full page annotations',
+  'sidebaractions#notebookpanel_show': 'Open notebook settings',
+  'sidebaractions#notebookpanel_hide': 'Close notebook settings',
+  'sidebaractions#notifications_show': 'View user notifications',
+  'sidebaractions#collapse': 'Close sidebar'
 };

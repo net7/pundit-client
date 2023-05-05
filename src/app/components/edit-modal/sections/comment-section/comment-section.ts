@@ -2,9 +2,13 @@ import {
   AfterViewInit,
   Component,
   Input,
+  OnDestroy,
 } from '@angular/core';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { TextEditorData } from 'src/app/components/text-editor/text-editor';
 import { FormSection, FormSectionData } from 'src/app/types';
+import { editor } from '../../../text-editor/editor/editor';
 
 const TEXT_MIN_LIMIT = 3;
 
@@ -18,69 +22,82 @@ export type CommentSectionOptions = {
   selector: 'pnd-comment-section',
   templateUrl: './comment-section.html'
 })
-export class CommentSectionComponent implements AfterViewInit, FormSection<
+export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   CommentSectionValue, CommentSectionOptions
 > {
   id = 'comment';
+
+  editor: any;
 
   @Input() public data: FormSectionData<CommentSectionValue, CommentSectionOptions>;
 
   @Input() public reset$: Subject<void>;
 
+  public editorData: TextEditorData;
+
+  private destroy$: Subject<void> = new Subject();
+
   ngAfterViewInit() {
+    this.init();
     this.checkFocus();
-    this.reset$.subscribe(this.onReset);
+    this.reset$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(this.onReset);
   }
 
-  onChange(payload) {
+  ngOnDestroy() {
+    this.destroy$.next();
+  }
+
+  init() {
+    setTimeout(() => {
+      const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+      const appendTo: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__view');
+      const target: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__content');
+
+      editor.init({
+        target,
+        appendTo,
+        onChange: this.onChange.bind(this)
+      });
+
+      // editor data
+      this.editorData = {
+        content: this.data.initialValue || '',
+        menu: editor.getMenu()
+      };
+    });
+  }
+
+  onChange({ text, html }) {
     // check for errors
-    const value = (typeof payload === 'string' && payload.trim());
+    const textValue = (typeof text === 'string' && text.trim());
     const errors = [];
-    if (value && value.length < TEXT_MIN_LIMIT) {
+    if (textValue && textValue.length < TEXT_MIN_LIMIT) {
       errors.push('minlength');
     }
 
     this.data.changed$.next({
-      value,
+      value: textValue ? html : null,
       errors,
       id: this.id,
     });
   }
 
-  onKeyEvent(ev: KeyboardEvent) {
-    ev.stopImmediatePropagation();
-    const { key } = ev;
-    if (key === 'Tab') {
-      // FIXME: passare evento
-      // const saveButtonEl = this.saveButton.nativeElement as HTMLButtonElement;
-      // if (!saveButtonEl.disabled) {
-      //   setTimeout(() => {
-      //     saveButtonEl.focus();
-      //   });
-      // }
-    }
-  }
-
   private onReset = () => {
-    if (this.getTextAreaEl()) {
-      const { initialValue } = this.data;
-      this.getTextAreaEl().value = initialValue;
+    const { initialValue } = this.data;
+    setTimeout(() => {
+      editor.setContent(initialValue);
       this.checkFocus();
-    }
+    });
   }
 
   private checkFocus = () => {
     const { focus } = this.data;
     if (focus) {
-      const el = this.getTextAreaEl();
-      el.focus();
-      // focus position end of text
-      el.setSelectionRange(el.value.length, el.value.length);
+      setTimeout(() => {
+        editor.focus();
+      });
     }
-  }
-
-  private getTextAreaEl() {
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector('textarea.pnd-edit-modal__comment-textarea') as HTMLTextAreaElement;
   }
 }

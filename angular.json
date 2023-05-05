@@ -72,19 +72,29 @@
             },
             "shake": {
               "outputPath": "dist/shake",
-              "fileReplacements": [
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/shakespeare.html"
-                }
-              ]
+              "index": {
+                "input": "src/html-examples/shakespeare.html",
+                "output": "index.html"
+              }
             },
             "scroll": {
               "outputPath": "dist/scroll",
-              "fileReplacements": [
+              "index": {
+                "input": "src/html-examples/shakespeare-scroll.html",
+                "output": "index.html"
+              }
+            },
+            "pdf": {
+              "outputPath": "dist/pdf",
+              "index": {
+                "input": "src/html-examples/pdf-viewer.html",
+                "output": "index.html"
+              },
+              "assets": [
                 {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/shakespeare-scroll.html"
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }
               ]
             },
@@ -106,13 +116,18 @@
               "assets": [
                 {
                   "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/prod",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -134,13 +149,18 @@
               "assets": [
                 {
                   "glob": "**/*",
-                  "input": "src/chrome-ext/assets/img",
-                  "output": "/assets/img"
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 }, 
                 {
                 "glob": "**/*",
                 "input": "src/chrome-ext/assets/icons/stage",
                 "output": "/assets/icons"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -157,12 +177,12 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.prod.ts"
-                },
-                {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/embed.html"
                 }
-              ]
+              ],
+              "index": {
+                "input": "src/html-examples/embed.html",
+                "output": "index.html"
+              }
             },
             "embed-stage": {
               "outputPath": "dist/embed-stage",
@@ -177,10 +197,74 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.embed.stage.ts"
+                }
+              ],
+              "index": {
+                "input": "src/html-examples/embed.html",
+                "output": "index.html"
+              }
+            },
+            "pdf-standalone-prod": {
+              "outputPath": "dist/pdf-standalone-prod",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.prod.ts"
+                }
+              ],
+              "index": {
+                "input": "src/chrome-ext/src/pdf-viewer.html",
+                "output": "index.html"
+              },
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
                 },
                 {
-                  "replace": "src/index.html",
-                  "with": "src/html-examples/embed.html"
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "/"
+                }
+              ]
+            },
+            "pdf-standalone-stage": {
+              "outputPath": "dist/pdf-standalone-stage",
+              "optimization": true,
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.embed.stage.ts"
+                }
+              ],
+              "index": {
+                "input": "src/chrome-ext/src/pdf-viewer.html",
+                "output": "index.html"
+              },
+              "assets": [
+                {
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/pdfjs",
+                  "output": "/assets/pdfjs"
+                },
+                {
+                  "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "/"
                 }
               ]
             }
@@ -201,6 +285,9 @@
             "scroll": {
               "browserTarget": "pnd:build:scroll"
             },
+            "pdf": {
+              "browserTarget": "pnd:build:pdf"
+            },
             "chrome-ext-prod": {
               "browserTarget": "pnd:build:chrome-ext-prod"
             },
@@ -212,6 +299,12 @@
             },
             "embed-stage": {
               "browserTarget": "pnd:build:embed-stage"
+            },
+            "pdf-standalone-prod": {
+              "browserTarget": "pnd:build:pdf-standalone-prod"
+            },
+            "pdf-standalone-stage": {
+              "browserTarget": "pnd:build:pdf-standalone-stage"
             }
           }
         },
@@ -236,19 +329,6 @@
             "scripts": []
           }
         },
-        "lint": {
-          "builder": "@angular-devkit/build-angular:tslint",
-          "options": {
-            "tsConfig": [
-              "tsconfig.app.json",
-              "tsconfig.spec.json",
-              "e2e/tsconfig.json"
-            ],
-            "exclude": [
-              "**/node_modules/**"
-            ]
-          }
-        },
         "e2e": {
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
@@ -263,6 +343,5 @@
         }
       }
     }
-  },
-  "defaultProject": "pnd"
+  }
 }

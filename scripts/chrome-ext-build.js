@@ -9,10 +9,54 @@ const path = require('path');
 const _ = require('lodash');
 const { version } = require('../package.json');
 
+const stageVersionFilePath = path.join(path.dirname(fs.realpathSync(__filename)), '../scripts/.stage.version');
+
+const getStageVersion = () => {
+  let newStageVersion = null;
+  try {
+    const fileData = fs.readFileSync(stageVersionFilePath, 'utf8');
+    const fileLines = fileData.split(/\r?\n/);
+    if (Array.isArray(fileLines) && fileLines.length) {
+      const firstLine = fileLines[0].trim();
+      const [pkgMajor, pkgMinor, pkgPatch] = version.split('.');
+      const [major, minor, patch, extra] = firstLine.split('.');
+      let newExtra;
+      if (
+        (pkgMajor !== major)
+        || (pkgMinor !== minor)
+        || (pkgPatch !== patch)
+      ) {
+        newExtra = 0;
+      } else {
+        newExtra = +extra + 1;
+      }
+      newStageVersion = [pkgMajor, pkgMinor, pkgPatch, newExtra].join('.');
+      // update stage file with new version
+      fs.writeFileSync(stageVersionFilePath, newStageVersion);
+    } else {
+      throw Error(`File ${stageVersionFilePath} empty`);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+
+  return newStageVersion;
+};
+
 const copyChromeExtFiles = (dist, src) => fs.copy(src, dist).catch((err) => {
   console.log('copy chrome ext files error:', err);
   throw new Error('copy chrome ext files fail');
 });
+
+const copyEmbedBuildFile = (dist, context) => {
+  const embedDirName = context.replace('chrome-ext', 'embed');
+  const fileSrc = path.join(path.dirname(fs.realpathSync(__filename)), `../dist/${embedDirName}/pundit.embed.js`);
+  const fileDist = `${dist}/pundit.embed.js`;
+  return fs.copy(fileSrc, fileDist).catch((err) => {
+    console.log('copy embed build file error:', err);
+    throw new Error('copy embed build file fail');
+  });
+};
 
 const createManifestFile = (dist, context) => {
   const basePath = path.join(path.dirname(fs.realpathSync(__filename)), '../src/chrome-ext');
@@ -24,7 +68,9 @@ const createManifestFile = (dist, context) => {
   const manifestContext = require(manifestContextPath);
   const manifestData = _.merge(manifestCommon, manifestContext);
   // update with lib version
-  manifestData.version = version;
+  manifestData.version = context === 'chrome-ext-stage'
+    ? getStageVersion()
+    : version;
   return fs.writeJson(`${dist}/manifest.json`, manifestData);
 };
 
@@ -32,6 +78,7 @@ const buildExt = (context, dist) => {
   const src = path.join(path.dirname(fs.realpathSync(__filename)), '../dist/chrome-ext-tmp/');
   // init
   copyChromeExtFiles(dist, src)
+    .then(() => copyEmbedBuildFile(dist, context))
     .then(() => createManifestFile(dist, context))
     .then(() => fs.remove(src))
     .then(() => {

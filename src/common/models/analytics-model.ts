@@ -1,4 +1,4 @@
-import { analytics } from '@n7-frontend/core';
+import { analytics } from '@net7/core';
 import mixpanel from 'mixpanel-browser';
 import { AnalyticsAction, AnalyticsData, CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
@@ -21,8 +21,10 @@ analytics.init([
     },
     actions: [
       AnalyticsAction.Bootstrap,
-      AnalyticsAction.HighlightCreated,
-      AnalyticsAction.CommentCreated,
+      AnalyticsAction.HighlightAnnotationCreated,
+      AnalyticsAction.CommentAnnotationCreated,
+      AnalyticsAction.TagAnnotationCreated,
+      AnalyticsAction.SemanticAnnotationCreated,
       AnalyticsAction.NotebookCreated,
       AnalyticsAction.NotebookCurrentChanged,
       AnalyticsAction.NotebookVisibilityChanged,
@@ -46,6 +48,10 @@ analytics.init([
       AnalyticsAction.AccessGoogleCompleted,
       AnalyticsAction.AccessFacebookCompleted,
       AnalyticsAction.AccessEgiCompleted,
+      AnalyticsAction.SocialLike,
+      AnalyticsAction.SocialDislike,
+      AnalyticsAction.SocialReport,
+      AnalyticsAction.SocialComment,
     ]
   }
 ]);

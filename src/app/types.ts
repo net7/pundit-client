@@ -1,4 +1,4 @@
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export type AppEventData = {
   type: string;
@@ -63,12 +63,39 @@ export type EditModalParams = {
     required?: boolean;
     focus?: boolean;
   }[];
+  validation?: {
+    required?: {
+      condition: 'AND' | 'OR';
+    };
+  };
 }
 
 export interface FormSection<T, U> {
   id: string;
   data: FormSectionData<T, U>;
   reset$: Subject<void>;
+}
+
+export type SemanticItem = {
+  label: string;
+  uri: string;
+  description?: string;
+  providerId?: string;
+}
+
+export interface SemanticProvider {
+  id: string;
+  label: string;
+  items: SemanticItem[];
+  selected: SemanticItem;
+  get: (uri: string) => SemanticItem;
+  search: (query?: string) => Observable<SemanticItem[]>;
+  setSelected: (uri: string) => void;
+}
+
+export type SemanticConfig = {
+  default: string;
+  providers: SemanticProvider[];
 }
 
 // ------------------------------------ //

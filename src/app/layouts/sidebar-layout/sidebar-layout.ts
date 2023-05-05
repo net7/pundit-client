@@ -13,6 +13,7 @@ import { AnchorService } from 'src/app/services/anchor.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { TagService } from 'src/app/services/tag.service';
+import { PdfService } from 'src/app/services/pdf.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 
 @Component({
@@ -33,6 +34,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
     private punditLoginService: PunditLoginService,
     private toastService: ToastService,
     private tagService: TagService,
+    private pdfService: PdfService,
     private changeDetectorRef: ChangeDetectorRef,
   ) {
     super(config);
@@ -51,6 +53,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       punditLoginService: this.punditLoginService,
       toastService: this.toastService,
       tagService: this.tagService,
+      pdfService: this.pdfService,
       changeDetectorRef: this.changeDetectorRef,
     };
   }

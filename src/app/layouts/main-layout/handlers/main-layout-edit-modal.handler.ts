@@ -1,4 +1,5 @@
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
+import { SemanticTripleType } from '@pundit/communication';
 import { EMPTY, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
@@ -7,7 +8,7 @@ import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
 import { AnalyticsModel } from 'src/common/models';
-import { AnalyticsAction } from 'src/common/types';
+import { AnalyticsAction, AnalyticsData } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -38,8 +39,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               this.layoutEH.handleError(e);
               // toast
               this.layoutDS.toastService.error({
-                title: _t('toast#genericerror_error_title'),
-                text: _t('toast#genericerror_error_text'),
+                title: _t('toast#annotationsave_error_title'),
+                text: _t('toast#annotationsave_error_text'),
                 timer: _c('toastTimer'),
                 onLoad: () => {
                   workingToast.close();
@@ -80,12 +81,43 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               this.layoutDS.tagService.addMany(data?.tags);
 
               // analytics
-              AnalyticsModel.track({
-                action: AnalyticsAction.CommentCreated,
-                payload: {
-                  scope: 'fragment'
-                }
-              });
+              let analyticsData: AnalyticsData;
+              // comment
+              if (data.type === 'Commenting') {
+                analyticsData = {
+                  action: AnalyticsAction.CommentAnnotationCreated,
+                  payload: {
+                    scope: 'fragment'
+                  }
+                };
+              // semantic
+              } else if (data.type === 'Linking') {
+                const { content }: { content: SemanticTripleType[] } = data;
+                analyticsData = {
+                  action: AnalyticsAction.SemanticAnnotationCreated,
+                  payload: {
+                    scope: 'fragment',
+                    predicate: content.map(({ predicate }) => predicate.label),
+                    'object-type': content.map(({ objectType }) => objectType),
+                    'object-lod': content.map((triple) => (
+                      triple.objectType === 'uri'
+                        ? triple.object.label
+                        : null
+                    )),
+                    'number-triples': content.length,
+                  }
+                };
+              // tags
+              } else if (Array.isArray(data.tags) && data.tags.length) {
+                analyticsData = {
+                  action: AnalyticsAction.TagAnnotationCreated,
+                  payload: {
+                    scope: 'fragment',
+                    tags: data.tags
+                  }
+                };
+              }
+              AnalyticsModel.track(analyticsData);
             }
           });
         } break;
@@ -106,8 +138,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
 
     // toast
     this.layoutDS.toastService.error({
-      title: _t('toast#genericerror_error_title'),
-      text: _t('toast#genericerror_error_text'),
+      title: _t('toast#genericerror_title'),
+      text: _t('toast#genericerror_text'),
     });
   }
 
@@ -170,6 +202,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       ? formState?.comment?.value.trim()
       : null;
     const tags = formState?.tags?.value || null;
+    const semantic = formState?.semantic?.value || null;
     // check notebook value
     if (notebook) {
       annotationPayload.notebookId = notebook;
@@ -186,7 +219,37 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     if (Array.isArray(tags)) {
       annotationPayload.tags = tags.length ? tags : undefined;
     }
+    // check semantic value
+    if (Array.isArray(semantic)) {
+      annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
+      annotationPayload.content = semantic.length
+        ? semantic.map(({ predicate, object, objectType }) => {
+          const objectPayload = this.getObjectPayload(object, objectType);
+          return {
+            predicate: {
+              label: predicate.label,
+              uri: predicate.uri
+            },
+            ...objectPayload
+          };
+        }) : undefined;
+    }
     return annotationPayload;
+  }
+
+  private getObjectPayload = (object, objectType: string) => {
+    if (objectType === 'literal') {
+      return { objectType, object: { text: object.label } };
+    } if (objectType === 'uri') {
+      return {
+        objectType,
+        object: {
+          uri: object.label,
+          source: 'free-text'
+        }
+      };
+    }
+    return {};
   }
 
   private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;

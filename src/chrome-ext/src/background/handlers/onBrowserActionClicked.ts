@@ -2,7 +2,7 @@ import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
 import * as helpers from '../helpers';
 
-export const onBrowserActionClicked = ({ id }: chrome.tabs.Tab) => {
+export const onBrowserActionClicked = ({ id }: chrome.tabs.Tab, skipCheck = false) => {
   const activeKey = `${ChromeExtStorageKey.Active}.${id}`;
   ChromeExtStorage.get(activeKey)
     .then((value) => {
@@ -12,6 +12,8 @@ export const onBrowserActionClicked = ({ id }: chrome.tabs.Tab) => {
       return ChromeExtStorage.set(activeKey, !value);
     })
     .then(() => {
-      helpers.checkActiveState(id);
+      if (!skipCheck) {
+        helpers.checkActiveState(id);
+      }
     });
 };

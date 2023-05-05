@@ -102,6 +102,7 @@
         font-size: $font-size-s;
         font-weight: $font-weight-bold;
         line-height: 1;
+        white-space: nowrap;
         transition: color $transition-durations;
 
         &:hover {

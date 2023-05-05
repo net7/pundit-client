@@ -36,6 +36,7 @@ $font-size-l: 20px;
 $font-size-m: 16px;
 $font-size-s: 14px;
 $font-size-xs: 13px;
+$font-size-xxs: 11px;
 
 // Font weight
 $font-weight-normal: 300;
@@ -48,7 +49,7 @@ $font-weight-bold: 500;
 // Text Colors
 $color-text: $color-gray-05;
 $color-text-inverse: $color-gray-00;
-$color-text-light: $color-gray-04;
+$color-text-light: lighten($color-gray-05, 42); // $color-gray-04;
 $color-text-link: $color-main;
 $color-text-link-hover: $color-text-hover;
 $color-text-link-visited: $color-text-hover;
@@ -138,6 +139,7 @@ $annotation-background-color: $color-background-base;
 $annotation-comment-background-color: $color-background-medium;
 $annotation-border-color: $color-border-normal;
 $annotation-collapsed-height: 26px;
+$annotation-border-size: 1px;
 
 
 // ------------------------------------ //
@@ -150,7 +152,7 @@ $tooltip-border-color: $color-border-normal;
 // ------------------------------------ //
 // #MODAL
 // ------------------------------------ //
-$modal-width: 480px;
+$modal-width: 590px;
 
 
 // ------------------------------------ //

@@ -194,6 +194,29 @@
             width: 18px;
             height: auto;
         }
+        
+        &.is-bell {
+            position: relative;
+            border-bottom: transparent
+        }
+        &__badge {
+            background-color: $color-main;
+            color: white;
+            width: 8px;
+            height: 8px;
+            margin: 0;
+            text-align: center;
+            border-radius: 50%;
+            border: 1px solid ;
+            position: absolute;
+            top: 17px;
+            right: 5px;
+            padding: 2px;
+            font-size: xx-small;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
 }
 
@@ -290,6 +313,45 @@
         .pnd-loader {
             width: 100%;
         }
+    }
+}
+
+.pnd-sidebar__content {
+
+    &__action {
+        margin: 70px  $space $space $space;
+        width: auto;
+        display: flex;
+        box-sizing: border-box;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        font-size: $font-size-m;
+        color: $color-text-light;
+        // transition: color $transition-durations;
+
+        &:hover {
+            color: $color-text-link;
+        }
+
+        &.is-active {
+            color: $color-text-link;
+            border-bottom: 3px solid $color-main;
+        }
+
+        .pnd-svg-icon svg {
+            width: 20px;
+            height: auto;
+        }
+    }
+}
+
+// FULLPAGE DROPDOWN SELECT
+.pnd-sidebar__content {
+    .pnd-dropdown {
+        position: absolute;
+        margin: 70px $space;
+        width: calc(100% - 16px);
     }
 }
 

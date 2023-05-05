@@ -1,14 +1,15 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import {
-  Subject, ReplaySubject, EMPTY, of, Observable
+  Subject, ReplaySubject, EMPTY, of
 } from 'rxjs';
 import {
-  catchError, delay, switchMap, tap
+  catchError, delay, switchMap
 } from 'rxjs/operators';
 import { AppEventData } from 'src/app/types';
-import { AppEvent, MainLayoutEvent, } from 'src/app/event-types';
-import { LoginUser } from '@pundit/communication';
+import {
+  AppEvent, getEventType, MainLayoutEvent,
+} from 'src/app/event-types';
 import { MainLayoutDS } from './main-layout.ds';
 
 export class MainLayoutEH extends EventHandler {
@@ -39,31 +40,20 @@ export class MainLayoutEH extends EventHandler {
         case MainLayoutEvent.GetPublicData:
           this.dataSource.getPublicData().pipe(
             catchError((err) => {
+              this.dataSource.state.identitySyncLoading = false;
               console.warn('PublicData error:', err);
               return of(null);
             })
           ).subscribe(() => {
             // signal
+            this.dataSource.state.identitySyncLoading = false;
             this.appEvent$.next({
               type: AppEvent.SearchAnnotationResponse
             });
           });
           break;
         case MainLayoutEvent.GetUserData: {
-          let notebook$: Observable<any> = of(true);
-          if (payload?.getNotebookInfo) {
-            notebook$ = this.dataSource.punditLoginService.sso().pipe(
-              tap((val) => {
-                if ('user' in val) {
-                  const user = val.user as LoginUser;
-                  this.dataSource.notebookService.setSelected(user.current_notebook);
-                }
-              })
-            );
-          }
-
-          notebook$.pipe(
-            switchMap(() => this.dataSource.getUserNotebooks()),
+          this.dataSource.getUserNotebooks().pipe(
             switchMap(() => {
               // set default notebook
               this.dataSource.setDefaultNotebook();
@@ -76,11 +66,14 @@ export class MainLayoutEH extends EventHandler {
               return this.dataSource.getUserAnnotations();
             }),
             switchMap(() => this.dataSource.getUserTags()),
+            switchMap(() => this.dataSource.getUserSemanticPredicates()),
             catchError((e) => {
+              this.dataSource.state.identitySyncLoading = false;
               this.handleError(e);
               return EMPTY;
             }),
           ).subscribe(() => {
+            this.dataSource.state.identitySyncLoading = false;
             this.appEvent$.next({
               type: AppEvent.SearchAnnotationResponse
             });
@@ -123,12 +116,27 @@ export class MainLayoutEH extends EventHandler {
   }
 
   public handleError(error) {
-    const { status } = error.response;
+    let { status } = error;
+    if (error.response) {
+      status = error.response.status;
+    }
     switch (status) {
       // Unauthorized
       case 403:
       case 401:
-        this.appEvent$.next({ type: AppEvent.Logout });
+        if (!this.dataSource.state.identitySyncLoading) {
+          this.dataSource.state.identitySyncLoading = true;
+          this.appEvent$.next({
+            type: AppEvent.Logout,
+            payload: {
+              skipRequest: true,
+              callback: () => {
+                // emit signal
+                this.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+              }
+            }
+          });
+        }
         break;
       default:
         console.warn('FIXME: error handler', error);

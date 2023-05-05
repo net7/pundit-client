@@ -1,4 +1,4 @@
-import { DataSource, _t } from '@n7-frontend/core';
+import { DataSource, _t } from '@net7/core';
 import { uniqueId } from 'lodash';
 import { Subject } from 'rxjs';
 import { EditModalData } from '../components/edit-modal/edit-modal';
@@ -14,6 +14,7 @@ export class EditModalDS extends DataSource {
       textQuote,
       saveButtonLabel,
       sections,
+      validation
     } = data;
 
     const formSections: {
@@ -36,15 +37,15 @@ export class EditModalDS extends DataSource {
       textQuote,
       visible: true,
       header: {
-        label: _t('commentmodal#label'),
+        label: _t('editmodal#label'),
       },
       sections: formSections,
       actions: {
         cancel: {
-          label: _t('commentmodal#cancel')
+          label: _t('editmodal#cancel')
         },
         save: {
-          label: saveButtonLabel || _t('commentmodal#save'),
+          label: saveButtonLabel || _t('editmodal#save'),
           classes: 'pnd-btn-cta',
           disabled: true,
         }
@@ -55,6 +56,7 @@ export class EditModalDS extends DataSource {
         const { x, y } = this.draggableInstance.get();
         this.defaultPosition = { x, y };
       },
+      validation
     };
   }
 

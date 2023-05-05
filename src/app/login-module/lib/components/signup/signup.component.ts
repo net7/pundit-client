@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { filter, first, switchMap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -16,7 +16,7 @@ import validationHelper from '../../helpers/validation.helper';
   styleUrls: []
 })
 export class SignUpComponent {
-  registerForm: FormGroup;
+  registerForm: UntypedFormGroup;
 
   email: EmailAuthProvider;
 
@@ -43,7 +43,7 @@ export class SignUpComponent {
     private configService: LoginConfigurationService,
     private emailProvider: EmailProviderService,
     private oauthProviders: OauthProviderService,
-    private formBuilder: FormBuilder
+    private formBuilder: UntypedFormBuilder
   ) {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();

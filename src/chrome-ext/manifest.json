@@ -9,7 +9,9 @@
     "128": "assets/icons/pundit-icon-128-close.png"
   },
   "background" : {
-    "scripts" : ["background.bundle.js"]
+    "scripts" : [
+      "background.bundle.js"
+    ]
   },
   "content_scripts": [
     {
@@ -23,5 +25,5 @@
     "default_title": "Launch Pundit Annotator"
   },
   "web_accessible_resources": ["pundit.chrome-ext.js"],
-  "permissions": ["activeTab", "storage"]
+  "permissions": ["tabs", "storage"]
 }

@@ -116,10 +116,24 @@ annotation {
         text-overflow: ellipsis;
     }
     
-    a .pnd-annotation__header-name {
-        cursor: pointer;
-        &:hover {
+    // User name link.
+    a {
+        color: $color-text;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
+        
+        .pnd-annotation__header-name { // div
+            cursor: pointer;
+            color: $color-text;
+        }
+
+        &:hover, &:active, &:focus {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
+
+            .pnd-annotation__header-name { // div
+                color: $color-text-link;
+            }
         }
     }
     
@@ -145,12 +159,14 @@ annotation {
     }
 
     &__header-notebook-link {
-        text-decoration: none;
         color: $color-text;
         cursor: pointer;
+        text-decoration-color: rgba($color-text, .2);
+        transition: text-decoration-color $transition-durations;
         
         &:hover {
             color: $color-text-link;
+            text-decoration-color: rgba($color-text-link, .6);
         }
     }
 
@@ -208,6 +224,11 @@ annotation {
         .pnd-notebook-selector {
             width: 100%;
         }
+
+        &.share {
+            right: $space/2;
+        }
+
     }
 
     &__menu-notebooks-header {
@@ -227,6 +248,11 @@ annotation {
 
         &:hover {
             color: $color-text-link;
+        }
+        
+        & a {
+            display: block;
+            text-decoration: none;
         }
     }
 }
@@ -253,7 +279,157 @@ annotation {
     .pnd-annotation__comment-text {
         display: block;
         box-sizing: border-box;
+        font-size: $font-size-xs;
+
+        p, ol, ul {
+            margin: 0 0 $space;
+        }
+
+        ol, ul {
+            padding: 0 0 0 $space*4;
+        }
+
+        code {
+            padding: $space/4 $space/2;
+            font-size: 90%;
+            background-color: $color-gray-01;
+            color: lighten($color-gray-05, 30%);
+            border-radius: 4px;
+        }
+
+    }
+
+    .pnd-annotation__comment-plain-text {
+        display: none;
+        box-sizing: border-box;
         font-size: $font-size-s;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #SEMANTIC ANNOTATIONS
+\* ------------------------------------ */
+.pnd-annotation {
+    .pnd-annotation__semantic {
+        // border-bottom: 3px double $annotation-border-color;
+    
+        &:last-child {
+            border-bottom: 0;
+        }
+    }
+
+    .pnd-annotation__semantic-item-predicate {
+        display: inline-block;
+        position: relative;
+        height: 20px;
+        margin-left: 10px;
+        padding: 0 8px;
+        background: $color-predicate;
+
+        font-size: 13px;
+        line-height: 20px;
+        font-style: italic;
+        color: #ffffff;
+        text-align: center;
+        border-radius: 3px;
+        text-shadow: 0px -1px 0px rgba(0,0,0,0.10);
+
+        /* Orange carets above and below */
+        &:before, &:after {
+            content: "";
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            left: 50%;
+            margin-left: -2px;
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+        }
+
+        &:before {
+            top: -3px;
+            border-bottom: 3px solid $color-predicate;
+        }
+
+        &:after {
+            top: 20px;
+            border-top: 3px solid $color-predicate;
+        }
+    }
+
+    /* The Object in semantic annotations */
+    .pnd-annotation__semantic-item-object {
+        font-size: $font-size-xs;
+        color: $color-text-light;
+        padding: $space*2 $space $space;
+        margin-top: -$space;
+        background-color: $color-gray-01;
+        border-top: $annotation-border-size solid $annotation-border-color;
+
+        .pnd-annotation__header {
+            padding: 0px $space;
+            align-items: initial;
+            border-bottom: 0;
+        }
+
+        .pnd-annotation__header-thumb-wrapper,
+        .pnd-annotation__header-thumb-image {
+            margin: 2px;
+            max-height: 40px;
+            max-width: 40px;
+            width: 40px;
+            height: 40px;
+        }
+
+        .pnd-annotation__header-name__header-info {
+            margin-right: auto;
+            padding-right: 8px;
+            overflow: hidden;
+        }
+
+        a .pnd-annotation__header-name,
+        .pnd-annotation__header-name {
+            font-size: $font-size-m;
+            font-weight: $font-weight-bold;
+            margin: 5px 8px;
+            text-decoration: none;
+        }
+
+        .pnd-annotation__header-types {
+            margin: 6px;
+        }
+
+        a .pnd-annotation__header-type,
+        .pnd-annotation__header-type {
+            margin: 2px;
+            padding: 2px 3px;
+            display: inline-block;
+            height: 10px;
+            background-color: rgb(232, 235, 237);
+            color: rgb(127, 133, 140);
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            font-size: $font-size-xxs;
+            text-transform: uppercase;
+            text-shadow: white 0px 1px 0px;
+            box-shadow: $color-gray-05 0px 1px 2px;
+            overflow: hidden;
+            border-width: 1px;
+            border-style: solid;
+            border-color: $color-gray-03;
+            border-image: initial;
+            list-style: none;
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
+        &__description {
+            padding: 0px $space ;
+            align-items: initial;
+            border-bottom: 0px;
+        }
     }
 }
 
@@ -276,6 +452,132 @@ annotation {
     }
 }
 
+/* ------------------------------------ *\
+   #SOCIAL-BAR
+\* ------------------------------------ */
+.pnd-annotation {
+    &__social {
+        text-align: left;
+    }
+
+    &__social-bar {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-top: 1px solid $color-gray-03;
+    }
+
+    a.pnd-annotation__social-bar-action {
+        margin: $space/2;
+        color: $color-gray-04;
+        .pnd-svg-icon, .pnd-svg-icon svg {
+            width: $font-size-xxs;
+            height: $font-size-xxs;
+        }
+        
+        &:hover, &.is-active {
+            cursor: pointer;
+            color: $color-text-link;
+        }
+
+        .pnd-svg-icon {
+            margin-right: $space/2;
+            svg {
+                height: 14px;
+            }
+        }
+    }
+    
+    &__social-bar-action:hover {
+        margin-right: $space/2;
+    }
+
+    &__social-bar-action > span {
+        font-size: $font-size-xxs;
+    }
+}
+
+
+/* ------------------------------------ *\
+   #SOCIAL-REPLY
+\* ------------------------------------ */
+.pnd-annotation {
+    &__reply-textarea-wrapper {
+        border-top: 1px solid $color-gray-03;
+        padding: $space 0 $space/2;
+    }
+
+    &__reply-textarea {
+        width: calc(100% - 8px);
+        height: 100px;
+        resize: none;
+        margin: 0 $space/2;
+        font-size: $font-size-xs;
+        padding: $space;
+    }
+
+    .pnd-annotation__reply__new-reply-footer,
+    .pnd-annotation__reply__edit-reply-footer {
+        display: flex;
+        justify-content: flex-end;
+        margin: 0 $space/2 $space;
+
+        .pnd-notebook-selector {
+            width: 100%;
+        }
+
+        .pnd-btn {
+            width: 70px;
+        }
+    }
+
+    .pnd-annotation__reply__new-reply-actions,
+    .pnd-annotation__reply__edit-reply-actions {
+        .pnd-btn:last-child {
+            margin-left: $space/2;
+        }
+    }
+
+    pnd-annotation-reply {
+        .pnd-annotation__header {
+            padding-left: $space*2;
+            align-items: initial;
+            border-bottom: 0;
+            border-top: 1px solid $color-gray-03;
+        }
+
+        .pnd-annotation__header-thumb-wrapper,
+        .pnd-annotation__header-initials,
+        .pnd-annotation__header-thumb-image {
+            height: 24px;
+            width: 24px;
+        }
+
+        a .pnd-annotation__header-name,
+        .pnd-annotation__header-name {
+            font-size: $font-size-xs;
+            line-height: 14px;
+            margin-bottom: 0;
+            margin-right: $space/2;
+        }
+
+        .pnd-annotation__header-reply {
+            font-size: $font-size-xs;
+            line-height: 14px;
+            color: $color-gray-04;
+            margin-bottom: 0;
+        }
+
+        .pnd-annotation__social-bar {
+            margin-left: $space*2;
+            border-top: 1px solid $color-gray-02;
+        }
+
+        .pnd-annotation__menu-dropdown {
+            right: 0;
+        }
+    }
+}
 
 /* ------------------------------------ *\
    #EXPANDED-ANNOTATION
@@ -351,7 +653,7 @@ annotation {
     align-items: center;
     cursor: pointer;
 
-    .pnd-annotation__highlight {
+    pnd-highlight-annotation-section {
         max-width: calc( 100% - #{$space} );
         padding: 0 $space/2 0 $space;
     }
@@ -361,6 +663,10 @@ annotation {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+
+        &.is-fullpage {
+            text-overflow: unset;
+        }
     }
 
     /* Hover */
@@ -377,11 +683,15 @@ annotation {
 .pnd-annotation.is-collapsed.has-comment {
     justify-content: space-between;
 
-    .pnd-annotation__highlight {
+    pnd-highlight-annotation-section, .pnd-annotation__highlight {
         max-width: calc( 50% - 9px );
     }
 
-    .pnd-annotation__comment {
+    .pnd-annotation__highlight {
+        max-width: 100%;
+    }
+
+    pnd-comment-annotation-section, .pnd-annotation__comment {
         display: flex;
         align-items: center;
         width: calc( 50% - 12px );
@@ -389,7 +699,16 @@ annotation {
         line-height: 20px;
     }
 
+    .pnd-annotation__comment {
+        width: 100%;
+    }
+
     .pnd-annotation__comment-text {
+        display: none;
+    }
+
+    .pnd-annotation__comment-plain-text {
+        display: block;
         max-width: 100%;
         white-space: nowrap;
         overflow: hidden;
@@ -426,6 +745,15 @@ annotation {
             border-right-color: $annotation-comment-background-color;
             border-left-width: 0;
         }
+    }
+}
+
+.pnd-annotation.is-fullpage {
+    
+    &.has-comment.is-collapsed{}
+
+    .pnd-annotation__highlight-text {
+        background-color: transparent;
     }
 }
 
@@ -473,10 +801,15 @@ annotation {
             background-color: $color-highlight;
         }
 
-        &__header,
-        &__highlight-text,
-        &__comment,
-        &__notebook {
+        .pnd-annotation__tags,
+        .pnd-annotation__header,
+        .pnd-annotation__highlight-text,
+        .pnd-annotation__comment,
+        .pnd-annotation__notebook {
+            display: none;
+        }
+        
+        pnd-social-annotation-section {
             display: none;
         }
 

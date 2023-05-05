@@ -1,9 +1,11 @@
-import { AuthToken, CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from '@pundit/communication';
 import mixpanel from 'mixpanel-browser';
-import { CommonEventType, StorageKey } from '../../../../common/types';
+import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
-import { ChromeExtStorage } from '../storage';
+
+// webpack build env variables
+declare const API_BASE_URL: string;
 
 type RuntimeMessage = {
   type: string;
@@ -24,17 +26,8 @@ export const onContentScriptMessage = (
     case CommonEventType.RootElementExists:
       onBrowserActionClicked(tab);
       break;
-    case CommonEventType.StorageRequest:
-      helpers.doStorageRequest(tab, payload);
-      break;
     case CommonEventType.CrossMsgRequest:
       helpers.doCrossMessageRequest(tab, payload);
-      break;
-    case CommonEventType.SetTokenFromStorage:
-      ChromeExtStorage.get(StorageKey.Token).then((storageToken) => {
-        // FIXME: controllare communication token type
-        CommunicationSettings.token = storageToken as AuthToken | null;
-      });
       break;
     case CommonEventType.InitCommunicationSettings:
       // communication config
@@ -45,6 +38,17 @@ export const onContentScriptMessage = (
       break;
     case CommonEventType.ImageDataRequest:
       helpers.doImageDataRequest(tab, payload);
+      break;
+    case CommonEventType.DocumentInfoResponse:
+      CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
+      CommunicationSettings.token = null;
+      helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, total }) => {
+        if (tabId === tab.id && total !== null) {
+          helpers.updateBadgeText(tab.id, total);
+        }
+      }).catch((err) => {
+        console.warn('Annotations request: ', err);
+      });
       break;
     default:
       break;

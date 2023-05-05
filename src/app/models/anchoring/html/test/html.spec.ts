@@ -381,8 +381,8 @@ describe('HTML anchoring', () => {
       // return Promise.all(anchored);
 
       selectors.forEach(async (sel) => {
-        const anchoredRange = await html.anchor(container, [sel]);
-        expect(anchoredRange.toString()).toEqual(range.toString());
+        const anchor = await html.anchor(container, [sel]);
+        expect(anchor.range.toString()).toEqual(range.toString());
       });
     });
   });
@@ -465,8 +465,8 @@ describe('HTML anchoring', () => {
         const annotationsChecked = annotations.map(async (ann) => {
           const root: HTMLElement = frame.contentWindow.document.body;
           const selectors = ann.target[0].selector as SelectorWithType[];
-          const range = await html.anchor(root, selectors);
-          const newSelectors = await html.describe(root, range);
+          const anchor = await html.anchor(root, selectors);
+          const newSelectors = await html.describe(root, anchor.range);
           // assert.deepEqual(sortByType(selectors), sortByType(newSelectors));
           expect(sortByType(selectors)).toEqual(sortByType(newSelectors));
         });

@@ -1,0 +1,27 @@
+<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal">
+    <div class="pnd-modal__overlay" (click)="onClose($event.target)">
+        <div class="pnd-modal__window">
+            <div class="pnd-modal__close">
+                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
+            </div>
+            
+            <div class="pnd-modal__header">
+                <div class="pnd-modal__header-text">
+                    {{ data.header.label }}
+                </div>
+            </div>
+            
+            <div class="pnd-modal__body">
+                <div class="pnd-modal__body-text" [innerHTML]="data.body.text"></div>
+            </div>
+            
+            <div class="pnd-modal__actions">
+                <a *ngFor="let action of data.actions" class="pnd-btn {{ action.classes || '' }}" 
+                (click)="onClick($event, action.payload)">
+                    {{ action.label }}
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,37 @@
+<div *ngIf="data" class="pnd-text-editor__menu {{ data.classes || '' }}">
+    <div *ngFor="let group of data.groups" class="pnd-text-editor__group">
+        <a *ngFor="let button of group.buttons" 
+            (click)="onClick(button)"
+            class="pnd-text-editor__button {{ button.classes || '' }}"
+            [title]="button.title"
+            [ngClass]="{
+                'is-active': button.active,
+                'is-disabled': button.disabled
+            }">
+            <pnd-svg-icon [data]="{ id: 'text-editor-' + button.id }"></pnd-svg-icon>
+        </a>
+    </div>
+</div>
+
+<div *ngIf="data && data.linkForm?.visible" class="pnd-text-editor__link">
+    <span *ngIf="data.linkForm?.label"
+        class="pnd-text-editor__link-label">
+        {{ data.linkForm.label }}
+    </span>
+    <input type="text" name="insert-link"
+        class="pnd-text-editor__link-field small"
+        [placeholder]="data.linkForm?.placeholder"
+        (input)="onLinkInput($event.target.value)"
+        (keyup)="onLinkKeyup($event)">
+    <button *ngIf="data.linkForm?.actions.cancel as cancelAction" 
+        class="pnd-btn pnd-text-editor__link-btn-cancel"
+        (click)="onLinkCancel()">
+        {{ cancelAction.label }}
+    </button>
+    <button *ngIf="data.linkForm?.actions.save as saveAction" 
+        class="pnd-btn pnd-text-editor__link-btn-save"
+        [disabled]="saveAction.disabled"
+        (click)="onLinkSave()">
+        {{ saveAction.label }}
+    </button>
+</div>

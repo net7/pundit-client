@@ -24,12 +24,39 @@ if (['chrome-ext-stage', 'chrome-ext-prod'].includes(context)) {
     'assets',
     'background.bundle.js',
     'content.bundle.js',
+    'manifest.json',
+    'pdf-viewer.html'
   ];
   buildExt(context, basePath);
 }
+// pdf standalone check
+if (['pdf-standalone-stage', 'pdf-standalone-prod'].includes(context)) {
+  allowedFiles = [
+    ...allowedFiles,
+    'assets',
+    'pdf-viewer.html',
+  ];
+}
 
-// merge in one file
-concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath)
+// create styles.js file
+const createStylesJsFile = () => fs.readFile(`${basePath}/styles.css`, 'utf8')
+  .then((data) => {
+    const fileContent = `
+        if (!document.getElementById("pundit-host-styles")) {
+          const style = document.createElement("style");
+          style.setAttribute("id", "pundit-host-styles");
+          style.textContent = \`
+            ${data}
+          \`;
+          document.head.appendChild(style);
+        }
+      `;
+    return fs.writeFile(`${basePath}/styles.js`, fileContent);
+  });
+
+createStylesJsFile()
+  // merge in one file
+  .then(() => concat(filesToMerge.map((file) => `${basePath}/${file}`), outputFilePath))
   .then(() => {
     console.log(`Dist updated with merged file ${outputFile}`);
     return fs.readdir(basePath);

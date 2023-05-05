@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { BehaviorSubject, interval, Subject } from 'rxjs';
 import {
   filter, takeWhile, map

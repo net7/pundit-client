@@ -1,4 +1,4 @@
-import { DataSource, _t } from '@n7-frontend/core';
+import { DataSource, _t } from '@net7/core';
 import { NotebookSelectorData } from '../components/notebook-selector/notebook-selector';
 
 export class NotebookPanelDS extends DataSource {

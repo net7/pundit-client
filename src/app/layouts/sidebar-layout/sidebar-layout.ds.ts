@@ -1,4 +1,4 @@
-import { LayoutDataSource, _t } from '@n7-frontend/core';
+import { LayoutDataSource, _t } from '@net7/core';
 import {
   BehaviorSubject, Subject
 } from 'rxjs';
@@ -24,7 +24,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
   public userService: UserService;
 
   /** open/close the sidebar */
-  public isCollapsed = new BehaviorSubject(true);
+  public isCollapsed = new BehaviorSubject(false);
 
   /** open/close the notebook editor panel */
   public notebookEditor = new BehaviorSubject(false);
@@ -36,6 +36,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   public userLink = _c('userLink');
 
+  public notificationsLink = _c('notificationsLink');
+
   /** Data for the popover that appears when clicking on the user name */
   public userPopover = {
     isOpen: new BehaviorSubject(false),
@@ -44,6 +46,31 @@ export class SidebarLayoutDS extends LayoutDataSource {
       { label: _t('userpopover#report'), href: `${REPORT_LINK}=${getDocumentHref()}` },
       { label: _t('userpopover#logout'), payload: 'clicklogout' },
     ]
+  }
+
+  public fullpage = {
+    isExpanded: false
+  }
+
+  public labels = {
+    fullpage: {
+      show: _t('sidebaractions#fullpage_show'),
+      hide: _t('sidebaractions#fullpage_hide'),
+      add: _t('fullpage#add'),
+      options: {
+        tagging: _t('tooltip#tag'),
+        commenting: _t('tooltip#comment'),
+        linking: _t('tooltip#semantic')
+      }
+    },
+    notebookpanel: {
+      show: _t('sidebaractions#notebookpanel_show'),
+      hide: _t('sidebaractions#notebookpanel_hide')
+    },
+    notifications: {
+      show: _t('sidebaractions#notifications_show')
+    },
+    collapse: _t('sidebaractions#collapse')
   }
 
   onInit(payload) {
@@ -71,7 +98,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   updateAnnotations(load = false) {
     if (load) {
-      this.annotations = this.annotationService.getAnnotations();
+      this.annotations = this.annotationService.getAnnotationsToShow();
     }
 
     // fix elements load delay
@@ -83,5 +110,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
   onUsernameClick(ev: MouseEvent) {
     ev.stopImmediatePropagation();
     this.userPopover.isOpen.next(!this.userPopover.isOpen.getValue());
+  }
+
+  onFullpageDropdownToggle() {
+    this.fullpage.isExpanded = !this.fullpage.isExpanded;
   }
 }

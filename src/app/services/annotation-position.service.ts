@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
+import { PdfService } from './pdf.service';
 
 const TOP_MARGIN = 60;
+const TOP_MARGIN_FULLPAGE = 110;
 
 @Injectable()
 export class AnnotationPositionService {
   constructor(
     private annotationService: AnnotationService,
-    private anchorService: AnchorService
+    private anchorService: AnchorService,
+    private pdfService: PdfService
   ) {}
 
   /** Recalculate the position and order of each annotation present in the sidebar */
@@ -20,11 +23,21 @@ export class AnnotationPositionService {
     }
 
     const { shadowRoot } = rootElement;
-    const bodyTop = document.body.getBoundingClientRect().top;
+    let containerTop = document.body.getBoundingClientRect().top;
+    // pdf document check
+    if (this.pdfService.isActive()) {
+      const pdfDocumentContainer = this.pdfService.getDocumentContainer();
+      if (pdfDocumentContainer) {
+        const viewerTop = pdfDocumentContainer.getBoundingClientRect().top;
+        const viewerToolbarHeight = this.pdfService.getViewerToolbarHeight();
+        containerTop = viewerTop - viewerToolbarHeight;
+      }
+    }
     // get all annotations (creation date and anchor)
-    const annotations = this.annotationService.getAnnotations().map(
-      ({ ds, id }) => ({
-        created: ds.output._meta.created,
+    const showFullPage = this.annotationService.showPageAnnotations$.getValue();
+    const annotations = this.annotationService.getAnnotationsToShow().map(
+      ({ data$, id }) => ({
+        created: data$.getValue().created,
         anchor: this.anchorService.getHighlightById(id)
       })
     );
@@ -41,7 +54,7 @@ export class AnnotationPositionService {
           .filter((highlightEl) => highlightEl.offsetHeight > 0)
           .map(
             // get vertical offset of the corresponding highlight
-            (highlightEl) => highlightEl.getBoundingClientRect().top - bodyTop
+            (highlightEl) => highlightEl.getBoundingClientRect().top - containerTop
           );
         if (tops.length) {
           // the first highlight
@@ -68,7 +81,8 @@ export class AnnotationPositionService {
       // or the previous annotation offset (lastEnd)
       const { el, anchorPosition } = positionData;
       const { offsetHeight } = el;
-      const lastEnd = index ? positions[index - 1].end : TOP_MARGIN;
+      const firstMargin = showFullPage ? TOP_MARGIN_FULLPAGE : TOP_MARGIN;
+      const lastEnd = index ? positions[index - 1].end : firstMargin;
       const start = anchorPosition < lastEnd
         ? lastEnd
         : anchorPosition;

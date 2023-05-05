@@ -17,6 +17,13 @@ export enum CrossMsgRequestId {
   AnnotationRemove = 'annotation.remove',
   AnnotationSearch = 'annotation.search',
   AnnotationUpdate = 'annotation.update',
+  // social
+  SocialCreate = 'social.create',
+  SocialRemove = 'social.remove',
+  // reply
+  ReplyCreate = 'reply.create',
+  ReplyRemove = 'reply.remove',
+  ReplyUpdate = 'reply.update',
   // auth
   AuthLogin = 'auth.login',
   AuthLogout = 'auth.logout',
@@ -26,34 +33,24 @@ export enum CrossMsgRequestId {
   // analytics
   AnalyticsTrigger = 'analytics.trigger',
   // tag
-  TagGet = 'tag.get'
+  TagGet = 'tag.get',
+  // semantic
+  SemanticPredicateGet = 'semanticpredicate.get',
 }
 
 export enum CommonEventType {
   AnnotationsUpdate = 'annotationsupdate',
   RootElementExists = 'rootelementexists',
-  StorageRequest = 'storage.request',
-  StorageResponse = 'storage.response',
   StateChanged = 'statechanged',
   CrossMsgRequest = 'crossmessage.request',
   CrossMsgResponse = 'crossmessage.response',
   PunditLoaded = 'punditloaded',
   PunditDestroy = 'punditdestroy',
-  SetTokenFromStorage = 'settokenfromstorage',
   InitCommunicationSettings = 'initcommunicationsettings',
   ImageDataRequest = 'imagedata.request',
   ImageDataResponse = 'imagedata.response',
-}
-
-export enum StorageKey {
-  User = 'pundit-user',
-  Token = 'pundit-token'
-}
-
-export enum StorageOperationType {
-  Get = 'get',
-  Set = 'set',
-  Remove = 'remove'
+  DocumentInfoRequest = 'documentinfo.request',
+  DocumentInfoResponse = 'documentinfo.response',
 }
 
 export type AnalyticsData = {
@@ -64,8 +61,10 @@ export type AnalyticsData = {
 export enum AnalyticsAction {
   Bootstrap = 'bootstrap',
   // annotation
-  HighlightCreated = 'new-highlight',
-  CommentCreated = 'new-comment',
+  HighlightAnnotationCreated = 'new-highlight',
+  CommentAnnotationCreated = 'new-comment',
+  SemanticAnnotationCreated = 'new-semantic',
+  TagAnnotationCreated = 'new-tag',
   // notebook
   NotebookCreated = 'notebook-new-created',
   NotebookCurrentChanged = 'notebook-switch-current',
@@ -94,4 +93,9 @@ export enum AnalyticsAction {
   AccessGoogleCompleted = 'access-google-completed',
   AccessFacebookCompleted = 'access-facebook-completed',
   AccessEgiCompleted = 'access-egi-completed',
+  // social
+  SocialLike = 'social-like',
+  SocialDislike = 'social-dislike',
+  SocialReport = 'social-report',
+  SocialComment = 'social-comment',
 }

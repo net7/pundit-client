@@ -4,13 +4,17 @@ import {
   Input,
   AfterViewInit,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { _c } from 'src/app/models/config';
 import { TagService } from 'src/app/services/tag.service';
 import { FormSection, FormSectionData } from 'src/app/types';
+import { customDropdownHide, customShadowRootRender } from './tagify-custom';
 
 export type TagsSectionValue = string[];
 
@@ -22,7 +26,7 @@ export type TagsSectionOptions = {
   selector: 'pnd-tags-section',
   templateUrl: './tags-section.html'
 })
-export class TagsSectionComponent implements AfterViewInit, FormSection<
+export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
   id = 'tags';
@@ -33,31 +37,41 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
 
   @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
 
+  private destroy$: Subject<void> = new Subject();
+
   private formInstance;
+
+  public tagsHint = _c('tagsHint');
 
   constructor(private tagService: TagService) {}
 
   ngAfterViewInit() {
     this.init();
     this.checkFocus();
-    this.reset$.subscribe(this.onReset);
+    this.reset$.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe(this.onReset);
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
   }
 
   private init = () => {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tag-wrapper');
+    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tags-input-wrapper');
     const tagFormConfig = {
       pattern: /^\w{2,128}$/,
       delimiters: ',| ',
       maxTags: 20,
       transformTag: this.transformTag,
       backspace: 'edit',
-      placeholder: _t('commentmodal#add_tag'),
+      placeholder: _t('editmodal#add_tag'),
       dropdown: {
-        enabled: 0,
+        enabled: 1,
         fuzzySearch: false,
         position: 'all',
-        caseSensitive: true,
+        caseSensitive: false,
         appendTarget: targetRef
       }
     };
@@ -65,6 +79,9 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
       this.tagifyInputRef.nativeElement,
       tagFormConfig
     );
+    this.formInstance.dropdown.render = customShadowRootRender.bind(this.formInstance);
+    this.formInstance.dropdown.hide = customDropdownHide.bind(this.formInstance);
+
     if (Array.isArray(this.data.initialValue)) {
       this.formInstance.addTags(this.data.initialValue);
     }
@@ -80,56 +97,10 @@ export class TagsSectionComponent implements AfterViewInit, FormSection<
         });
       }
     );
-    this.formInstance.on(
-      'blur dropdown:select',
-      () => {
-        setTimeout(() => {
-          this.tagifyDropdownManualHide();
-        });
-      }
-    );
     // suggestion list
     this.tagService.get$().pipe().subscribe((whitelist) => {
       this.formInstance.settings.whitelist = whitelist;
     });
-  }
-
-  // clone of tagify dropdown hide method
-  // to fix shadowroot check
-  // <tagify>/src/parts/dropdown.js:hide( force )
-  private tagifyDropdownManualHide(force = false): any {
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const _instance = this.formInstance;
-    const { scope, dropdown } = _instance.DOM;
-    const isManual = _instance.settings.dropdown.position === 'manual' && !force;
-
-    // if there's no dropdown, this means the dropdown events aren't binded
-    if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
-      return null;
-    }
-
-    window.removeEventListener('resize', _instance.dropdown.position);
-    _instance.dropdown.events.binding.call(_instance, false); // unbind all events
-
-    scope.setAttribute('aria-expanded', false);
-    dropdown.parentNode.removeChild(dropdown);
-
-    setTimeout(() => {
-      _instance.state.dropdown.visible = false;
-    }, 100);
-
-    _instance.state.dropdown.query = null;
-    _instance.state.ddItemData = null;
-    _instance.state.ddItemElm = null;
-    _instance.state.selection = null;
-
-    if (_instance.state.tag && _instance.state.tag.value.length) {
-      _instance.state.flaggedTags[_instance.state.tag.baseOffset] = _instance.state.tag;
-    }
-
-    _instance.trigger('dropdown:hide', dropdown);
-
-    return _instance;
   }
 
   private transformTag = (tagData) => {

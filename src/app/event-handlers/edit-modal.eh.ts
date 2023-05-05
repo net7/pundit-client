@@ -1,6 +1,8 @@
-import { EventHandler } from '@n7-frontend/core';
+import { EventHandler } from '@net7/core';
 import { EditModalDS } from '../data-sources';
-import { EditModalEvent, getEventType, MainLayoutEvent } from '../event-types';
+import {
+  EditModalEvent, getEventType, MainLayoutEvent
+} from '../event-types';
 
 export class EditModalEH extends EventHandler {
   public dataSource: EditModalDS;
@@ -33,17 +35,26 @@ export class EditModalEH extends EventHandler {
       }
     });
 
-    this.outerEvents$.subscribe(({ type }) => {
+    this.outerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
-        case MainLayoutEvent.KeyUpEscape:
-          if (this.dataSource.isVisible()) {
-            this.dataSource.close();
-            this.emitOuter('close');
+        case MainLayoutEvent.ClickTooltip:
+          if (payload === 'highlight') {
+            this.closeModal();
           }
+          break;
+        case MainLayoutEvent.KeyUpEscape:
+          this.closeModal();
           break;
         default:
           break;
       }
     });
+  }
+
+  private closeModal() {
+    if (this.dataSource.isVisible()) {
+      this.dataSource.close();
+      this.emitOuter('close');
+    }
   }
 }

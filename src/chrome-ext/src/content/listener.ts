@@ -1,3 +1,4 @@
+import { getDocumentCanonicalUrl, getDocumentHref } from '../../../app/models/annotation/html-util';
 import { CommonEventType } from '../../../common/types';
 import { RuntimeMessage } from '../types';
 import { destroyExtension } from './destroyExtension';
@@ -19,13 +20,6 @@ export const listen = () => {
         }
         break;
       }
-      case CommonEventType.StorageResponse: {
-        const signal = new CustomEvent(CommonEventType.StorageResponse, {
-          detail: payload
-        });
-        window.dispatchEvent(signal);
-        break;
-      }
       case CommonEventType.CrossMsgResponse: {
         const signal = new CustomEvent(CommonEventType.CrossMsgResponse, {
           detail: payload
@@ -38,6 +32,23 @@ export const listen = () => {
           detail: payload
         });
         window.dispatchEvent(signal);
+        break;
+      }
+      case CommonEventType.DocumentInfoRequest: {
+        const pageContext = getDocumentHref();
+        const canonical = getDocumentCanonicalUrl();
+        const { active } = payload;
+        let pageMetadata = null;
+        if (canonical) {
+          pageMetadata = [{
+            key: 'canonical',
+            value: canonical
+          }];
+        }
+        chrome.runtime.sendMessage({
+          type: CommonEventType.DocumentInfoResponse,
+          payload: { pageContext, pageMetadata, active }
+        });
         break;
       }
       default:

@@ -1,4 +1,4 @@
-import { _t } from '@n7-frontend/core';
+import { _t } from '@net7/core';
 import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from 'src/app/event-types';
 import { NotebookUpdate } from 'src/app/services/notebook.service';
 import { LayoutHandler } from 'src/app/types';
