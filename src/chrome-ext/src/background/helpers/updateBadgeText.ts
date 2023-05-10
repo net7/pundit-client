@@ -1,6 +1,6 @@
 export const updateBadgeText = (tabId: number, total: number) => {
-  chrome.browserAction.setBadgeText({
+  chrome.action.setBadgeText({
     tabId,
-    text: total ? `${total}` : null
+    text: total ? `${total}` : ''
   });
 };

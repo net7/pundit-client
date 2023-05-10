@@ -30,7 +30,7 @@ export const loadExtension = () => {
   state.set({ appRoot });
 
   const main = document.createElement('script');
-  main.src = chrome.extension.getURL('pundit.chrome-ext.js');
+  main.src = chrome.runtime.getURL('pundit.chrome-ext.js');
   (document.head || document.documentElement).appendChild(main);
   main.onload = () => {
     // emit signal
