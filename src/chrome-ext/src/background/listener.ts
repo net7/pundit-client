@@ -2,7 +2,7 @@ import * as handlers from './handlers';
 
 export const listen = () => {
   // browser action click
-  chrome.browserAction.onClicked.addListener(handlers.onBrowserActionClicked);
+  chrome.action.onClicked.addListener(handlers.onBrowserActionClicked);
   // tab activated
   chrome.tabs.onActivated.addListener(handlers.onTabActivated);
   // tab created
