@@ -1,6 +1,6 @@
 {
   "name": "pundit",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -75,7 +75,7 @@
     "@angular/compiler-cli": "^14.2.7",
     "@angular/language-service": "^14.2.7",
     "@teipublisher/pb-components": "^1.43.1",
-    "@types/chrome": "0.0.127",
+    "@types/chrome": "0.0.235",
     "@types/faker": "^5.1.5",
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",

@@ -2,16 +2,14 @@
   "name": "Pundit Annotator",
   "version": "__VERSION__",
   "description": "Annotate the web using Pundit Annotator: highlight and comment text on any page and manage your annotations in the Pundit Dashboard.",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "assets/icons/icon16.png",
     "48": "assets/icons/pundit-icon-48-close.png",
     "128": "assets/icons/pundit-icon-128-close.png"
   },
   "background" : {
-    "scripts" : [
-      "background.bundle.js"
-    ]
+    "service_worker": "background.bundle.js"
   },
   "content_scripts": [
     {
@@ -20,10 +18,18 @@
       "run_at": "document_end"
     }
   ],
-  "browser_action": {
+  "action": {
     "default_icon": "assets/icons/pundit-icon-38.png",
     "default_title": "Launch Pundit Annotator"
   },
-  "web_accessible_resources": ["pundit.chrome-ext.js"],
-  "permissions": ["tabs", "storage"]
+  "web_accessible_resources": [{
+    "resources": [
+      "pundit.chrome-ext.js"
+    ],
+    "matches": [
+      "*://*/*"
+    ]
+  }],
+  "permissions": ["tabs", "storage"],
+  "host_permissions": ["<all_urls>"]
 }

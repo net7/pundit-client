@@ -20,5 +20,5 @@ export const updateBadgeTitle = (tabId: number, total: number, active = true) =>
         break;
     }
   }
-  chrome.browserAction.setTitle({ tabId, title });
+  chrome.action.setTitle({ tabId, title });
 };

@@ -1,9 +1,10 @@
+/* eslint-disable no-restricted-globals */
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import { CrossMsgData, CommonEventType } from './types';
 
 const crossMessageEnabled = () => !!(
-  env.chromeExt && document.location.protocol !== 'chrome-extension:'
+  env.chromeExt && document?.location?.protocol !== 'chrome-extension:'
 );
 
 const handlers: {
@@ -13,19 +14,21 @@ const handlers: {
   };
 } = {};
 
-window.addEventListener(CommonEventType.CrossMsgResponse, (ev: CustomEvent) => {
-  const { detail }: { detail: CrossMsgData } = ev;
-  const { messageId, response, error } = detail;
-  if (handlers[messageId]) {
-    if (error) {
-      handlers[messageId].reject(error);
-    } else {
-      handlers[messageId].resolve(response);
+if (addEventListener) {
+  addEventListener(CommonEventType.CrossMsgResponse, (ev: CustomEvent) => {
+    const { detail }: { detail: CrossMsgData } = ev;
+    const { messageId, response, error } = detail;
+    if (handlers[messageId]) {
+      if (error) {
+        handlers[messageId].reject(error);
+      } else {
+        handlers[messageId].resolve(response);
+      }
+      // clear
+      handlers[messageId] = null;
     }
-    // clear
-    handlers[messageId] = null;
-  }
-});
+  });
+}
 
 export function CrossMessage(requestId: string) {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
@@ -50,7 +53,9 @@ export function CrossMessage(requestId: string) {
             args,
           }
         });
-        window.dispatchEvent(signal);
+        if (dispatchEvent) {
+          dispatchEvent(signal);
+        }
       } else {
         result = originalMethod.apply(this, args);
       }
