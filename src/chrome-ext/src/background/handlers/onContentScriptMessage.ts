@@ -3,6 +3,8 @@ import mixpanel from 'mixpanel-browser';
 import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
+import { ChromeExtStorage } from '../storage';
+import { ChromeExtStorageKey } from '../../types';
 
 // webpack build env variables
 declare const API_BASE_URL: string;
@@ -33,6 +35,9 @@ export const onContentScriptMessage = (
       // communication config
       CommunicationSettings.apiBaseUrl = payload.apiBaseUrl;
       CommunicationSettings.authBaseUrl = payload.authBaseUrl;
+      // storage save to future use
+      ChromeExtStorage.set(ChromeExtStorageKey.ApiBaseUrl, payload.apiBaseUrl);
+      ChromeExtStorage.set(ChromeExtStorageKey.AuthBaseUrl, payload.authBaseUrl);
       // mixpanel config
       mixpanel.init(payload.mixpanelToken);
       break;

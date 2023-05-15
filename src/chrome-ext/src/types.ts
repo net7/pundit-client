@@ -18,7 +18,9 @@ export type ChromeExtStorageValue = (
 
 export enum ChromeExtStorageKey {
   Active = 'active',
-  Incognito = 'incognito'
+  Incognito = 'incognito',
+  ApiBaseUrl = 'apibaseurl',
+  AuthBaseUrl = 'authbaseurl',
 }
 
 export type ChromeExtStateKey = 'appRoot'

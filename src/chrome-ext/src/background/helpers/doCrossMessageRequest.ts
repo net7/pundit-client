@@ -1,3 +1,4 @@
+import { CommunicationSettings } from '@pundit/communication';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -9,6 +10,8 @@ import {
   SocialModel,
   ReplyModel
 } from '../../../../common/models';
+import { ChromeExtStorage } from '../storage';
+import { ChromeExtStorageKey } from '../../types';
 
 export const doCrossMessageRequest = (tab, payload) => {
   const { messageId, requestId, args } = payload;
@@ -103,7 +106,15 @@ export const doCrossMessageRequest = (tab, payload) => {
       break;
   }
   if (request$) {
-    request$
+    ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
+      .then((value: string) => {
+        CommunicationSettings.apiBaseUrl = value;
+        return ChromeExtStorage.get(ChromeExtStorageKey.AuthBaseUrl);
+      })
+      .then((value: string) => {
+        CommunicationSettings.authBaseUrl = value;
+        return request$;
+      })
       .then((response) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
