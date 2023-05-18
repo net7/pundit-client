@@ -9,7 +9,7 @@
             <div class="pnd-dropdown {{ row.predicate.isExpanded ? 'is-expanded' : '' }}">
 
                 <!-- Selected element -->
-                <button class="pnd-dropdown__selected"
+                <button [disabled]="row.disabled" class="pnd-dropdown__selected"
                     (click)="onPredicateToggleExpand($i)">
                     <div class="pnd-dropdown__selected-label"
                         title="{{row.predicate.label}}">
@@ -44,12 +44,13 @@
         <div class="pnd-edit-modal__semantic-object">
             <ng-container *ngIf="row.object.providerId === 'pundit-basic'">
                 <p class="pnd-edit-modal__semantic-object-type">
-                    {{ row.object.type }}
+                    {{ row.object?.altValue || row.object.type }}
                 </p>
                 <input [attr.id]="'object-input-' + $i" type="text" 
                     class="pnd-edit-modal__semantic-object-input small"
                     (input)="onObjectChange($i, $event.target.value)" 
                     [value]="row.object.value"
+                    [disabled]="row.disabled"
                     [placeholder]="row.object.placeholder" />
             </ng-container>
         </div>    
