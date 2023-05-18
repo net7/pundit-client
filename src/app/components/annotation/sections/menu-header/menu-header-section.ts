@@ -161,7 +161,21 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   onClick(ev: Event, payload) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
-    this.emit('click', payload);
+
+    const currentState = this.state$.getValue();
+    const { activeMenu } = currentState;
+    const { source } = payload;
+    if (
+      (activeMenu === 'actions' && source === 'menu-header')
+      || (activeMenu === 'share' && source === 'menu-share')
+    ) {
+      this.state$.next({
+        ...currentState,
+        activeMenu: undefined
+      });
+    } else {
+      this.emit('click', payload);
+    }
 
     // trigger change detector
     this.ref.detectChanges();

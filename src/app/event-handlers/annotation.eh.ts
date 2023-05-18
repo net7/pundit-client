@@ -1,6 +1,6 @@
 import { EventHandler } from '@net7/core';
-import { fromEvent, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { fromEvent, Subject, race } from 'rxjs';
+import { first, takeUntil } from 'rxjs/operators';
 import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../event-types';
 import { AnnotationService } from '../services/annotation.service';
 import { NotebookService } from '../services/notebook.service';
@@ -150,16 +150,27 @@ export class AnnotationEH extends EventHandler {
  * then the menu should be dismissed.
  */
   listenDocumentClicks(annotationID: string) {
-    fromEvent(document, 'click') // listen for clicks on the document
-      .pipe(takeUntil(this.onMenuFocusLost)) // keep listening until the menu is closed
-      .subscribe((e: PointerEvent) => {
-        const clickedElement: Element = (e as any).path[0]; // get the element that was clicked
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+    // listen for clicks on the document
+    race(fromEvent(shadowRoot, 'click'), fromEvent(document, 'click'))
+      .pipe(
+        first(),
+        takeUntil(this.onMenuFocusLost),
+      ) // keep listening until the menu is closed
+      .subscribe((e: MouseEvent) => {
+        let clickedElement: HTMLElement;
+        const { path, target } = e as any || {};
+        if (Array.isArray(path) && path.length) {
+          [clickedElement] = path;
+        } else if (target) {
+          clickedElement = target;
+        }
         // only act if the clicked item is NOT the notebook-selector component
-        if (
-          typeof clickedElement.className === 'string'
-          && !clickedElement.className
-            .match(/(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi)
-        ) {
+        const className = clickedElement?.className || '';
+        const isNotebookSelector = className.match(
+          /(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi
+        );
+        if (!isNotebookSelector) {
           this.closeAnnotationMenu(annotationID);
           this.onMenuFocusLost.next(true);
         }
