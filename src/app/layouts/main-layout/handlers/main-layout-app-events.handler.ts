@@ -186,7 +186,9 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       } else {
         console.warn('No handler for semantic object', triple.object);
       }
-      return { predicate, object, objectType };
+      return {
+        predicate, object, objectType, _raw: triple
+      };
     }) : undefined;
   }
 

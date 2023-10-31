@@ -18,6 +18,7 @@ export const DEFAULT_PROVIDER_ID = 'pundit-basic';
 export type SemanticSectionValue = {
   predicate: SemanticItem;
   object: SemanticItem;
+  _raw?: any;
 }[];
 
 export type SemanticSectionOptions = {
@@ -44,6 +45,8 @@ export type SemanticFormRow = {
   actions: {
     isExpanded: boolean;
   };
+  disabled?: boolean;
+  _raw?: any;
 };
 
 export const getObjectType = (value: string) => {
@@ -131,8 +134,8 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     // initial value check
     const { initialValue } = this.data;
     if (Array.isArray(initialValue) && initialValue.length) {
-      initialValue.forEach(({ predicate, object }) => {
-        this.addRow(predicate, object);
+      initialValue.forEach(({ predicate, object, _raw }) => {
+        this.addRow(predicate, object, undefined, _raw);
       });
     } else {
       this.addRow();
@@ -143,6 +146,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     predicate: SemanticItem = {} as SemanticItem,
     object: SemanticItem = {} as SemanticItem,
     rowIndex?: number,
+    _raw?: any,
   ) {
     const predicateProviderId = predicate.providerId || this.config.predicate.default;
     const predicateProvider = this.getProviderById(predicateProviderId, 'predicate');
@@ -163,11 +167,14 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       object: {
         value: objectValue,
         providerId: objectProviderId,
-        placeholder: _t('editmodal#semantic_object_placeholder')
+        placeholder: _t('editmodal#semantic_object_placeholder'),
+        altValue: this.getObjectAltValue(_raw)
       },
       actions: {
         isExpanded: false
-      }
+      },
+      disabled: this.isDisabled(_raw),
+      _raw
     } as SemanticFormRow;
 
     // object type check
@@ -183,10 +190,11 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   }
 
   removeRow(index: number) {
-    if (this.rows.length === 1) {
-      this.rows[0].object.value = null;
-    } else {
-      this.rows.splice(index, 1);
+    this.rows.splice(index, 1);
+
+    // if empty add first row
+    if (!this.rows.length) {
+      this.addRow();
     }
 
     // trigger form change
@@ -255,30 +263,51 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     return this.rows.length === 1 ? this.labels.clear : this.labels.remove;
   }
 
+  private isDisabled(rawData) {
+    const { objectType, object } = rawData || {};
+    const hasObjectUri = objectType === 'uri' && object?.source === 'search';
+    const hasDate = objectType === 'date';
+    return !!hasObjectUri || !!hasDate;
+  }
+
+  private getObjectAltValue(rawData) {
+    const { object } = rawData || {};
+    const { rdfTypes } = object || {};
+    if (rdfTypes?.length) {
+      return rdfTypes[0].label;
+    }
+    return null;
+  }
+
   private triggerChange() {
     const formValue = [];
     const errors = [];
     this.rows.forEach((row) => {
-      const rawValues = {
-        objectType: row.object.type,
-        object: row.object.value || null,
-        predicate: (row.predicate.options
-          .find((option) => option.selected) || {}).value || null
-      };
-
-      if (rawValues.predicate && rawValues.object) {
-        const rowValue = {
-          predicate: null as SemanticItem,
-          object: null as SemanticItem,
-          objectType: rawValues.objectType
+      // old semantic annotation check
+      if (row.disabled) {
+        formValue.push(row._raw);
+      } else {
+        const rawValues = {
+          objectType: row.object.type,
+          object: row.object.value || null,
+          predicate: (row.predicate.options
+            .find((option) => option.selected) || {}).value || null
         };
-        ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
-          const { providerId } = row[key];
-          const provider = this.getProviderById(providerId, key);
-          rowValue[key] = provider.get(rawValues[key]);
-        });
-        if (rowValue.predicate && rowValue.object?.label) {
-          formValue.push(rowValue);
+
+        if (rawValues.predicate && rawValues.object) {
+          const rowValue = {
+            predicate: null as SemanticItem,
+            object: null as SemanticItem,
+            objectType: rawValues.objectType
+          };
+          ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
+            const { providerId } = row[key];
+            const provider = this.getProviderById(providerId, key);
+            rowValue[key] = provider.get(rawValues[key]);
+          });
+          if (rowValue.predicate && rowValue.object?.label) {
+            formValue.push(rowValue);
+          }
         }
       }
     });

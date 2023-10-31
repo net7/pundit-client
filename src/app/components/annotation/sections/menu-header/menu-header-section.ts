@@ -14,7 +14,11 @@ import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
 import {
-  ActionButtonConfig, blockEditAction, menuActionButtons, menuIconButton, menuNotebookSection
+  ActionButtonConfig,
+  // blockEditAction,
+  menuActionButtons,
+  menuIconButton,
+  menuNotebookSection
 } from './menu-data.helper';
 import { shareActionButtons, shareButton } from './menu-share.helper';
 
@@ -124,7 +128,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       id,
       type: annotation.type,
       hasTags: !!annotation.tags?.length,
-      avoidEdit: blockEditAction(annotation),
+      // avoidEdit: blockEditAction(annotation),
     };
     const currentUser = this.userService.whoami();
     const currentUserNotebooks = currentUser
@@ -157,7 +161,21 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   onClick(ev: Event, payload) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
-    this.emit('click', payload);
+
+    const currentState = this.state$.getValue();
+    const { activeMenu } = currentState;
+    const { source } = payload;
+    if (
+      (activeMenu === 'actions' && source === 'menu-header')
+      || (activeMenu === 'share' && source === 'menu-share')
+    ) {
+      this.state$.next({
+        ...currentState,
+        activeMenu: undefined
+      });
+    } else {
+      this.emit('click', payload);
+    }
 
     // trigger change detector
     this.ref.detectChanges();

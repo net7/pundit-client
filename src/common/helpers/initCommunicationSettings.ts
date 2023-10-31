@@ -20,4 +20,6 @@ export const initCommunicationSettings = () => {
     // mixpanel config
     mixpanel.init(env.analytics.mixpanel.token);
   }
+  // mixpanel config
+  mixpanel.init(env.analytics.mixpanel.token);
 };

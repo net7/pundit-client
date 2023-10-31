@@ -223,7 +223,14 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     if (Array.isArray(semantic)) {
       annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
       annotationPayload.content = semantic.length
-        ? semantic.map(({ predicate, object, objectType }) => {
+        ? semantic.map((row) => {
+          const {
+            predicate, object, objectType
+          } = row;
+          // old semantic annotation check
+          if (object?.rdfTypes?.length) {
+            return row;
+          }
           const objectPayload = this.getObjectPayload(object, objectType);
           return {
             predicate: {

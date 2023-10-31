@@ -199,6 +199,14 @@
         .pnd-dropdown__list-items {
             max-height: 250px;
         }
+        .pnd-dropdown__selected:disabled {
+            cursor: not-allowed;
+            color: $color-text-light;
+            
+            &:hover .pnd-dropdown__selected-right-icon {
+                color: $color-text-light;
+            }
+        }
     }
 
     &__list-wrapper {
@@ -229,6 +237,11 @@
     &__semantic-object-input[type=text] {
         width: 100%;
         padding-right: 58px;
+
+        &:disabled {
+            color: $color-text-light;
+            cursor: not-allowed;
+        }
     }
 
     // actions

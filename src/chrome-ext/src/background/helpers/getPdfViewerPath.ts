@@ -1,1 +1,1 @@
-export const getPdfViewerPath = () => chrome.extension.getURL('pdf-viewer.html');
+export const getPdfViewerPath = () => chrome.runtime.getURL('pdf-viewer.html');

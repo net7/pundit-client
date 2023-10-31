@@ -805,7 +805,9 @@ annotation {
         .pnd-annotation__header,
         .pnd-annotation__highlight-text,
         .pnd-annotation__comment,
-        .pnd-annotation__notebook {
+        .pnd-annotation__notebook, 
+        .pnd-annotation__semantic,
+        .pnd-annotation__social {
             display: none;
         }
         

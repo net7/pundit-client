@@ -1,7 +1,11 @@
 import { analytics } from '@net7/core';
 import mixpanel from 'mixpanel-browser';
-import { AnalyticsAction, AnalyticsData, CrossMsgRequestId } from '../types';
-import { CrossMessage } from '../cross-message';
+import {
+  AnalyticsAction,
+  AnalyticsData,
+  // CrossMsgRequestId
+} from '../types';
+// import { CrossMessage } from '../cross-message';
 import { environment as env } from '../../environments/environment';
 import { getDocumentHref } from '../../app/models/annotation/html-util';
 import packageJson from '../../../package.json';
@@ -59,7 +63,7 @@ analytics.init([
 export class AnalyticsModel {
   static userId: string = null;
 
-  @CrossMessage(CrossMsgRequestId.AnalyticsTrigger)
+  // @CrossMessage(CrossMsgRequestId.AnalyticsTrigger)
   static trigger({ action, payload }: AnalyticsData) {
     return new Promise((resolve, reject) => {
       try {
