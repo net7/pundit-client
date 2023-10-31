@@ -92,7 +92,8 @@ export class NotebookShareModalDS extends DataSource {
       label: _t('notebookshare#modal_confirm_ok'),
       classes: 'pnd-btn-cta',
       payload: {
-        source: 'action-confirm-ok'
+        source: 'action-confirm-ok',
+        email: selected.email
       }
     }];
   }

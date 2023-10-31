@@ -46,13 +46,25 @@ export class NotebookModel {
     return Promise.resolve(usersMock());
   }
 
-  @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
-  static userInviteWithEmail(email: string) {
-    // FIXME: togliere mock
-    // return notebook.userSearch({ query, size: 10 });
-    console.warn('FIXME: togliere mock:', email);
-    return Promise.resolve(okMock());
+  // LUCA P.
+  @CrossMessage(CrossMsgRequestId.NotebookGetUserWithAccess)
+  static getUserWithAccess(id: string) {
+    return notebook.get(id);
   }
+
+  // LUCA P.
+  @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
+  static userInviteWithEmail(id: string, data: NotebookAttributes) {
+    return notebook.share(id, data);
+  }
+
+  // @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
+  // static userInviteWithEmail(email: string) {
+  //   // FIXME: togliere mock
+  //   // return notebook.userSearch({ query, size: 10 });
+  //   console.warn('FIXME: togliere mock:', email);
+  //   return Promise.resolve(okMock());
+  // }
 
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithId)
   static userInviteWithId(id: string | number) {

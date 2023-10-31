@@ -57,7 +57,7 @@ export class NotebookShareModalEH extends EventHandler {
         this.emitOuter(getEventType(NotebookShareModalEvent.Ok));
         break;
       case 'action-confirm-ok':
-        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm));
+        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), payload);
         break;
       case 'action-confirm-cancel':
         this.dataSource.closeConfirm();

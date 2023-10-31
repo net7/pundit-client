@@ -61,6 +61,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         case NotebookShareModalEvent.ActionClick:
           this.onActionClick(payload);
           break;
+        // LUCA P.
+        case NotebookShareModalEvent.Confirm:
+          this.onConfirm(payload.email);
+          break;
         default:
           break;
       }
@@ -109,6 +113,31 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
     return request$.subscribe((actionResponse) => {
       console.warn('FIXME: gestire risposta dell\'azione', id, action, actionResponse);
+    });
+  }
+
+  // LUCA P.
+  private onConfirm(email: string) {
+    const { notebookService } = this.layoutDS;
+    const currentNotebookId = notebookService.getSelected()?.id;
+    return notebookService.getUserWithAccess(currentNotebookId).subscribe((response) => {
+      const readAccess = response.data.userWithReadAccess;
+      const writeAccess = response.data.userWithWriteAccess;
+      readAccess.push(email);
+      writeAccess.push(email);
+      const notebookLabel = response.data.label;
+      const idUser = response.data.userId;
+      const sharing = response.data.sharingMode;
+      const body = {
+        label: notebookLabel,
+        userId: idUser,
+        sharingMode: sharing,
+        userWithReadAccess: readAccess,
+        userWithWriteAccess: writeAccess,
+      };
+      return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((resp) => {
+        console.warn(resp);
+      });
     });
   }
 
