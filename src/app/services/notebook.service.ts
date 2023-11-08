@@ -156,12 +156,6 @@ export class NotebookService {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }
 
-  // TOGLI
-  getProva(id: string) {
-    return from(NotebookModel.getProva(id));
-  }
-  //-----
-
   userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
 
   userRemove = (id: string) => from(NotebookModel.userRemove(id));

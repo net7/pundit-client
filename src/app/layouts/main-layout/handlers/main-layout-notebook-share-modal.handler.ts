@@ -120,16 +120,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  // LUCA P.
   private onConfirm(email: string) {
     const { notebookService } = this.layoutDS;
     const currentNotebookId = notebookService.getSelected()?.id;
-    // TOGLI
-    // return notebookService.getProva(currentNotebookId).subscribe((response) => {
-    //   console.warn(response);
-    //   console.warn(email);
-    // });
-    //-----
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
@@ -137,10 +130,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     body.userWithReadAccess.push(email);
     body.userWithWriteAccess.push(email);
     return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      console.warn('SHARE:', response);
-      return notebookService.getProva(currentNotebookId).subscribe((res) => {
-        console.warn('GET:', res);
-      });
+      console.warn(response);
     });
   }
 

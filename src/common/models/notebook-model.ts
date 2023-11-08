@@ -52,13 +52,6 @@ export class NotebookModel {
     return notebook.share(id, data);
   }
 
-  // TOGLI
-  @CrossMessage(CrossMsgRequestId.NotebookGetProva)
-  static getProva(id: string) {
-    return notebook.get(id);
-  }
-  //-----
-
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithId)
   static userInviteWithId(id: string | number) {
     // FIXME: togliere mock
