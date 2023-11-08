@@ -13,6 +13,8 @@ import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
+import { NotebookPermissions } from '@pundit/communication';
+import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -33,6 +35,8 @@ const userStatus = [
 
 export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private autocomplete$: Subject<string> = new Subject();
+
+  notebookShareModalDS: NotebookShareModalDS;
 
   constructor(
     private layoutDS: MainLayoutDS,
@@ -120,23 +124,22 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private onConfirm(email: string) {
     const { notebookService } = this.layoutDS;
     const currentNotebookId = notebookService.getSelected()?.id;
-    return notebookService.getUserWithAccess(currentNotebookId).subscribe((response) => {
-      const readAccess = response.data.userWithReadAccess;
-      const writeAccess = response.data.userWithWriteAccess;
-      readAccess.push(email);
-      writeAccess.push(email);
-      const notebookLabel = response.data.label;
-      const idUser = response.data.userId;
-      const sharing = response.data.sharingMode;
-      const body = {
-        label: notebookLabel,
-        userId: idUser,
-        sharingMode: sharing,
-        userWithReadAccess: readAccess,
-        userWithWriteAccess: writeAccess,
-      };
-      return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((resp) => {
-        console.warn(resp);
+    // TOGLI
+    // return notebookService.getProva(currentNotebookId).subscribe((response) => {
+    //   console.warn(response);
+    //   console.warn(email);
+    // });
+    //-----
+    const body: NotebookPermissions = {
+      userWithReadAccess: [],
+      userWithWriteAccess: []
+    };
+    body.userWithReadAccess.push(email);
+    body.userWithWriteAccess.push(email);
+    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+      console.warn('SHARE:', response);
+      return notebookService.getProva(currentNotebookId).subscribe((res) => {
+        console.warn('GET:', res);
       });
     });
   }

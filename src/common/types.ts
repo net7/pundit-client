@@ -13,7 +13,9 @@ export enum CrossMsgRequestId {
   NotebookSetDefault = 'notebook.setDefault',
   NotebookUserSearch = 'notebook.userSearch',
   NotebookUserInviteWithEmail = 'notebook.userInviteWithEmail',
-  NotebookGetUserWithAccess = 'notebook.getUserWithAccess',
+  // TOGLI
+  NotebookGetProva = 'notebook.getProva',
+  // -----
   NotebookUserInviteWithId = 'notebook.userInviteWithId',
   NotebookUserRemove = 'notebook.userRemove',
   // annotation

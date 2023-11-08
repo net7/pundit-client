@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   from, Subject, EMPTY
 } from 'rxjs';
-import { Notebook, NotebookAttributes, SharingModeType } from '@pundit/communication';
+import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
@@ -152,14 +152,15 @@ export class NotebookService {
   userSearch = (query: string) => from(NotebookModel.userSearch(query));
 
   // LUCA P.
-  getUserWithAccess = (id: string) => from(NotebookModel.getUserWithAccess(id));
-
-  // LUCA P.
-  userInviteWithEmail(id: string, data: NotebookAttributes) {
+  userInviteWithEmail(id: string, data: NotebookPermissions) {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }
 
-  // userInviteWithEmail = (email: string) => from(NotebookModel.userInviteWithEmail(email));
+  // TOGLI
+  getProva(id: string) {
+    return from(NotebookModel.getProva(id));
+  }
+  //-----
 
   userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
 

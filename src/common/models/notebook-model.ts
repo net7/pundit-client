@@ -1,4 +1,4 @@
-import { notebook, NotebookAttributes } from '@pundit/communication';
+import { notebook, NotebookAttributes, NotebookPermissions } from '@pundit/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
@@ -47,24 +47,17 @@ export class NotebookModel {
   }
 
   // LUCA P.
-  @CrossMessage(CrossMsgRequestId.NotebookGetUserWithAccess)
-  static getUserWithAccess(id: string) {
-    return notebook.get(id);
-  }
-
-  // LUCA P.
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
-  static userInviteWithEmail(id: string, data: NotebookAttributes) {
+  static userInviteWithEmail(id: string, data: NotebookPermissions) {
     return notebook.share(id, data);
   }
 
-  // @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
-  // static userInviteWithEmail(email: string) {
-  //   // FIXME: togliere mock
-  //   // return notebook.userSearch({ query, size: 10 });
-  //   console.warn('FIXME: togliere mock:', email);
-  //   return Promise.resolve(okMock());
-  // }
+  // TOGLI
+  @CrossMessage(CrossMsgRequestId.NotebookGetProva)
+  static getProva(id: string) {
+    return notebook.get(id);
+  }
+  //-----
 
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithId)
   static userInviteWithId(id: string | number) {
