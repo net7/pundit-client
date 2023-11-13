@@ -151,7 +151,6 @@ export class NotebookService {
 
   userSearch = (query: string) => from(NotebookModel.userSearch(query));
 
-  // LUCA P.
   userInviteWithEmail(id: string, data: NotebookPermissions) {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }

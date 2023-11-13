@@ -46,7 +46,6 @@ export class NotebookModel {
     return Promise.resolve(usersMock());
   }
 
-  // LUCA P.
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithEmail)
   static userInviteWithEmail(id: string, data: NotebookPermissions) {
     return notebook.share(id, data);

@@ -65,7 +65,6 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         case NotebookShareModalEvent.ActionClick:
           this.onActionClick(payload);
           break;
-        // LUCA P.
         case NotebookShareModalEvent.Confirm:
           this.onConfirm(payload.email);
           break;
