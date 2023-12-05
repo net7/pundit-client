@@ -35,6 +35,11 @@ export class NotebookShareModalDS extends DataSource {
           }))
         }
       },
+      invitationsList: [],
+      accessList: {
+        readAccess: [],
+        writeAccess: [],
+      },
       actions: this.getFormActions(),
     };
   }

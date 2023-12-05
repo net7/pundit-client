@@ -7,6 +7,7 @@ export type NotebookShareModalResult = {
   email: string;
   thumb: string;
   hideEmail?: boolean;
+  action?: 'read' | 'write';
 };
 
 export type NotebookShareListItem = {
@@ -49,6 +50,11 @@ export type NotebookShareModalData = {
       text: string;
       selected: NotebookShareModalResult;
     };
+  };
+  invitationsList: NotebookShareModalResult[];
+  accessList: {
+    readAccess: string[];
+    writeAccess: string[];
   };
   actions: {
     label: string;
