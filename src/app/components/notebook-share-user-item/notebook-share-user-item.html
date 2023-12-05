@@ -1,0 +1,48 @@
+<div class="pnd-notebook-share-modal__list-item">
+
+  <!-- IMG -->
+  <div class="pnd-notebook-share-modal__list-item-thumb">
+    <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb" 
+    onerror="this.style.display='none'">
+  </div>
+
+  <!-- USERNAME -->
+  <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
+
+  <!-- OWNER -->
+  <div *ngIf="item.role === 'owner'" class="pnd-notebook-share-modal__list-item-role">
+    {{ item.roleAsLabel }}
+  </div>
+
+  <!-- DROPDOWN -->
+  <div *ngIf="item.role !== 'owner'" 
+  class="pnd-notebook-share-modal__list-item-dropdown">
+    <div *ngIf="item.dropdown as dropdown" 
+    class="pnd-dropdown {{ dropdown.isExpanded ? 'is-expanded' : '' }}">
+
+      <!-- Selected element -->
+      <button class="pnd-dropdown__selected" (click)="dropdownToggle(item)">
+        <div class="pnd-dropdown__selected-label" title="{{item.statusAsLabel}}">
+          {{ item.statusAsLabel }}
+        </div>
+        <div class="pnd-dropdown__selected-right-icon">
+          <pnd-svg-icon *ngIf="!dropdown.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+          <pnd-svg-icon *ngIf="dropdown.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+        </div>
+      </button>
+
+      <!-- Dropdown items -->
+      <div class="pnd-dropdown__list-wrapper">
+        <!-- List of actions -->
+        <div class="pnd-dropdown__list-items">
+          <ng-container *ngFor="let action of dropdown.actions">
+            <div (click)="onActionClick(action.payload, item)" class="pnd-dropdown__item">
+              {{ action.label }}
+            </div>
+          </ng-container>
+        </div>
+      </div>   
+
+    </div>
+  </div>
+</div>

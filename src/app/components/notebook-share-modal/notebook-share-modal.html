@@ -53,6 +53,10 @@
                         <div class="pnd-modal__body-title">
                             {{ list.title }}
                         </div>
+                        <div class="pnd-modal__body-list">
+                            <pnd-notebook-share-user-item *ngFor="let item of list.items" 
+                            [item]="item" [emit]="emit"></pnd-notebook-share-user-item>
+                        </div>
                         <!-- Da togliere -->
                         <button (click)="getData()">Ottieni utenti con accesso</button>
                         <div *ngIf="data.invitationsList">
@@ -61,9 +65,6 @@
                           </div>
                           <p>READ: {{data.accessList.readAccess}}</p>
                           <p>WRITE: {{data.accessList.writeAccess}}</p>
-                          <div class="pnd-modal__body-list">
-                            <!-- qui componente utenti lista -->
-                          </div>
                         <!-- --- -->
                         
                     </div>
@@ -76,10 +77,7 @@
                         <div class="pnd-modal__body-text">
                             {{ confirm.text }}
                         </div>
-                        <!-- Da togliere -->
-                        <p><strong>confirmSection.selected:</strong> {{confirm.selected.email}} | {{confirm.selected.action}}</p>
                         <pnd-notebook-share-user-selected [data]="data"></pnd-notebook-share-user-selected>
-                        <!-- --- -->
                     </div>
                 </ng-container>
                 <!-- end/CONFIRM SECTION -->
