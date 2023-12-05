@@ -56,19 +56,21 @@ export class NotebookShareModalEH extends EventHandler {
         this.dataSource.close();
         break;
       case 'action-ok':
-        if (accessList.readAccess.length > 0) {
+        if (accessList.readAccess.length) {
           this.emitOuter(getEventType(NotebookShareModalEvent.Ok), accessList);
         }
         this.dataSource.close();
         break;
-      case 'action-confirm-ok':
-        invitationsList.push(this.dataSource.output.body.confirmSection.selected);
-        accessList.readAccess.push(this.dataSource.output.body.confirmSection.selected.email);
-        if (this.dataSource.output.body.confirmSection.selected.action === 'write') {
-          accessList.writeAccess.push(this.dataSource.output.body.confirmSection.selected.email);
+      case 'action-confirm-ok': {
+        const { selected } = this.dataSource.output.body.confirmSection;
+        invitationsList.push(selected);
+        accessList.readAccess.push(selected.email);
+        if (selected.action === 'write') {
+          accessList.writeAccess.push(selected.email);
         }
         this.dataSource.closeConfirm();
         break;
+      }
       case 'action-confirm-cancel':
         this.dataSource.closeConfirm();
         break;
