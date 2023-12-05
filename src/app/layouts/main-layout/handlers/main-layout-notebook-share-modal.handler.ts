@@ -13,7 +13,7 @@ import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
-import { NotebookPermissions } from '@pundit/communication';
+// import { NotebookPermissions } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -65,8 +65,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         case NotebookShareModalEvent.ActionClick:
           this.onActionClick(payload);
           break;
-        case NotebookShareModalEvent.Confirm:
-          this.onConfirm(payload.email);
+        case NotebookShareModalEvent.Ok:
+          this.onOk(payload);
           break;
         default:
           break;
@@ -119,18 +119,21 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onConfirm(email: string) {
-    const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
-    const body: NotebookPermissions = {
-      userWithReadAccess: [],
-      userWithWriteAccess: []
-    };
-    body.userWithReadAccess.push(email);
-    body.userWithWriteAccess.push(email);
-    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      console.warn(response);
-    });
+  private onOk(accessList) {
+    // const { notebookService } = this.layoutDS;
+    // const currentNotebookId = notebookService.getSelected()?.id;
+    // const body: NotebookPermissions = {
+    //   userWithReadAccess: [],
+    //   userWithWriteAccess: []
+    // };
+    // body.userWithReadAccess = accessList.readAccess;
+    // body.userWithWriteAccess = accessList.writeAccess;
+    // console.warn(body);
+    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+    //   console.warn(response);
+    // });
+    console.warn('READ:', accessList.readAccess);
+    console.warn('WRITE', accessList.writeAccess);
   }
 
   private openShareModal() {
