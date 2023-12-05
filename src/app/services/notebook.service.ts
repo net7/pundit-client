@@ -155,6 +155,12 @@ export class NotebookService {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }
 
+  // Da togliere
+  getData(id: string) {
+    return from(NotebookModel.getData(id));
+  }
+  // ---
+
   userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
 
   userRemove = (id: string) => from(NotebookModel.userRemove(id));
