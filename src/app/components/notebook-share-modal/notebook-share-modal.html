@@ -53,51 +53,19 @@
                         <div class="pnd-modal__body-title">
                             {{ list.title }}
                         </div>
-                        <div class="pnd-modal__body-list">
-                            <div *ngFor="let item of list.items" class="pnd-notebook-share-modal__list-item">
-                                <div class="pnd-notebook-share-modal__list-item-thumb">
-                                    <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
-                                        onerror="this.style.display='none'">
-                                </div>
-                                <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
-                                <!-- OWNER -->
-                                <div *ngIf="item.role === 'owner'" class="pnd-notebook-share-modal__list-item-role">
-                                    {{ item.roleAsLabel }}
-                                </div>
-                                <!-- DROPDOWN -->
-                                <div *ngIf="item.role !== 'owner'" class="pnd-notebook-share-modal__list-item-dropdown">
-                                    <div *ngIf="item.dropdown as dropdown" class="pnd-dropdown {{ dropdown.isExpanded ? 'is-expanded' : '' }}">
-
-                                        <!-- Selected element -->
-                                        <button class="pnd-dropdown__selected"
-                                            (click)="dropdownToggle(item)">
-                                            <div class="pnd-dropdown__selected-label" title="{{item.statusAsLabel}}">
-                                                {{ item.statusAsLabel }}
-                                            </div>
-                                            <div class="pnd-dropdown__selected-right-icon">
-                                                <pnd-svg-icon *ngIf="!dropdown.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
-                                                <pnd-svg-icon *ngIf="dropdown.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
-                                            </div>
-                                        </button>
-                                        <!-- END // Selected element -->
-                                
-                                        <!-- Dropdown items -->
-                                        <div class="pnd-dropdown__list-wrapper">
-                                            <!-- list of actions -->
-                                            <div class="pnd-dropdown__list-items">
-                                                <ng-container *ngFor="let action of dropdown.actions">
-                                                    <div (click)="onActionClick(action.payload)" class="pnd-dropdown__item">
-                                                        {{ action.label }}
-                                                    </div>
-                                                </ng-container>
-                                            </div>
-                                        </div>
-                                        <!-- END // Dropdown items -->
+                        <!-- Da togliere -->
+                        <button (click)="getData()">Ottieni utenti con accesso</button>
+                        <div *ngIf="data.invitationsList">
+                            <p><strong>List:</strong></p>
+                            <p *ngFor="let el of data.invitationsList">{{el.email}} {{el.name}} ({{el.action}})</p>
+                          </div>
+                          <p>READ: {{data.accessList.readAccess}}</p>
+                          <p>WRITE: {{data.accessList.writeAccess}}</p>
+                          <div class="pnd-modal__body-list">
+                            <!-- qui componente utenti lista -->
+                          </div>
+                        <!-- --- -->
                         
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <!-- end/LIST SECTION -->
                 </ng-container>
@@ -108,6 +76,10 @@
                         <div class="pnd-modal__body-text">
                             {{ confirm.text }}
                         </div>
+                        <!-- Da togliere -->
+                        <p><strong>confirmSection.selected:</strong> {{confirm.selected.email}} | {{confirm.selected.action}}</p>
+                        <pnd-notebook-share-user-selected [data]="data"></pnd-notebook-share-user-selected>
+                        <!-- --- -->
                     </div>
                 </ng-container>
                 <!-- end/CONFIRM SECTION -->

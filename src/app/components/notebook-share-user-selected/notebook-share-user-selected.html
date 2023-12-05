@@ -1,1 +1,41 @@
-<p>notebook-share-user-selected works!</p>
+<div class="pnd-notebook-share-modal__list-item">
+
+  <!-- IMG --> 
+  <div class="pnd-notebook-share-modal__list-item-thumb">
+    <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb" 
+    onerror="this.style.display='none'">
+  </div>
+
+  <!-- USERNAME -->
+  <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
+  
+  <!-- DROPDOWN -->
+  <div class="pnd-notebook-share-modal__list-item-dropdown">
+    <div class="pnd-dropdown {{ dropdownExpanded ? 'is-expanded' : '' }}">
+      
+      <!-- Selected element -->
+      <button class="pnd-dropdown__selected" (click)="dropdownToggle()">
+        <div class="pnd-dropdown__selected-label" title="{{statusLabel}}">
+          {{ statusLabel }}
+        </div>
+        <div class="pnd-dropdown__selected-right-icon">
+          <pnd-svg-icon *ngIf="!dropdownExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+          <pnd-svg-icon *ngIf="dropdownExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+        </div>
+      </button>
+
+      <!-- Dropdown items -->
+      <div class="pnd-dropdown__list-wrapper">
+        <!-- List of actions -->
+        <div class="pnd-dropdown__list-items">
+          <ng-container *ngFor="let action of actions">
+            <div (click)="onActionClick(action)" class="pnd-dropdown__item">
+              {{ action.label }}
+            </div>
+          </ng-container>
+        </div>
+      </div>  
+
+    </div>
+  </div>
+</div>
