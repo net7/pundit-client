@@ -8,7 +8,11 @@
   </div>
 
   <!-- USERNAME -->
-  <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
+  <div *ngIf="item.username; else unregistered" class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
+  <ng-template #unregistered>
+    <div class="pnd-notebook-share-modal__list-item-label">Unregistered User</div>
+  </ng-template>
+  
   
   <!-- DROPDOWN -->
   <div class="pnd-notebook-share-modal__list-item-dropdown">

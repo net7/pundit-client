@@ -53,20 +53,15 @@
                         <div class="pnd-modal__body-title">
                             {{ list.title }}
                         </div>
+                        <!-- Da togliere -->
+                        <div *ngIf="data.invitationsList">
+                            <p *ngFor="let el of data.invitationsList">{{el.email}} ({{el.action}})</p>
+                          </div>
+                        <!-- --- -->
                         <div class="pnd-modal__body-list">
                             <pnd-notebook-share-user-item *ngFor="let item of list.items" 
                             [item]="item" [emit]="emit"></pnd-notebook-share-user-item>
                         </div>
-                        <!-- Da togliere -->
-                        <button (click)="getData()">Ottieni utenti con accesso</button>
-                        <div *ngIf="data.invitationsList">
-                            <p><strong>List:</strong></p>
-                            <p *ngFor="let el of data.invitationsList">{{el.email}} {{el.name}} ({{el.action}})</p>
-                          </div>
-                          <p>READ: {{data.accessList.readAccess}}</p>
-                          <p>WRITE: {{data.accessList.writeAccess}}</p>
-                        <!-- --- -->
-                        
                     </div>
                     <!-- end/LIST SECTION -->
                 </ng-container>

@@ -10,8 +10,8 @@ export class NotebookShareUserSelectedComponent implements OnInit {
   @Input() data: NotebookShareModalData;
 
   actions = [
-    { label: 'Can read', value: 'read' },
-    { label: 'Can write', value: 'write' }
+    { label: 'Can view', value: 'read' },
+    { label: 'Can edit', value: 'write' }
   ];
 
   item: NotebookShareModalResult;
