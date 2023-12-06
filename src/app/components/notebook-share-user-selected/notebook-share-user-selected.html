@@ -2,9 +2,10 @@
 
   <!-- IMG --> 
   <div class="pnd-notebook-share-modal__list-item-thumb">
-    <p *ngIf="!item.thumb"><strong>NO Img</strong></p>
-    <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb" 
-    onerror="this.style.display='none'">
+    <img *ngIf="item.thumb; else noImg" [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb" onerror="this.style.display='none'">
+    <ng-template #noImg>
+      <img src="assets/unregistred-user.png">
+    </ng-template>
   </div>
 
   <!-- USERNAME -->

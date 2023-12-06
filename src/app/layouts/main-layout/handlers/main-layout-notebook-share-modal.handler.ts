@@ -120,8 +120,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   }
 
   private onOk(invitationsList) {
-    // const { notebookService } = this.layoutDS;
-    // const currentNotebookId = notebookService.getSelected()?.id;
+    const { notebookService } = this.layoutDS;
+    const currentNotebookId = notebookService.getSelected()?.id;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
@@ -134,10 +134,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         body.userWithWriteAccess.push(email);
       }
     });
-    console.warn(body);
-    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-    //   console.warn(response);
-    // });
+    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+      console.warn(response);
+    });
   }
 
   private openShareModal() {
