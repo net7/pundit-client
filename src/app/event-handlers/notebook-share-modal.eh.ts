@@ -48,7 +48,6 @@ export class NotebookShareModalEH extends EventHandler {
 
   private onClick(payload) {
     const { source } = payload;
-    const { accessList } = this.dataSource.output;
     const { invitationsList } = this.dataSource.output;
     switch (source) {
       case 'close-icon':
@@ -56,18 +55,14 @@ export class NotebookShareModalEH extends EventHandler {
         this.dataSource.close();
         break;
       case 'action-ok':
-        if (accessList.readAccess.length) {
-          this.emitOuter(getEventType(NotebookShareModalEvent.Ok), accessList);
+        if (invitationsList.size) {
+          this.emitOuter(getEventType(NotebookShareModalEvent.Ok), invitationsList);
         }
         this.dataSource.close();
         break;
       case 'action-confirm-ok': {
         const { selected } = this.dataSource.output.body.confirmSection;
-        invitationsList.push(selected);
-        accessList.readAccess.push(selected.email);
-        if (selected.action === 'write') {
-          accessList.writeAccess.push(selected.email);
-        }
+        invitationsList.set(selected.email, selected);
         this.dataSource.closeConfirm();
         break;
       }

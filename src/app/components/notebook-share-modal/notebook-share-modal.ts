@@ -51,11 +51,7 @@ export type NotebookShareModalData = {
       selected: NotebookShareModalResult;
     };
   };
-  invitationsList: NotebookShareModalResult[];
-  accessList: {
-    readAccess: string[];
-    writeAccess: string[];
-  };
+  invitationsList: Map<string, NotebookShareModalResult>;
   actions: {
     label: string;
     payload: any;

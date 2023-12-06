@@ -55,8 +55,8 @@
                         </div>
                         <!-- Da togliere -->
                         <div *ngIf="data.invitationsList">
-                            <p *ngFor="let el of data.invitationsList">{{el.email}} ({{el.action}})</p>
-                          </div>
+                            <p *ngFor="let el of data.invitationsList.keys()">{{data.invitationsList.get(el).email}} ({{data.invitationsList.get(el).action}})</p>
+                        </div>
                         <!-- --- -->
                         <div class="pnd-modal__body-list">
                             <pnd-notebook-share-user-item *ngFor="let item of list.items" 

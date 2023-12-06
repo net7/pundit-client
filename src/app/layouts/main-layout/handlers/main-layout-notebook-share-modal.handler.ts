@@ -13,7 +13,7 @@ import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
-// import { NotebookPermissions } from '@pundit/communication';
+import { NotebookPermissions } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -119,21 +119,25 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onOk(accessList) {
+  private onOk(invitationsList) {
     // const { notebookService } = this.layoutDS;
     // const currentNotebookId = notebookService.getSelected()?.id;
-    // const body: NotebookPermissions = {
-    //   userWithReadAccess: [],
-    //   userWithWriteAccess: []
-    // };
-    // body.userWithReadAccess = accessList.readAccess;
-    // body.userWithWriteAccess = accessList.writeAccess;
-    // console.warn(body);
+    const body: NotebookPermissions = {
+      userWithReadAccess: [],
+      userWithWriteAccess: []
+    };
+    invitationsList.forEach((value) => {
+      const { email } = value;
+      const { action } = value;
+      body.userWithReadAccess.push(email);
+      if (action === 'write') {
+        body.userWithWriteAccess.push(email);
+      }
+    });
+    console.warn(body);
     // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
     //   console.warn(response);
     // });
-    console.warn('READ:', accessList.readAccess);
-    console.warn('WRITE', accessList.writeAccess);
   }
 
   private openShareModal() {
