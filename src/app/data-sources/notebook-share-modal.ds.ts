@@ -65,7 +65,7 @@ export class NotebookShareModalDS extends DataSource {
       const email = query.trim();
       results = [{
         email,
-        username: email,
+        username: null,
         thumb: null,
         hideEmail: true
       }];
@@ -80,7 +80,7 @@ export class NotebookShareModalDS extends DataSource {
     // update section
     this.output.body.confirmSection = {
       selected,
-      text: _t('notebookshare#modal_confirm_text', { username: selected.username }),
+      text: _t('notebookshare#modal_confirm_text', { username: selected.username || selected.email }),
     };
 
     // update actions

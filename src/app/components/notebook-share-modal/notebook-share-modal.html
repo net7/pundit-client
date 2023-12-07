@@ -36,10 +36,16 @@
                                             <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
                                                 onerror="this.style.display='none'">
                                         </div>
-                                        <div class="pnd-notebook-share-modal__item-content">
+                                        <div *ngIf="item.username; else unregistered" class="pnd-notebook-share-modal__item-content">
                                             <div class="pnd-notebook-share-modal__item-label">{{ item.username }}</div>
                                             <div [hidden]="item.hideEmail" class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
                                         </div>
+                                        <ng-template #unregistered>
+                                            <div class="pnd-notebook-share-modal__item-content">
+                                                <div class="pnd-notebook-share-modal__item-label">{{ item.email }}</div>
+                                                <div class="pnd-notebook-share-modal__item-email">Invite to the notebook</div>
+                                            </div>                                            
+                                        </ng-template>
                                     </div>
                                 </div>
                             </div>
