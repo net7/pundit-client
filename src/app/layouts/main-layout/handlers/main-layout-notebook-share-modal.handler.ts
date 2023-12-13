@@ -1,4 +1,4 @@
-import { sample } from 'lodash';
+// import { sample } from 'lodash';
 import {
   forkJoin,
   Observable, of, Subject
@@ -19,19 +19,19 @@ import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
-const autocompleteMock = () => Array(Math.round(Math.random() * 10)).fill(null).map((_, i) => ({
-  username: `User ${i}`,
-  email: `email-${i}@example.com`,
-  thumb: `https://i.pravatar.cc/50?img${i}`
-}));
+// const autocompleteMock = () => Array(Math.round(Math.random() * 10)).fill(null).map((_, i) => ({
+//   username: `User ${i}`,
+//   email: `email-${i}@example.com`,
+//   thumb: `https://i.pravatar.cc/50?img${i}`
+// }));
 
-const userRoles = [NotebookUserRole.Owner, NotebookUserRole.Editor];
+// const userRoles = [NotebookUserRole.Owner, NotebookUserRole.Editor];
 
-const userStatus = [
-  NotebookUserStatus.Joined,
-  NotebookUserStatus.Pending,
-  NotebookUserStatus.Removed,
-];
+// const userStatus = [
+//   NotebookUserStatus.Joined,
+//   NotebookUserStatus.Pending,
+//   NotebookUserStatus.Removed,
+// ];
 
 export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private autocomplete$: Subject<string> = new Subject();
@@ -141,14 +141,30 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private openShareModal() {
     const notebook = this.layoutDS.notebookService.getSelected();
+    const { notebookService } = this.layoutDS;
+    return notebookService.search().subscribe((response) => {
+      const ownerId = this.layoutDS.userService.whoami().id;
+      const userList = response.data.users;
+      notebook.users = userList.map(({ id, username, thumb }) => ({
+        id,
+        username,
+        thumb,
+        role: (id === ownerId) ? NotebookUserRole.Owner : NotebookUserRole.Editor,
+        status: NotebookUserStatus.Joined
+      }));
+      const ownerItem = notebook.users.filter((item) => item.id === ownerId);
+      notebook.users = notebook.users.filter((item) => item.id !== ownerId);
+      notebook.users.unshift(ownerItem[0]);
+      this.layoutDS.one('notebook-share-modal').update(notebook);
+    });
     // FIXME: togliere
-    notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
-      username,
-      thumb,
-      id: `user-${index}`,
-      role: sample(userRoles),
-      status: sample(userStatus),
-    }));
-    this.layoutDS.one('notebook-share-modal').update(notebook);
+    // notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
+    //   username,
+    //   thumb,
+    //   id: `user-${index}`,
+    //   role: sample(userRoles),
+    //   status: sample(userStatus),
+    // }));
+    // this.layoutDS.one('notebook-share-modal').update(notebook);
   }
 }
