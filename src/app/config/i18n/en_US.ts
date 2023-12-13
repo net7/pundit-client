@@ -195,7 +195,7 @@ export default {
   'notebookshare#status_pending': 'Pending invitation',
   'notebookshare#status_joined': 'Joined',
   'notebookshare#status_removed': 'Removed',
-  'notebookshare#action_delete_invite': 'Delete invite',
+  'notebookshare#action_delete_invite': 'Revoke access',
   'notebookshare#action_resend_invite': 'Resend invite email',
   'notebookshare#action_remove': 'Remove from notebook',
   'notebookshare#action_restore': 'Restore',

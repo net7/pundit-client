@@ -113,10 +113,13 @@ export class NotebookShareModalComponent {
 
   // Da togliere
   getData() {
-    const currentNotebookId = this.notebookService.getSelected()?.id;
-    return this.notebookService.getData(currentNotebookId).subscribe((response) => {
-      console.warn(response.data);
-    });
+    // const currentNotebookId = this.notebookService.getSelected()?.id;
+    // return this.notebookService.getData(currentNotebookId).subscribe((response) => {
+    //   const notebookData = Object.assign(response.data);
+    //   console.warn(notebookData);
+    //   notebookData.userWithPendingReadingRequest
+    //   notebookData.userWithPendingWritingRequest
+    // });
   }
   // ---
 }

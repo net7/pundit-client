@@ -140,10 +140,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   }
 
   private openShareModal() {
-    const notebook = this.layoutDS.notebookService.getSelected();
     const { notebookService } = this.layoutDS;
+    const notebook = notebookService.getSelected();
+    const ownerId = this.layoutDS.userService.whoami().id;
     return notebookService.search().subscribe((response) => {
-      const ownerId = this.layoutDS.userService.whoami().id;
       const userList = response.data.users;
       notebook.users = userList.map(({ id, username, thumb }) => ({
         id,
