@@ -12,7 +12,7 @@ import {
 import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
-import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
+// import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { NotebookPermissions } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
@@ -141,22 +141,39 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private openShareModal() {
     const { notebookService } = this.layoutDS;
+    // const { userService } = this.layoutDS;
     const notebook = notebookService.getSelected();
-    const ownerId = this.layoutDS.userService.whoami().id;
+    // const ownerId = userService.whoami().id;
     return notebookService.search().subscribe((response) => {
-      const userList = response.data.users;
-      notebook.users = userList.map(({ id, username, thumb }) => ({
-        id,
-        username,
-        thumb,
-        role: (id === ownerId) ? NotebookUserRole.Owner : NotebookUserRole.Editor,
-        status: NotebookUserStatus.Joined
-      }));
-      const ownerItem = notebook.users.filter((item) => item.id === ownerId);
-      notebook.users = notebook.users.filter((item) => item.id !== ownerId);
-      notebook.users.unshift(ownerItem[0]);
-      this.layoutDS.one('notebook-share-modal').update(notebook);
+      console.warn('search()', response);
+      console.warn('getSelected()', notebook);
     });
+    // return notebookService.search().subscribe((response) => {
+    //   const pendingLists = {
+    //     pendingRead: [],
+    //     pendingWrite: []
+    //   };
+    //   response.data.notebooks.forEach((item) => {
+    //     if (item.id === notebook.id) {
+    //       const notebookInUse = Object.assign(item);
+    //       pendingLists.pendingRead = notebookInUse.userWithPendingReadingRequest;
+    //       pendingLists.pendingWrite = notebookInUse.userWithPendingWritingRequest;
+    //     }
+    //   });
+    //   let joinedUsers = response.data.users.map(({ id, username, thumb }) => ({
+    //     id,
+    //     username,
+    //     thumb,
+    //     role: (id === ownerId) ? NotebookUserRole.Owner : NotebookUserRole.Editor,
+    //     status: NotebookUserStatus.Joined
+    //   }));
+    //   const ownerItem = joinedUsers.filter((item) => item.id === ownerId);
+    //   joinedUsers = joinedUsers.filter((item) => item.id !== ownerId);
+    //   joinedUsers.unshift(ownerItem[0]);
+    //   console.warn('JOINED', joinedUsers);
+    //   console.warn('PENDING', pendingLists);
+    //   this.layoutDS.one('notebook-share-modal').update(notebook);
+    // });
     // FIXME: togliere
     // notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
     //   username,
