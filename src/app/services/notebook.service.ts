@@ -21,6 +21,7 @@ export enum NotebookUserStatus {
 export type NotebookUser = {
   id: string;
   username: string;
+  email: string;
   thumb: string;
   role: NotebookUserRole;
   status: NotebookUserStatus;
