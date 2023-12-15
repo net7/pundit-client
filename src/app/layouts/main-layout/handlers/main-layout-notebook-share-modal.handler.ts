@@ -145,16 +145,19 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return notebookService.search().subscribe((response) => {
       const selected = response.data.notebooks.find((item) => item.id === notebook.id);
       const { users } = response.data;
-      console.warn(users);
       const selectedNotebook = Object.assign(selected);
       const userList = {
-        owner: this.createOwner(selectedNotebook.userWithWriteAccess, users, notebook.userId),
-        readAccess: this.createUser(selectedNotebook.userWithReadAccess, users, notebook.userId),
-        writeAccess: this.createUser(selectedNotebook.userWithWriteAccess, users, notebook.userId),
-        pendingReadAccess: this.createUserPending(selectedNotebook.userWithPendingReadingRequest),
-        pendingWriteAccess: this.createUserPending(selectedNotebook.userWithPendingWritingRequest)
+        owner: this.createOwner(users, notebook.userId),
+        read: this.createUser(selectedNotebook.userWithReadAccess, users, false),
+        write: this.createUser(selectedNotebook.userWithWriteAccess, users, false),
+        pendingRead: this.createUser(selectedNotebook.userWithPendingReadingRequest, users, true),
+        pendingWrite: this.createUser(selectedNotebook.userWithPendingWritingRequest, users, true)
       };
       console.warn(userList);
+      notebook.users = userList.owner;
+      notebook.users.push(userList.read[4]);
+      notebook.users.push(userList.pendingWrite[0]);
+      this.layoutDS.one('notebook-share-modal').update(notebook);
       // const ownerItem = joinedUsers.filter((item) => item.id === ownerId);
       // joinedUsers = joinedUsers.filter((item) => item.id !== ownerId);
       // joinedUsers.unshift(ownerItem[0]);
@@ -174,50 +177,33 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     // this.layoutDS.one('notebook-share-modal').update(notebook);
   }
 
-  private createOwner(array: string[], users, ownerId) {
-    const owner = users.filter((item) => array.find((element) => (element === item.id)
-    && (element === ownerId)));
+  private createOwner(users, ownerId) {
+    const owner = users.filter((item) => item.id === ownerId);
     const ownerItem = owner.map(({
       id, username, thumb, emailAddress
     }) => ({
       id,
       username,
-      emailAddress,
+      email: emailAddress,
       thumb,
-      role: NotebookUserRole.Editor,
+      role: NotebookUserRole.Owner,
       status: NotebookUserStatus.Joined
     }));
     return ownerItem;
   }
 
-  private createUser(array: string[], users, ownerId) {
-    const list = users.filter((item) => array.find((element) => (element === item.id)
-    && (element !== ownerId)));
-    const userList = list.map(({
-      id, username, thumb, emailAddress
-    }) => ({
-      id,
-      username,
-      emailAddress,
-      thumb,
+  private createUser(array, users, pending) {
+    const list = (pending) ? array
+      : users.filter((item) => array.find((element) => element
+    === item.id));
+    const userList = list.map((item) => ({
+      id: (pending) ? '' : item.id,
+      username: (pending) ? item : item.username,
+      email: (pending) ? item : item.emailAddress,
+      thumb: (pending) ? '' : item.thumb,
       role: NotebookUserRole.Editor,
-      status: NotebookUserStatus.Joined
-    }));
-    return userList;
-  }
-
-  private createUserPending(array: string[]) {
-    const userList = array.map((item) => ({
-      id: '',
-      username: item,
-      emailAddress: item,
-      thumb: '',
-      role: NotebookUserRole.Editor,
-      status: NotebookUserStatus.Pending
+      status: (pending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined
     }));
     return userList;
   }
 }
-
-// notebook
-// id - label - sharingMode - userId
