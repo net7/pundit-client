@@ -22,15 +22,17 @@ export class NotebookShareModalDS extends DataSource {
         listSection: {
           title: _t('notebookshare#list_title'),
           items: (data.users || []).map(({
-            id, username, thumb, role, status
+            id, username, email, thumb, role, status, action
           }) => ({
             id,
             username,
+            email,
             thumb,
             role,
             status,
             roleAsLabel: _t(`notebookshare#role_${role}`),
             statusAsLabel: _t(`notebookshare#status_${status}`),
+            action,
             dropdown: this.getDropdown(id, role, status)
           }))
         }

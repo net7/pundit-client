@@ -13,11 +13,13 @@ export type NotebookShareModalResult = {
 export type NotebookShareListItem = {
   id: string | number;
   username: string;
+  email: string;
   thumb: string;
   role: NotebookUserRole;
   status: NotebookUserStatus;
   roleAsLabel: string;
   statusAsLabel: string;
+  action: string;
   dropdown?: {
     actions: {
       label: string;

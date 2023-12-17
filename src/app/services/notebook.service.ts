@@ -25,6 +25,7 @@ export type NotebookUser = {
   thumb: string;
   role: NotebookUserRole;
   status: NotebookUserStatus;
+  action: string;
 }
 
 export type NotebookData = {

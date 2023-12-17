@@ -148,23 +148,18 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       const selectedNotebook = Object.assign(selected);
       const userList = {
         owner: this.createOwner(users, notebook.userId),
-        read: this.createUser(selectedNotebook.userWithReadAccess, users, false),
-        write: this.createUser(selectedNotebook.userWithWriteAccess, users, false),
-        pendingRead: this.createUser(selectedNotebook.userWithPendingReadingRequest, users, true),
-        pendingWrite: this.createUser(selectedNotebook.userWithPendingWritingRequest, users, true)
+        read: this.createUser(selectedNotebook.userWithReadAccess, users, false, false),
+        write: this.createUser(selectedNotebook.userWithWriteAccess, users, false, true),
+        pendingRead: this.createUser(selectedNotebook.userWithPendingReadingRequest,
+          users, true, false),
+        pendingWrite: this.createUser(selectedNotebook.userWithPendingWritingRequest,
+          users, true, true)
       };
-      console.warn(userList);
+      // qui aggiungere tutti
       notebook.users = userList.owner;
       notebook.users.push(userList.read[4]);
       notebook.users.push(userList.pendingWrite[0]);
       this.layoutDS.one('notebook-share-modal').update(notebook);
-      // const ownerItem = joinedUsers.filter((item) => item.id === ownerId);
-      // joinedUsers = joinedUsers.filter((item) => item.id !== ownerId);
-      // joinedUsers.unshift(ownerItem[0]);
-      // notebook.users = //aggiungi users
-      // console.warn('JOINED', joinedUsers);
-      // console.warn('PENDING', pendingLists);
-      // this.layoutDS.one('notebook-share-modal').update(notebook);
     });
     // FIXME: togliere
     // notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
@@ -187,12 +182,13 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       email: emailAddress,
       thumb,
       role: NotebookUserRole.Owner,
-      status: NotebookUserStatus.Joined
+      status: NotebookUserStatus.Joined,
+      action: ''
     }));
     return ownerItem;
   }
 
-  private createUser(array, users, pending) {
+  private createUser(array, users, pending, canWrite) {
     const list = (pending) ? array
       : users.filter((item) => array.find((element) => element
     === item.id));
@@ -202,7 +198,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       email: (pending) ? item : item.emailAddress,
       thumb: (pending) ? '' : item.thumb,
       role: NotebookUserRole.Editor,
-      status: (pending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined
+      status: (pending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
+      action: (canWrite) ? 'write' : 'read'
     }));
     return userList;
   }
