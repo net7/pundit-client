@@ -68,6 +68,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         case NotebookShareModalEvent.Ok:
           this.onOk(payload);
           break;
+        case NotebookShareModalEvent.Confirm:
+          this.onConfirm(payload);
+          break;
         default:
           break;
       }
@@ -114,7 +117,6 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       default:
         break;
     }
-
     // return request$.subscribe((actionResponse) => {
     //   console.warn('FIXME: gestire risposta dell\'azione', payload.id,
     // payload.action, actionResponse);
@@ -135,9 +137,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
-    body.userWithReadAccess.push(payload.email);
     if (payload.permission === 'write') {
       body.userWithWriteAccess.push(payload.email);
+    } else {
+      body.userWithReadAccess.push(payload.email);
     }
     console.warn('RESEND', currentNotebookId, body);
     // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
@@ -154,16 +157,24 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     };
     invitationsList.forEach((value) => {
       const { email } = value;
-      const { permission } = value;
-      body.userWithReadAccess.push(email);
-      if (permission === 'write') {
+      const { action } = value;
+      if (action === 'write') {
         body.userWithWriteAccess.push(email);
+      } else {
+        body.userWithReadAccess.push(email);
       }
     });
     console.warn(body);
     // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
     //   console.warn(response);
     // });
+  }
+
+  private onConfirm(payload) {
+    const { notebookService } = this.layoutDS;
+    const notebook = notebookService.getSelected();
+    notebook.users.push(payload);
+    this.layoutDS.one('notebook-share-modal').update(notebook);
   }
 
   private openShareModal() {
@@ -173,19 +184,22 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       const selected = response.data.notebooks.find((item) => item.id === notebook.id);
       const { users } = response.data;
       const selectedNotebook = Object.assign(selected);
+      const writeAccess = selectedNotebook.userWithWriteAccess;
+      const readAccess = selectedNotebook.userWithReadAccess
+        .filter((item) => !writeAccess.includes(item));
+      const writePending = selectedNotebook.userWithPendingWritingRequest;
+      const readPending = selectedNotebook.userWithPendingReadingRequest
+        .filter((item) => !writePending.includes(item));
       const userList = {
         owner: this.createOwner(users, notebook.userId),
-        read: this.createUser(selectedNotebook.userWithReadAccess, users, false, false),
-        write: this.createUser(selectedNotebook.userWithWriteAccess, users, false, true),
-        pendingRead: this.createUser(selectedNotebook.userWithPendingReadingRequest,
-          users, true, false),
-        pendingWrite: this.createUser(selectedNotebook.userWithPendingWritingRequest,
-          users, true, true)
+        read: this.createUser(readAccess, users, false, false),
+        write: this.createUser(writeAccess, users, false, true),
+        pendingRead: this.createUser(readPending, users, true, false),
+        pendingWrite: this.createUser(writePending, users, true, true)
       };
-      // qui aggiungere tutti
-      notebook.users = userList.owner;
-      notebook.users.push(userList.read[4]);
-      notebook.users.push(userList.pendingWrite[0]);
+      const userArray = userList.owner.concat(userList.read, userList.write,
+        userList.pendingRead, userList.pendingWrite);
+      notebook.users = userArray;
       this.layoutDS.one('notebook-share-modal').update(notebook);
     });
     // FIXME: togliere
