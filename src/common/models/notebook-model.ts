@@ -39,10 +39,11 @@ export class NotebookModel {
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookUserSearch)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   static userSearch(query: string) {
     // FIXME: togliere mock
     // return notebook.userSearch({ query, size: 10 });
-    console.warn('FIXME: togliere mock:', query);
+    // console.warn('FIXME: togliere mock:', query);
     return Promise.resolve(usersMock());
   }
 
@@ -51,12 +52,10 @@ export class NotebookModel {
     return notebook.share(id, data);
   }
 
-  // Da togliere
   @CrossMessage(CrossMsgRequestId.NotebookGetData)
   static getData(id: string) {
     return notebook.get(id);
   }
-  // ---
 
   @CrossMessage(CrossMsgRequestId.NotebookUserInviteWithId)
   static userInviteWithId(id: string | number) {

@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
-import { NotebookService, NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
+import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 
 export type NotebookShareModalResult = {
   username: string;
@@ -71,10 +71,7 @@ export class NotebookShareModalComponent {
   @Input() emit: (type: string, payload?: unknown) => void;
 
   constructor(
-    public imageDataService: ImageDataService,
-    // Da togliere
-    public notebookService: NotebookService
-    // ---
+    public imageDataService: ImageDataService
   ) {}
 
   onClick(ev: Event, payload: any) {
@@ -112,16 +109,4 @@ export class NotebookShareModalComponent {
   dropdownToggle(item) {
     item.dropdown.isExpanded = !item.dropdown.isExpanded;
   }
-
-  // Da togliere
-  getData() {
-    // const currentNotebookId = this.notebookService.getSelected()?.id;
-    // return this.notebookService.getData(currentNotebookId).subscribe((response) => {
-    //   const notebookData = Object.assign(response.data);
-    //   console.warn(notebookData);
-    //   notebookData.userWithPendingReadingRequest
-    //   notebookData.userWithPendingWritingRequest
-    // });
-  }
-  // ---
 }

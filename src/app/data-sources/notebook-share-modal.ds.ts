@@ -59,11 +59,30 @@ export class NotebookShareModalDS extends DataSource {
     this.output.actions = this.getFormActions();
   }
 
+  // USE THIS WITH REAL AUTOCOMPLETE
+  // public updateAutocompleteResults({ response, query }) {
+  //   const { autocomplete } = this.output.body.formSection;
+  //   let results = response || [];
+  //   // check email format in query
+  //   if (results.length && this.validateEmail(query)) {
+  //     const email = query.trim();
+  //     results = [{
+  //       email,
+  //       username: null,
+  //       thumb: null,
+  //       hideEmail: true
+  //     }];
+  //   }
+  //   autocomplete.results = results || [];
+  // }
+
+  // FIXME: temporary autocomplete
   public updateAutocompleteResults({ response, query }) {
     const { autocomplete } = this.output.body.formSection;
     let results = response || [];
+    results = [];
     // check email format in query
-    if (results.length && this.validateEmail(query)) {
+    if (this.validateEmail(query)) {
       const email = query.trim();
       results = [{
         email,
@@ -77,7 +96,7 @@ export class NotebookShareModalDS extends DataSource {
 
   public onAutocompleteClick(selected) {
     // clear results
-    this.updateAutocompleteResults({ response: null, query: null });
+    this.updateAutocompleteResults({ response: null, query: '' });
 
     // update section
     this.output.body.confirmSection = {
