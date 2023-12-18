@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { UserService } from 'src/app/services/user.service';
 import { NotebookData } from '../../services/notebook.service';
 
 export interface NotebookPanelData {
@@ -20,6 +21,12 @@ export class NotebookPanelComponent {
   @Input() public data: NotebookPanelData;
 
   @Input() public emit: any;
+
+  userId = this.userService.whoami().id;
+
+  constructor(
+    public userService: UserService
+  ) {}
 
   /**
    * Event emitter for the internal notebook-selector component

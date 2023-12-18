@@ -60,7 +60,7 @@
     
         <section class="pnd-notebook-panel__section">
             <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.shareNotebook.title }}</div>
-            <button (click)="onShareClick()" class="pnd-btn pnd-notebook-panel__share-button">
+            <button [disabled]="data.selected.userId !== userId" (click)="onShareClick()" class="pnd-btn pnd-notebook-panel__share-button">
                 <span class="button-icon">
                     <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
                 </span>
