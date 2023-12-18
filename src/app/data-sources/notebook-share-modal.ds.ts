@@ -33,7 +33,7 @@ export class NotebookShareModalDS extends DataSource {
             roleAsLabel: _t(`notebookshare#role_${role}`),
             statusAsLabel: _t(`notebookshare#status_${status}`),
             action,
-            dropdown: this.getDropdown(id, role, status)
+            dropdown: this.getDropdown(id, role, status, email, action)
           }))
         }
       },
@@ -116,7 +116,8 @@ export class NotebookShareModalDS extends DataSource {
     }];
   }
 
-  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus) {
+  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
+    email: string, permission: string) {
     if (role === NotebookUserRole.Owner) return null;
     const dropdown = {
       actions: [],
@@ -135,7 +136,9 @@ export class NotebookShareModalDS extends DataSource {
       label: _t(`notebookshare#action_${action}`),
       payload: {
         id,
-        action
+        action,
+        email,
+        permission
       }
     }));
 

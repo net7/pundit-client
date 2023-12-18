@@ -98,45 +98,72 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return this.layoutDS.notebookService.userSearch(query);
   }
 
-  private onActionClick = ({ id, action }) => {
+  private onActionClick = (payload) => {
     const { notebookService } = this.layoutDS;
-    let request$;
-
-    switch (action) {
+    const currentNotebookId = notebookService.getSelected()?.id;
+    // let request$;
+    switch (payload.action) {
       case 'remove':
       case 'delete_invite':
-        request$ = notebookService.userRemove(id);
+        console.warn('REMOVE/DELETE', currentNotebookId, { email: payload.email });
+        // request$ = notebookService.removeShare(currentNotebookId, { email: payload.email });
         break;
       case 'resend_invite':
-        request$ = notebookService.userInviteWithId(id);
+        this.onResend(payload);
         break;
       default:
         break;
     }
 
-    return request$.subscribe((actionResponse) => {
-      console.warn('FIXME: gestire risposta dell\'azione', id, action, actionResponse);
-    });
+    // return request$.subscribe((actionResponse) => {
+    //   console.warn('FIXME: gestire risposta dell\'azione', payload.id,
+    // payload.action, actionResponse);
+    // });
   }
 
-  private onOk(invitationsList) {
+  private onDelete(payload) {
+    const body = {
+      email: payload.email
+    };
+    return body;
+  }
+
+  private onResend(payload) {
     const { notebookService } = this.layoutDS;
     const currentNotebookId = notebookService.getSelected()?.id;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
+    body.userWithReadAccess.push(payload.email);
+    if (payload.permission === 'write') {
+      body.userWithWriteAccess.push(payload.email);
+    }
+    console.warn('RESEND', currentNotebookId, body);
+    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+    //   console.warn(response);
+    // });
+  }
+
+  private onOk(invitationsList) {
+    // const { notebookService } = this.layoutDS;
+    // const currentNotebookId = notebookService.getSelected()?.id;
+    const body: NotebookPermissions = {
+      userWithReadAccess: [],
+      userWithWriteAccess: []
+    };
     invitationsList.forEach((value) => {
       const { email } = value;
-      const { action } = value;
+      const { permission } = value;
       body.userWithReadAccess.push(email);
-      if (action === 'write') {
+      if (permission === 'write') {
         body.userWithWriteAccess.push(email);
       }
     });
-    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      console.warn(response);
-    });
+    console.warn(body);
+    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+    //   console.warn(response);
+    // });
   }
 
   private openShareModal() {
