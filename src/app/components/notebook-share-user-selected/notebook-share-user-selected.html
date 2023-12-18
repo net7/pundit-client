@@ -11,7 +11,7 @@
   <!-- USERNAME -->
   <div *ngIf="item.username; else unregistered" class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
   <ng-template #unregistered>
-    <div class="pnd-notebook-share-modal__list-item-label">Unregistered User</div>
+    <div class="pnd-notebook-share-modal__list-item-label">{{ item.email }}</div>
   </ng-template>
   
   

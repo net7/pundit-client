@@ -64,9 +64,9 @@ export class NotebookShareModalEH extends EventHandler {
         break;
       case 'action-confirm-ok': {
         const { selected } = this.dataSource.output.body.confirmSection;
-        // const user = this.createUser(selected);
-        // this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), user);
-        invitationsList.set(selected.email, selected);
+        const user = this.createUser(selected);
+        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), user);
+        this.dataSource.output.invitationsList.set(selected.email, selected);
         this.dataSource.closeConfirm();
         break;
       }
