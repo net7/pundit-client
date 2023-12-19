@@ -12,6 +12,7 @@ import {
 import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
+import { _t } from '@net7/core';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { NotebookPermissions } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
@@ -114,6 +115,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       case 'resend_invite':
         this.onResend(payload);
         break;
+      case 'read':
+      case 'write':
+        this.onChangePermission(payload);
+        break;
       default:
         break;
     }
@@ -137,20 +142,19 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
+    body.userWithReadAccess.push(payload.email);
     if (payload.permission === 'write') {
       body.userWithWriteAccess.push(payload.email);
-    } else {
-      body.userWithReadAccess.push(payload.email);
     }
-    console.warn('RESEND', currentNotebookId, body);
-    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-    //   console.warn(response);
-    // });
+    console.warn(currentNotebookId, body);
+    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+      console.warn(response);
+    });
   }
 
   private onOk(invitationsList) {
-    // const { notebookService } = this.layoutDS;
-    // const currentNotebookId = notebookService.getSelected()?.id;
+    const { notebookService } = this.layoutDS;
+    const currentNotebookId = notebookService.getSelected()?.id;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
@@ -158,16 +162,24 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     invitationsList.forEach((value) => {
       const { email } = value;
       const { action } = value;
+      body.userWithReadAccess.push(email);
       if (action === 'write') {
         body.userWithWriteAccess.push(email);
-      } else {
-        body.userWithReadAccess.push(email);
       }
     });
-    console.warn(body);
-    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-    //   console.warn(response);
-    // });
+    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+      console.warn(response);
+    });
+  }
+
+  private onChangePermission(payload) {
+    this.layoutDS.widgets['notebook-share-modal'].ds.output.body.listSection.items.find((item) => item.email === payload.email).action = payload.action;
+    this.layoutDS.widgets['notebook-share-modal'].ds.output.body.listSection.items.find((item) => item.email === payload.email).actionAsLabel = _t(`notebookshare#action_${payload.action}`);
+    const value = {
+      email: payload.email,
+      action: payload.action
+    };
+    this.layoutDS.widgets['notebook-share-modal'].ds.output.invitationsList.set(payload.email, value);
   }
 
   private onConfirm(payload) {

@@ -9,7 +9,7 @@
   </div>
 
   <!-- USERNAME -->
-  <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }}</div>
+  <div class="pnd-notebook-share-modal__list-item-label">{{ item.username }} - {{ item.action }}</div>
 
   <!-- OWNER -->
   <div *ngIf="item.role === 'owner'" class="pnd-notebook-share-modal__list-item-role">
@@ -24,9 +24,14 @@
 
       <!-- Selected element -->
       <button class="pnd-dropdown__selected" (click)="dropdownToggle(item)">
-        <div class="pnd-dropdown__selected-label" title="{{item.statusAsLabel}}">
+        <div *ngIf="item.status !== 'selected'; else selected" class="pnd-dropdown__selected-label" title="{{item.statusAsLabel}}">
           {{ item.statusAsLabel }}
         </div>
+        <ng-template #selected>
+          <div class="pnd-dropdown__selected-label" title="{{item.actionAsLabel}}">
+            {{ item.actionAsLabel }}
+          </div>
+        </ng-template>
         <div class="pnd-dropdown__selected-right-icon">
           <pnd-svg-icon *ngIf="!dropdown.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
           <pnd-svg-icon *ngIf="dropdown.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>

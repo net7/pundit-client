@@ -20,6 +20,7 @@ export type NotebookShareListItem = {
   roleAsLabel: string;
   statusAsLabel: string;
   action: string;
+  actionAsLabel: string;
   dropdown?: {
     actions: {
       label: string;

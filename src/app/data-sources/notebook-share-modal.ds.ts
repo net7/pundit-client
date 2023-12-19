@@ -33,6 +33,7 @@ export class NotebookShareModalDS extends DataSource {
             roleAsLabel: _t(`notebookshare#role_${role}`),
             statusAsLabel: _t(`notebookshare#status_${status}`),
             action,
+            actionAsLabel: _t(`notebookshare#action_${action}`),
             dropdown: this.getDropdown(id, role, status, email, action)
           }))
         }
@@ -150,6 +151,8 @@ export class NotebookShareModalDS extends DataSource {
       actionKeys = ['remove'];
     } else if (status === NotebookUserStatus.Removed) {
       actionKeys = ['restore'];
+    } else if (status === NotebookUserStatus.Selected) {
+      actionKeys = ['read', 'write'];
     }
     dropdown.actions = actionKeys.map((action) => ({
       label: _t(`notebookshare#action_${action}`),
@@ -160,7 +163,6 @@ export class NotebookShareModalDS extends DataSource {
         permission
       }
     }));
-
     return dropdown;
   }
 

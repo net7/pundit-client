@@ -16,6 +16,7 @@ export enum NotebookUserStatus {
   Pending = 'pending',
   Removed = 'removed',
   Joined = 'joined',
+  Selected = 'selected'
 }
 
 export type NotebookUser = {

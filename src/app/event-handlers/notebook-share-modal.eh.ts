@@ -56,17 +56,21 @@ export class NotebookShareModalEH extends EventHandler {
         this.dataSource.close();
         break;
       case 'action-ok':
-        console.warn(invitationsList);
-        // if (invitationsList.size) {
-        //   this.emitOuter(getEventType(NotebookShareModalEvent.Ok), invitationsList);
-        // }
-        // this.dataSource.close();
+        if (invitationsList.size) {
+          this.emitOuter(getEventType(NotebookShareModalEvent.Ok), invitationsList);
+        }
+        this.dataSource.close();
         break;
       case 'action-confirm-ok': {
         const { selected } = this.dataSource.output.body.confirmSection;
         const user = this.createUser(selected);
         this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), user);
-        this.dataSource.output.invitationsList.set(selected.email, selected);
+        this.dataSource.output.invitationsList = invitationsList;
+        const value = {
+          action: selected.action,
+          email: selected.email,
+        };
+        this.dataSource.output.invitationsList.set(selected.email, value);
         this.dataSource.closeConfirm();
         break;
       }
@@ -85,8 +89,9 @@ export class NotebookShareModalEH extends EventHandler {
       email: selected.email,
       thumb: selected.thumb,
       role: NotebookUserRole.Editor,
-      status: NotebookUserStatus.Pending,
-      action: selected.action
+      status: NotebookUserStatus.Selected,
+      action: selected.action,
+      actionAsLabel: selected.action
     };
     return user;
   }
