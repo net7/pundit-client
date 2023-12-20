@@ -1,4 +1,3 @@
-// import { sample } from 'lodash';
 import {
   forkJoin,
   Observable, of, Subject
@@ -19,20 +18,6 @@ import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
-
-// const autocompleteMock = () => Array(Math.round(Math.random() * 10)).fill(null).map((_, i) => ({
-//   username: `User ${i}`,
-//   email: `email-${i}@example.com`,
-//   thumb: `https://i.pravatar.cc/50?img${i}`
-// }));
-
-// const userRoles = [NotebookUserRole.Owner, NotebookUserRole.Editor];
-
-// const userStatus = [
-//   NotebookUserStatus.Joined,
-//   NotebookUserStatus.Pending,
-//   NotebookUserStatus.Removed,
-// ];
 
 export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private autocomplete$: Subject<string> = new Subject();
@@ -103,14 +88,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   }
 
   private onActionClick = (payload) => {
-    // const { notebookService } = this.layoutDS;
-    // const currentNotebookId = notebookService.getSelected()?.id;
-    // let request$;
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
         this.onDelete(payload);
-        // request$ = notebookService.removeShare(currentNotebookId, { email: payload.email });
         break;
       case 'resend_invite':
         this.onResend(payload);
@@ -122,10 +103,6 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       default:
         break;
     }
-    // return request$.subscribe((actionResponse) => {
-    //   console.warn('FIXME: gestire risposta dell\'azione', payload.id,
-    // payload.action, actionResponse);
-    // });
   }
 
   private onDelete(payload) {
@@ -197,36 +174,25 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     const { notebookService } = this.layoutDS;
     const notebook = notebookService.getSelected();
     return notebookService.search().subscribe((response) => {
-      const selected = response.data.notebooks.find((item) => item.id === notebook.id);
+      const selected = Object.assign(response.data.notebooks
+        .find((item) => item.id === notebook.id));
       const { users } = response.data;
-      const selectedNotebook = Object.assign(selected);
-      const writeAccess = selectedNotebook.userWithWriteAccess;
-      const readAccess = selectedNotebook.userWithReadAccess
-        .filter((item) => !writeAccess.includes(item));
-      const writePending = selectedNotebook.userWithPendingWritingRequest;
-      const readPending = selectedNotebook.userWithPendingReadingRequest
-        .filter((item) => !writePending.includes(item));
+      const readAccess = selected.userWithReadAccess
+        .filter((item) => !selected.userWithWriteAccess.includes(item));
+      const readPending = selected.userWithPendingReadingRequest
+        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
       const userList = {
         owner: this.createOwner(users, notebook.userId),
         read: this.createUser(readAccess, users, false, false),
-        write: this.createUser(writeAccess, users, false, true),
+        write: this.createUser(selected.userWithWriteAccess, users, false, true),
         pendingRead: this.createUser(readPending, users, true, false),
-        pendingWrite: this.createUser(writePending, users, true, true)
+        pendingWrite: this.createUser(selected.userWithPendingWritingRequest, users, true, true)
       };
       const userArray = userList.owner.concat(userList.read, userList.write,
         userList.pendingRead, userList.pendingWrite);
       notebook.users = userArray;
       this.layoutDS.one('notebook-share-modal').update(notebook);
     });
-    // FIXME: togliere
-    // notebook.users = autocompleteMock().map(({ username, thumb }, index) => ({
-    //   username,
-    //   thumb,
-    //   id: `user-${index}`,
-    //   role: sample(userRoles),
-    //   status: sample(userStatus),
-    // }));
-    // this.layoutDS.one('notebook-share-modal').update(notebook);
   }
 
   private createOwner(users, ownerId) {
@@ -245,17 +211,16 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return ownerItem;
   }
 
-  private createUser(array, users, pending, canWrite) {
-    const list = (pending) ? array
-      : users.filter((item) => array.find((element) => element
-    === item.id));
+  private createUser(array, users, isPending, canWrite) {
+    const list = (isPending) ? array
+      : users.filter((item) => array.find((element) => element === item.id));
     const userList = list.map((item) => ({
-      id: (pending) ? '' : item.id,
-      username: (pending) ? item : item.username,
-      email: (pending) ? item : item.emailAddress,
-      thumb: (pending) ? '' : item.thumb,
+      id: (isPending) ? '' : item.id,
+      username: (isPending) ? item : item.username,
+      email: (isPending) ? item : item.emailAddress,
+      thumb: (isPending) ? '' : item.thumb,
       role: NotebookUserRole.Editor,
-      status: (pending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
+      status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
       action: (canWrite) ? 'write' : 'read'
     }));
     return userList;
