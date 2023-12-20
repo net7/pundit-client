@@ -13,6 +13,7 @@ export enum CrossMsgRequestId {
   NotebookSetDefault = 'notebook.setDefault',
   NotebookUserSearch = 'notebook.userSearch',
   NotebookUserInviteWithEmail = 'notebook.userInviteWithEmail',
+  NotebookUserRemoveWithEmail = 'notebook.userRemoveWithEmail',
   NotebookGetData = 'notebook.getData',
   NotebookUserInviteWithId = 'notebook.userInviteWithId',
   NotebookUserRemove = 'notebook.userRemove',

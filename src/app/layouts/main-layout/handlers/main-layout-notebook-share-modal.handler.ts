@@ -103,13 +103,13 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   }
 
   private onActionClick = (payload) => {
-    const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
+    // const { notebookService } = this.layoutDS;
+    // const currentNotebookId = notebookService.getSelected()?.id;
     // let request$;
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
-        console.warn('REMOVE/DELETE', currentNotebookId, { email: payload.email });
+        this.onDelete(payload);
         // request$ = notebookService.removeShare(currentNotebookId, { email: payload.email });
         break;
       case 'resend_invite':
@@ -129,10 +129,15 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   }
 
   private onDelete(payload) {
+    // const { notebookService } = this.layoutDS;
+    // const currentNotebookId = notebookService.getSelected()?.id;
     const body = {
       email: payload.email
     };
-    return body;
+    console.warn('FIXME', payload.action, body);
+    // return notebookService.userRemoveWithEmail(currentNotebookId, body).subscribe((response) => {
+    //   console.warn(response);
+    // });
   }
 
   private onResend(payload) {
@@ -146,7 +151,6 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     if (payload.permission === 'write') {
       body.userWithWriteAccess.push(payload.email);
     }
-    console.warn(currentNotebookId, body);
     return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
       console.warn(response);
     });

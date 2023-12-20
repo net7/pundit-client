@@ -52,6 +52,12 @@ export class NotebookModel {
     return notebook.share(id, data);
   }
 
+  @CrossMessage(CrossMsgRequestId.NotebookUserRemoveWithEmail)
+  static userRemoveWithEmail(notebookId: string, data: { email: string }) {
+    console.warn('FIXME', notebookId, data);
+    // return notebook.removeShare(notebookId, email);
+  }
+
   @CrossMessage(CrossMsgRequestId.NotebookGetData)
   static getData(id: string) {
     return notebook.get(id);

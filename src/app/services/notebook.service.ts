@@ -158,6 +158,11 @@ export class NotebookService {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }
 
+  userRemoveWithEmail(notebookId: string, data: { email: string }) {
+    console.warn(notebookId, data);
+    // return from(NotebookModel.userRemoveWithEmail(notebookId, email));
+  }
+
   getData(id: string) {
     return from(NotebookModel.getData(id));
   }
