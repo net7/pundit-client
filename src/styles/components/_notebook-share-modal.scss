@@ -71,6 +71,11 @@
             font-weight: $font-weight-bold;
             margin-bottom: $space;
         }
+
+        .pnd-modal__body-list {
+            max-height: 25vh;
+            overflow: auto;
+        }
     }
 
     &__list-item {

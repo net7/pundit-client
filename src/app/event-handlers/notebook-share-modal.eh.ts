@@ -1,6 +1,5 @@
 import { EventHandler } from '@net7/core';
 import { NotebookShareModalDS } from '../data-sources';
-import { NotebookUserRole, NotebookUserStatus } from '../services/notebook.service';
 import { getEventType, MainLayoutEvent, NotebookShareModalEvent } from '../event-types';
 
 export class NotebookShareModalEH extends EventHandler {
@@ -49,28 +48,17 @@ export class NotebookShareModalEH extends EventHandler {
 
   private onClick(payload) {
     const { source } = payload;
-    const { invitationsList } = this.dataSource.output;
     switch (source) {
       case 'close-icon':
       case 'action-cancel':
         this.dataSource.close();
         break;
       case 'action-ok':
-        if (invitationsList.size) {
-          this.emitOuter(getEventType(NotebookShareModalEvent.Ok), invitationsList);
-        }
         this.dataSource.close();
         break;
       case 'action-confirm-ok': {
         const { selected } = this.dataSource.output.body.confirmSection;
-        const user = this.createUser(selected);
-        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), user);
-        const value = {
-          action: selected.action,
-          email: selected.email,
-        };
-        this.dataSource.output.invitationsList = invitationsList;
-        this.dataSource.output.invitationsList.set(selected.email, value);
+        this.emitOuter(getEventType(NotebookShareModalEvent.Confirm), selected);
         this.dataSource.closeConfirm();
         break;
       }
@@ -80,19 +68,5 @@ export class NotebookShareModalEH extends EventHandler {
       default:
         break;
     }
-  }
-
-  private createUser(selected) {
-    const user = {
-      id: '',
-      username: selected.email,
-      email: selected.email,
-      thumb: selected.thumb,
-      role: NotebookUserRole.Editor,
-      status: NotebookUserStatus.Selected,
-      action: selected.action,
-      actionAsLabel: selected.action
-    };
-    return user;
   }
 }

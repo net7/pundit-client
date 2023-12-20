@@ -54,8 +54,7 @@ export class NotebookModel {
 
   @CrossMessage(CrossMsgRequestId.NotebookUserRemoveWithEmail)
   static userRemoveWithEmail(notebookId: string, data: { email: string }) {
-    console.warn('FIXME', notebookId, data);
-    // return notebook.removeShare(notebookId, email);
+    return notebook.removeShare(notebookId, data);
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookGetData)

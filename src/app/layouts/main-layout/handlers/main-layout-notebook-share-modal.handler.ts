@@ -11,7 +11,6 @@ import {
 import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
-import { _t } from '@net7/core';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { NotebookPermissions } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
@@ -50,9 +49,6 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
           break;
         case NotebookShareModalEvent.ActionClick:
           this.onActionClick(payload);
-          break;
-        case NotebookShareModalEvent.Ok:
-          this.onOk(payload);
           break;
         case NotebookShareModalEvent.Confirm:
           this.onConfirm(payload);
@@ -96,25 +92,23 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       case 'resend_invite':
         this.onResend(payload);
         break;
-      case 'read':
-      case 'write':
-        this.onChangePermission(payload);
-        break;
       default:
         break;
     }
   }
 
   private onDelete(payload) {
-    // const { notebookService } = this.layoutDS;
-    // const currentNotebookId = notebookService.getSelected()?.id;
+    const { notebookService } = this.layoutDS;
+    const notebook = notebookService.getSelected();
     const body = {
       email: payload.email
     };
-    console.warn('FIXME', payload.action, body);
-    // return notebookService.userRemoveWithEmail(currentNotebookId, body).subscribe((response) => {
-    //   console.warn(response);
-    // });
+    return notebookService.userRemoveWithEmail(notebook.id, body).subscribe((response) => {
+      if (response.status === 200) {
+        notebook.users = notebook.users.filter((item) => item.email !== payload.email);
+        this.layoutDS.one('notebook-share-modal').update(notebook);
+      }
+    });
   }
 
   private onResend(payload) {
@@ -129,45 +123,30 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       body.userWithWriteAccess.push(payload.email);
     }
     return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      console.warn(response);
-    });
-  }
-
-  private onOk(invitationsList) {
-    const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
-    const body: NotebookPermissions = {
-      userWithReadAccess: [],
-      userWithWriteAccess: []
-    };
-    invitationsList.forEach((value) => {
-      const { email } = value;
-      const { action } = value;
-      body.userWithReadAccess.push(email);
-      if (action === 'write') {
-        body.userWithWriteAccess.push(email);
+      if (response.status === 200) {
+        //
       }
     });
-    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      console.warn(response);
-    });
-  }
-
-  private onChangePermission(payload) {
-    this.layoutDS.widgets['notebook-share-modal'].ds.output.body.listSection.items.find((item) => item.email === payload.email).action = payload.action;
-    this.layoutDS.widgets['notebook-share-modal'].ds.output.body.listSection.items.find((item) => item.email === payload.email).actionAsLabel = _t(`notebookshare#action_${payload.action}`);
-    const value = {
-      email: payload.email,
-      action: payload.action
-    };
-    this.layoutDS.widgets['notebook-share-modal'].ds.output.invitationsList.set(payload.email, value);
   }
 
   private onConfirm(payload) {
     const { notebookService } = this.layoutDS;
     const notebook = notebookService.getSelected();
-    notebook.users.push(payload);
-    this.layoutDS.one('notebook-share-modal').update(notebook);
+    const body: NotebookPermissions = {
+      userWithReadAccess: [],
+      userWithWriteAccess: []
+    };
+    body.userWithReadAccess.push(payload.email);
+    if (payload.action === 'write') {
+      body.userWithWriteAccess.push(payload.email);
+    }
+    return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
+      if (response.status === 200) {
+        const user = this.createSingleUser(payload);
+        notebook.users.push(user);
+        this.layoutDS.one('notebook-share-modal').update(notebook);
+      }
+    });
   }
 
   private openShareModal() {
@@ -183,10 +162,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
         .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
       const userList = {
         owner: this.createOwner(users, notebook.userId),
-        read: this.createUser(readAccess, users, false, false),
-        write: this.createUser(selected.userWithWriteAccess, users, false, true),
-        pendingRead: this.createUser(readPending, users, true, false),
-        pendingWrite: this.createUser(selected.userWithPendingWritingRequest, users, true, true)
+        read: this.createUsers(readAccess, users, false, false),
+        write: this.createUsers(selected.userWithWriteAccess, users, false, true),
+        pendingRead: this.createUsers(readPending, users, true, false),
+        pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
       };
       const userArray = userList.owner.concat(userList.read, userList.write,
         userList.pendingRead, userList.pendingWrite);
@@ -211,7 +190,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return ownerItem;
   }
 
-  private createUser(array, users, isPending, canWrite) {
+  private createUsers(array, users, isPending, canWrite) {
     const list = (isPending) ? array
       : users.filter((item) => array.find((element) => element === item.id));
     const userList = list.map((item) => ({
@@ -224,5 +203,19 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       action: (canWrite) ? 'write' : 'read'
     }));
     return userList;
+  }
+
+  private createSingleUser(selected) {
+    const user = {
+      id: '',
+      username: selected.email,
+      email: selected.email,
+      thumb: selected.thumb,
+      role: NotebookUserRole.Editor,
+      status: NotebookUserStatus.Pending,
+      action: selected.action,
+      actionAsLabel: selected.action
+    };
+    return user;
   }
 }

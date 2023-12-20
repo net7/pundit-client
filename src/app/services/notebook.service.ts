@@ -159,8 +159,7 @@ export class NotebookService {
   }
 
   userRemoveWithEmail(notebookId: string, data: { email: string }) {
-    console.warn(notebookId, data);
-    // return from(NotebookModel.userRemoveWithEmail(notebookId, email));
+    return from(NotebookModel.userRemoveWithEmail(notebookId, data));
   }
 
   getData(id: string) {
