@@ -22,6 +22,9 @@ export class NotebookPanelEH extends EventHandler {
         case NotebookPanelEvent.OpenShareModal:
           this.emitOuter(getEventType(type), payload);
           break;
+        case NotebookPanelEvent.ActionClick:
+          this.emitOuter(getEventType(NotebookPanelEvent.ActionClick), payload);
+          break;
         default:
           break;
       }

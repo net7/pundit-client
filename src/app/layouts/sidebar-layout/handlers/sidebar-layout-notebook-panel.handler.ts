@@ -8,6 +8,7 @@ import { catchError } from 'rxjs/operators';
 import { EMPTY } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
+import { NotebookPermissions } from '@pundit/communication';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';
 
@@ -85,8 +86,58 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
           });
           break;
 
+        case NotebookPanelEvent.ActionClick:
+          this.onActionClick(payload);
+          break;
+
         default:
           break;
+      }
+    });
+  }
+
+  private onActionClick = (payload) => {
+    switch (payload.action) {
+      case 'remove':
+      case 'delete_invite':
+        this.onDelete(payload);
+        break;
+      case 'resend_invite':
+        this.onResend(payload);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private onDelete(payload) {
+    const { notebookService } = this.layoutEH;
+    const notebook = notebookService.getSelected();
+    const body = {
+      email: payload.email
+    };
+    return notebookService.userRemoveWithEmail(notebook.id, body).subscribe((response) => {
+      if (response.status === 200) {
+        // notebook.users = notebook.users.filter((item) => item.email !== payload.email);
+        // this.layoutDS.one('notebook-share-modal').update(notebook);
+      }
+    });
+  }
+
+  private onResend(payload) {
+    const { notebookService } = this.layoutEH;
+    const currentNotebookId = notebookService.getSelected()?.id;
+    const body: NotebookPermissions = {
+      userWithReadAccess: [],
+      userWithWriteAccess: []
+    };
+    body.userWithReadAccess.push(payload.email);
+    if (payload.permission === 'write') {
+      body.userWithWriteAccess.push(payload.email);
+    }
+    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+      if (response.status === 200) {
+        //
       }
     });
   }
