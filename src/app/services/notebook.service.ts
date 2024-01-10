@@ -50,6 +50,8 @@ export class NotebookService {
 
   public selectedChanged$: Subject<void> = new Subject();
 
+  public sharedWithChanged$: Subject<ListOfUsers> = new Subject();
+
   constructor(
     private userService: UserService
   ) {}
@@ -184,4 +186,26 @@ export class NotebookService {
     this.notebooks = [];
     this.selectedId = null;
   }
+
+  getListOfUsers() {
+    this.search().subscribe((response) => {
+      const selected = Object.assign(response.data.notebooks
+        .find((item) => item.id === this.selectedId));
+      const { users } = response.data;
+      const readAccess = selected.userWithReadAccess
+        .filter((item) => !selected.userWithWriteAccess.includes(item));
+      const readPending = selected.userWithPendingReadingRequest
+        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
+      const userList = {
+        owner: this.createOwner(users, notebook.userId),
+        read: this.createUsers(readAccess, users, false, false),
+        write: this.createUsers(selected.userWithWriteAccess, users, false, true),
+        pendingRead: this.createUsers(readPending, users, true, false),
+        pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
+      };
+      const userArray = userList.owner.concat(userList.read, userList.write,
+        userList.pendingRead, userList.pendingWrite);
+      notebook.users = userArray;
+  }
+  this.sharedWithChanged$.next(...)
 }

@@ -1,21 +1,21 @@
-import { ChangeDetectorRef } from '@angular/core';
-import { EventHandler } from '@net7/core';
-import { Subject, ReplaySubject } from 'rxjs';
-import { delay, takeUntil, withLatestFrom } from 'rxjs/operators';
-import ResizeObserver from 'resize-observer-polyfill';
-import { AnnotationService } from 'src/app/services/annotation.service';
-import { AnchorService } from 'src/app/services/anchor.service';
-import { AppEventData } from 'src/app/types';
-import { NotebookService } from 'src/app/services/notebook.service';
-import { UserService } from 'src/app/services/user.service';
-import { ToastService } from 'src/app/services/toast.service';
-import { AppEvent, SidebarLayoutEvent } from 'src/app/event-types';
-import { PunditLoginService } from 'src/app/login-module/public-api';
-import { AnalyticsModel } from 'src/common/models';
-import { AnalyticsAction } from 'src/common/types';
-import { TagService } from 'src/app/services/tag.service';
-import { PdfService } from 'src/app/services/pdf.service';
-import { SidebarLayoutDS } from './sidebar-layout.ds';
+import { ChangeDetectorRef } from "@angular/core";
+import { EventHandler } from "@net7/core";
+import { Subject, ReplaySubject } from "rxjs";
+import { delay, takeUntil, withLatestFrom } from "rxjs/operators";
+import ResizeObserver from "resize-observer-polyfill";
+import { AnnotationService } from "src/app/services/annotation.service";
+import { AnchorService } from "src/app/services/anchor.service";
+import { AppEventData } from "src/app/types";
+import { NotebookService } from "src/app/services/notebook.service";
+import { UserService } from "src/app/services/user.service";
+import { ToastService } from "src/app/services/toast.service";
+import { AppEvent, SidebarLayoutEvent } from "src/app/event-types";
+import { PunditLoginService } from "src/app/login-module/public-api";
+import { AnalyticsModel } from "src/common/models";
+import { AnalyticsAction } from "src/common/types";
+import { TagService } from "src/app/services/tag.service";
+import { PdfService } from "src/app/services/pdf.service";
+import { SidebarLayoutDS } from "./sidebar-layout.ds";
 
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
@@ -60,6 +60,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
           this.listenDocumentResize();
           this.listenSidebarCollapse();
+          this.listenSharedUsersChanges();
           break;
         case SidebarLayoutEvent.Destroy:
           this.destroy$.next();
@@ -79,10 +80,13 @@ export class SidebarLayoutEH extends EventHandler {
           break;
         case SidebarLayoutEvent.ClickPageAnnotationPanel:
           {
-            const state = this.annotationService.showPageAnnotations$.getValue();
+            const state =
+              this.annotationService.showPageAnnotations$.getValue();
             this.annotationService.showPageAnnotations$.next(!state);
             this.appEvent$.next({
-              type: state ? AppEvent.HidePageAnnotations : AppEvent.ShowPageAnnotations
+              type: state
+                ? AppEvent.HidePageAnnotations
+                : AppEvent.ShowPageAnnotations,
             });
           }
           break;
@@ -90,7 +94,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.onFullpageDropdownToggle();
           this.appEvent$.next({
             type: AppEvent.AnnotationNewFullPage,
-            payload
+            payload,
           });
           break;
         case SidebarLayoutEvent.Close:
@@ -98,7 +102,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.isCollapsed.next(true);
           break;
         case SidebarLayoutEvent.ClickUsername:
-          console.warn('FIXME: gestire username click');
+          console.warn("FIXME: gestire username click");
           break;
         case SidebarLayoutEvent.ClickLogout:
           this.appEvent$.next({
@@ -121,13 +125,13 @@ export class SidebarLayoutEH extends EventHandler {
               ? AnalyticsAction.RegisterButtonClick
               : AnalyticsAction.LoginButtonClick,
             payload: {
-              location: 'header',
+              location: "header",
             },
           });
           break;
         }
         default:
-          console.warn('unhandled inner event of type', type);
+          console.warn("unhandled inner event of type", type);
           break;
       }
 
@@ -157,6 +161,12 @@ export class SidebarLayoutEH extends EventHandler {
 
     // init
     this.onResize();
+  }
+
+  private listenSharedUsersChanges() {
+    this.notebookService.sharedWithChanged$.subscribe((users) => {
+      this.dataSource;
+    });
   }
 
   private listenSidebarCollapse() {
@@ -193,7 +203,8 @@ export class SidebarLayoutEH extends EventHandler {
   public updateSidebarHeight() {
     const documentHeight = document.documentElement.scrollHeight;
     let { scrollHeight } = document.body;
-    scrollHeight = documentHeight > scrollHeight ? documentHeight : scrollHeight;
+    scrollHeight =
+      documentHeight > scrollHeight ? documentHeight : scrollHeight;
     // check if document is pdf
     if (this.pdfService.isActive()) {
       const pdfDocumentContainer = this.pdfService.getDocumentContainer();
