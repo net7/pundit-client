@@ -60,7 +60,6 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
           this.listenDocumentResize();
           this.listenSidebarCollapse();
-          // Nuovo - Luca
           this.listenSharedUsersChanges();
           break;
         case SidebarLayoutEvent.Destroy:
@@ -161,7 +160,6 @@ export class SidebarLayoutEH extends EventHandler {
     this.onResize();
   }
 
-  // Nuovo - Luca
   private listenSharedUsersChanges() {
     this.notebookService.sharedWithChanged$.subscribe((users) => {
       const usersTrasformed = this.transformUsers(users);

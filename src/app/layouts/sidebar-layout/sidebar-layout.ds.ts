@@ -73,7 +73,6 @@ export class SidebarLayoutDS extends LayoutDataSource {
     collapse: _t('sidebaractions#collapse')
   }
 
-  // Nuovo - Luca
   public usersList = []
 
   onInit(payload) {
@@ -95,7 +94,6 @@ export class SidebarLayoutDS extends LayoutDataSource {
       this.one('notebook-panel').update({
         selected: this.notebookService.getSelected(),
         list: this.notebookService.getByUserId(currentUser.id),
-        // Nuovo - Luca
         usersList: this.usersList
       });
     }

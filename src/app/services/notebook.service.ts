@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-// import { _t } from '@net7/core';
 import {
   from, Subject, EMPTY
 } from 'rxjs';
@@ -51,7 +50,6 @@ export class NotebookService {
 
   public selectedChanged$: Subject<void> = new Subject();
 
-  // Nuovo - Luca
   public sharedWithChanged$: Subject<NotebookUser[]> = new Subject();
 
   constructor(
@@ -183,7 +181,6 @@ export class NotebookService {
     this.selectedId = null;
   }
 
-  // Nuovo - Luca
   getListOfUsers() {
     const userId = this.userService.whoami().id;
     this.search().subscribe((response) => {
@@ -220,7 +217,6 @@ export class NotebookService {
       status: NotebookUserStatus.Joined,
       action: ''
     }));
-    // ownerItem = this.transformUsers(ownerItem);
     return ownerItem;
   }
 
@@ -236,59 +232,12 @@ export class NotebookService {
       status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
       action: (canWrite) ? 'write' : 'read'
     }));
-    // userList = this.transformUsers(userList);
     return userList;
   }
 
-  // private transformUsers(users) {
-  //   return (users || []).map(({
-  //     id, username, email, thumb, role, status, action
-  //   }) => ({
-  //     id,
-  //     username,
-  //     email,
-  //     thumb,
-  //     role,
-  //     status,
-  //     roleAsLabel: _t(`notebookshare#role_${role}`),
-  //     statusAsLabel: _t(`notebookshare#status_${status}`),
-  //     action,
-  //     actionAsLabel: _t(`notebookshare#action_${action}`),
-  //     dropdown: this.getDropdown(id, role, status, email, action)
-  //   }));
-  // }
-
-  // private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
-  //   email: string, permission: string) {
-  //   if (role === NotebookUserRole.Owner) return null;
-  //   const dropdown = {
-  //     actions: [],
-  //     isExpanded: false
-  //   };
-  //   let actionKeys = [];
-  //   if (status === NotebookUserStatus.Pending) {
-  //     actionKeys = ['delete_invite', 'resend_invite'];
-  //   } else if (status === NotebookUserStatus.Joined) {
-  //     actionKeys = ['remove'];
-  //   } else if (status === NotebookUserStatus.Removed) {
-  //     actionKeys = ['restore'];
-  //   } else if (status === NotebookUserStatus.Selected) {
-  //     actionKeys = ['read', 'write'];
-  //   }
-  //   dropdown.actions = actionKeys.map((action) => ({
-  //     label: _t(`notebookshare#action_${action}`),
-  //     payload: {
-  //       id,
-  //       action,
-  //       email,
-  //       permission
-  //     }
-  //   }));
-  //   return dropdown;
-  // }
-
   // MOCKS
 
+  // modify when real autocomplete is implemented
   userSearch = (query: string) => from(NotebookModel.userSearch(query));
 
   // userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));

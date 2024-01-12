@@ -28,7 +28,6 @@ export class MainLayoutEH extends EventHandler {
           this.changeDetectorRef = payload.changeDetectorRef;
           this.appEvent$ = payload.appEvent$;
           this.dataSource.onInit(payload);
-          // Nuovo - Luca
           this.listenSharedUsersChanges();
 
           // listen javascript url navigation
@@ -157,7 +156,6 @@ export class MainLayoutEH extends EventHandler {
     }
   }
 
-  // Nuovo - Luca
   private listenSharedUsersChanges() {
     this.dataSource.notebookService.sharedWithChanged$.subscribe((users) => {
       this.dataSource.usersList = users;

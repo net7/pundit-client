@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-// import { _t } from '@net7/core';
 import { UserService } from 'src/app/services/user.service';
-// import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { NotebookData, NotebookService } from '../../services/notebook.service';
 
 export interface NotebookPanelData {

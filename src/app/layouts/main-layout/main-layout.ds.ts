@@ -79,7 +79,6 @@ export class MainLayoutDS extends LayoutDataSource {
     identitySyncLoading: false
   };
 
-  // Nuovo - Luca
   public usersList = []
 
   onInit(payload) {
@@ -316,14 +315,9 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
-  // Nuovo - Luca
   updateShareModal() {
-    // const currentUser = this.userService.whoami();
     const notebook = this.notebookService.getSelected();
     notebook.users = this.usersList;
-    // if (currentUser) {
-    //   this.one('notebook-share-modal').update(notebook);
-    // }
   }
 }
 
