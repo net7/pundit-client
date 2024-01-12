@@ -118,8 +118,8 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     };
     return notebookService.userRemoveWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
-        // notebook.users = notebook.users.filter((item) => item.email !== payload.email);
-        // this.layoutDS.one('notebook-share-modal').update(notebook);
+        const newUsers = this.layoutDS.usersList.filter((item) => item.email !== payload.email);
+        this.layoutEH.notebookService.sharedWithChanged$.next(newUsers);
       }
     });
   }

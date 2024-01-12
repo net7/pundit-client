@@ -73,6 +73,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
     collapse: _t('sidebaractions#collapse')
   }
 
+  // Nuovo - Luca
+  public usersList = []
+
   onInit(payload) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
@@ -91,7 +94,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
     if (currentUser) {
       this.one('notebook-panel').update({
         selected: this.notebookService.getSelected(),
-        list: this.notebookService.getByUserId(currentUser.id)
+        list: this.notebookService.getByUserId(currentUser.id),
+        // Nuovo - Luca
+        usersList: this.usersList
       });
     }
   }

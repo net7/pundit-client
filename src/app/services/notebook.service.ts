@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+// import { _t } from '@net7/core';
 import {
   from, Subject, EMPTY
 } from 'rxjs';
@@ -49,6 +50,9 @@ export class NotebookService {
   private selectedId: string;
 
   public selectedChanged$: Subject<void> = new Subject();
+
+  // Nuovo - Luca
+  public sharedWithChanged$: Subject<NotebookUser[]> = new Subject();
 
   constructor(
     private userService: UserService
@@ -152,8 +156,6 @@ export class NotebookService {
     );
   }
 
-  userSearch = (query: string) => from(NotebookModel.userSearch(query));
-
   userInviteWithEmail(id: string, data: NotebookPermissions) {
     return from(NotebookModel.userInviteWithEmail(id, data));
   }
@@ -165,10 +167,6 @@ export class NotebookService {
   getData(id: string) {
     return from(NotebookModel.getData(id));
   }
-
-  userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
-
-  userRemove = (id: string) => from(NotebookModel.userRemove(id));
 
   getNotebookById(notebookId: string): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
@@ -184,4 +182,116 @@ export class NotebookService {
     this.notebooks = [];
     this.selectedId = null;
   }
+
+  // Nuovo - Luca
+  getListOfUsers() {
+    const userId = this.userService.whoami().id;
+    this.search().subscribe((response) => {
+      const selected = Object.assign(response.data.notebooks
+        .find((item) => item.id === this.selectedId));
+      const { users } = response.data;
+      const readAccess = selected.userWithReadAccess
+        .filter((item) => !selected.userWithWriteAccess.includes(item));
+      const readPending = selected.userWithPendingReadingRequest
+        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
+      const userList = {
+        owner: this.createOwner(users, userId),
+        read: this.createUsers(readAccess, users, false, false),
+        write: this.createUsers(selected.userWithWriteAccess, users, false, true),
+        pendingRead: this.createUsers(readPending, users, true, false),
+        pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
+      };
+      const userArray = userList.owner.concat(userList.read, userList.write,
+        userList.pendingRead, userList.pendingWrite);
+      this.sharedWithChanged$.next(userArray);
+    });
+  }
+
+  private createOwner(users, ownerId) {
+    const owner = users.filter((item) => item.id === ownerId);
+    const ownerItem = owner.map(({
+      id, username, thumb, emailAddress
+    }) => ({
+      id,
+      username,
+      email: emailAddress,
+      thumb,
+      role: NotebookUserRole.Owner,
+      status: NotebookUserStatus.Joined,
+      action: ''
+    }));
+    // ownerItem = this.transformUsers(ownerItem);
+    return ownerItem;
+  }
+
+  private createUsers(array, users, isPending, canWrite) {
+    const list = (isPending) ? array
+      : users.filter((item) => array.find((element) => element === item.id));
+    const userList = list.map((item) => ({
+      id: (isPending) ? '' : item.id,
+      username: (isPending) ? item : item.username,
+      email: (isPending) ? item : item.emailAddress,
+      thumb: (isPending) ? '' : item.thumb,
+      role: NotebookUserRole.Editor,
+      status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
+      action: (canWrite) ? 'write' : 'read'
+    }));
+    // userList = this.transformUsers(userList);
+    return userList;
+  }
+
+  // private transformUsers(users) {
+  //   return (users || []).map(({
+  //     id, username, email, thumb, role, status, action
+  //   }) => ({
+  //     id,
+  //     username,
+  //     email,
+  //     thumb,
+  //     role,
+  //     status,
+  //     roleAsLabel: _t(`notebookshare#role_${role}`),
+  //     statusAsLabel: _t(`notebookshare#status_${status}`),
+  //     action,
+  //     actionAsLabel: _t(`notebookshare#action_${action}`),
+  //     dropdown: this.getDropdown(id, role, status, email, action)
+  //   }));
+  // }
+
+  // private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
+  //   email: string, permission: string) {
+  //   if (role === NotebookUserRole.Owner) return null;
+  //   const dropdown = {
+  //     actions: [],
+  //     isExpanded: false
+  //   };
+  //   let actionKeys = [];
+  //   if (status === NotebookUserStatus.Pending) {
+  //     actionKeys = ['delete_invite', 'resend_invite'];
+  //   } else if (status === NotebookUserStatus.Joined) {
+  //     actionKeys = ['remove'];
+  //   } else if (status === NotebookUserStatus.Removed) {
+  //     actionKeys = ['restore'];
+  //   } else if (status === NotebookUserStatus.Selected) {
+  //     actionKeys = ['read', 'write'];
+  //   }
+  //   dropdown.actions = actionKeys.map((action) => ({
+  //     label: _t(`notebookshare#action_${action}`),
+  //     payload: {
+  //       id,
+  //       action,
+  //       email,
+  //       permission
+  //     }
+  //   }));
+  //   return dropdown;
+  // }
+
+  // MOCKS
+
+  userSearch = (query: string) => from(NotebookModel.userSearch(query));
+
+  // userInviteWithId = (id: string) => from(NotebookModel.userInviteWithId(id));
+
+  // userRemove = (id: string) => from(NotebookModel.userRemove(id));
 }

@@ -1,12 +1,12 @@
 import { ChangeDetectorRef } from '@angular/core';
-import { EventHandler } from '@net7/core';
+import { EventHandler, _t } from '@net7/core';
 import { Subject, ReplaySubject } from 'rxjs';
 import { delay, takeUntil, withLatestFrom } from 'rxjs/operators';
 import ResizeObserver from 'resize-observer-polyfill';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';
 import { AppEventData } from 'src/app/types';
-import { NotebookService } from 'src/app/services/notebook.service';
+import { NotebookService, NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { AppEvent, SidebarLayoutEvent } from 'src/app/event-types';
@@ -60,6 +60,8 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
           this.listenDocumentResize();
           this.listenSidebarCollapse();
+          // Nuovo - Luca
+          this.listenSharedUsersChanges();
           break;
         case SidebarLayoutEvent.Destroy:
           this.destroy$.next();
@@ -159,6 +161,15 @@ export class SidebarLayoutEH extends EventHandler {
     this.onResize();
   }
 
+  // Nuovo - Luca
+  private listenSharedUsersChanges() {
+    this.notebookService.sharedWithChanged$.subscribe((users) => {
+      const usersTrasformed = this.transformUsers(users);
+      this.dataSource.usersList = usersTrasformed;
+      this.dataSource.updateNotebookPanel();
+    });
+  }
+
   private listenSidebarCollapse() {
     this.dataSource.isCollapsed
       .pipe(
@@ -215,5 +226,52 @@ export class SidebarLayoutEH extends EventHandler {
     if (this.changeDetectorRef) {
       this.changeDetectorRef.detectChanges();
     }
+  }
+
+  private transformUsers(users) {
+    return (users || []).map(({
+      id, username, email, thumb, role, status, action
+    }) => ({
+      id,
+      username,
+      email,
+      thumb,
+      role,
+      status,
+      roleAsLabel: _t(`notebookshare#role_${role}`),
+      statusAsLabel: _t(`notebookshare#status_${status}`),
+      action,
+      actionAsLabel: _t(`notebookshare#action_${action}`),
+      dropdown: this.getDropdown(id, role, status, email, action)
+    }));
+  }
+
+  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
+    email: string, permission: string) {
+    if (role === NotebookUserRole.Owner) return null;
+    const dropdown = {
+      actions: [],
+      isExpanded: false
+    };
+    let actionKeys = [];
+    if (status === NotebookUserStatus.Pending) {
+      actionKeys = ['delete_invite', 'resend_invite'];
+    } else if (status === NotebookUserStatus.Joined) {
+      actionKeys = ['remove'];
+    } else if (status === NotebookUserStatus.Removed) {
+      actionKeys = ['restore'];
+    } else if (status === NotebookUserStatus.Selected) {
+      actionKeys = ['read', 'write'];
+    }
+    dropdown.actions = actionKeys.map((action) => ({
+      label: _t(`notebookshare#action_${action}`),
+      payload: {
+        id,
+        action,
+        email,
+        permission
+      }
+    }));
+    return dropdown;
   }
 }

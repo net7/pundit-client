@@ -105,6 +105,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     };
     return notebookService.userRemoveWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
+        const newUsers = this.layoutDS.usersList.filter((item) => item.email !== payload.email);
+        this.layoutDS.notebookService.sharedWithChanged$.next(newUsers);
         notebook.users = notebook.users.filter((item) => item.email !== payload.email);
         this.layoutDS.one('notebook-share-modal').update(notebook);
       }
@@ -142,9 +144,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     }
     return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
-        const user = this.createSingleUser(payload);
-        notebook.users.push(user);
-        this.layoutDS.one('notebook-share-modal').update(notebook);
+        setInterval(() => {
+          notebookService.getListOfUsers();
+          this.layoutDS.one('notebook-share-modal').update(notebook);
+        }, 1000);
       }
     });
   }
@@ -152,58 +155,60 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private openShareModal() {
     const { notebookService } = this.layoutDS;
     const notebook = notebookService.getSelected();
-    return notebookService.search().subscribe((response) => {
-      const selected = Object.assign(response.data.notebooks
-        .find((item) => item.id === notebook.id));
-      const { users } = response.data;
-      const readAccess = selected.userWithReadAccess
-        .filter((item) => !selected.userWithWriteAccess.includes(item));
-      const readPending = selected.userWithPendingReadingRequest
-        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
-      const userList = {
-        owner: this.createOwner(users, notebook.userId),
-        read: this.createUsers(readAccess, users, false, false),
-        write: this.createUsers(selected.userWithWriteAccess, users, false, true),
-        pendingRead: this.createUsers(readPending, users, true, false),
-        pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
-      };
-      const userArray = userList.owner.concat(userList.read, userList.write,
-        userList.pendingRead, userList.pendingWrite);
-      notebook.users = userArray;
-      this.layoutDS.one('notebook-share-modal').update(notebook);
-    });
+    notebook.users = this.layoutDS.usersList;
+    this.layoutDS.one('notebook-share-modal').update(notebook);
+    // return notebookService.search().subscribe((response) => {
+    //   const selected = Object.assign(response.data.notebooks
+    //     .find((item) => item.id === notebook.id));
+    //   const { users } = response.data;
+    //   const readAccess = selected.userWithReadAccess
+    //     .filter((item) => !selected.userWithWriteAccess.includes(item));
+    //   const readPending = selected.userWithPendingReadingRequest
+    //     .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
+    //   const userList = {
+    //     owner: this.createOwner(users, notebook.userId),
+    //     read: this.createUsers(readAccess, users, false, false),
+    //     write: this.createUsers(selected.userWithWriteAccess, users, false, true),
+    //     pendingRead: this.createUsers(readPending, users, true, false),
+    //     pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
+    //   };
+    //   const userArray = userList.owner.concat(userList.read, userList.write,
+    //     userList.pendingRead, userList.pendingWrite);
+    //   notebook.users = userArray;
+    //   this.layoutDS.one('notebook-share-modal').update(notebook);
+    // });
   }
 
-  private createOwner(users, ownerId) {
-    const owner = users.filter((item) => item.id === ownerId);
-    const ownerItem = owner.map(({
-      id, username, thumb, emailAddress
-    }) => ({
-      id,
-      username,
-      email: emailAddress,
-      thumb,
-      role: NotebookUserRole.Owner,
-      status: NotebookUserStatus.Joined,
-      action: ''
-    }));
-    return ownerItem;
-  }
+  // private createOwner(users, ownerId) {
+  //   const owner = users.filter((item) => item.id === ownerId);
+  //   const ownerItem = owner.map(({
+  //     id, username, thumb, emailAddress
+  //   }) => ({
+  //     id,
+  //     username,
+  //     email: emailAddress,
+  //     thumb,
+  //     role: NotebookUserRole.Owner,
+  //     status: NotebookUserStatus.Joined,
+  //     action: ''
+  //   }));
+  //   return ownerItem;
+  // }
 
-  private createUsers(array, users, isPending, canWrite) {
-    const list = (isPending) ? array
-      : users.filter((item) => array.find((element) => element === item.id));
-    const userList = list.map((item) => ({
-      id: (isPending) ? '' : item.id,
-      username: (isPending) ? item : item.username,
-      email: (isPending) ? item : item.emailAddress,
-      thumb: (isPending) ? '' : item.thumb,
-      role: NotebookUserRole.Editor,
-      status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
-      action: (canWrite) ? 'write' : 'read'
-    }));
-    return userList;
-  }
+  // private createUsers(array, users, isPending, canWrite) {
+  //   const list = (isPending) ? array
+  //     : users.filter((item) => array.find((element) => element === item.id));
+  //   const userList = list.map((item) => ({
+  //     id: (isPending) ? '' : item.id,
+  //     username: (isPending) ? item : item.username,
+  //     email: (isPending) ? item : item.emailAddress,
+  //     thumb: (isPending) ? '' : item.thumb,
+  //     role: NotebookUserRole.Editor,
+  //     status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
+  //     action: (canWrite) ? 'write' : 'read'
+  //   }));
+  //   return userList;
+  // }
 
   private createSingleUser(selected) {
     const user = {
