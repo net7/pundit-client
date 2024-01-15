@@ -143,8 +143,8 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     }
     return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
-        setInterval(() => {
-          notebookService.getListOfUsers();
+        notebookService.getListOfUsers();
+        setTimeout(() => {
           this.layoutDS.one('notebook-share-modal').update(notebook);
         }, 1000);
       }
