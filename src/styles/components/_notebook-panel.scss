@@ -60,6 +60,8 @@
     
     /* Change status */
     &__change-status {
+        padding-left: 20px;
+
         .pnd-btn {
             display: block; // ! To be removed when sharing will be implemented
             margin-right: $space/2;
