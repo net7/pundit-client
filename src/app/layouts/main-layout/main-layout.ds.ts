@@ -315,9 +315,12 @@ export class MainLayoutDS extends LayoutDataSource {
     );
   }
 
-  updateShareModal() {
+  updateShareModal(openModal = false) {
     const notebook = this.notebookService.getSelected();
     notebook.users = this.usersList;
+    if (openModal) {
+      this.one('notebook-share-modal').update(notebook);
+    }
   }
 }
 

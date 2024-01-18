@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import {
-  from, Subject, EMPTY
-} from 'rxjs';
+import { from, Subject, EMPTY } from 'rxjs';
 import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
@@ -42,6 +40,11 @@ export type NotebookUpdate = {
   sharingMode?: SharingModeType;
 }
 
+export type SharedWithChanged = {
+  users: NotebookUser[];
+  openModal: boolean;
+}
+
 @Injectable()
 export class NotebookService {
   private notebooks: NotebookData[] = [];
@@ -50,7 +53,7 @@ export class NotebookService {
 
   public selectedChanged$: Subject<void> = new Subject();
 
-  public sharedWithChanged$: Subject<NotebookUser[]> = new Subject();
+  public sharedWithChanged$: Subject<SharedWithChanged> = new Subject();
 
   constructor(
     private userService: UserService
@@ -181,7 +184,7 @@ export class NotebookService {
     this.selectedId = null;
   }
 
-  getListOfUsers() {
+  getListOfUsers(openModal = false) {
     const userId = this.userService.whoami().id;
     this.search().subscribe((response) => {
       const selected = Object.assign(response.data.notebooks
@@ -200,7 +203,10 @@ export class NotebookService {
       };
       const userArray = userList.owner.concat(userList.read, userList.write,
         userList.pendingRead, userList.pendingWrite);
-      this.sharedWithChanged$.next(userArray);
+      this.sharedWithChanged$.next({
+        users: userArray,
+        openModal
+      });
     });
   }
 

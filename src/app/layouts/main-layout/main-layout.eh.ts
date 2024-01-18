@@ -157,9 +157,9 @@ export class MainLayoutEH extends EventHandler {
   }
 
   private listenSharedUsersChanges() {
-    this.dataSource.notebookService.sharedWithChanged$.subscribe((users) => {
-      this.dataSource.usersList = users;
-      this.dataSource.updateShareModal();
+    this.dataSource.notebookService.sharedWithChanged$.subscribe((data) => {
+      this.dataSource.usersList = data.users;
+      this.dataSource.updateShareModal(data.openModal);
     });
   }
 }

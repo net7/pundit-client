@@ -161,8 +161,8 @@ export class SidebarLayoutEH extends EventHandler {
   }
 
   private listenSharedUsersChanges() {
-    this.notebookService.sharedWithChanged$.subscribe((users) => {
-      const usersTrasformed = this.transformUsers(users);
+    this.notebookService.sharedWithChanged$.subscribe((data) => {
+      const usersTrasformed = this.transformUsers(data.users);
       this.dataSource.usersList = usersTrasformed;
       this.dataSource.updateNotebookPanel();
     });

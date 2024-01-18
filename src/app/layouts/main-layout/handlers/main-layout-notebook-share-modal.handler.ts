@@ -105,8 +105,10 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     return notebookService.userRemoveWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
         const newUsers = this.layoutDS.usersList.filter((item) => item.email !== payload.email);
-        this.layoutDS.notebookService.sharedWithChanged$.next(newUsers);
-        notebook.users = notebook.users.filter((item) => item.email !== payload.email);
+        this.layoutDS.notebookService.sharedWithChanged$.next({
+          users: newUsers,
+          openModal: false
+        });
         this.layoutDS.one('notebook-share-modal').update(notebook);
       }
     });
@@ -143,10 +145,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     }
     return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
-        notebookService.getListOfUsers();
         setTimeout(() => {
-          this.layoutDS.one('notebook-share-modal').update(notebook);
-        }, 1000);
+          notebookService.getListOfUsers(true);
+        }, 500);
       }
     });
   }
