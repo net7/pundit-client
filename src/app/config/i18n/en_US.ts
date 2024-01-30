@@ -142,6 +142,8 @@ export default {
   // userpopover
   'userpopover#notebooks': 'Your Notebooks',
   'userpopover#report': 'Report a problem or bug',
+  'userpopover#hypothesisIsOn': 'Hide Hypothes.is notes',
+  'userpopover#hypothesisIsOff': 'See Hypothes.is notes',
   'userpopover#logout': 'Log Out',
   // notebookselector
   'notebookselector#cancel': 'Cancel',

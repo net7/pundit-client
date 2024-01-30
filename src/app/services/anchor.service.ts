@@ -40,7 +40,7 @@ export class AnchorService {
       try {
         const selectors = this.createSelectors(annotation);
         const { range, type } = await anchor(document.body, selectors);
-        const highlights = highlightRange(range);
+        const highlights = highlightRange(range, annotation.serializedBy);
         this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
 

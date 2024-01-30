@@ -12,7 +12,7 @@ import { wholeTextNodesInRange } from './wholeTextNodesInRange';
  * @param {string} cssClass - A CSS class to use for the highlight
  * @return {HighlightElement[]} - Elements wrapping text in `normedRange` to add a highlight effect
  */
-export function highlightRange(range: Range, cssClass = _c('highlightTag')): HighlightElement[] {
+export function highlightRange(range: Range, serializedBy = '', cssClass = _c('highlightTag')): HighlightElement[] {
   const textNodes = wholeTextNodesInRange(range);
 
   // Check if this range refers to a placeholder for not-yet-rendered text in
@@ -55,6 +55,9 @@ export function highlightRange(range: Range, cssClass = _c('highlightTag')): Hig
     /** @type {HighlightElement} */
     const highlightEl = document.createElement(_c('highlightTag')) as HighlightElement;
     highlightEl.className = cssClass;
+    if (serializedBy === 'hypothesis') {
+      highlightEl.className += '-hypo';
+    }
 
     nodes[0].parentNode.replaceChild(highlightEl, nodes[0]);
     nodes.forEach((node) => highlightEl.appendChild(node));

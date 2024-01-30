@@ -37,6 +37,8 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   @Input() public annotationId: string;
 
+  @Input() public serializedBy: string;
+
   public menu$: Observable<any>;
 
   public notebookSelectorData: any;

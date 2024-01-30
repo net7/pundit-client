@@ -25,6 +25,8 @@ export class HeaderAnnotationSectionComponent implements OnInit {
 
   @Input() public annotationId: string;
 
+  @Input() public serializedBy: string;
+
   constructor(
     private ref: ChangeDetectorRef,
     private userService: UserService,
@@ -39,7 +41,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
   }
 
   private transformData = (annotation: Annotation): any => ({
-    user: this.getUserData(annotation.userId),
+    user: (annotation.serializedBy === 'hypothesis') ? this.createHypothesisUser(annotation) : this.getUserData(annotation.userId),
     notebook: this.getNotebookData(annotation),
     date: new Date(annotation.created).toLocaleDateString(),
   });
@@ -68,20 +70,48 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     };
   }
 
+  private createHypothesisUser(annotation) {
+    return {
+      initials: '',
+      image: _c('userDefaultThumb'),
+      name: annotation.userName,
+    };
+  }
+
   private isCurrentUser(user: UserData) {
     const currentUser = this.userService.whoami();
     return user.id === currentUser?.id;
   }
 
+  // private getNotebookData(annotation: Annotation) {
+  //   const notebook = this.notebookService.getNotebookById(annotation.notebookId);
+  //   const user = this.userService.getUserById(annotation.userId);
+  //   return {
+  //     name: notebook.label,
+  //     anchor: this.isCurrentUser(user)
+  //       ? this.getNotebookLink(notebook.id)
+  //       : null
+  //   };
+  // }
+
   private getNotebookData(annotation: Annotation) {
-    const notebook = this.notebookService.getNotebookById(annotation.notebookId);
-    const user = this.userService.getUserById(annotation.userId);
-    return {
-      name: notebook.label,
-      anchor: this.isCurrentUser(user)
-        ? this.getNotebookLink(notebook.id)
-        : null
-    };
+    let notebookData;
+    if (annotation.serializedBy === 'hypothesis') {
+      notebookData = {
+        name: '',
+        anchor: '',
+      };
+    } else {
+      const notebook = this.notebookService.getNotebookById(annotation.notebookId);
+      const user = this.userService.getUserById(annotation.userId);
+      notebookData = {
+        name: notebook.label,
+        anchor: this.isCurrentUser(user)
+          ? this.getNotebookLink(notebook.id)
+          : null
+      };
+    }
+    return notebookData;
   }
 
   private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`

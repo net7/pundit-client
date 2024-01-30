@@ -5,6 +5,8 @@ export enum SidebarLayoutEvent {
   AnnotationUpdateNotebook = 'sidebar-layout.annotationupdatenb',
   ClickLogo = 'sidebar-layout.clicklogo',
   ClickLogout = 'sidebar-layout.clicklogout',
+  ClickShowHypothesis = 'sidebar-layout.clickshowhypo',
+  ClickHideHypothesis = 'sidebar-layout.clickhidehypo',
   ClickNotebookPanel = 'sidebar-layout.notebookpanel',
   ClickPageAnnotationPanel = 'sidebar-layout.pageannotationpanel',
   ClickNewFullPageAnnotation = 'sidebar-layout.newfullpage',

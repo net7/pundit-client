@@ -3,8 +3,11 @@
 
         <div class="pnd-annotation__header-thumb-wrapper">
             <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
-            <img [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
+            <img *ngIf="serializedBy !== 'hypothesis'; else hypoLogo" [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
                 onerror="this.style.display='none'" alt="{{data.user.name}}" class="pnd-annotation__header-thumb-image">
+            <ng-template #hypoLogo>
+                <img src="assets/hypothesis_logo.png" class="pnd-annotation__header-thumb-image-hypo">
+            </ng-template>
         </div>
 
         <div class="pnd-annotation__header-info">
@@ -23,7 +26,7 @@
             </div>
         </div>
 
-        <pnd-menu-header-section [data$]="data$" [emit]="emit" [annotationId]="annotationId" [state$]="state$">
+        <pnd-menu-header-section [data$]="data$" [emit]="emit" [annotationId]="annotationId" [state$]="state$" [serializedBy]="serializedBy">
         </pnd-menu-header-section>
     </div>
 </ng-container>

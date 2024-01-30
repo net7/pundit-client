@@ -11,11 +11,16 @@ pnd-mark.pnd-mark {
     background-color: rgba($color: #fcfc05, $alpha: 0.33);
     transition: none;
 }
+pnd-mark.pnd-mark-hypo {
+    background-color: #ddddce;
+}
 
+pnd-mark.pnd-mark-hypo:hover,
 pnd-mark.pnd-mark:hover {
     cursor: pointer;
 }
 
+pnd-mark.pnd-mark-hypo.is-hovered,
 pnd-mark.pnd-mark.is-hovered {
     background-color: rgba(46, 230, 230, 0.4);
 }

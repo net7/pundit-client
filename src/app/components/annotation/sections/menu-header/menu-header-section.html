@@ -1,4 +1,5 @@
 <div class="pnd-annotation__header-menu">
+    <div *ngIf="serializedBy !== 'hypothesis'">
     <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
         *ngIf="(menu$ | async)?.menuData as menuData" (click)="onClick($event, menuData.icon['payload'])">
         <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
@@ -7,6 +8,7 @@
         *ngIf="(menu$ | async)?.shareData as shareData" (click)="onClick($event, shareData.icon['payload'])">
         <pnd-svg-icon [data]="{ id: 'share' }"></pnd-svg-icon>
     </button>
+    </div>
     
     <button class="pnd-annotation__header-menu-button"
         (click)="onClick($event, {id: annotationId, source: 'compress'})">

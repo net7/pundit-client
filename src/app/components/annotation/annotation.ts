@@ -114,6 +114,8 @@ export class AnnotationComponent implements OnInit {
 
   @Input() public annotationId: string;
 
+  @Input() public serializedBy: string;
+
   public socials$: Observable<any>;
 
   public replies$: Observable<Reply[]>;

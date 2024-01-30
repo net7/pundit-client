@@ -20,14 +20,15 @@
 
 <ng-template #expanded>
     <!-- Header -->
-    <pnd-header-annotation-section [data$]="data$" [emit]="emit" [state$]="state$" [annotationId]="annotationId">
+    <pnd-header-annotation-section [data$]="data$" [emit]="emit" [state$]="state$" [annotationId]="annotationId" [serializedBy]="serializedBy">
     </pnd-header-annotation-section>
     <!-- END // Header -->
-    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
     <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
     <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
     <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
     <pnd-social-annotation-section 
+    *ngIf="serializedBy !== 'hypothesis'"
     [emit]="emit"
     [socials$]="socials$"
     [replies$]="replies$" 
@@ -35,7 +36,7 @@
 </ng-template>
 
 <ng-template #collapsed>
-    <pnd-highlight-annotation-section [data$]="data$"></pnd-highlight-annotation-section>
+    <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
     <ng-container *ngIf="(data$ | async)?.subject.selected">
         <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
     </ng-container>

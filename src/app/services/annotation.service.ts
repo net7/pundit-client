@@ -12,6 +12,7 @@ import {
 } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
+import { HttpClient } from '@angular/common/http';
 import { _c } from '../models/config';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
@@ -49,11 +50,16 @@ export class AnnotationService {
 
   public showPageAnnotations$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
+  public hypothesisAnnotation$: Subject<any> = new Subject();
+
+  private hypothesisBaseUrl = 'https://api.hypothes.is/api/search';
+
   constructor(
     private userService: UserService,
     private notebookService: NotebookService,
     private pdfService: PdfService,
     private documentInfoService: DocumentInfoService,
+    private http: HttpClient
   ) { }
 
   load(rawAnnotations: Annotation[]) {
@@ -263,5 +269,66 @@ export class AnnotationService {
 
   clear() {
     this.annotations = [];
+  }
+
+  getHypothesisAnnotations(): any {
+    this.documentInfoService.get().subscribe((response) => {
+      const url = `${this.hypothesisBaseUrl}?uri=${response.pageContext}`;
+      this.http.get(url).subscribe((res) => {
+        const hypothesisAnnotations = Object.assign(res);
+        const annotations = [];
+        hypothesisAnnotations.rows.forEach((hypoAnnotation) => {
+          annotations.push(this.convertIntoAnnotation(hypoAnnotation));
+        });
+        this.hypothesisAnnotation$.next(annotations);
+      });
+    });
+  }
+
+  private convertIntoAnnotation(hypoAnnotation) {
+    const { source } = hypoAnnotation.target[0];
+    const { selector } = hypoAnnotation.target[0];
+    const textPosition = (selector) ? selector.find((item) => item.type === 'TextPositionSelector') : null;
+    const textQuote = (selector) ? selector.find((item) => item.type === 'TextQuoteSelector') : null;
+    const range = (selector) ? selector.find((item) => item.type === 'RangeSelector') : null;
+    const annotation = {
+      changed: hypoAnnotation.updated,
+      created: hypoAnnotation.created,
+      id: hypoAnnotation.id,
+      serializedBy: 'hypothesis',
+      userId: null,
+      userName: hypoAnnotation.user.replace('acct:', ''),
+      notebookId: null,
+      uri: hypoAnnotation.uri,
+      type: 'Commenting',
+      tags: hypoAnnotation.tags,
+      subject: {
+        pageContext: source,
+        pageFavicon: '',
+        pageTitle: '',
+        selected: {
+          text: (selector) ? textQuote.exact : null,
+          textPositionSelector: {
+            start: (selector) ? textPosition.start : null,
+            end: (selector) ? textPosition.end : null,
+          },
+          textQuoteSelector: {
+            exact: (selector) ? textQuote.exact : null,
+            prefix: (selector) ? textQuote.prefix : null,
+            suffix: (selector) ? textQuote.suffix : null,
+          },
+          rangeSelector: {
+            startOffset: (selector) ? range.startOffset : null,
+            endOffset: (selector) ? range.endOffset : null,
+            startContainer: (selector) ? range.startContainer : null,
+            endContainer: (selector) ? range.endContainer : null,
+          }
+        },
+      },
+      content: {
+        comment: hypoAnnotation.text,
+      }
+    };
+    return annotation;
   }
 }

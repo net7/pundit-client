@@ -60,6 +60,7 @@ export class SidebarLayoutEH extends EventHandler {
           this.dataSource.onInit(payload);
           this.listenDocumentResize();
           this.listenSidebarCollapse();
+          this.listenHypothesisAnnotation();
           this.listenSharedUsersChanges();
           break;
         case SidebarLayoutEvent.Destroy:
@@ -105,6 +106,12 @@ export class SidebarLayoutEH extends EventHandler {
           this.appEvent$.next({
             type: AppEvent.SidebarLogoutClick,
           });
+          break;
+        case SidebarLayoutEvent.ClickShowHypothesis:
+          this.showHypothesisAnnotations();
+          break;
+        case SidebarLayoutEvent.ClickHideHypothesis:
+          this.hideHypothesisAnnotations();
           break;
         case SidebarLayoutEvent.RequestLogin:
         case SidebarLayoutEvent.RequestRegister: {
@@ -271,5 +278,33 @@ export class SidebarLayoutEH extends EventHandler {
       }
     }));
     return dropdown;
+  }
+
+  private listenHypothesisAnnotation() {
+    this.annotationService.hypothesisAnnotation$.subscribe((data) => {
+      this.dataSource.hypothesisAnnotations = data;
+    });
+  }
+
+  private showHypothesisAnnotations() {
+    const annotations = this.dataSource.hypothesisAnnotations;
+    this.annotationService.load(annotations);
+    this.anchorService.load(annotations);
+    this.dataSource.updateAnnotations(true);
+    this.dataSource.userPopover.items[2] = this.dataSource.hypothesisLabels.hideHypo;
+    // signal
+    if (!this.annotationService.getAnnotations().length) {
+      this.annotationService.totalChanged$.next(0);
+    }
+  }
+
+  private hideHypothesisAnnotations() {
+    const hypoAnnotationsId = this.dataSource.hypothesisAnnotations.map(({ id }) => id);
+    hypoAnnotationsId.forEach((annotationId) => {
+      this.annotationService.removeCached(annotationId);
+      this.anchorService.remove(annotationId);
+    });
+    this.dataSource.updateAnnotations(true);
+    this.dataSource.userPopover.items[2] = this.dataSource.hypothesisLabels.showHypo;
   }
 }

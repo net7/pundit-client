@@ -97,6 +97,14 @@ annotation {
         }
     }
 
+    &__header-thumb-image-hypo {
+        display: block;
+        position: absolute;
+        height: 34px;
+        max-width: 34px;
+        width: auto;
+    }
+
     /* Info */
     &__header-info {
         margin-right: auto;
@@ -268,6 +276,10 @@ annotation {
         background-color: $color-highlight;
         font-size: $font-size-s;
         font-style: italic;
+    }
+
+    .hypo {
+        background-color: #ddddce;
     }
 
     .pnd-annotation__comment {

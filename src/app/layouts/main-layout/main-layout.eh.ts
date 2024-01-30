@@ -32,6 +32,9 @@ export class MainLayoutEH extends EventHandler {
 
           // listen javascript url navigation
           this.listenUrlNavigation();
+
+          // get Hypothesis annotations
+          this.dataSource.annotationService.getHypothesisAnnotations();
           break;
 
         case MainLayoutEvent.Destroy:

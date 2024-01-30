@@ -147,7 +147,8 @@
                             [data$]="annotation.data$"
                             [state$]="annotation.state$"
                             [emit]="lb.widgets['annotation'].emit"
-                            [annotationId]="annotation.id">
+                            [annotationId]="annotation.id"
+                            [serializedBy]="annotation.data$.value.serializedBy">
                 </annotation>
             </ng-container>
         </ng-container>
