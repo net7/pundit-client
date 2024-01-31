@@ -6,7 +6,7 @@
             <img *ngIf="serializedBy !== 'hypothesis'; else hypoLogo" [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
                 onerror="this.style.display='none'" alt="{{data.user.name}}" class="pnd-annotation__header-thumb-image">
             <ng-template #hypoLogo>
-                <img src="assets/hypothesis_logo.png" class="pnd-annotation__header-thumb-image-hypo">
+                <img [src]="logoHypothesis" class="pnd-annotation__header-thumb-image-hypo">
             </ng-template>
         </div>
 

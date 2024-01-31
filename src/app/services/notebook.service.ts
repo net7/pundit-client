@@ -4,6 +4,7 @@ import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communic
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
+import { _c } from '../models/config';
 
 export enum NotebookUserRole {
   Owner = 'owner',
@@ -218,7 +219,7 @@ export class NotebookService {
       id,
       username,
       email: emailAddress,
-      thumb,
+      thumb: thumb || _c('unregisteredUserThumb'),
       role: NotebookUserRole.Owner,
       status: NotebookUserStatus.Joined,
       action: ''
@@ -233,7 +234,7 @@ export class NotebookService {
       id: (isPending) ? '' : item.id,
       username: (isPending) ? item : item.username,
       email: (isPending) ? item : item.emailAddress,
-      thumb: (isPending) ? '' : item.thumb,
+      thumb: (isPending) ? _c('unregisteredUserThumb') : item.thumb || _c('unregisteredUserThumb'),
       role: NotebookUserRole.Editor,
       status: (isPending) ? NotebookUserStatus.Pending : NotebookUserStatus.Joined,
       action: (canWrite) ? 'write' : 'read'

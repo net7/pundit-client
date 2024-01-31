@@ -36,6 +36,8 @@ export class HeaderAnnotationSectionComponent implements OnInit {
 
   public header$: Observable<any>;
 
+  public logoHypothesis = _c('hypothesisLogo');
+
   ngOnInit(): void {
     this.header$ = this.data$.pipe(map(this.transformData));
   }
