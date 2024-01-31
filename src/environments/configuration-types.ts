@@ -9,6 +9,8 @@ export type LocalConfig = {
     notificationsLink: string;
     userDefaultThumb: string;
     baseDereferenceURL: string;
+    hypothesisLogo: string;
+    unregisteredUserThumb: string;
     analytics: {
         mixpanel: {
           token: string;
