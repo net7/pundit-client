@@ -278,7 +278,9 @@ export class AnnotationService {
         const hypothesisAnnotations = Object.assign(res);
         const annotations = [];
         hypothesisAnnotations.rows.forEach((hypoAnnotation) => {
-          annotations.push(this.convertIntoAnnotation(hypoAnnotation));
+          if (hypoAnnotation.target[0].selector) {
+            annotations.push(this.convertIntoAnnotation(hypoAnnotation));
+          }
         });
         this.hypothesisAnnotation$.next(annotations);
       });
