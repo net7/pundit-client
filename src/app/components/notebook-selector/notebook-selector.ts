@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { _t } from '@net7/core';
-import { NotebookData } from 'src/app/services/notebook.service';
+import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 
 /**
  * Data for NotebookSelector Component.
@@ -38,7 +38,8 @@ export class NotebookSelectorComponent {
   };
 
   constructor(
-    private ref: ChangeDetectorRef
+    private ref: ChangeDetectorRef,
+    private notebookService: NotebookService
   ) {}
 
   onClick(type, payload) {
@@ -51,6 +52,7 @@ export class NotebookSelectorComponent {
     } else {
       // if a notebook option is clicked
       this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload);
+      this.notebookService.getListOfUsers();
     }
     // collapse the list of notebooks
     this.data._meta.isExpanded = false;

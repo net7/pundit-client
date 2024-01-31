@@ -57,6 +57,9 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
             })
           ).subscribe(({ data }) => {
             this.layoutEH.notebookService.setSelected(data.id, true); // select the new notebook
+            const currentUser = this.layoutDS.userService.whoami();
+            this.layoutDS.usersList = this.layoutDS.usersList
+              .filter((item) => item.id === currentUser.id);
             this.layoutDS.updateNotebookPanel();
 
             // signal
