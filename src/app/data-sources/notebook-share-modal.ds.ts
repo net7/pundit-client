@@ -2,6 +2,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { DataSource, _t } from '@net7/core';
 import { NotebookShareModalData } from '../components/notebook-share-modal/notebook-share-modal';
 import { NotebookData, NotebookUserRole, NotebookUserStatus } from '../services/notebook.service';
+import { _c } from '../models/config';
 
 export class NotebookShareModalDS extends DataSource {
   transform(data: NotebookData): NotebookShareModalData {
@@ -88,7 +89,7 @@ export class NotebookShareModalDS extends DataSource {
       results = [{
         email,
         username: null,
-        thumb: null,
+        thumb: _c('unregisteredUserThumb'),
         hideEmail: true
       }];
     }

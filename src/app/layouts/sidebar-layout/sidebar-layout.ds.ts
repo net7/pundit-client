@@ -107,7 +107,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     if (currentUser) {
       this.one('notebook-panel').update({
         selected: this.notebookService.getSelected(),
-        list: this.notebookService.getByUserId(currentUser.id),
+        list: this.notebookService.getByUserIdShared(currentUser.id),
         usersList: this.usersList
       });
     }

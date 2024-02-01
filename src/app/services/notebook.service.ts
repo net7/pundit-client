@@ -34,6 +34,8 @@ export type NotebookData = {
   sharingMode: string;
   userId: string;
   users?: NotebookUser[];
+  userWithReadAccess: string[];
+  userWithWriteAccess: string[];
 }
 
 export type NotebookUpdate = {
@@ -115,10 +117,10 @@ export class NotebookService {
   add(rawNotebook: Notebook) {
     if (!this.getNotebookById(rawNotebook.id)) {
       const {
-        id, label, sharingMode, userId
+        id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
       } = rawNotebook;
       this.notebooks.push({
-        id, label, sharingMode, userId
+        id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
       });
     }
   }
@@ -176,6 +178,11 @@ export class NotebookService {
 
   getByUserId(id: string): NotebookData[] {
     return this.notebooks.filter(({ userId }) => userId === id);
+  }
+
+  getByUserIdShared(id: string) {
+    return this.notebooks
+      .filter((item) => (item.userId === id) || (item.userWithWriteAccess.find((el) => el === id)));
   }
 
   getAll = (): NotebookData[] => this.notebooks;

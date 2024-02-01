@@ -42,6 +42,12 @@
         }
     }
 
+    /* User list */
+    &__item-share-list {
+        height: 100px;
+        overflow-y: auto;
+    }
+
     /* Utilities */
     .pnd-text {
         margin-bottom: $space;

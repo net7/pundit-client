@@ -51,7 +51,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   }
 
   private setNotebookSelectorData(notebookId: string) {
-    const notebooks = this.notebookService.getByUserId(this.userService.whoami().id);
+    const notebooks = this.notebookService.getByUserIdShared(this.userService.whoami().id);
     this.currentNotebook = this.notebookService.getSelected();
 
     if (notebookId) {
