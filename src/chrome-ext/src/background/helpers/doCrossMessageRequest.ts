@@ -40,12 +40,15 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.NotebookUserInviteWithEmail:
       request$ = NotebookModel.userInviteWithEmail.apply(null, args);
       break;
-    case CrossMsgRequestId.NotebookUserInviteWithId:
-      request$ = NotebookModel.userInviteWithId.apply(null, args);
+    case CrossMsgRequestId.NotebookUserRemoveWithEmail:
+      request$ = NotebookModel.userRemoveWithEmail.apply(null, args);
       break;
-    case CrossMsgRequestId.NotebookUserRemove:
-      request$ = NotebookModel.userRemove.apply(null, args);
-      break;
+    // case CrossMsgRequestId.NotebookUserInviteWithId:
+    //   request$ = NotebookModel.userInviteWithId.apply(null, args);
+    //   break;
+    // case CrossMsgRequestId.NotebookUserRemove:
+    //   request$ = NotebookModel.userRemove.apply(null, args);
+    //   break;
     // ANNOTATION REQUEST
     // --------------------------------------------------->
     case CrossMsgRequestId.AnnotationCreate:
