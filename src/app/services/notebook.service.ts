@@ -1,8 +1,6 @@
 import { Injectable } from '@angular/core';
 import { from, Subject, EMPTY } from 'rxjs';
-import {
-  Notebook, NotebookPermissions, ShareNotification, SharingModeType
-} from '@pundit/communication';
+import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
@@ -170,8 +168,8 @@ export class NotebookService {
     return from(NotebookModel.userRemoveWithEmail(notebookId, data));
   }
 
-  resendEmail(data: ShareNotification) {
-    return from(NotebookModel.resendEmail(data));
+  resendEmail(notebookId: string, data: { email: string }) {
+    return from(NotebookModel.resendEmail(notebookId, data));
   }
 
   getData(id: string) {

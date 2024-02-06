@@ -1,6 +1,4 @@
-import {
-  notebook, NotebookAttributes, NotebookPermissions, ShareNotification
-} from '@pundit/communication';
+import { notebook, NotebookAttributes, NotebookPermissions } from '@pundit/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
@@ -60,8 +58,9 @@ export class NotebookModel {
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookResendEmail)
-  static resendEmail(data: ShareNotification) {
-    return notebook.shareNotification(data);
+  static resendEmail(notebookId: string, data: { email: string }) {
+    console.warn('Prova');
+    return notebook.shareNotification(notebookId, data);
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookGetData)
