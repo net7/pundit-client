@@ -11,7 +11,7 @@ import {
 import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
-import { NotebookPermissions } from '@pundit/communication';
+import { NotebookPermissions, ShareNotification } from '@pundit/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -116,20 +116,32 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private onResend(payload) {
     const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
-    const body: NotebookPermissions = {
-      userWithReadAccess: [],
-      userWithWriteAccess: []
+    // const currentNotebookId = notebookService.getSelected()?.id;
+    const currentNotebookName = notebookService.getSelected()?.label;
+    const body: ShareNotification = {
+      email: payload.email,
+      existing: false,
+      label: currentNotebookName,
     };
-    body.userWithReadAccess.push(payload.email);
-    if (payload.permission === 'write') {
-      body.userWithWriteAccess.push(payload.email);
-    }
-    return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
-      if (response.status === 200) {
-        //
-      }
+    return notebookService.resendEmail(body).subscribe((response) => {
+      console.warn(response);
+      // if (response.status === 200) {
+      //   //
+      // }
     });
+    // const body: NotebookPermissions = {
+    //   userWithReadAccess: [],
+    //   userWithWriteAccess: []
+    // };
+    // body.userWithReadAccess.push(payload.email);
+    // if (payload.permission === 'write') {
+    //   body.userWithWriteAccess.push(payload.email);
+    // }
+    // return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
+    //   if (response.status === 200) {
+    //     //
+    //   }
+    // });
   }
 
   private onConfirm(payload) {

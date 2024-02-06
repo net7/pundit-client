@@ -14,6 +14,7 @@ export enum CrossMsgRequestId {
   NotebookUserSearch = 'notebook.userSearch',
   NotebookUserInviteWithEmail = 'notebook.userInviteWithEmail',
   NotebookUserRemoveWithEmail = 'notebook.userRemoveWithEmail',
+  NotebookResendEmail = 'notebook.resendEmail',
   NotebookGetData = 'notebook.getData',
   NotebookUserInviteWithId = 'notebook.userInviteWithId',
   NotebookUserRemove = 'notebook.userRemove',

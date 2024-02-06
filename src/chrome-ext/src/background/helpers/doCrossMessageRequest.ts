@@ -43,6 +43,9 @@ export const doCrossMessageRequest = (tab, payload) => {
     case CrossMsgRequestId.NotebookUserRemoveWithEmail:
       request$ = NotebookModel.userRemoveWithEmail.apply(null, args);
       break;
+    case CrossMsgRequestId.NotebookResendEmail:
+      request$ = NotebookModel.resendEmail.apply(null, args);
+      break;
     // case CrossMsgRequestId.NotebookUserInviteWithId:
     //   request$ = NotebookModel.userInviteWithId.apply(null, args);
     //   break;

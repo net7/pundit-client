@@ -1,4 +1,6 @@
-import { notebook, NotebookAttributes, NotebookPermissions } from '@pundit/communication';
+import {
+  notebook, NotebookAttributes, NotebookPermissions, ShareNotification
+} from '@pundit/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
@@ -55,6 +57,11 @@ export class NotebookModel {
   @CrossMessage(CrossMsgRequestId.NotebookUserRemoveWithEmail)
   static userRemoveWithEmail(notebookId: string, data: { email: string }) {
     return notebook.removeShare(notebookId, data);
+  }
+
+  @CrossMessage(CrossMsgRequestId.NotebookResendEmail)
+  static resendEmail(data: ShareNotification) {
+    return notebook.shareNotification(data);
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookGetData)
