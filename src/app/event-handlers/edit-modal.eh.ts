@@ -15,7 +15,7 @@ export class EditModalEH extends EventHandler {
           this.emitOuter(getEventType(EditModalEvent.Close));
           break;
         case EditModalEvent.Save:
-          this.dataSource.close();
+          // don't close the modal yet! we are waiting for success response.
           this.emitOuter(getEventType(EditModalEvent.Save), payload);
           break;
         case EditModalEvent.NotebookChange:
@@ -42,15 +42,20 @@ export class EditModalEH extends EventHandler {
             this.closeModal();
           }
           break;
+        case MainLayoutEvent.AnnotationCreated:
         case MainLayoutEvent.KeyUpEscape:
           this.closeModal();
           break;
         default:
+          // console.warn('Unhandled outer event:', type, payload);
           break;
       }
     });
   }
 
+  /**
+   * Closes the modal if it is currently visible.
+   */
   private closeModal() {
     if (this.dataSource.isVisible()) {
       this.dataSource.close();

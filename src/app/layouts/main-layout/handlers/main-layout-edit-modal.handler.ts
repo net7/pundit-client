@@ -3,7 +3,9 @@ import { SemanticTripleType } from '@pundit/communication';
 import { EMPTY, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
-import { AppEvent, EditModalEvent } from 'src/app/event-types';
+import {
+  AppEvent, EditModalEvent, MainLayoutEvent, getEventType
+} from 'src/app/event-types';
 import { _c } from 'src/app/models/config';
 import { ToastInstance } from 'src/app/services/toast.service';
 import { LayoutHandler } from 'src/app/types';
@@ -62,6 +64,11 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               });
             } else {
               // signal
+              this.layoutEH.emitOuter(
+                getEventType(MainLayoutEvent.AnnotationCreated), {
+                  payload: data
+                }
+              );
               this.layoutEH.appEvent$.next({
                 type: AppEvent.AnnotationCreateSuccess,
                 payload: data

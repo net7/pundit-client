@@ -1,5 +1,11 @@
+/**
+ * Main layout events
+ *
+ * Components should listen for these events, while layouts should listen for AppEvents instead.
+ */
 export enum MainLayoutEvent {
   AnnotationDeleteClick = 'main-layout.annotationdeleteclick',
+  AnnotationCreated = 'main-layout.annotationcreated',
   Init = 'main-layout.init',
   Destroy = 'main-layout.destroy',
   GetPublicData = 'main-layout.getpublicdata',
