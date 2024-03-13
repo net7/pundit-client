@@ -42,6 +42,8 @@ export class SidebarLayoutEH extends EventHandler {
 
   public dataSource: SidebarLayoutDS;
 
+  private callHypoDone = false;
+
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
@@ -108,6 +110,10 @@ export class SidebarLayoutEH extends EventHandler {
           });
           break;
         case SidebarLayoutEvent.ClickShowHypothesis:
+          if (!this.callHypoDone) {
+            this.annotationService.getHypothesisAnnotations();
+            return;
+          }
           this.showHypothesisAnnotations();
           break;
         case SidebarLayoutEvent.ClickHideHypothesis:
@@ -283,6 +289,9 @@ export class SidebarLayoutEH extends EventHandler {
   private listenHypothesisAnnotation() {
     this.annotationService.hypothesisAnnotation$.subscribe((data) => {
       this.dataSource.hypothesisAnnotations = data;
+      this.showHypothesisAnnotations();
+      this.callHypoDone = true;
+      this.dataSource.userPopover.items[2] = this.dataSource.hypothesisLabels.hideHypo;
     });
   }
 
