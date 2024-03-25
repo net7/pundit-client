@@ -1058,19 +1058,22 @@ const PDFViewerApplication = {
       }
 
       let key = "loading_error";
+      let custom = false;
 
       if (exception instanceof _pdfjsLib.InvalidPDFException) {
         key = "invalid_file_error";
+        custom = true;
       } else if (exception instanceof _pdfjsLib.MissingPDFException) {
         key = "missing_file_error";
       } else if (exception instanceof _pdfjsLib.UnexpectedResponseException) {
         key = "unexpected_response_error";
+        custom = true;
       }
 
       return this.l10n.get(key).then(msg => {
         this._documentError(msg, {
           message: exception?.message
-        });
+        }, custom);
 
         throw exception;
       });
@@ -1168,13 +1171,13 @@ const PDFViewerApplication = {
     });
   },
 
-  _documentError(message, moreInfo = null) {
+  _documentError(message, moreInfo = null, custom = false) {
     this._unblockDocumentLoadEvent();
 
-    this._otherError(message, moreInfo);
+    this._otherError(message, moreInfo, custom);
   },
 
-  _otherError(message, moreInfo = null) {
+  _otherError(message, moreInfo = null, custom = false) {
     const moreInfoText = [this.l10n.get("error_version_info", {
       version: _pdfjsLib.version || "?",
       build: _pdfjsLib.build || "?"
@@ -1237,6 +1240,25 @@ const PDFViewerApplication = {
     closeButton.oncontextmenu = _ui_utils.noContextMenuHandler;
     moreInfoButton.hidden = false;
     lessInfoButton.hidden = true;
+
+    // Pundit error customization
+    if (custom) {
+      const customMessage = `The resource is not a PDF file, or cannot be annotated with Pundit. You can try to directly access the document by clicking the button below.`;
+      errorMessage.textContent = customMessage;
+      
+      const sliceString = 'source=';
+      const redirectUrl = this.url.split(sliceString)[1];
+
+      const redirectButton = document.getElementById("errorRedirect");
+      moreInfoButton.hidden = true;
+
+      redirectButton.onclick = function () {
+        window.open(redirectUrl);
+      };
+    } else {
+      redirectButton.hidden = true;
+    }
+
     Promise.all(moreInfoText).then(parts => {
       errorMoreInfo.value = parts.join("\n");
     });

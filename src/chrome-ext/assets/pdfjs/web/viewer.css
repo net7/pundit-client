@@ -2068,6 +2068,7 @@ html[dir="rtl"] .toolbarField[type="checkbox"] {
 
 .toolbarField.pageNumber {
   -moz-appearance: textfield; /* hides the spinner in moz */
+  appearance: textfield;
   min-width: 16px;
   text-align: right;
   width: 40px;
@@ -2310,15 +2311,30 @@ html[dir="rtl"] .treeItemToggler::before {
   position: absolute;
   right: 0;
   z-index: 1000;
-  padding: 3px 6px;
+  /* padding: 3px 6px; */
+  padding: 20px 6px 15px 6px;
 }
 
 #errorMessageLeft {
   float: left;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#errorRedirect {
+  float: left;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 5px;
 }
 
 #errorMessageRight {
   float: right;
+}
+
+#errorClose {
+  padding: 5px;
 }
 
 #errorMoreInfo {
