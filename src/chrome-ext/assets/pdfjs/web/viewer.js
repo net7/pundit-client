@@ -1246,8 +1246,10 @@ const PDFViewerApplication = {
       const customMessage = `The resource is not a PDF file, or cannot be annotated with Pundit. You can try to directly access the document by clicking the button below.`;
       errorMessage.textContent = customMessage;
       
-      const sliceString = 'source=';
-      const redirectUrl = this.url.split(sliceString)[1];
+      const splitString = '?source=';
+      const urlObject = new URL(window.location.href);
+      const searchDecoded = decodeURIComponent(urlObject.search);
+      const redirectUrl = searchDecoded.split(splitString)[2];
 
       const redirectButton = document.getElementById("errorRedirect");
       moreInfoButton.hidden = true;
