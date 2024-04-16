@@ -1248,8 +1248,9 @@ const PDFViewerApplication = {
       
       const splitString = '?source=';
       const urlObject = new URL(window.location.href);
-      const searchDecoded = decodeURIComponent(urlObject.search);
-      const redirectUrl = searchDecoded.split(splitString)[2];
+      const search = urlObject.search;
+      const searchDecoded = decodeURIComponent(search); 
+      const redirectUrl = searchDecoded.split(splitString)[1];
 
       const redirectButton = document.getElementById("errorRedirect");
       moreInfoButton.hidden = true;
