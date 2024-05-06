@@ -279,7 +279,9 @@ export class AnnotationService {
         const annotations = [];
         hypothesisAnnotations.rows.forEach((hypoAnnotation) => {
           if (hypoAnnotation.target[0].selector) {
-            annotations.push(this.convertIntoAnnotation(hypoAnnotation));
+            annotations.push(this.convertIntoAnnotation(hypoAnnotation, false));
+          } else {
+            annotations.push(this.convertIntoAnnotation(hypoAnnotation, true));
           }
         });
         this.hypothesisAnnotation$.next(annotations);
@@ -287,12 +289,33 @@ export class AnnotationService {
     });
   }
 
-  private convertIntoAnnotation(hypoAnnotation) {
+  private convertIntoAnnotation(hypoAnnotation, isPageAnnotation) {
     const { source } = hypoAnnotation.target[0];
-    const { selector } = hypoAnnotation.target[0];
-    const textPosition = (selector) ? selector.find((item) => item.type === 'TextPositionSelector') : null;
-    const textQuote = (selector) ? selector.find((item) => item.type === 'TextQuoteSelector') : null;
-    const range = (selector) ? selector.find((item) => item.type === 'RangeSelector') : null;
+    let selected = null;
+    if (!isPageAnnotation) {
+      const { selector } = hypoAnnotation.target[0];
+      const textPosition = (selector) ? selector.find((item) => item.type === 'TextPositionSelector') : null;
+      const textQuote = (selector) ? selector.find((item) => item.type === 'TextQuoteSelector') : null;
+      const range = (selector) ? selector.find((item) => item.type === 'RangeSelector') : null;
+      selected = {
+        text: (selector) ? textQuote.exact : null,
+        textPositionSelector: {
+          start: (selector) ? textPosition.start : null,
+          end: (selector) ? textPosition.end : null,
+        },
+        textQuoteSelector: {
+          exact: (selector) ? textQuote.exact : null,
+          prefix: (selector) ? textQuote.prefix : null,
+          suffix: (selector) ? textQuote.suffix : null,
+        },
+        rangeSelector: {
+          startOffset: (selector) ? range.startOffset : null,
+          endOffset: (selector) ? range.endOffset : null,
+          startContainer: (selector) ? range.startContainer : null,
+          endContainer: (selector) ? range.endContainer : null,
+        }
+      };
+    }
     const annotation = {
       changed: hypoAnnotation.updated,
       created: hypoAnnotation.created,
@@ -308,24 +331,7 @@ export class AnnotationService {
         pageContext: source,
         pageFavicon: '',
         pageTitle: '',
-        selected: {
-          text: (selector) ? textQuote.exact : null,
-          textPositionSelector: {
-            start: (selector) ? textPosition.start : null,
-            end: (selector) ? textPosition.end : null,
-          },
-          textQuoteSelector: {
-            exact: (selector) ? textQuote.exact : null,
-            prefix: (selector) ? textQuote.prefix : null,
-            suffix: (selector) ? textQuote.suffix : null,
-          },
-          rangeSelector: {
-            startOffset: (selector) ? range.startOffset : null,
-            endOffset: (selector) ? range.endOffset : null,
-            startContainer: (selector) ? range.startContainer : null,
-            endContainer: (selector) ? range.endContainer : null,
-          }
-        },
+        selected,
       },
       content: {
         comment: hypoAnnotation.text,
