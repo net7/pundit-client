@@ -26,9 +26,12 @@ export class TagService {
 
     addMany(tags: Tag[]) {
       if (Array.isArray(tags) && tags.length) {
-        tags.forEach((tag) => {
+        // eslint-disable-next-line no-plusplus
+        for (let i = 0; i < tags.length; i++) {
+          const tag = tags[i].replace('\n', '');
+          tags[i] = tag;
           this.add(tag);
-        });
+        }
         this.tags$.next(this.get());
       }
     }
