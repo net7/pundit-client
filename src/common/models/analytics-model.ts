@@ -1,5 +1,5 @@
 import { analytics } from '@net7/core';
-import mixpanel from 'mixpanel-browser';
+// import mixpanel from 'mixpanel-browser';
 import {
   AnalyticsAction,
   AnalyticsData,
@@ -20,7 +20,7 @@ analytics.init([
         // eslint-disable-next-line no-console
         console.log('MIXPANEL DEBUG:', type, payload);
       } else {
-        mixpanel.track(type, payload);
+        // mixpanel.track(type, payload);
       }
     },
     actions: [

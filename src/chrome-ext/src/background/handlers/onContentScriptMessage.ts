@@ -1,5 +1,5 @@
 import { CommunicationSettings } from '@pundit/communication';
-import mixpanel from 'mixpanel-browser';
+// import mixpanel from 'mixpanel-browser';
 import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
 import * as helpers from '../helpers';
@@ -39,7 +39,7 @@ export const onContentScriptMessage = (
       ChromeExtStorage.set(ChromeExtStorageKey.ApiBaseUrl, payload.apiBaseUrl);
       ChromeExtStorage.set(ChromeExtStorageKey.AuthBaseUrl, payload.authBaseUrl);
       // mixpanel config
-      mixpanel.init(payload.mixpanelToken);
+      // mixpanel.init(payload.mixpanelToken);
       break;
     case CommonEventType.ImageDataRequest:
       helpers.doImageDataRequest(tab, payload);
