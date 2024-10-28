@@ -1,3 +1,9 @@
+/**
+ * Service that manages annotations in the application.
+ * Handles creating, updating, deleting and querying annotations.
+ * Provides functionality for working with different annotation types
+ * (highlights, comments, links) and manages their state.
+ */
 import { Injectable } from '@angular/core';
 import {
   Annotation,

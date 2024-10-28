@@ -1,3 +1,8 @@
+/**
+ * Service that manages the anchoring of annotations in the application.
+ * Handles the creation, updating, and removal of annotation highlights.
+ * Provides functionality for attaching event listeners to highlights and managing their state.
+ */
 import { Injectable } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';

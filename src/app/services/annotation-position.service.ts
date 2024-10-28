@@ -1,3 +1,8 @@
+/**
+ * Service that manages the position of annotations in the application's sidebar.
+ * Handles the calculation and updating of annotation positions based on their highlights.
+ * Provides functionality for positioning annotations correctly in the sidebar.
+ */
 import { Injectable } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
@@ -42,7 +47,7 @@ export class AnnotationPositionService {
       })
     );
     // get all <n7-annotation> nodes present in the sidebar
-    const rawElements: NodeListOf<HTMLElement> = shadowRoot.querySelectorAll('annotation');
+    const rawElements = shadowRoot.querySelectorAll<HTMLElement>('annotation');
     const positionMap = [];
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>
