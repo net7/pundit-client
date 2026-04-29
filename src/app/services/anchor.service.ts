@@ -8,10 +8,15 @@ import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
+import {
+  anchor,
+  highlightRange,
+  removeHighlights,
+  HighlightElement,
+  SelectorWithType
+} from '@net7/annotator';
 import { AnchorEvent } from '../event-types';
-import { anchor } from '../models/anchoring/html';
-import { SelectorWithType } from '../models/anchoring/types';
-import { HighlightElement, highlightRange, removeHighlights } from '../models/highlighter';
+import { _c } from '../models/config';
 import { AnnotationService } from './annotation.service';
 
 const HOVER_CLASS = 'is-hovered';
@@ -45,7 +50,9 @@ export class AnchorService {
       try {
         const selectors = this.createSelectors(annotation);
         const { range, type } = await anchor(document.body, selectors);
-        const highlights = highlightRange(range, annotation.serializedBy);
+        const tag = _c('highlightTag');
+        const cssClass = annotation.serializedBy === 'hypothesis' ? `${tag}-hypo` : tag;
+        const highlights = highlightRange({ range, tag, cssClass });
         this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
 

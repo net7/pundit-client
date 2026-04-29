@@ -1,6 +1,6 @@
 import { createPopper, VirtualElement } from '@popperjs/core';
 import { Subject } from 'rxjs';
-import { selectionFocusRect, isSelectionBackwards } from './range-util';
+import { selectionFocusRect, isSelectionBackwards } from '@net7/annotator';
 
 class TooltipModel {
   public changed$: Subject<any> = new Subject();

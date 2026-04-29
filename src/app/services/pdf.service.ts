@@ -5,8 +5,8 @@ import {
 import {
   debounceTime, filter, first, switchMap
 } from 'rxjs/operators';
+import { PDFViewerApplication as PDFViewerApp } from '@net7/annotator';
 import { PdfViewerEvents } from '../event-types';
-import { PDFViewerApplication as PDFViewerApp } from '../models/anchoring/pdf/types';
 
 const PDF_DOCUMENT_CONTAINER_ID = 'viewer';
 

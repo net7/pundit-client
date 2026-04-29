@@ -16,7 +16,7 @@ import {
 } from '@pundit/communication';
 import { DocumentInfoPdf } from 'src/app/services/document-info/document-info-pdf.service';
 import { DocumentInfoWebpage } from 'src/app/services/document-info/document-info-webpage.service';
-import { describe } from '../anchoring/html';
+import { describe } from '@net7/annotator';
 import { _c } from '../config';
 
 type AnnotationPayload = {
