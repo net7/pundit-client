@@ -139,9 +139,16 @@ export class MainLayoutEH extends EventHandler {
           });
         }
         break;
-      default:
-        console.warn('FIXME: error handler', error);
+      default: {
+        const details = {
+          status: error?.status || error?.response?.status,
+          message: error?.message,
+          responseData: error?.response?.data,
+          url: error?.config?.url || error?.response?.config?.url,
+        };
+        console.error('Unhandled error in handleError:', details, error);
         break;
+      }
     }
   }
 
