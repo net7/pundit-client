@@ -7,7 +7,7 @@ describe('Selection', () => {
     let fakeGetRangeAtCollapsedFalse;
     beforeEach(() => {
       fakeEvent = new Event('selectionchange');
-      fakeGetRangeAtCollapsedFalse = jasmine.createSpy().and.returnValue((() => {
+      fakeGetRangeAtCollapsedFalse = jest.fn().mockReturnValue((() => {
         const fakeTextNode = document.createTextNode('Hello world');
         const range = document.createRange();
         range.setStart(fakeTextNode, 0);
@@ -22,10 +22,10 @@ describe('Selection', () => {
     });
 
     it('returns a Range', (done) => {
-      spyOn(document, 'getSelection').and.returnValue({
+      jest.spyOn(document, 'getSelection').mockReturnValue({
         rangeCount: 1,
         getRangeAt: fakeGetRangeAtCollapsedFalse
-      } as Selection);
+      } as unknown as Selection);
 
       model.changed$.pipe(
         first()

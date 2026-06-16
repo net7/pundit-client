@@ -49,6 +49,15 @@
     },
     {
       "files": [
+        "*.spec.ts"
+      ],
+      "env": {
+        "jest": true
+      },
+      "rules": {}
+    },
+    {
+      "files": [
         "*.html"
       ],
       "extends": [
