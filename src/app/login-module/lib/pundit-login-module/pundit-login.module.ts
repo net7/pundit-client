@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import {
   ErrorComponent, ModalComponent, SignInComponent, SignUpComponent, SvgIconComponent
 } from '../components';
@@ -18,17 +18,14 @@ import { PunditLoginComponent } from './pundit-login.component';
     ErrorComponent,
     SvgIconComponent
   ],
+  exports: [PunditLoginComponent],
+  imports: [CommonModule,
+    FormsModule,
+    ReactiveFormsModule],
   providers: [{
     provide: 'config',
     useValue: undefined
-  }],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-  ],
-  exports: [PunditLoginComponent]
+  }, provideHttpClient(withInterceptorsFromDi())]
 })
 export class PunditLoginModule {
   static forRoot(conf: AuthConfig): ModuleWithProviders<PunditLoginModule> {
