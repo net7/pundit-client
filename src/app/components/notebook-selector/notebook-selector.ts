@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import {
+  ChangeDetectorRef, Component, Input, ChangeDetectionStrategy
+} from '@angular/core';
 import { _t } from '@net7/core';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 
@@ -26,6 +28,7 @@ export interface NotebookSelectorData {
 @Component({
   selector: 'notebook-selector',
   templateUrl: './notebook-selector.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookSelectorComponent {

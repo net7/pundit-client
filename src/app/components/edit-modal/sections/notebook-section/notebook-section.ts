@@ -2,6 +2,7 @@ import {
   OnInit,
   Component,
   Input,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { _t } from '@net7/core';
 import { EMPTY, Subject } from 'rxjs';
@@ -19,6 +20,7 @@ export type NotebookSectionOptions = Record<string, never>;
 @Component({
   selector: 'pnd-notebook-section',
   templateUrl: './notebook-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookSectionComponent implements OnInit, FormSection<

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Interface for DeleteModal's "data"
@@ -21,6 +21,7 @@ export interface DeleteModalData {
 @Component({
   selector: 'pnd-delete-modal',
   templateUrl: './delete-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DeleteModalComponent {

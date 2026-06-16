@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
@@ -15,6 +15,7 @@ import { environment as env } from '../../../../../environments/environment';
   selector: 'lib-pundit-login-signin',
   templateUrl: './signin.component.html',
   styleUrls: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SignInComponent {

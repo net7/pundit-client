@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';

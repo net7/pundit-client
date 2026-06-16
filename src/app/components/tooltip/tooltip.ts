@@ -1,4 +1,6 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import {
+  ChangeDetectorRef, Component, Input, ChangeDetectionStrategy
+} from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { NavData } from '../../types';
@@ -14,6 +16,7 @@ export interface TooltipData {
 @Component({
   selector: 'pnd-tooltip',
   templateUrl: './tooltip.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TooltipComponent {

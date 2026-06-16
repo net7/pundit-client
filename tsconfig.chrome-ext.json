@@ -2,22 +2,26 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "strict": false,
     "outDir": "./dist/chrome-ext-tmp",
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
-    "target": "es5",
+    "target": "es2020",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types"
     ],
+    "types": [
+      "chrome"
+    ],
     "lib": [
-      "es2018",
+      "es2020",
       "dom"
     ]
   },

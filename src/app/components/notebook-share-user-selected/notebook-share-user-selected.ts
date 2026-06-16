@@ -1,10 +1,13 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookShareModalData, NotebookShareModalResult } from '../notebook-share-modal/notebook-share-modal';
 
 @Component({
   selector: 'pnd-notebook-share-user-selected',
   templateUrl: './notebook-share-user-selected.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookShareUserSelectedComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Interface for SvgIcon's "data"
@@ -11,6 +11,7 @@ export interface SvgIconData {
 @Component({
   selector: 'pnd-svg-icon',
   templateUrl: './svg-icon.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SvgIconComponent {

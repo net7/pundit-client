@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
 
@@ -65,6 +65,7 @@ export type NotebookShareModalData = {
 @Component({
   selector: 'pnd-notebook-share-modal',
   templateUrl: './notebook-share-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookShareModalComponent {

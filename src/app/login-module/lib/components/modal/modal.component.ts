@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ModalService } from '../../services/modal.service';
@@ -7,6 +7,7 @@ import { ModalService } from '../../services/modal.service';
   selector: 'lib-pundit-login-modal',
   templateUrl: './modal.component.html',
   styleUrls: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ModalComponent implements OnDestroy {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Reply, SocialType } from '@pundit/communication';
 import { Observable } from 'rxjs';
 import { ReplyType } from './reply/reply';
@@ -6,6 +6,7 @@ import { ReplyType } from './reply/reply';
 @Component({
   selector: 'pnd-social-annotation-section',
   templateUrl: './social-annotation-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SocialAnnotationSectionComponent {

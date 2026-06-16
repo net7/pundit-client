@@ -3,7 +3,8 @@
 //---------------------------
 
 import {
-  ChangeDetectorRef, Component, Input, OnInit
+  ChangeDetectorRef, Component, Input, OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import {
   Annotation, Reply, Tag
@@ -102,6 +103,7 @@ export interface AnnotationData {
 @Component({
   selector: 'annotation',
   templateUrl: './annotation.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AnnotationComponent implements OnInit {

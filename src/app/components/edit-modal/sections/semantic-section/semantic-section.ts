@@ -3,6 +3,7 @@ import {
   Component,
   Input,
   OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { _t } from '@net7/core';
 import { Subject } from 'rxjs';
@@ -63,6 +64,7 @@ export const getObjectType = (value: string) => {
 @Component({
   selector: 'pnd-semantic-section',
   templateUrl: './semantic-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormSection<

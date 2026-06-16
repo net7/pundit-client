@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { NotebookData, NotebookService } from '../../services/notebook.service';
 
@@ -17,6 +19,7 @@ export interface NotebookPanelData {
 @Component({
   selector: 'notebook-panel',
   templateUrl: './notebook-panel.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookPanelComponent implements OnInit {

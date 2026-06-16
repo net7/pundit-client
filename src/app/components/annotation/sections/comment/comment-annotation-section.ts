@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -6,6 +8,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'pnd-comment-annotation-section',
   templateUrl: './comment-annotation-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CommentAnnotationSectionComponent implements OnInit {

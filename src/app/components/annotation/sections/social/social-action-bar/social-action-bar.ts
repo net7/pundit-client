@@ -1,9 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { _t } from '@net7/core';
 import {
-  Reply,
-  ReplyAttributes, SocialType
-} from '@pundit/communication';
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
+import { _t } from '@net7/core';
+import { Reply, ReplyAttributes, SocialType } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';
@@ -13,12 +12,12 @@ import { SocialService, SocialStats } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
 import { ReplyType } from '../reply/reply';
-import { } from '../social-annotation-section';
 import { SocialBarState, createInitialState, resetFormState } from './social-action-bar.helpers';
 
 @Component({
   selector: 'pnd-social-action-bar',
   templateUrl: './social-action-bar.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SocialActionBarComponent implements OnInit {

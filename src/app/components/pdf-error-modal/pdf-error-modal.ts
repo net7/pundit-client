@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Interface for PdfErrorModal's "data"
@@ -21,6 +21,7 @@ export interface PdfErrorModalData {
 @Component({
   selector: 'pnd-pdf-error-modal',
   templateUrl: './pdf-error-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PdfErrorModalComponent {

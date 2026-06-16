@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { _t } from '@net7/core';
 import {
   SocialType, Reply
@@ -30,6 +32,7 @@ export type ReplyType = 'Reply';
 @Component({
   selector: 'pnd-annotation-reply',
   templateUrl: './reply.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ReplyComponent implements OnInit {

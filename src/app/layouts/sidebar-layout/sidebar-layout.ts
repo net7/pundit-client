@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, OnDestroy, Input, ChangeDetectorRef
+  Component, OnInit, OnDestroy, Input, ChangeDetectorRef,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
@@ -19,6 +20,7 @@ import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 @Component({
   selector: 'sidebar-layout',
   templateUrl: './sidebar-layout.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {

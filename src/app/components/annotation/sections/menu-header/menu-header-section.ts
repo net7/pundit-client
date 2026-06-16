@@ -1,5 +1,6 @@
 import {
-  ChangeDetectorRef, Component, Input, OnDestroy, OnInit
+  ChangeDetectorRef, Component, Input, OnDestroy, OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import {
@@ -25,6 +26,7 @@ import { shareActionButtons, shareButton } from './menu-share.helper';
 @Component({
   selector: 'pnd-menu-header-section',
   templateUrl: './menu-header-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {

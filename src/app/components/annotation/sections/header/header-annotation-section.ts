@@ -1,5 +1,6 @@
 import {
-  ChangeDetectorRef, Component, Input, OnInit
+  ChangeDetectorRef, Component, Input, OnInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -13,6 +14,7 @@ import { UserData, UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'pnd-header-annotation-section',
   templateUrl: './header-annotation-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class HeaderAnnotationSectionComponent implements OnInit {

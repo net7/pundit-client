@@ -2,7 +2,7 @@
 // TOAST.ts
 //---------------------------
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 /**
@@ -94,6 +94,7 @@ export interface ToastAction {
 @Component({
   selector: 'pnd-toast',
   templateUrl: './toast.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ToastComponent {

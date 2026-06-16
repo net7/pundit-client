@@ -1,5 +1,6 @@
 import {
-  Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener
+  Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
@@ -22,6 +23,7 @@ import { MainLayoutConfig as config } from './main-layout.config';
 @Component({
   selector: 'main-layout',
   templateUrl: './main-layout.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {

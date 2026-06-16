@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { _t } from '@net7/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
@@ -7,6 +9,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'pnd-highlight-annotation-section',
   templateUrl: './highlight-annotation-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class HighlightAnnotationSectionComponent implements OnInit {

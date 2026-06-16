@@ -1,4 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,6 +11,7 @@ type TagType = { label: string; color: string };
 @Component({
   selector: 'pnd-tag-annotation-section',
   templateUrl: './tag-annotation-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TagAnnotationSectionComponent implements OnInit {

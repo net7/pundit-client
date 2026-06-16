@@ -3,7 +3,8 @@ import {
   Component,
   Input,
   ElementRef,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { FormSectionData } from 'src/app/types';
 import * as Draggable from 'draggable';
@@ -53,6 +54,7 @@ export type EditModalFormState = {
 @Component({
   selector: 'pnd-edit-modal',
   templateUrl: './edit-modal.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditModalComponent implements AfterContentChecked {

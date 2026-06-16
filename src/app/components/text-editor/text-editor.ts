@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { TextEditorMenuData } from './sections/text-editor-menu/text-editor-menu';
 
 /**
@@ -13,6 +13,7 @@ export interface TextEditorData {
 @Component({
   selector: 'pnd-text-editor',
   templateUrl: './text-editor.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TextEditorComponent {

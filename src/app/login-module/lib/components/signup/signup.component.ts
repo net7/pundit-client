@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { of } from 'rxjs';
 import { filter, first, switchMap } from 'rxjs/operators';
@@ -14,6 +14,7 @@ import validationHelper from '../../helpers/validation.helper';
   selector: 'lib-pundit-login-signup',
   templateUrl: './signup.component.html',
   styleUrls: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SignUpComponent {

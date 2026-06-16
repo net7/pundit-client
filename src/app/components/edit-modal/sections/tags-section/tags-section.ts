@@ -5,6 +5,7 @@ import {
   AfterViewInit,
   ViewChild,
   OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
@@ -25,6 +26,7 @@ export type TagsSectionOptions = {
 @Component({
   selector: 'pnd-tags-section',
   templateUrl: './tags-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<

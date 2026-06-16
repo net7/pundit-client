@@ -1,10 +1,11 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookShareListItem } from '../notebook-share-modal/notebook-share-modal';
 
 @Component({
   selector: 'pnd-notebook-share-user-item',
   templateUrl: './notebook-share-user-item.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class NotebookShareUserItemComponent {

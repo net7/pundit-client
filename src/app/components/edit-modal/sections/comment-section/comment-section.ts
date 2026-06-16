@@ -3,6 +3,7 @@ import {
   Component,
   Input,
   OnDestroy,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -21,6 +22,7 @@ export type CommentSectionOptions = {
 @Component({
   selector: 'pnd-comment-section',
   templateUrl: './comment-section.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<

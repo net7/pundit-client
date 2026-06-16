@@ -67,7 +67,7 @@ export class AnchorService {
             }
           });
         }
-      } catch (_e) {
+      } catch {
         this.orphans.push(annotation);
 
         // analytics
