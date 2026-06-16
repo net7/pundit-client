@@ -15,8 +15,10 @@ module.exports = {
       },
     ],
   },
-  // These deps (and their nested node_modules) ship ESM that must be transformed.
-  // The `.*` lets a whitelisted scope match anywhere in the path, covering nested
-  // node_modules like @pundit/communication/node_modules/@vespaiach/*.
-  transformIgnorePatterns: ['node_modules/(?!.*(@net7|@pundit|@angular|rxjs|@vespaiach|\\.mjs$))'],
+  moduleNameMapper: {
+    // The networking layer must not be loaded by unit tests — stub it. See the mock.
+    '^@pundit/communication$': '<rootDir>/src/testing/communication.mock.ts',
+  },
+  // Remaining deps ship ESM that Jest must transform (it ignores node_modules by default).
+  transformIgnorePatterns: ['node_modules/(?!.*(@net7|@angular|rxjs|\\.mjs$))'],
 };
