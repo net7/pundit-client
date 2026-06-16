@@ -15,7 +15,7 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:application",
+          "builder": "@angular/build:application",
           "options": {
             "preserveSymlinks": true,
             "outputPath": {
@@ -28,6 +28,21 @@
               "zone.js",
               "document-register-element"
             ],
+            "allowedCommonJsDependencies": [
+              "axios",
+              "draggable",
+              "seedrandom",
+              "lodash"
+            ],
+            "stylePreprocessorOptions": {
+              "sass": {
+                "silenceDeprecations": [
+                  "import",
+                  "global-builtin",
+                  "color-functions"
+                ]
+              }
+            },
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -44,6 +59,11 @@
             "scripts": []
           },
           "configurations": {
+            "development": {
+              "optimization": false,
+              "outputHashing": "none",
+              "sourceMap": true
+            },
             "production": {
               "outputPath": {
                 "base": "dist/prod",
@@ -282,9 +302,9 @@
           }
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular/build:dev-server",
           "options": {
-            "buildTarget": "pnd:build"
+            "buildTarget": "pnd:build:development"
           },
           "configurations": {
             "production": {

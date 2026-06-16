@@ -75,19 +75,23 @@ overrides) all has to be ported and re-verified.
 
 ---
 
-## 2. Sass deprecations (`@import`, `lighten()`)
+## 2. Sass deprecations (`@import`, `lighten()`) — currently SILENCED
 
-**Priority: medium (warnings now; fatal in Dart Sass 3.0).**
+**Priority: medium (silenced now; will be fatal in Dart Sass 3.0).**
 
-**Context.** The newer Dart Sass shipped with the esbuild builder emits
-deprecation warnings on every build:
+**Context.** The newer Dart Sass emits deprecation warnings:
 - `@import` rules are deprecated (use `@use` / `@forward`),
-- color functions like `lighten()` are deprecated (use `color.adjust` /
-  `color.scale`).
+- global color functions (`lighten()` / `darken()` / `desaturate()`) are
+  deprecated (use `color.adjust` / `color.scale`).
 
-**Why deferred.** Purely cosmetic for now (build is green). The `@import` → `@use`
-migration changes module scoping (no more global access to variables/mixins),
-so it touches every partial and needs care.
+These are **silenced** in `angular.json` via
+`stylePreprocessorOptions.sass.silenceDeprecations: ["import", "global-builtin", "color-functions"]`
+so the build/serve output is clean. This only hides them — the underlying SCSS
+still needs migrating before Dart Sass 3.0 removes these features (at which point
+the silenced deprecations become hard errors).
+
+**Why deferred.** The `@import` → `@use` migration changes module scoping (no more
+global access to variables/mixins), so it touches every partial and needs care.
 
 **Steps.**
 1. `@import`: run `npx sass-migrator module --migrate-deps src/styles/styles.scss`
@@ -97,7 +101,9 @@ so it touches every partial and needs care.
    hand-replace with `color.adjust($c, $lightness: …)` / `color.scale(...)`.
    Check the rendered colors are unchanged (the migrator's `scale` suggestion is
    not always identical to the old `lighten`).
-3. Rebuild; confirm the deprecation warnings are gone and styles look identical.
+3. Remove the `silenceDeprecations` entries from `angular.json`'s
+   `stylePreprocessorOptions` so any *new* deprecations surface again.
+4. Rebuild; confirm the deprecation warnings are gone and styles look identical.
 
 (Note: the earlier slash-division deprecation was already handled — commit `1b2c0af`.)
 
@@ -156,9 +162,10 @@ non-strict, so `strict: false` was set explicitly in `tsconfig.json` and
 
 ## 6. Other deferred / latent items
 
-- **`@angular-devkit/build-angular` deprecation note.** We use it for the
-  `application` builder. The package re-exports from `@angular/build`; a future
-  cleanup could depend on `@angular/build` directly.
+- **`@angular-devkit/build-angular` is still a devDep** only for the `extract-i18n`
+  and `e2e` (protractor) targets. `build` and `serve` now use `@angular/build`
+  directly. If those legacy targets are dropped, `@angular-devkit/build-angular`
+  can be removed entirely.
 - **`tsconfig` `baseUrl` + `ignoreDeprecations: "6.0"`.** `baseUrl` is deprecated
   in TS and removed in TS 7. Before a TS 7 bump, migrate absolute `src/...`
   imports to explicit `paths` mappings (or relative imports) and drop `baseUrl`.

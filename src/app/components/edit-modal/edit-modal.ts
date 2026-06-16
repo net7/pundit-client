@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { FormSectionData } from 'src/app/types';
-import * as Draggable from 'draggable';
+import Draggable from 'draggable';
 import { merge, Subject } from 'rxjs';
 import { isEmpty } from 'lodash';
 import { EditModalEvent, getEventType } from 'src/app/event-types';
