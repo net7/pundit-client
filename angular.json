@@ -15,14 +15,19 @@
       "prefix": "",
       "architect": {
         "build": {
-          "builder": "ngx-build-plus:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "preserveSymlinks": true,
-            "aot": true,
-            "outputPath": "dist/default",
+            "outputPath": {
+              "base": "dist/default",
+              "browser": ""
+            },
             "index": "src/index.html",
-            "main": "src/main.ts",
-            "polyfills": "src/polyfills.ts",
+            "browser": "src/main.ts",
+            "polyfills": [
+              "zone.js",
+              "document-register-element"
+            ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
@@ -40,16 +45,14 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/prod",
+              "outputPath": {
+                "base": "dist/prod",
+                "browser": ""
+              },
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
-              "extractCss": true,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "budgets": [
                 {
                   "type": "initial",
@@ -70,21 +73,30 @@
               ]
             },
             "shake": {
-              "outputPath": "dist/shake",
+              "outputPath": {
+                "base": "dist/shake",
+                "browser": ""
+              },
               "index": {
                 "input": "src/html-examples/shakespeare.html",
                 "output": "index.html"
               }
             },
             "scroll": {
-              "outputPath": "dist/scroll",
+              "outputPath": {
+                "base": "dist/scroll",
+                "browser": ""
+              },
               "index": {
                 "input": "src/html-examples/shakespeare-scroll.html",
                 "output": "index.html"
               }
             },
             "pdf": {
-              "outputPath": "dist/pdf",
+              "outputPath": {
+                "base": "dist/pdf",
+                "browser": ""
+              },
               "index": {
                 "input": "src/html-examples/pdf-viewer.html",
                 "output": "index.html"
@@ -98,14 +110,14 @@
               ]
             },
             "chrome-ext-prod": {
-              "outputPath": "dist/chrome-ext-prod",
+              "outputPath": {
+                "base": "dist/chrome-ext-prod",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -131,14 +143,14 @@
               ]
             },
             "chrome-ext-stage": {
-              "outputPath": "dist/chrome-ext-stage",
+              "outputPath": {
+                "base": "dist/chrome-ext-stage",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -164,14 +176,14 @@
               ]
             },
             "embed-prod": {
-              "outputPath": "dist/embed-prod",
+              "outputPath": {
+                "base": "dist/embed-prod",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -184,14 +196,14 @@
               }
             },
             "embed-stage": {
-              "outputPath": "dist/embed-stage",
+              "outputPath": {
+                "base": "dist/embed-stage",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -204,14 +216,14 @@
               }
             },
             "pdf-standalone-prod": {
-              "outputPath": "dist/pdf-standalone-prod",
+              "outputPath": {
+                "base": "dist/pdf-standalone-prod",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -236,14 +248,14 @@
               ]
             },
             "pdf-standalone-stage": {
-              "outputPath": "dist/pdf-standalone-stage",
+              "outputPath": {
+                "base": "dist/pdf-standalone-stage",
+                "browser": ""
+              },
               "optimization": true,
+              "outputHashing": "none",
               "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
@@ -270,40 +282,40 @@
           }
         },
         "serve": {
-          "builder": "ngx-build-plus:dev-server",
+          "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "pnd:build"
+            "buildTarget": "pnd:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "pnd:build:production"
+              "buildTarget": "pnd:build:production"
             },
             "shake": {
-              "browserTarget": "pnd:build:shake"
+              "buildTarget": "pnd:build:shake"
             },
             "scroll": {
-              "browserTarget": "pnd:build:scroll"
+              "buildTarget": "pnd:build:scroll"
             },
             "pdf": {
-              "browserTarget": "pnd:build:pdf"
+              "buildTarget": "pnd:build:pdf"
             },
             "chrome-ext-prod": {
-              "browserTarget": "pnd:build:chrome-ext-prod"
+              "buildTarget": "pnd:build:chrome-ext-prod"
             },
             "chrome-ext-stage": {
-              "browserTarget": "pnd:build:chrome-ext-stage"
+              "buildTarget": "pnd:build:chrome-ext-stage"
             },
             "embed-prod": {
-              "browserTarget": "pnd:build:embed-prod"
+              "buildTarget": "pnd:build:embed-prod"
             },
             "embed-stage": {
-              "browserTarget": "pnd:build:embed-stage"
+              "buildTarget": "pnd:build:embed-stage"
             },
             "pdf-standalone-prod": {
-              "browserTarget": "pnd:build:pdf-standalone-prod"
+              "buildTarget": "pnd:build:pdf-standalone-prod"
             },
             "pdf-standalone-stage": {
-              "browserTarget": "pnd:build:pdf-standalone-stage"
+              "buildTarget": "pnd:build:pdf-standalone-stage"
             }
           }
         },
