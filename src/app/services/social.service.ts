@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Social, SocialAttributes } from '@pundit/communication';
 import {
   BehaviorSubject, EMPTY, from, Observable
@@ -26,20 +26,14 @@ type SocialConfig = {
 }
 
 @Injectable()
-export class SocialService implements OnInit {
+export class SocialService {
   private socialCache: Social[] = [];
 
   private socialStatsByAnnotationId: SocialConfig[] = [];
 
   constructor(
     private userService: UserService
-  ) { }
-
-  // FIXME: Angular does not invoke ngOnInit on @Injectable() services, so this
-  // subscription is effectively dead. Kept as-is to avoid a behavior change;
-  // should be moved to the constructor or an explicit init method.
-  // eslint-disable-next-line @angular-eslint/contextual-lifecycle
-  ngOnInit() {
+  ) {
     this.userService.logged$.subscribe(() => {
       this.refreshStats();
     });
