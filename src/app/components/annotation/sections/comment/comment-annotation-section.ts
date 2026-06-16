@@ -27,7 +27,7 @@ export class CommentAnnotationSectionComponent implements OnInit {
 
   private transformData = (annotation: Annotation): any => {
     if (annotation.type !== 'Commenting') return {};
-    const { comment: text } = annotation?.content;
+    const { comment: text } = annotation.content;
     return { text };
   };
 }

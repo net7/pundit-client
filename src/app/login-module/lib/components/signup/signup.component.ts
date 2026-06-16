@@ -33,11 +33,11 @@ export class SignUpComponent {
   private inputTextValues: {
     [key: string]: string;
   } = {
-    firstname: null,
-    lastname: null,
-    email: null,
-    password: null
-  };
+      firstname: null,
+      lastname: null,
+      email: null,
+      password: null
+    };
 
   constructor(
     private configService: LoginConfigurationService,
@@ -166,5 +166,5 @@ export class SignUpComponent {
       return null;
     }
     return validationHelper.getErrorMessage(input, this.registerForm.get(input).errors);
-  }
+  };
 }

@@ -112,7 +112,7 @@ export class EditModalComponent implements AfterContentChecked {
       // init changed$ listener
       this.initChangedListener();
     }
-  }
+  };
 
   private initDraggableInstance = () => {
     // fix element dom loaded
@@ -124,7 +124,7 @@ export class EditModalComponent implements AfterContentChecked {
       this.draggableInstance = new Draggable(target, { handle, limit });
       this.data._setDraggableInstance(this.draggableInstance);
     });
-  }
+  };
 
   private initFormState = () => {
     // reset form state
@@ -140,7 +140,7 @@ export class EditModalComponent implements AfterContentChecked {
     // update save button state
     // with initial form state values
     this.updateSaveButtonState();
-  }
+  };
 
   private initChangedListener = () => {
     const { sections } = this.data;
@@ -154,7 +154,7 @@ export class EditModalComponent implements AfterContentChecked {
       // update save button state
       this.updateSaveButtonState();
     });
-  }
+  };
 
   private updateSaveButtonState() {
     const { sections, validation } = this.data;
@@ -194,5 +194,5 @@ export class EditModalComponent implements AfterContentChecked {
     const tw = Math.max(target.clientWidth || 200);
     const th = Math.max(target.clientHeight || 200);
     return { x: [0, vw - tw], y: [0, vh - th] };
-  }
+  };
 }

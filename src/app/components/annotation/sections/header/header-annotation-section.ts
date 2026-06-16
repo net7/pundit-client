@@ -116,7 +116,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     return notebookData;
   }
 
-  private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`
+  private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`;
 
   onClick(ev: Event, payload) {
     if (!this.emit) return;

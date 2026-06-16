@@ -63,3 +63,5 @@ src/environments/local.stage.ts
 
 #deploy scripts
 deploy-*.sh
+.nx/cache
+.nx/workspace-data

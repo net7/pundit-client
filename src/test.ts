@@ -11,7 +11,8 @@ import {
 // Spec files are discovered automatically by the Angular karma builder (v15+).
 getTestBed().initTestEnvironment(
   BrowserDynamicTestingModule,
-  platformBrowserDynamicTesting(), {
+  platformBrowserDynamicTesting(),
+  {
     teardown: { destroyAfterEach: false }
   }
 );

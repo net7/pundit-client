@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { LoginResponse } from '@pundit/communication';
@@ -24,7 +24,7 @@ export class PunditLoginService {
     this.modalService.close();
   }
 
-  onAuth = (): Observable<LoginResponse> => this.authEventService.get()
+  onAuth = (): Observable<LoginResponse> => this.authEventService.get();
 
   logout() {
     return AuthModel.logout();

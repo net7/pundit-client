@@ -18,5 +18,5 @@ export class SocialAnnotationSectionComponent {
 
   @Input() public emit: any;
 
-  public readonly ACTIONS: (SocialType | ReplyType)[]= ['Like', 'Dislike', 'Report', 'Reply'];
+  public readonly ACTIONS: (SocialType | ReplyType)[] = ['Like', 'Dislike', 'Report', 'Reply'];
 }

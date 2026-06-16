@@ -109,7 +109,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
       default:
         break;
     }
-  }
+  };
 
   private onDelete(payload) {
     const { notebookService } = this.layoutEH;

@@ -74,21 +74,21 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     add: _t('editmodal#semantic_add'),
     remove: _t('editmodal#semantic_remove'),
     clear: _t('editmodal#semantic_clear'),
-  }
+  };
 
   private config: {
     predicate: SemanticConfig;
     object: SemanticConfig;
   } = {
-    predicate: {
-      default: DEFAULT_PROVIDER_ID,
-      providers: []
-    },
-    object: {
-      default: DEFAULT_PROVIDER_ID,
-      providers: []
-    }
-  };
+      predicate: {
+        default: DEFAULT_PROVIDER_ID,
+        providers: []
+      },
+      object: {
+        default: DEFAULT_PROVIDER_ID,
+        providers: []
+      }
+    };
 
   @Input() public data: FormSectionData<SemanticSectionValue, SemanticSectionOptions>;
 
@@ -329,7 +329,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.rows = [];
     this.init();
     this.checkFocus();
-  }
+  };
 
   private checkFocus = () => {
     const { focus } = this.data;
@@ -341,7 +341,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
         }
       });
     }
-  }
+  };
 
   private getObjectInputEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];

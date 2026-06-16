@@ -10,7 +10,7 @@ export class AuthEventService {
 
   set = (value: LoginResponse) => {
     this.event$.next(value);
-  }
+  };
 
-  get = () => this.event$.asObservable()
+  get = () => this.event$.asObservable();
 }

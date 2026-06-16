@@ -28,13 +28,13 @@ export class NotebookPanelDS extends DataSource {
       description: _t('notebookpanel#share_description'),
     },
     commingSoon: _t('notebookpanel#comingsoon')
-  }
+  };
 
   public iconMap = {
     public: '', // no icon
     private: 'lock',
     shared: 'users'
-  }
+  };
 
   transform(data) {
     // Data for the internal notebook-selector component

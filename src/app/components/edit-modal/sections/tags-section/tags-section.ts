@@ -101,12 +101,12 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
     this.tagService.get$().pipe().subscribe((whitelist) => {
       this.formInstance.settings.whitelist = whitelist;
     });
-  }
+  };
 
   private transformTag = (tagData) => {
     const tagColor = getTagColor(tagData.value);
     tagData.style = `--tag-bg:${tagColor}`;
-  }
+  };
 
   private onReset = () => {
     const { initialValue } = this.data;
@@ -115,7 +115,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       this.formInstance.addTags(initialValue);
     }
     this.checkFocus();
-  }
+  };
 
   private checkFocus = () => {
     const { focus } = this.data;
@@ -125,5 +125,5 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
         (input as HTMLInputElement).focus();
       });
     }
-  }
+  };
 }

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
@@ -41,7 +41,8 @@ export class EmailProviderService implements OnDestroy {
   ) {
     this.isLoading$.next(true);
     from(AuthModel.login(data))
-      .pipe(take(1),
+      .pipe(
+        take(1),
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
@@ -51,7 +52,8 @@ export class EmailProviderService implements OnDestroy {
           }
           this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
-        })).subscribe((authResp: LoginResponse) => {
+        })
+      ).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
 
@@ -83,13 +85,15 @@ export class EmailProviderService implements OnDestroy {
     };
     this.isLoading$.next(true);
     from(AuthModel.signup(request))
-      .pipe(take(1),
+      .pipe(
+        take(1),
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
           this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
-        })).subscribe((authResp: LoginResponse) => {
+        })
+      ).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
 
@@ -110,7 +114,7 @@ export class EmailProviderService implements OnDestroy {
   private openTermsPopup = (params: TermsParameters) => {
     const event$ = this.popupService.open(params.url, params.popup, 'pundit-terms');
     this.listenEvent(event$);
-  }
+  };
 
   private listenEvent(event$: Observable<MessageEvent>) {
     event$.pipe(

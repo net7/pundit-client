@@ -1,0 +1,61 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true
+  },
+  "globals": {
+    "Atomics": "readonly",
+    "SharedArrayBuffer": "readonly"
+  },
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "*.ts"
+      ],
+      "extends": [
+        "airbnb-base",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "no-console": ["warn", { "allow": ["warn", "error"] }],
+        "linebreak-style": "off",
+        "import/no-unresolved": "off",
+        "@typescript-eslint/no-unused-vars": "error",
+        "import/extensions": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "no-param-reassign": ["error", { "props": false }],
+        "import/prefer-default-export": "off",
+        "no-underscore-dangle": "off",
+        "class-methods-use-this": "off",
+        "comma-dangle": "off",
+        "import/no-extraneous-dependencies": "off",
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": "error",
+        "no-use-before-define": "off",
+        "@typescript-eslint/no-use-before-define": ["error", { "functions": false, "classes": false, "typedefs": false, "enums": false }],
+        "no-useless-constructor": "off",
+        "default-param-last": "off",
+        "no-empty-function": "off",
+        "@typescript-eslint/no-empty-function": ["error", { "allow": ["constructors"] }]
+      }
+    },
+    {
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended",
+        "plugin:@angular-eslint/template/accessibility"
+      ],
+      "rules": {}
+    }
+  ]
+}

@@ -45,5 +45,5 @@ export class MainLayoutAnchorHandler implements LayoutHandler {
     const { payload, type } = data;
     const isMouseOverOrLeave = (type === AnchorEvent.MouseOver || type === AnchorEvent.MouseLeave);
     return !(payload === this.layoutDS.pendingAnnotationId && isMouseOverOrLeave);
-  }
+  };
 }

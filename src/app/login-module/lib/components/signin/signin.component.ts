@@ -124,5 +124,5 @@ export class SignInComponent {
       return null;
     }
     return validationHelper.getErrorMessage(input, this.loginForm.get(input).errors);
-  }
+  };
 }

@@ -22,16 +22,15 @@
             "outputPath": "dist/default",
             "index": "src/index.html",
             "main": "src/main.ts",
-            
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
               "src/assets",
-              { 
-                "glob": "**/*", 
-                "input": "node_modules/@n7-frontend/icon-font/Font/", 
-                "output": "/" 
+              {
+                "glob": "**/*",
+                "input": "node_modules/@n7-frontend/icon-font/Font/",
+                "output": "/"
               }
             ],
             "styles": [
@@ -118,11 +117,11 @@
                   "glob": "**/*",
                   "input": "src/chrome-ext/assets/pdfjs",
                   "output": "/assets/pdfjs"
-                }, 
+                },
                 {
-                "glob": "**/*",
-                "input": "src/chrome-ext/assets/icons/prod",
-                "output": "/assets/icons"
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/icons/prod",
+                  "output": "/assets/icons"
                 },
                 {
                   "glob": "pdf-viewer.html",
@@ -151,11 +150,11 @@
                   "glob": "**/*",
                   "input": "src/chrome-ext/assets/pdfjs",
                   "output": "/assets/pdfjs"
-                }, 
+                },
                 {
-                "glob": "**/*",
-                "input": "src/chrome-ext/assets/icons/stage",
-                "output": "/assets/icons"
+                  "glob": "**/*",
+                  "input": "src/chrome-ext/assets/icons/stage",
+                  "output": "/assets/icons"
                 },
                 {
                   "glob": "pdf-viewer.html",
@@ -340,11 +339,23 @@
               "devServerTarget": "pnd:serve:production"
             }
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

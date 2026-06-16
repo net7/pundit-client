@@ -35,16 +35,20 @@ export class SocialService implements OnInit {
     private userService: UserService
   ) { }
 
+  // FIXME: Angular does not invoke ngOnInit on @Injectable() services, so this
+  // subscription is effectively dead. Kept as-is to avoid a behavior change;
+  // should be moved to the constructor or an explicit init method.
+  // eslint-disable-next-line @angular-eslint/contextual-lifecycle
   ngOnInit() {
     this.userService.logged$.subscribe(() => {
       this.refreshStats();
     });
   }
 
-  load= (rawSocials: Social[]) => {
+  load = (rawSocials: Social[]) => {
     rawSocials.forEach((social) => this.addToCache(social));
     this.refreshStats();
-  }
+  };
 
   /**
    * Load a social that already exists into the client
@@ -57,7 +61,7 @@ export class SocialService implements OnInit {
     } else {
       this.socialCache.push(rawSocial);
     }
-  }
+  };
 
   removeCached(socialId: string) {
     const index = this.socialCache.findIndex((s) => s.id === socialId);
@@ -161,9 +165,7 @@ export class SocialService implements OnInit {
         if (data) {
           const { id } = data;
           const requestPayload = attributes;
-          const newSocial = this.getSocialFromPayload(
-            id, requestPayload
-          );
+          const newSocial = this.getSocialFromPayload(id, requestPayload);
           this.addToCache(newSocial);
 
           // analytics

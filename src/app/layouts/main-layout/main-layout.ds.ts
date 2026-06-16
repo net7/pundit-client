@@ -79,7 +79,7 @@ export class MainLayoutDS extends LayoutDataSource {
     identitySyncLoading: false
   };
 
-  public usersList = []
+  public usersList = [];
 
   onInit(payload) {
     this.userService = payload.userService;
@@ -159,9 +159,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.annotationService.create(payload).pipe(
       switchMap(({ data }) => {
         const { id } = data;
-        const newAnnotation = this.annotationService.getAnnotationFromPayload(
-          id, payload
-        );
+        const newAnnotation = this.annotationService.getAnnotationFromPayload(id, payload);
         this.anchorService.add(newAnnotation);
         this.removePendingAnnotation();
         return of(newAnnotation);

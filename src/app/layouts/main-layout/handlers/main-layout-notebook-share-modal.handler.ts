@@ -80,7 +80,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     const query = value?.length ? value.trim() : value;
     if (query?.length < 3) return of(null);
     return this.layoutDS.notebookService.userSearch(query);
-  }
+  };
 
   private onActionClick = (payload) => {
     switch (payload.action) {
@@ -94,7 +94,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       default:
         break;
     }
-  }
+  };
 
   private onDelete(payload) {
     const { notebookService } = this.layoutDS;

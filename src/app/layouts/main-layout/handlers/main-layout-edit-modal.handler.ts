@@ -64,11 +64,9 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
               });
             } else {
               // signal
-              this.layoutEH.emitOuter(
-                getEventType(MainLayoutEvent.AnnotationCreated), {
-                  payload: data
-                }
-              );
+              this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
+                payload: data
+              });
               this.layoutEH.appEvent$.next({
                 type: AppEvent.AnnotationCreateSuccess,
                 payload: data
@@ -264,7 +262,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       };
     }
     return {};
-  }
+  };
 
   private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;
 }

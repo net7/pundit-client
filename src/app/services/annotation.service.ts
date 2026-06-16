@@ -84,9 +84,7 @@ export class AnnotationService {
       tap(({ data }) => {
         const { id } = data;
         const requestPayload = attributes;
-        const newAnnotation = this.getAnnotationFromPayload(
-          id, requestPayload
-        );
+        const newAnnotation = this.getAnnotationFromPayload(id, requestPayload);
         this.add(newAnnotation);
       })
     );

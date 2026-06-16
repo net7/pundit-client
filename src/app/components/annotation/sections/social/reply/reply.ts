@@ -32,7 +32,7 @@ export type ReplyType = 'Reply';
   templateUrl: './reply.html'
 })
 export class ReplyComponent implements OnInit {
-  @Input() public data: Reply
+  @Input() public data: Reply;
 
   @Input() public annotationId: string;
 
@@ -83,7 +83,7 @@ export class ReplyComponent implements OnInit {
         classes: 'pnd-btn-cta'
       }]
     };
-  }
+  };
 
   private getMenuData() {
     const currentUser = this.userService.whoami()?.id;
@@ -102,7 +102,7 @@ export class ReplyComponent implements OnInit {
       : null;
   }
 
-  private createActionButtons= (id) => [{
+  private createActionButtons = (id) => [{
     label: _t('social#reply_edit'),
     payload: {
       id,
@@ -115,7 +115,7 @@ export class ReplyComponent implements OnInit {
       id,
       source: 'action-delete',
     },
-  }]
+  }];
 
   onClick($event, payload) {
     if (!payload || this.formState?.isLoading) {
@@ -188,10 +188,12 @@ export class ReplyComponent implements OnInit {
         return;
       }
       this.formState.isLoading = true;
-      this.replyService.update(this.data.id,
+      this.replyService.update(
+        this.data.id,
         {
           userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value
-        }).pipe(
+        }
+      ).pipe(
         catchError(() => {
           this.toastService.error({
             title: _t('toast#annotation_reply_edit_error_title'),
@@ -227,7 +229,7 @@ export class ReplyComponent implements OnInit {
       el.focus();
       el.setSelectionRange(el.value.length, el.value.length);
     });
-  }
+  };
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];

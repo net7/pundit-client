@@ -40,7 +40,7 @@ export class NotebookPanelComponent implements OnInit {
   onNotebookSelection = (type, payload) => {
     if (!this.emit) return;
     this.emit(type, payload);
-  }
+  };
 
   onClick(type, payload) {
     if (!this.emit) return;

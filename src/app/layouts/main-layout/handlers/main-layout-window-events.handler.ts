@@ -31,5 +31,5 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
       text: _t('toast#rootelementexists_text'),
       autoClose: false
     });
-  }
+  };
 }

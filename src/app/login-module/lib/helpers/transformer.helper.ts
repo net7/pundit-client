@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
+/* eslint-disable camelcase */
 import { from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AuthToken, LoginResponse, SourceType } from '@pundit/communication';

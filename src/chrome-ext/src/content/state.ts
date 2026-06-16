@@ -6,7 +6,7 @@ class ChromeExtState {
     badgeInterval: null,
     badgeIntervalCount: 0,
     rootExistMessageSended: false
-  }
+  };
 
   set(newData: Partial<ChromeExtStateData>) {
     Object.keys(newData).forEach((key) => {

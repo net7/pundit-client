@@ -186,5 +186,5 @@ export class AnnotationEH extends EventHandler {
     const currentState = state$.getValue();
     const newState = { isCollapsed: !currentState.isCollapsed };
     this.annotationService.updateAnnotationState(annotation.id, newState);
-  }
+  };
 }

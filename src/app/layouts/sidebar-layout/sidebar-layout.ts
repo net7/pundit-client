@@ -74,5 +74,5 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   onDocumentClick = () => {
     this.lb.dataSource.userPopover.isOpen.next(false);
-  }
+  };
 }

@@ -46,7 +46,7 @@ type SocialBarState = {
   templateUrl: './social-action-bar.html'
 })
 export class SocialActionBarComponent implements OnInit {
-  @Input() socials$: Observable<SocialStats>
+  @Input() socials$: Observable<SocialStats>;
 
   @Input() replies$: Observable<Reply[]>;
 
@@ -107,7 +107,7 @@ export class SocialActionBarComponent implements OnInit {
       reply: this.actions.includes('Reply') ? { total: 0, form: this.resetFormState() } : undefined,
       isLogged: false,
     };
-  }
+  };
 
   private resetFormState = (newReply?: string) => {
     const isValidReply = (reply: string): boolean => reply && reply.length > 3;
@@ -126,7 +126,7 @@ export class SocialActionBarComponent implements OnInit {
       }],
       isLoading: false
     };
-  }
+  };
 
   private setSocialState(socials: SocialStats) {
     if (this.state?.like) {
@@ -228,9 +228,11 @@ export class SocialActionBarComponent implements OnInit {
       hasUserLike: !!this.state?.like?.madeByUser,
     };
     this.socialService.updateStatsByAnnotationId(
-      { ...oldStats, ...newStats }, this.annotationId, this.parentId
+      { ...oldStats, ...newStats },
+      this.annotationId,
+      this.parentId
     );
-  }
+  };
 
   private dislike() {
     if (this.state.dislike?.madeByUser) {
@@ -372,7 +374,7 @@ export class SocialActionBarComponent implements OnInit {
         el.focus();
       });
     }
-  }
+  };
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];

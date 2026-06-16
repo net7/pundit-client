@@ -137,8 +137,13 @@ export class NotebookShareModalDS extends DataSource {
     }];
   }
 
-  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
-    email: string, permission: string) {
+  private getDropdown(
+    id: string,
+    role: NotebookUserRole,
+    status: NotebookUserStatus,
+    email: string,
+    permission: string
+  ) {
     if (role === NotebookUserRole.Owner) return null;
     const dropdown = {
       actions: [],

@@ -41,5 +41,5 @@ export class SemanticAnnotationSectionComponent implements OnInit {
   private getObject = (triple: SemanticTripleType): any => ({
     type: triple.objectType,
     ...triple.object
-  })
+  });
 }

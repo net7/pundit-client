@@ -32,7 +32,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
   /** dynamically update the document height on scroll */
   public height$: Subject<string> = new Subject();
 
-  public annotations: AnnotationConfig[] = null ;
+  public annotations: AnnotationConfig[] = null;
 
   public hypothesisAnnotations = [];
 
@@ -60,11 +60,11 @@ export class SidebarLayoutDS extends LayoutDataSource {
       this.hypothesisLabels.showHypo,
       { label: _t('userpopover#logout'), payload: 'clicklogout' },
     ]
-  }
+  };
 
   public fullpage = {
     isExpanded: false
-  }
+  };
 
   public labels = {
     fullpage: {
@@ -85,9 +85,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
       show: _t('sidebaractions#notifications_show')
     },
     collapse: _t('sidebaractions#collapse')
-  }
+  };
 
-  public usersList = []
+  public usersList = [];
 
   onInit(payload) {
     this.annotationService = payload.annotationService;

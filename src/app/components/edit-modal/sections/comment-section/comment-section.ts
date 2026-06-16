@@ -90,7 +90,7 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
       editor.setContent(initialValue);
       this.checkFocus();
     });
-  }
+  };
 
   private checkFocus = () => {
     const { focus } = this.data;
@@ -99,5 +99,5 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
         editor.focus();
       });
     }
-  }
+  };
 }

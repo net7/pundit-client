@@ -36,9 +36,7 @@ export class ReplyService {
       tap(({ data }) => {
         const { id } = data;
         const requestPayload = attributes;
-        const newReply = this.getReplyFromPayload(
-          id, requestPayload
-        );
+        const newReply = this.getReplyFromPayload(id, requestPayload);
         this.add(newReply);
 
         // analytics

@@ -213,8 +213,12 @@ export class NotebookService {
         pendingRead: this.createUsers(readPending, users, true, false),
         pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
       };
-      const userArray = userList.owner.concat(userList.read, userList.write,
-        userList.pendingRead, userList.pendingWrite);
+      const userArray = userList.owner.concat(
+        userList.read,
+        userList.write,
+        userList.pendingRead,
+        userList.pendingWrite
+      );
       this.sharedWithChanged$.next({
         users: userArray,
         openModal

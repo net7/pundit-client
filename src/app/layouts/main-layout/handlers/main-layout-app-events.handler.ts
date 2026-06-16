@@ -227,7 +227,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     if (payload?.callback) {
       payload.callback();
     }
-  }
+  };
 
   private onRefresh() {
     // reset
@@ -254,7 +254,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
       this.layoutDS.openEditModal(openModalConfig);
     });
-  }
+  };
 
   private buildEditModalConf = (pendingAnnotation: Annotation, type: string): EditModalParams => {
     const isTagging = type !== 'tagging ';
@@ -288,5 +288,5 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       },
       sections
     };
-  }
+  };
 }
