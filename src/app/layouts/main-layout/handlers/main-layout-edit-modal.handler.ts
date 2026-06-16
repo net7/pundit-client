@@ -1,6 +1,6 @@
 import { _t } from '@net7/core';
 import { SemanticTripleType } from '@pundit/communication';
-import { EMPTY, of } from 'rxjs';
+import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
 import {
@@ -184,7 +184,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
 
   private onEditModalSave(payload) {
     const isUpdate = this.isUpdate();
-    let source$ = of(null);
+    let source$: Observable<any> = of(null);
     if (isUpdate) {
       const updateRequestPayload = this.getEditRequestPayload(
         this.layoutDS.state.annotation.updatePayload,

@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from '@net7/annotator';
 
 class TooltipModel {
-  public changed$: Subject<any> = new Subject();
+  public changed$: Subject<void> = new Subject<void>();
 
   private instance;
 

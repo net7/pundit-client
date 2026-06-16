@@ -6,7 +6,7 @@ import { fromEvent, Subject } from 'rxjs';
  * sends a signal (changed$) when the event occurs
  */
 class SelectionModel {
-  public changed$: Subject<any> = new Subject();
+  public changed$: Subject<void> = new Subject<void>();
 
   private currentSelection: Selection | null;
 

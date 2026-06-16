@@ -13,7 +13,7 @@ export class ModalComponent implements OnDestroy {
 
   status: modalStateType = 'SIGNIN';
 
-  private destroyed$ = new Subject();
+  private destroyed$ = new Subject<void>();
 
   constructor(private modalService: ModalService) {
     this.status = 'SIGNIN';
