@@ -1,8 +1,8 @@
 // ------------------------------------ //
 // #TIPPY
 // ------------------------------------ //
-@import "../../node_modules/tippy.js/dist/tippy.css";
-@import "../../node_modules/tippy.js/themes/light-border.css";
+// NOTE: tippy's plain-CSS imports live at the top of app.component.scss so they
+// resolve at the top level (a nested CSS @import inside :host is invalid).
 
 
 // ------------------------------------ //

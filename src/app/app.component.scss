@@ -1,3 +1,11 @@
+// Top-level imports: plain CSS @imports must come before any rule.
+// Google Fonts is a remote url() import (cannot be inlined); the tippy imports
+// drop the .css extension so Dart Sass inlines their contents instead of
+// emitting a (here nested, invalid) CSS @import at-rule.
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+@import "../../node_modules/tippy.js/dist/tippy";
+@import "../../node_modules/tippy.js/themes/light-border";
+
 :host {
     // fix tagify root variables
     --tagify-dd-color-primary: rgb(53,149,246);

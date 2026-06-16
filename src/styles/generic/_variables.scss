@@ -20,7 +20,9 @@ $grid-gutter-v: $space;
 // ------------------------------------ //
 // FONTS
 // ------------------------------------ //
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+// NOTE: the Google Fonts @import lives at the top of app.component.scss.
+// A plain CSS @import (remote url) must be top-level; nested inside :host it
+// would be emitted as an invalid non-top-level @import.
 
 
 // ------------------------------------ //
