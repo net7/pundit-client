@@ -79,10 +79,10 @@ export class NotebookShareModalDS extends DataSource {
   // }
 
   // FIXME: temporary autocomplete
-  public updateAutocompleteResults({ response, query }) {
+  public updateAutocompleteResults({ query, response }) {
+    void response;
     const { autocomplete } = this.output.body.formSection;
-    let results = response || [];
-    results = [];
+    let results = [];
     // check email format in query
     if (this.validateEmail(query)) {
       const email = query.trim();

@@ -107,6 +107,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
+  // eslint-disable-next-line complexity -- Existing edit-modal assembly branches predate the flat-config migration.
   private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
     const annotation = data$.getValue();

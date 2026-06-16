@@ -198,25 +198,23 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
   }
 
-  private onEditModalSave(payload) {
+  private onEditModalSave(payload): Observable<any> {
     const isUpdate = this.isUpdate();
-    let source$: Observable<any> = of(null);
     if (isUpdate) {
       const updateRequestPayload = this.getEditRequestPayload(
         this.layoutDS.state.annotation.updatePayload,
         payload
       );
-      source$ = of({ requestPayload: updateRequestPayload, isUpdate });
-    } else {
-      const pendingRequestPayload = this.getEditRequestPayload(
-        this.layoutDS.state.annotation.pendingPayload,
-        payload
-      );
-      source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
+      return of({ requestPayload: updateRequestPayload, isUpdate });
     }
-    return source$;
+    const pendingRequestPayload = this.getEditRequestPayload(
+      this.layoutDS.state.annotation.pendingPayload,
+      payload
+    );
+    return this.layoutDS.saveAnnotation(pendingRequestPayload);
   }
 
+  // eslint-disable-next-line complexity -- Existing payload assembly branches predate the flat-config migration.
   private getEditRequestPayload(annotationPayload, formState: EditModalFormState) {
     const notebook = formState?.notebook?.value || null;
     const comment = typeof formState?.comment?.value === 'string'

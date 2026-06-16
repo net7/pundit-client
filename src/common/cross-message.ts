@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import { CrossMsgData, CommonEventType } from './types';
@@ -33,7 +32,6 @@ if (addEventListener) {
 export function CrossMessage(requestId: string) {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
-    // eslint-disable-next-line func-names
     descriptor.value = function (...args) {
       let result;
       if (crossMessageEnabled()) {

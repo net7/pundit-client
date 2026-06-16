@@ -1,5 +1,3 @@
-/* eslint-disable camelcase */
-
 import { config } from './app/models/config';
 
 const OVERRIDABLE_CONFIG_PARAMETERS = [

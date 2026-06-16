@@ -146,6 +146,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     }
   }
 
+  // eslint-disable-next-line complexity -- Existing semantic row construction predates the flat-config migration.
   addRow(
     predicate: SemanticItem = {} as SemanticItem,
     object: SemanticItem = {} as SemanticItem,

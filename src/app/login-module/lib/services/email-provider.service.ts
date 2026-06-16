@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy } from '@angular/core';
 import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';

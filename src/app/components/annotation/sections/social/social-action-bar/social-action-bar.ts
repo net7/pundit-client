@@ -167,6 +167,7 @@ export class SocialActionBarComponent implements OnInit {
     }
   }
 
+  // eslint-disable-next-line complexity -- Existing social-state merge branches predate the flat-config migration.
   private updateSocialState = (newStats: SocialStats) => {
     const oldStats: SocialStats = {
       totalLikes: this.state?.like?.total || 0,

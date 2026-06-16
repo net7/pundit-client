@@ -3,7 +3,7 @@
     class="pnd-sidebar"
      [ngClass]="{
         'is-collapsed': (ds.isCollapsed | async),
-        'is-expanded': !(ds.isCollapsed | async),
+        'is-expanded': (ds.isCollapsed | async) === false,
         'has-notebook-panel-open': (lb.dataSource.notebookEditor | async),
         'has-fullpage-open': (ds.annotationService.showPageAnnotations$ | async)
     }">
@@ -16,7 +16,7 @@
     <!-- Header -->
     <div class="pnd-sidebar__header">
       <div class="pnd-sidebar__user-name">
-        @if (!(ds.userService.logged$ | async)) {
+        @if ((ds.userService.logged$ | async) === false) {
           <a (click)="lb.eventHandler.emitInner('requestlogin')"
           class="pnd-sidebar__header-login">Login</a>
           <span class="pnd-sidebar__header-separator"></span>
@@ -106,7 +106,7 @@
     @if (
       (ds.userService.logged$ | async)
       && (ds.annotationService.showPageAnnotations$ | async)
-      && !(ds.isCollapsed | async)
+      && (ds.isCollapsed | async) === false
       ) {
       <div class="pnd-dropdown {{ ds.fullpage.isExpanded ? 'is-expanded' : '' }}">
         <!-- Selected element -->
@@ -151,7 +151,7 @@
         </annotation>
       }
     } @else {
-      @if (!(ds.isCollapsed | async)) {
+      @if ((ds.isCollapsed | async) === false) {
         <div class="pnd-sidebar__loader-wrapper">
           <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
         </div>

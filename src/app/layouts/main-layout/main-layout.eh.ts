@@ -116,6 +116,7 @@ export class MainLayoutEH extends EventHandler {
     });
   }
 
+  // eslint-disable-next-line complexity -- Existing error routing branches predate the flat-config migration.
   public handleError(error) {
     let { status } = error;
     if (error.response) {

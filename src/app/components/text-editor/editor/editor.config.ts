@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { DOMOutputSpec, Schema } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { schema as baseSchema } from 'prosemirror-schema-basic';

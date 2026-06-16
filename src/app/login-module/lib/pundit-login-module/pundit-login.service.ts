@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { Injectable } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { LoginResponse } from '@pundit/communication';
