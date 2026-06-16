@@ -41,6 +41,7 @@ export type SemanticFormRow = {
     providerId: string;
     type?: 'literal' | 'uri';
     placeholder?: string;
+    altValue?: string;
   };
   actions: {
     isExpanded: boolean;

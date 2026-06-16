@@ -1,168 +1,169 @@
-<div *ngIf="lb.dataSource as ds"
-     class="pnd-sidebar"
+@if (lb.dataSource; as ds) {
+  <div
+    class="pnd-sidebar"
      [ngClass]="{
         'is-collapsed': (ds.isCollapsed | async),
         'is-expanded': !(ds.isCollapsed | async),
         'has-notebook-panel-open': (lb.dataSource.notebookEditor | async),
         'has-fullpage-open': (ds.annotationService.showPageAnnotations$ | async)
     }">
-    
     <!-- Pundit Logo toggle -->
     <div class="pnd-sidebar__logo"
-        (click)="lb.eventHandler.emitInner('clicklogo')">
-        <pnd-svg-icon [data]="{ id: 'pundit' }"></pnd-svg-icon>
+      (click)="lb.eventHandler.emitInner('clicklogo')">
+      <pnd-svg-icon [data]="{ id: 'pundit' }"></pnd-svg-icon>
     </div>
     <!-- END // Pundit Logo toggle -->
-
     <!-- Header -->
     <div class="pnd-sidebar__header">
-        <div class="pnd-sidebar__user-name">
-            <ng-container *ngIf="!(ds.userService.logged$ | async)">
-                <a (click)="lb.eventHandler.emitInner('requestlogin')"
-                    class="pnd-sidebar__header-login">Login</a>
-                <span class="pnd-sidebar__header-separator"></span>
-                <a (click)="lb.eventHandler.emitInner('requestregister')"
-                    class="pnd-sidebar__header-register">Register</a>
-            </ng-container>
-            <ng-container *ngIf="ds.userService.logged$ | async">
-                <span (click)="ds.onUsernameClick($event)">
-                    <!-- <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link"> -->
-                    {{ ds.userService.whoami().username }}
-                    <!-- </a> -->
-                </span>
-            </ng-container>
-        </div>
-        <!-- User popover -->
-        <ng-container *ngIf="ds.userPopover.isOpen | async">
-            <div class="pnd-sidebar__user-popover">
-                <ul class="pnd-sidebar__user-popover-list">
-                    <ng-container *ngFor="let item of ds.userPopover.items">
-                        <ng-container *ngIf="item.href">
-                            <li class="pnd-sidebar__user-popover-item">
-                                <a [href]="item.href" target="_blank">
-                                    {{ item.label }}
-                                </a>
-                            </li>
-                        </ng-container>
-                        <ng-container *ngIf="item.payload">
-                            <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
-                                {{ item.label }}
-                            </li>
-                        </ng-container>
-                    </ng-container>
-                </ul>
-            </div>
-        </ng-container>
-        <div  class="pnd-sidebar__actions">
-            <ng-container *ngIf="ds.userService.logged$ | async">
-                <a [href]="ds.notificationsLink" target="_blank" class="pnd-sidebar__action is-bell"
-                [title]="ds.labels.notifications.show"
+      <div class="pnd-sidebar__user-name">
+        @if (!(ds.userService.logged$ | async)) {
+          <a (click)="lb.eventHandler.emitInner('requestlogin')"
+          class="pnd-sidebar__header-login">Login</a>
+          <span class="pnd-sidebar__header-separator"></span>
+          <a (click)="lb.eventHandler.emitInner('requestregister')"
+          class="pnd-sidebar__header-register">Register</a>
+        }
+        @if (ds.userService.logged$ | async) {
+          <span (click)="ds.onUsernameClick($event)">
+            <!-- <a [href]="ds.userLink"  target="_blank" class="pnd-sidebar__user-name-link"> -->
+            {{ ds.userService.whoami().username }}
+          <!-- </a> -->
+        </span>
+      }
+    </div>
+    <!-- User popover -->
+    @if (ds.userPopover.isOpen | async) {
+      <div class="pnd-sidebar__user-popover">
+        <ul class="pnd-sidebar__user-popover-list">
+          @for (item of ds.userPopover.items; track item) {
+            @if (item.href) {
+              <li class="pnd-sidebar__user-popover-item">
+                <a [href]="item.href" target="_blank">
+                  {{ item.label }}
+                </a>
+              </li>
+            }
+            @if (item.payload) {
+              <li class="pnd-sidebar__user-popover-item" (click)="lb.eventHandler.emitInner(item.payload)">
+                {{ item.label }}
+              </li>
+            }
+          }
+        </ul>
+      </div>
+    }
+    <div  class="pnd-sidebar__actions">
+      @if (ds.userService.logged$ | async) {
+        <a [href]="ds.notificationsLink" target="_blank" class="pnd-sidebar__action is-bell"
+          [title]="ds.labels.notifications.show"
                 [ngClass]="{
                     'is-active': ds.userService.dashboardNotifications$ | async
                 }">
-                    <pnd-svg-icon [data]="{ id: 'bell' }">
-                    </pnd-svg-icon>
-                    <ng-container *ngIf="(ds.userService.dashboardNotifications$ | async)">
-                        <span class="pnd-sidebar__action__badge">{{ds.userService.dashboardNotifications$ | async}}</span>
-                    </ng-container>
-                </a>
-            </ng-container>
-            <a class="pnd-sidebar__action"
-            [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
+          <pnd-svg-icon [data]="{ id: 'bell' }">
+          </pnd-svg-icon>
+          @if ((ds.userService.dashboardNotifications$ | async)) {
+            <span class="pnd-sidebar__action__badge">{{ds.userService.dashboardNotifications$ | async}}</span>
+          }
+        </a>
+      }
+      <a class="pnd-sidebar__action"
+        [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
             [ngClass]="{
                 'is-active': ds.annotationService.showPageAnnotations$ | async
             }" 
-            (click)="lb.eventHandler.emitInner('pageannotationpanel')">
-                <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
-            </a>
-            <ng-container *ngIf="ds.userService.logged$ | async">
-                <a class="pnd-sidebar__action pnd-sidebar__notebook-panel"
-                [title]="(ds.notebookEditor | async) ? ds.labels.notebookpanel.hide : ds.labels.notebookpanel.show"
+        (click)="lb.eventHandler.emitInner('pageannotationpanel')">
+        <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
+      </a>
+      @if (ds.userService.logged$ | async) {
+        <a class="pnd-sidebar__action pnd-sidebar__notebook-panel"
+          [title]="(ds.notebookEditor | async) ? ds.labels.notebookpanel.hide : ds.labels.notebookpanel.show"
                 [ngClass]="{
                     'is-active': ds.notebookEditor | async
                 }"
-                (click)="lb.eventHandler.emitInner('notebookpanel')">
-                 <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
-             </a>
-             <a class="pnd-sidebar__action pnd-sidebar__close-button"
-                [title]="ds.labels.collapse"
-                (click)="lb.eventHandler.emitInner('sidebarclose')">
-                 <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
-             </a>
-            </ng-container>
-        
+          (click)="lb.eventHandler.emitInner('notebookpanel')">
+          <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
+        </a>
+        <a class="pnd-sidebar__action pnd-sidebar__close-button"
+          [title]="ds.labels.collapse"
+          (click)="lb.eventHandler.emitInner('sidebarclose')">
+          <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
+        </a>
+      }
+    </div>
+  </div>
+  <!-- END // Header -->
+  <!-- Notebook popover -->
+  @if (
+    (ds.userService.logged$ | async) &&
+    (lb.dataSource.notebookEditor | async)
+    ) {
+    <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
+  }
+  <!-- END // Notebook popover -->
+  <!-- Sidebar content -->
+  <div class="pnd-sidebar__content"
+    [style.height]="ds.height$ | async">
+    @if (
+      (ds.userService.logged$ | async)
+      && (ds.annotationService.showPageAnnotations$ | async)
+      && !(ds.isCollapsed | async)
+      ) {
+      <div class="pnd-dropdown {{ ds.fullpage.isExpanded ? 'is-expanded' : '' }}">
+        <!-- Selected element -->
+        <button class="pnd-dropdown__selected"
+          (click)="ds.onFullpageDropdownToggle()">
+          <div class="pnd-dropdown__selected-label" title="{{ ds.labels.fullpage.add }}">
+            {{ ds.labels.fullpage.add }}
+          </div>
+          <div class="pnd-dropdown__selected-right-icon">
+            @if (!ds.fullpage.isExpanded) {
+              <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+            }
+            @if (ds.fullpage.isExpanded) {
+              <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+            }
+          </div>
+        </button>
+        <!-- END // Selected element -->
+        <!-- Dropdown items -->
+        <div class="pnd-dropdown__list-wrapper">
+          <!-- list of predicate options -->
+          <div class="pnd-dropdown__list-items">
+            @for (type of ['tagging', 'commenting', 'linking']; track type) {
+              <div class="pnd-dropdown__item"
+                (click)="lb.eventHandler.emitInner('newfullpage', type)">
+                {{ ds.labels.fullpage.options[type] }}
+              </div>
+            }
+          </div>
         </div>
-    </div>
-    <!-- END // Header -->
-
-    <!-- Notebook popover -->
-    <ng-container *ngIf="
-        (ds.userService.logged$ | async) && 
-        (lb.dataSource.notebookEditor | async)
-    ">
-        <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
-    </ng-container>
-    <!-- END // Notebook popover -->
-
-    <!-- Sidebar content -->
-    <div class="pnd-sidebar__content"
-         [style.height]="ds.height$ | async">
-         <ng-container *ngIf="
-            (ds.userService.logged$ | async) 
-            && (ds.annotationService.showPageAnnotations$ | async)
-            && !(ds.isCollapsed | async)
-        ">
-            <div class="pnd-dropdown {{ ds.fullpage.isExpanded ? 'is-expanded' : '' }}">
-                <!-- Selected element -->
-                <button class="pnd-dropdown__selected"
-                    (click)="ds.onFullpageDropdownToggle()">
-                    <div class="pnd-dropdown__selected-label" title="{{ ds.labels.fullpage.add }}">
-                        {{ ds.labels.fullpage.add }}
-                    </div>
-                    <div class="pnd-dropdown__selected-right-icon">
-                        <pnd-svg-icon *ngIf="!ds.fullpage.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
-                        <pnd-svg-icon *ngIf="ds.fullpage.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
-                    </div>
-                </button>
-                <!-- END // Selected element -->
-                
-                <!-- Dropdown items -->
-                <div class="pnd-dropdown__list-wrapper">
-                    <!-- list of predicate options -->
-                    <div class="pnd-dropdown__list-items">
-                        <ng-container *ngFor="let type of ['tagging', 'commenting', 'linking']">
-                            <div class="pnd-dropdown__item"
-                            (click)="lb.eventHandler.emitInner('newfullpage', type)">
-                                {{ ds.labels.fullpage.options[type] }}
-                            </div>
-                        </ng-container>
-                    </div>
-                </div>
-                <!-- END // Dropdown items -->
-            </div>
-         </ng-container>
-         <ng-container *ngIf="lb.dataSource.annotations; else annotationloader">
-            <ng-container *ngFor="let annotation of lb.dataSource.annotations">
-                <annotation [ngClass]="annotation"
-                            [data$]="annotation.data$"
-                            [state$]="annotation.state$"
-                            [emit]="lb.widgets['annotation'].emit"
-                            [annotationId]="annotation.id"
-                            [serializedBy]="annotation.data$.value.serializedBy">
-                </annotation>
-            </ng-container>
-        </ng-container>
-        <ng-template #annotationloader>
-            <div *ngIf="!(ds.isCollapsed | async)" class="pnd-sidebar__loader-wrapper">
-                <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-            </div>
-        </ng-template>
-    </div>
-    <!-- END //Sidebar content -->
+        <!-- END // Dropdown items -->
+      </div>
+    }
+    @if (lb.dataSource.annotations) {
+      @for (annotation of lb.dataSource.annotations; track annotation) {
+        <annotation [ngClass]="annotation"
+          [data$]="annotation.data$"
+          [state$]="annotation.state$"
+          [emit]="lb.widgets['annotation'].emit"
+          [annotationId]="annotation.id"
+          [serializedBy]="annotation.data$.value.serializedBy">
+        </annotation>
+      }
+    } @else {
+      @if (!(ds.isCollapsed | async)) {
+        <div class="pnd-sidebar__loader-wrapper">
+          <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+        </div>
+      }
+    }
+  </div>
+  <!-- END //Sidebar content -->
 </div>
+}
 
 
 <ng-template #notebookpanel>
-    <notebook-panel [data]="lb.widgets['notebook-panel'].ds.out$ | async"
-                    [emit]="lb.widgets['notebook-panel'].emit"></notebook-panel>
+  <notebook-panel [data]="lb.widgets['notebook-panel'].ds.out$ | async"
+  [emit]="lb.widgets['notebook-panel'].emit"></notebook-panel>
 </ng-template>

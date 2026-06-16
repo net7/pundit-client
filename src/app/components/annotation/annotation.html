@@ -1,4 +1,5 @@
-<div *ngIf="(state$ | async) as state" class="pnd-annotation {{ state?.classes || ''}}"
+@if ((state$ | async); as state) {
+  <div class="pnd-annotation {{ state?.classes || ''}}"
     [ngClass]="{
         'is-collapsed': state?.isCollapsed,
         'is-expanded': !state?.isCollapsed,
@@ -6,38 +7,38 @@
         'is-fullpage': !(data$ | async)?.subject?.selected
     }"
     (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
-
-    <ng-container *ngIf="!state.isCollapsed">
-        <!-- view the full annotation -->
-        <ng-container *ngTemplateOutlet="expanded"></ng-container>
-    </ng-container>
-
-    <ng-container *ngIf="state.isCollapsed">
-        <!-- minimal view of the annotation -->
-        <ng-container *ngTemplateOutlet="collapsed"></ng-container>
-    </ng-container>
-</div>
+    @if (!state.isCollapsed) {
+      <!-- view the full annotation -->
+      <ng-container *ngTemplateOutlet="expanded"></ng-container>
+    }
+    @if (state.isCollapsed) {
+      <!-- minimal view of the annotation -->
+      <ng-container *ngTemplateOutlet="collapsed"></ng-container>
+    }
+  </div>
+}
 
 <ng-template #expanded>
-    <!-- Header -->
-    <pnd-header-annotation-section [data$]="data$" [emit]="emit" [state$]="state$" [annotationId]="annotationId" [serializedBy]="serializedBy">
-    </pnd-header-annotation-section>
-    <!-- END // Header -->
-    <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
-    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
-    <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
-    <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
-    <pnd-social-annotation-section 
-    *ngIf="serializedBy !== 'hypothesis'"
-    [emit]="emit"
-    [socials$]="socials$"
-    [replies$]="replies$" 
+  <!-- Header -->
+  <pnd-header-annotation-section [data$]="data$" [emit]="emit" [state$]="state$" [annotationId]="annotationId" [serializedBy]="serializedBy">
+  </pnd-header-annotation-section>
+  <!-- END // Header -->
+  <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
+  <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+  <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
+  <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
+  @if (serializedBy !== 'hypothesis') {
+    <pnd-social-annotation-section
+      [emit]="emit"
+      [socials$]="socials$"
+      [replies$]="replies$"
     [annotationId]="annotationId"></pnd-social-annotation-section>
+  }
 </ng-template>
 
 <ng-template #collapsed>
-    <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
-    <ng-container *ngIf="(data$ | async)?.subject.selected">
-        <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
-    </ng-container>
+  <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
+  @if ((data$ | async)?.subject.selected) {
+    <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
+  }
 </ng-template>

@@ -1,7 +1,11 @@
-<div class="pnd-annotation__tags" *ngIf="(tags$ | async) as tags">
-    <span *ngFor="let tag of tags" [ngStyle]="{
+@if ((tags$ | async); as tags) {
+  <div class="pnd-annotation__tags">
+    @for (tag of tags; track tag) {
+<span [ngStyle]="{
             'background-color': tag.color
         }" class="pnd-annotation__tags-item">
         {{ tag.label }}
-    </span>
-</div>
+      </span>
+    }
+  </div>
+}

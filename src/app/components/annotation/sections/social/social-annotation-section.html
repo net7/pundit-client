@@ -1,15 +1,15 @@
 <div class="pnd-annotation__social">
-    <pnd-social-action-bar 
+  <pnd-social-action-bar
     [socials$]="socials$"
-    [replies$]="replies$" 
+    [replies$]="replies$"
     [annotationId]="annotationId"
     [emit]="emit"
     [actions]="ACTIONS"
     >
-</pnd-social-action-bar>
+  </pnd-social-action-bar>
 </div>
 
-<ng-container *ngFor="let reply of (replies$ | async)">
-    <pnd-annotation-reply [data]="reply" [emit]="emit" [annotationId]="annotationId">
-    </pnd-annotation-reply>
-</ng-container>
+@for (reply of (replies$ | async); track reply) {
+  <pnd-annotation-reply [data]="reply" [emit]="emit" [annotationId]="annotationId">
+  </pnd-annotation-reply>
+}

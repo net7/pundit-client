@@ -39,6 +39,7 @@ export type AnnotationState = {
   isNotebookSelectorLoading: boolean;
   source: 'box';
   isCollapsed: boolean;
+  classes?: AnnotationCssClass;
 }
 
 export type AnnotationConfig = {

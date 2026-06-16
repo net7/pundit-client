@@ -8,6 +8,7 @@ export type AppEventData = {
 export interface AnchorHref {
   href: string;
   target?: '_self' | '_blank' | '_parent' | '_top';
+  payload?: any;
 }
 
 export interface AnchorPayload {
