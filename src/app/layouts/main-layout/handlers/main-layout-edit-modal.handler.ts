@@ -29,103 +29,9 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         case EditModalEvent.Close:
           this.onEditModalClose();
           break;
-        case EditModalEvent.Save: {
-          const isUpdate = this.isUpdate();
-          let workingToast: ToastInstance;
-          if (!isUpdate) {
-            // toast "working..."
-            workingToast = this.layoutDS.toastService.working();
-          }
-          this.onEditModalSave(payload).pipe(
-            catchError((e) => {
-              this.layoutEH.handleError(e);
-              // toast
-              this.layoutDS.toastService.error({
-                title: _t('toast#annotationsave_error_title'),
-                text: _t('toast#annotationsave_error_text'),
-                timer: _c('toastTimer'),
-                onLoad: () => {
-                  workingToast.close();
-                }
-              });
-              return EMPTY;
-            }),
-            filter((data) => data)
-          ).subscribe((data) => {
-            // clear previous annotation payload
-            this.layoutDS.state.annotation.pendingPayload = null;
-            this.layoutDS.state.annotation.updatePayload = null;
-
-            if (data.isUpdate) {
-              // signal
-              this.layoutEH.appEvent$.next({
-                type: AppEvent.CommentUpdate,
-                payload: data.requestPayload
-              });
-            } else {
-              // signal
-              this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
-                payload: data
-              });
-              this.layoutEH.appEvent$.next({
-                type: AppEvent.AnnotationCreateSuccess,
-                payload: data
-              });
-
-              // toast
-              this.layoutDS.toastService.success({
-                title: _t('toast#annotationsave_success_title'),
-                text: _t('toast#annotationsave_success_text'),
-                timer: _c('toastTimer'),
-                onLoad: () => {
-                  workingToast.close();
-                }
-              });
-
-              // update tags;
-              this.layoutDS.tagService.addMany(data?.tags);
-
-              // analytics
-              let analyticsData: AnalyticsData;
-              // comment
-              if (data.type === 'Commenting') {
-                analyticsData = {
-                  action: AnalyticsAction.CommentAnnotationCreated,
-                  payload: {
-                    scope: 'fragment'
-                  }
-                };
-              // semantic
-              } else if (data.type === 'Linking') {
-                const { content }: { content: SemanticTripleType[] } = data;
-                analyticsData = {
-                  action: AnalyticsAction.SemanticAnnotationCreated,
-                  payload: {
-                    scope: 'fragment',
-                    predicate: content.map(({ predicate }) => predicate.label),
-                    'object-type': content.map(({ objectType }) => objectType),
-                    'object-lod': content.map((triple) => (
-                      triple.objectType === 'uri'
-                        ? triple.object.label
-                        : null
-                    )),
-                    'number-triples': content.length,
-                  }
-                };
-              // tags
-              } else if (Array.isArray(data.tags) && data.tags.length) {
-                analyticsData = {
-                  action: AnalyticsAction.TagAnnotationCreated,
-                  payload: {
-                    scope: 'fragment',
-                    tags: data.tags
-                  }
-                };
-              }
-              AnalyticsModel.track(analyticsData);
-            }
-          });
-        } break;
+        case EditModalEvent.Save:
+          this.onEditModalSaveEvent(payload);
+          break;
         case EditModalEvent.CreateNotebookError:
           this.onCreateNotebookError(payload);
           break;
@@ -136,6 +42,112 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           break;
       }
     });
+  }
+
+  private onEditModalSaveEvent(payload) {
+    const isUpdate = this.isUpdate();
+    let workingToast: ToastInstance;
+    if (!isUpdate) {
+      // toast "working..."
+      workingToast = this.layoutDS.toastService.working();
+    }
+    this.onEditModalSave(payload).pipe(
+      catchError((e) => {
+        this.layoutEH.handleError(e);
+        // toast
+        this.layoutDS.toastService.error({
+          title: _t('toast#annotationsave_error_title'),
+          text: _t('toast#annotationsave_error_text'),
+          timer: _c('toastTimer'),
+          onLoad: () => {
+            workingToast.close();
+          }
+        });
+        return EMPTY;
+      }),
+      filter((data) => data)
+    ).subscribe((data) => {
+      // clear previous annotation payload
+      this.layoutDS.state.annotation.pendingPayload = null;
+      this.layoutDS.state.annotation.updatePayload = null;
+
+      if (data.isUpdate) {
+        // signal
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.CommentUpdate,
+          payload: data.requestPayload
+        });
+      } else {
+        this.onAnnotationCreated(data, workingToast);
+      }
+    });
+  }
+
+  private onAnnotationCreated(data, workingToast: ToastInstance) {
+    // signal
+    this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
+      payload: data
+    });
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.AnnotationCreateSuccess,
+      payload: data
+    });
+
+    // toast
+    this.layoutDS.toastService.success({
+      title: _t('toast#annotationsave_success_title'),
+      text: _t('toast#annotationsave_success_text'),
+      timer: _c('toastTimer'),
+      onLoad: () => {
+        workingToast.close();
+      }
+    });
+
+    // update tags;
+    this.layoutDS.tagService.addMany(data?.tags);
+
+    // analytics
+    AnalyticsModel.track(this.getAnnotationCreatedAnalytics(data));
+  }
+
+  private getAnnotationCreatedAnalytics(data): AnalyticsData {
+    let analyticsData: AnalyticsData;
+    // comment
+    if (data.type === 'Commenting') {
+      analyticsData = {
+        action: AnalyticsAction.CommentAnnotationCreated,
+        payload: {
+          scope: 'fragment'
+        }
+      };
+    // semantic
+    } else if (data.type === 'Linking') {
+      const { content }: { content: SemanticTripleType[] } = data;
+      analyticsData = {
+        action: AnalyticsAction.SemanticAnnotationCreated,
+        payload: {
+          scope: 'fragment',
+          predicate: content.map(({ predicate }) => predicate.label),
+          'object-type': content.map(({ objectType }) => objectType),
+          'object-lod': content.map((triple) => (
+            triple.objectType === 'uri'
+              ? triple.object.label
+              : null
+          )),
+          'number-triples': content.length,
+        }
+      };
+    // tags
+    } else if (Array.isArray(data.tags) && data.tags.length) {
+      analyticsData = {
+        action: AnalyticsAction.TagAnnotationCreated,
+        payload: {
+          scope: 'fragment',
+          tags: data.tags
+        }
+      };
+    }
+    return analyticsData;
   }
 
   private onCreateNotebookError(payload) {
@@ -213,6 +225,17 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload.notebookId = notebook;
     }
     // check comment value
+    this.applyCommentPayload(annotationPayload, comment);
+    // check tags value
+    if (Array.isArray(tags)) {
+      annotationPayload.tags = tags.length ? tags : undefined;
+    }
+    // check semantic value
+    this.applySemanticPayload(annotationPayload, semantic);
+    return annotationPayload;
+  }
+
+  private applyCommentPayload(annotationPayload, comment) {
     if (comment) {
       annotationPayload.type = 'Commenting';
       annotationPayload.content = { comment };
@@ -220,33 +243,33 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload.type = 'Highlighting';
       annotationPayload.content = undefined;
     }
-    // check tags value
-    if (Array.isArray(tags)) {
-      annotationPayload.tags = tags.length ? tags : undefined;
+  }
+
+  private applySemanticPayload(annotationPayload, semantic) {
+    if (!Array.isArray(semantic)) {
+      return;
     }
-    // check semantic value
-    if (Array.isArray(semantic)) {
-      annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
-      annotationPayload.content = semantic.length
-        ? semantic.map((row) => {
-          const {
-            predicate, object, objectType
-          } = row;
-          // old semantic annotation check
-          if (object?.rdfTypes?.length) {
-            return row;
-          }
-          const objectPayload = this.getObjectPayload(object, objectType);
-          return {
-            predicate: {
-              label: predicate.label,
-              uri: predicate.uri
-            },
-            ...objectPayload
-          };
-        }) : undefined;
+    annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
+    annotationPayload.content = semantic.length
+      ? semantic.map((row) => this.getSemanticContentRow(row)) : undefined;
+  }
+
+  private getSemanticContentRow(row) {
+    const {
+      predicate, object, objectType
+    } = row;
+    // old semantic annotation check
+    if (object?.rdfTypes?.length) {
+      return row;
     }
-    return annotationPayload;
+    const objectPayload = this.getObjectPayload(object, objectType);
+    return {
+      predicate: {
+        label: predicate.label,
+        uri: predicate.uri
+      },
+      ...objectPayload
+    };
   }
 
   private getObjectPayload = (object, objectType: string) => {

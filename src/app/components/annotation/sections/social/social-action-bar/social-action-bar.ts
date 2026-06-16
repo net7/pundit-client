@@ -12,34 +12,9 @@ import { ReplyService } from 'src/app/services/reply.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
-import { ReplyFormState, ReplyType } from '../reply/reply';
+import { ReplyType } from '../reply/reply';
 import { } from '../social-annotation-section';
-
-type SocialBarState = {
-  like?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  dislike?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  report?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  endorse?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  reply?: {
-    madeByUser?: boolean;
-    total: number;
-    toggleForm?: boolean;
-    form: ReplyFormState;
-  };
-  isLogged: boolean;
-}
+import { SocialBarState, createInitialState, resetFormState } from './social-action-bar.helpers';
 
 @Component({
   selector: 'pnd-social-action-bar',
@@ -99,34 +74,10 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private initState = () => {
-    this.state = {
-      like: this.actions.includes('Like') ? { total: 0, } : undefined,
-      dislike: this.actions.includes('Dislike') ? { total: 0 } : undefined,
-      report: this.actions.includes('Report') ? { total: 0 } : undefined,
-      endorse: this.actions.includes('Endorse') ? { total: 0 } : undefined,
-      reply: this.actions.includes('Reply') ? { total: 0, form: this.resetFormState() } : undefined,
-      isLogged: false,
-    };
+    this.state = createInitialState(this.actions);
   };
 
-  private resetFormState = (newReply?: string) => {
-    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
-    return {
-      value: newReply,
-      placeholder: _t('social#reply_placeholder'),
-      actions: [{
-        label: _t('social#reply_cancel'),
-        source: 'cancel',
-        classes: 'pnd-btn-light'
-      }, {
-        label: _t('social#reply_save'),
-        source: 'save',
-        disabled: !isValidReply(newReply),
-        classes: 'pnd-btn-cta'
-      }],
-      isLoading: false
-    };
-  };
+  private resetFormState = (newReply?: string) => resetFormState(newReply);
 
   private setSocialState(socials: SocialStats) {
     if (this.state?.like) {

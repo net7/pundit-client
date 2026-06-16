@@ -9,7 +9,12 @@
     "SharedArrayBuffer": "readonly"
   },
   "ignorePatterns": [
-    "projects/**/*"
+    "projects/**/*",
+    "src/html-examples/**",
+    "src/index.html",
+    "src/**/pdf-viewer.html",
+    "src/chrome-ext/assets/**",
+    "src/**/svg-icon/*.html"
   ],
   "overrides": [
     {
@@ -44,7 +49,10 @@
         "no-useless-constructor": "off",
         "default-param-last": "off",
         "no-empty-function": "off",
-        "@typescript-eslint/no-empty-function": ["error", { "allow": ["constructors"] }]
+        "@typescript-eslint/no-empty-function": ["error", { "allow": ["constructors"] }],
+        "complexity": ["error", 10],
+        "max-lines": ["error", { "max": 300, "skipBlankLines": true, "skipComments": true }],
+        "max-lines-per-function": ["error", { "max": 100, "skipBlankLines": true, "skipComments": true }]
       }
     },
     {
@@ -54,17 +62,32 @@
       "env": {
         "jest": true
       },
-      "rules": {}
+      "rules": {
+        "max-lines-per-function": "off",
+        "max-lines": "off"
+      }
+    },
+    {
+      "files": [
+        "src/app/mocks/**/*.ts",
+        "src/**/*.mock.ts"
+      ],
+      "rules": {
+        "max-lines": "off",
+        "max-lines-per-function": "off"
+      }
     },
     {
       "files": [
         "*.html"
       ],
-      "extends": [
-        "plugin:@angular-eslint/template/recommended",
-        "plugin:@angular-eslint/template/accessibility"
+      "parser": "@angular-eslint/template-parser",
+      "plugins": [
+        "@angular-eslint/template"
       ],
-      "rules": {}
+      "rules": {
+        "max-lines": ["error", { "max": 200, "skipBlankLines": true }]
+      }
     }
   ]
 }

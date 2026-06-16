@@ -20,65 +20,72 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutEH.appEvent$.pipe(
       takeUntil(this.layoutEH.destroy$)
     ).subscribe(({ type, payload }) => {
-      switch (type) {
-        case AppEvent.KeyUpEscape:
-          this.onKeyupEscape();
-          this.layoutEH.emitOuter(getEventType(MainLayoutEvent.KeyUpEscape));
-          break;
-        case AppEvent.AnnotationDeleteClick:
-          this.onAnnotationDeleteClick(payload);
-          this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationDeleteClick));
-          break;
-        case AppEvent.AnnotationMouseEnter:
-          this.onAnnotationMouseEnter(payload);
-          break;
-        case AppEvent.AnnotationMouseLeave:
-          this.onAnnotationMouseLeave(payload);
-          break;
-        case AppEvent.AnnotationEditComment:
-          this.onAnnotationEdit(payload, 'comment');
-          break;
-        case AppEvent.AnnotationEditTags:
-          this.onAnnotationEdit(payload, 'tags');
-          break;
-        case AppEvent.AnnotationEditSemantic:
-          this.onAnnotationEdit(payload, 'semantic');
-          break;
-        case AppEvent.AnnotationNewFullPage:
-          this.onFullPageAnnotationCreate(payload);
-          break;
-        case AppEvent.SidebarCollapse:
-          this.onSidebarCollapse(payload);
-          break;
-        case AppEvent.SidebarLogoutClick:
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.Logout,
-            payload: {
-              callback: () => {
-                // emit signal
-                this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
-              }
-            }
-          });
-          break;
-        case AppEvent.Logout:
-          this.onLogout(payload);
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.Clear
-          });
-          break;
-        case AppEvent.Refresh:
-          this.onRefresh();
-          break;
-        case AppEvent.ClearAnonymousSelectionRange:
-          this.layoutDS.state.anonymousSelectionRange = null;
-          break;
-        default:
-          break;
-      }
+      this.handleAppEvent(type, payload);
 
       this.layoutEH.detectChanges();
     });
+  }
+
+  private handleAppEvent(type: string, payload?: any) {
+    const handlers: Record<string, () => void> = {
+      [AppEvent.KeyUpEscape]: () => {
+        this.onKeyupEscape();
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.KeyUpEscape));
+      },
+      [AppEvent.AnnotationDeleteClick]: () => {
+        this.onAnnotationDeleteClick(payload);
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationDeleteClick));
+      },
+      [AppEvent.AnnotationMouseEnter]: () => {
+        this.onAnnotationMouseEnter(payload);
+      },
+      [AppEvent.AnnotationMouseLeave]: () => {
+        this.onAnnotationMouseLeave(payload);
+      },
+      [AppEvent.AnnotationEditComment]: () => {
+        this.onAnnotationEdit(payload, 'comment');
+      },
+      [AppEvent.AnnotationEditTags]: () => {
+        this.onAnnotationEdit(payload, 'tags');
+      },
+      [AppEvent.AnnotationEditSemantic]: () => {
+        this.onAnnotationEdit(payload, 'semantic');
+      },
+      [AppEvent.AnnotationNewFullPage]: () => {
+        this.onFullPageAnnotationCreate(payload);
+      },
+      [AppEvent.SidebarCollapse]: () => {
+        this.onSidebarCollapse(payload);
+      },
+      [AppEvent.SidebarLogoutClick]: () => {
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.Logout,
+          payload: {
+            callback: () => {
+              // emit signal
+              this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+            }
+          }
+        });
+      },
+      [AppEvent.Logout]: () => {
+        this.onLogout(payload);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.Clear
+        });
+      },
+      [AppEvent.Refresh]: () => {
+        this.onRefresh();
+      },
+      [AppEvent.ClearAnonymousSelectionRange]: () => {
+        this.layoutDS.state.anonymousSelectionRange = null;
+      }
+    };
+
+    const handler = handlers[type];
+    if (handler) {
+      handler();
+    }
   }
 
   private onKeyupEscape() {

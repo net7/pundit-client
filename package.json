@@ -8,7 +8,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:mocha": "mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" \"src/**/*.html\"",
     "e2e": "ng e2e",
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
     "stylelint:watch": "onchange \"src/styles/**/*.scss\" -- npm run stylelint",
@@ -120,7 +120,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": [
+    "*.{ts,html}": [
       "eslint --fix"
     ],
     "*.scss": [
