@@ -77,6 +77,10 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           type: AppEvent.CommentUpdate,
           payload: data.requestPayload
         });
+        // close the edit modal — the create flow closes it via onAnnotationCreated;
+        // the update flow must emit the same close signal (EditModalEH listens to
+        // MainLayoutEvent.AnnotationCreated to run closeModal()).
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated));
       } else {
         this.onAnnotationCreated(data, workingToast);
       }

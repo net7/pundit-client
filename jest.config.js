@@ -6,6 +6,8 @@ module.exports = {
   globalSetup: 'jest-preset-angular/global-setup',
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   moduleFileExtensions: ['ts', 'html', 'js', 'json', 'mjs'],
+  // Resolve tsconfig baseUrl ('./') absolute imports like `src/app/...`.
+  modulePaths: ['<rootDir>'],
   transform: {
     '^.+\\.(ts|js|mjs|html|svg)$': [
       'jest-preset-angular',
