@@ -1,3 +1,6 @@
+@use "../generic/color-scheme";
+@use "../generic/variables";
+
 /**
  * TAGIFY
  *
@@ -8,23 +11,23 @@
    #TAGIFY
 \* ------------------------------------ */
 .tagify {
-    padding: $space*0.25 $space*0.25;
-    border-radius: $form-border-radius;
+    padding: variables.$space*0.25 variables.$space*0.25;
+    border-radius: variables.$form-border-radius;
     width: 100%;
 
     &:focus, &.tagify--focus {
-        border-color: $color-main;
+        border-color: color-scheme.$color-main;
     }
 
     .tagify__tag {
-        margin: $space*0.25;
+        margin: variables.$space*0.25;
         > div {
-            padding: $space*0.25 $space*0.5;
+            padding: variables.$space*0.25 variables.$space*0.5;
         }
     }
 
     .tagify__tag-text {
-        font-size: $font-size-s;
+        font-size: variables.$font-size-s;
     }
 
     .tagify__tag__removeBtn {
@@ -34,9 +37,9 @@
     }
 
     .tagify__input {
-        margin: $space*0.25;
-        padding: $space*0.25 $space*0.5;
-        font-size: $font-size-s;
+        margin: variables.$space*0.25;
+        padding: variables.$space*0.25 variables.$space*0.5;
+        font-size: variables.$font-size-s;
 
         &::before {
             line-height: 1.35;
@@ -46,29 +49,29 @@
 
 .tagify__dropdown {
     top: auto !important;
-    left: $space*2 !important;
+    left: variables.$space*2 !important;
 }
 
 .tagify__dropdown__wrapper {
     border-top-width: 1px;
-    border-color: $color-border-normal;
-    border-radius: $form-border-radius;
+    border-color: variables.$color-border-normal;
+    border-radius: variables.$form-border-radius;
 }
 
 .tagify__dropdown__item {
-    padding: $space;
+    padding: variables.$space;
 }
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */

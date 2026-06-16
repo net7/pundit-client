@@ -1,3 +1,7 @@
+@use "../generic/color-scheme";
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * TOAST
  *
@@ -9,32 +13,32 @@
 \* ------------------------------------ */
 .pnd-toast {
     position: fixed;
-    bottom: $space * 3;
-    left: $space * 3;
+    bottom: variables.$space * 3;
+    left: variables.$space * 3;
 
     &__box {
         position: relative;
-        width: $toast-max-width;
-        margin-top: $space * 2;
-        padding: $space * 2.5 $space * 2.5 $space * 2.5 $space * 2.5;
-        background-color: $toast-background-color;
+        width: variables.$toast-max-width;
+        margin-top: variables.$space * 2;
+        padding: variables.$space * 2.5 variables.$space * 2.5 variables.$space * 2.5 variables.$space * 2.5;
+        background-color: variables.$toast-background-color;
         border-top: 4px solid rgba(0, 0, 0, 0.12);
-        @include toastShadow;
+        @include mixins.toastShadow;
     }
 
     &__title {
         display: block;
-        margin-bottom: $space*0.5;
-        font-size: $font-size-l;
-        font-weight: $font-weight-bold;
-        color: $toast-title-color;
+        margin-bottom: variables.$space*0.5;
+        font-size: variables.$font-size-l;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$toast-title-color;
     }
 
     &__text {
         display: block;
         margin-bottom: 0;
-        font-size: $font-size-m;
-        color: $toast-text-color;
+        font-size: variables.$font-size-m;
+        color: variables.$toast-text-color;
         line-height: 1.4;
     }
 }
@@ -46,7 +50,7 @@
     display: flex;
 
     .pnd-toast__content {
-        margin-right: $space * 2;
+        margin-right: variables.$space * 2;
     }
 
     .pnd-toast__actions {
@@ -56,24 +60,24 @@
     }
 
     .pnd-toast__action-button:not(:last-child) {
-        margin-right: $space*0.5;
+        margin-right: variables.$space*0.5;
     }
 
     .pnd-toast__close-icon {
         position: absolute;
-        top: $space;
-        right: $space;
+        top: variables.$space;
+        right: variables.$space;
         cursor: pointer;
-        color: rgba($color-text-inverse, 0.75);
-        transition: color $transition-durations;
+        color: rgba(variables.$color-text-inverse, 0.75);
+        transition: color variables.$transition-durations;
 
         &:hover {
-            color: $color-text-inverse;
+            color: variables.$color-text-inverse;
         }
     }
 
     .pnd-toast__action-content {
-        margin-left: $space;
+        margin-left: variables.$space;
     }
 
     .pnd-toast__action-content:nth-child(1) {
@@ -89,7 +93,7 @@
     top: -4px;
     left: 0px;
     height: 4px;
-    background-color: $color-info;
+    background-color: color-scheme.$color-info;
     width: 0%;
     -webkit-transition: width 0.2s linear;
     -moz-transition: width 0.2s linear;
@@ -102,30 +106,30 @@
 \* ------------------------------------ */
 .pnd-toast .is-success {
     .pnd-toast__progress {
-        background-color: $color-success;
+        background-color: color-scheme.$color-success;
     }
 }
 
 .pnd-toast .is-info {
     .pnd-toast__progress {
-        background-color: $color-info;
+        background-color: color-scheme.$color-info;
     }
 }
 
 .pnd-toast .is-warning {
     .pnd-toast__progress {
-        background-color: $color-warning;
+        background-color: color-scheme.$color-warning;
     }
 }
 
 .pnd-toast .is-error {
     .pnd-toast__progress {
-        background-color: $color-error;
+        background-color: color-scheme.$color-error;
     }
 }
 
 .pnd-toast .is-working {
     .pnd-toast__progress {
-        background-color: $color-gray-04;
+        background-color: color-scheme.$color-gray-04;
     }
 }

@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * TYPOGRAPHY
  *
@@ -8,54 +10,54 @@
    #HEADINGS
 \* ------------------------------------ */
 h1, h2, h3, h4, h5, h6 {
-    font-weight: $font-weight-bold;
-    font-family: $font-family-headings;
+    font-weight: variables.$font-weight-bold;
+    font-family: variables.$font-family-headings;
     margin: 0;
     padding: 0;
-    color: $color-text;
+    color: variables.$color-text;
 }
 
 h1 {
-    font-size: $font-size-xl;
+    font-size: variables.$font-size-xl;
     line-height: 1.2;
     margin-bottom: .3em;
 }
 
 h2 {
-    font-size: $font-size-l;
+    font-size: variables.$font-size-l;
     line-height: 1.2;
     margin-bottom: .3em;
 }
 
 h3 {
-    font-size: $font-size-m;
+    font-size: variables.$font-size-m;
     line-height: 1.2;
     margin-bottom: .3em;
 }
 
 h4 {
-    font-size: $font-size-m;
+    font-size: variables.$font-size-m;
     line-height: 1.2;
     margin-bottom: .3em;
 }
 
 h5 {
-    font-size: $font-size-s;
+    font-size: variables.$font-size-s;
     line-height: 1.2;
     margin-bottom: .3em;
 }
 
 p, .single-content p {
-    margin: 0 0 $space*0.5 0;
+    margin: 0 0 variables.$space*0.5 0;
     padding: 0;
-    color: $color-text;
-    font-size: $font-size-m;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text;
+    font-size: variables.$font-size-m;
+    font-weight: variables.$font-weight-normal;
     line-height: 1.5;
 }
 
 b, strong {
-    font-weight: $font-weight-bold;
+    font-weight: variables.$font-weight-bold;
 }
 
 
@@ -63,11 +65,11 @@ b, strong {
    #LINKS
 \* ------------------------------------ */
 a {
-    font-size: $font-size-s;
-    color: $color-text;
-    transition: all $transition-durations;
+    font-size: variables.$font-size-s;
+    color: variables.$color-text;
+    transition: all variables.$transition-durations;
     text-decoration: underline;
-    text-decoration-color: rgba($color-text, .3);
+    text-decoration-color: rgba(variables.$color-text, .3);
     text-underline-offset: 5px;
 
     h1, h2, h3, h4, h5, h6 {
@@ -75,8 +77,8 @@ a {
     }
 
     &:hover, &:focus {
-        color: $color-text-link;
-        text-decoration-color: rgba($color-text-link, .7);
+        color: variables.$color-text-link;
+        text-decoration-color: rgba(variables.$color-text-link, .7);
     }
 }
 
@@ -88,5 +90,5 @@ hr {
     margin: 0;
     padding: 0;
     border: none;
-    border-top: 1px solid $color-border-normal;
+    border-top: 1px solid variables.$color-border-normal;
 }

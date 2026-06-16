@@ -8,63 +8,63 @@
 // ------------------------------------ //
 // #TAGIFY
 // ------------------------------------ //
-@import "../../node_modules/@yaireo/tagify/dist/tagify";
+@use "../../node_modules/@yaireo/tagify/dist/tagify";
 
 
 // ------------------------------------ //
 // #PUNDIT-COLOR-SCHEME
 // ------------------------------------ //
-@import "./generic/color-scheme";
+@use "generic/color-scheme";
 
 
 // ------------------------------------ //
 // #PUNDIT-GENERIC
 // ------------------------------------ //
-@import "./generic/variables";
-@import "./generic/mixins";
+@use "generic/variables";
+@use "generic/mixins";
 
 
 // ------------------------------------ //
 // #PUNDIT-GLOBAL
 // ------------------------------------ //
-@import "./global/forms";
-@import "./global/global";
+@use "global/forms";
+@use "global/global";
 
 
 // ------------------------------------ //
 // #PUNDIT-ATOMS
 // ------------------------------------ //
-@import "./atoms/button";
-@import "./atoms/dropdown";
+@use "atoms/button";
+@use "atoms/dropdown";
 
 
 // ------------------------------------ //
 // #PUNDIT-COMPONENTS
 // ------------------------------------ //
-@import "./components/annotation";
-@import "./components/annotation-form";
-@import "./components/loader";
-@import "./components/modal"; 
-@import "./components/edit-modal"; // After modal
-@import "./components/nav";
-@import "./components/notebook-panel";
-@import "./components/tooltip";
-@import "./components/notebook-selector";
-@import "./components/tagify";
-@import "./components/toast";
-@import "./components/text-editor";
-@import "./components/notebook-share-modal";
+@use "components/annotation";
+@use "components/annotation-form";
+@use "components/loader";
+@use "components/modal";
+@use "components/edit-modal"; // After modal
+@use "components/nav";
+@use "components/notebook-panel";
+@use "components/tooltip";
+@use "components/notebook-selector";
+@use "components/tagify" as tagify2;
+@use "components/toast";
+@use "components/text-editor";
+@use "components/notebook-share-modal";
 
 
 // ------------------------------------ //
 // #PUNDIT-LAYOUTS
 // ------------------------------------ //
-@import "./layouts/main";
-@import "./layouts/sidebar";
+@use "layouts/main";
+@use "layouts/sidebar";
 
 
 // ------------------------------------ //
 // #PUNDIT-UTILITIES
 // ------------------------------------ //
-@import "./utilities/grids";
-@import "./utilities/utilities";
+@use "utilities/grids";
+@use "utilities/utilities";

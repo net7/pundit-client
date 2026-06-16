@@ -1,3 +1,6 @@
+@use "../generic/color-scheme";
+@use "../generic/variables";
+
 /**
  * TEXT EDITOR
  *
@@ -5,16 +8,16 @@
  */
 .pnd-text-editor {
     width: 100%;
-    background-color: $color-gray-00;
-    border: 1px solid $color-gray-03;
-    border-radius: $border-radius;
-    font-size: $font-size-xs;
+    background-color: color-scheme.$color-gray-00;
+    border: 1px solid color-scheme.$color-gray-03;
+    border-radius: variables.$border-radius;
+    font-size: variables.$font-size-xs;
 }
 
 
 .pnd-text-editor {
     &__menu-wrapper {
-        background-color: $color-gray-02;
+        background-color: color-scheme.$color-gray-02;
     }
 
     &__menu {
@@ -35,7 +38,7 @@
 
     &__group:not(:last-child):after {
         border-left: 0;
-        border-right: 1px solid $color-gray-03;
+        border-right: 1px solid color-scheme.$color-gray-03;
         content: "";
         cursor: default;
         margin: 2px;
@@ -47,7 +50,7 @@
         padding: 0;
         align-items: center;
         border: 1px solid transparent;
-        border-radius: $border-radius;
+        border-radius: variables.$border-radius;
         display: flex;
         height: 26px;
         justify-content: center;
@@ -55,15 +58,15 @@
         overflow: hidden;
 
         &:hover {
-            background: $color-gray-03;
+            background: color-scheme.$color-gray-03;
         }
         
         &.is-active {
-            background: $color-gray-03;
+            background: color-scheme.$color-gray-03;
         }
 
         &.is-disabled {
-            color: $color-gray-04;
+            color: color-scheme.$color-gray-04;
 
             &:hover {
                 cursor: not-allowed;
@@ -84,10 +87,10 @@
     &__link {
         display: flex;
         align-items: center;
-        padding: $space;
-        border-top: 1px solid $color-gray-03;
-        background: $color-gray-00;
-        border-bottom: 1px solid $color-gray-03;
+        padding: variables.$space;
+        border-top: 1px solid color-scheme.$color-gray-03;
+        background: color-scheme.$color-gray-00;
+        border-bottom: 1px solid color-scheme.$color-gray-03;
     }
 
     &__link-label {
@@ -100,11 +103,11 @@
     }
 
     &__link-btn-cancel {
-        margin-left: $space;
+        margin-left: variables.$space;
     }
 
     &__link-btn-save {
-        margin-left: $space*0.5;
+        margin-left: variables.$space*0.5;
     }
 }
 
@@ -114,7 +117,7 @@
     }
 
     &__view {
-        padding: 0 $space;
+        padding: 0 variables.$space;
          
         .ProseMirror {
             position: relative;
@@ -138,7 +141,7 @@
         }
 
         .ProseMirror li p {
-            margin: $space * 0.5 0;
+            margin: variables.$space * 0.5 0;
         }
 
         .ProseMirror-hideselection *::selection {

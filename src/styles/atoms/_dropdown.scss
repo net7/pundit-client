@@ -1,3 +1,6 @@
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * DROPDOWN
  *
@@ -10,12 +13,12 @@
 .pnd-dropdown {
     position: relative;
     display: inline-block;
-    height: $notebook-selector-height;
+    height: variables.$notebook-selector-height;
     min-width: 80px;
     margin: 0;
     text-align: left;
     overflow: visible;
-    color: $color-text;
+    color: variables.$color-text;
     
     /* Selected element */
     &__selected {
@@ -25,19 +28,19 @@
         align-items: center;
         height: 28px;
         padding: 0 8px;
-        background-color: $color-background-light;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
+        background-color: variables.$color-background-light;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
         cursor: pointer;
-        transition: color $transition-durations;
+        transition: color variables.$transition-durations;
 
         &:hover {
             .pnd-dropdown__selected-icon {
-                color: $color-text-link;
+                color: variables.$color-text-link;
             }
 
             .pnd-dropdown__selected-right-icon {
-                color: $color-text-link;
+                color: variables.$color-text-link;
             }
         }
 
@@ -54,8 +57,8 @@
 
     &__selected-label {
         margin-right: auto;
-        font-size: $font-size-s;
-        font-weight: $font-weight-bold;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -68,26 +71,26 @@
         position: absolute;
         left: 0;
         right: 0;
-        top: $notebook-selector-height + 2;
-        background-color: $color-background-base;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        @include cardShadow-1;
+        top: variables.$notebook-selector-height + 2;
+        background-color: variables.$color-background-base;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        @include mixins.cardShadow-1;
     }
 
     &__item {
-        padding: $space*0.5 $space;
-        color: $color-text;
-        font-size: $font-size-s;
-        transition: color $transition-durations;
+        padding: variables.$space*0.5 variables.$space;
+        color: variables.$color-text;
+        font-size: variables.$font-size-s;
+        transition: color variables.$transition-durations;
         cursor: pointer;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         &:not(:last-child) {
-            border-bottom: 1px solid $color-border-normal;
+            border-bottom: 1px solid variables.$color-border-normal;
         }
 
         .pnd-svg-icon svg {
@@ -97,7 +100,7 @@
     }
 
     &__list-items {
-        max-height: $notebook-selector-list-max-height;
+        max-height: variables.$notebook-selector-list-max-height;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -115,7 +118,7 @@
 
         // the element of the list that represents the active notebook
         .pnd-dropdown__item.is-current {
-            font-weight: $font-weight-bold;
+            font-weight: variables.$font-weight-bold;
         }
     }
 }

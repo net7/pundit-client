@@ -1,3 +1,6 @@
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * NOTEBOOK PANEL
  *
@@ -12,28 +15,28 @@
     box-sizing: border-box;
     top: 56px;
     right: 0;
-    padding: $space*2;
-    width: $sidebar-exploded-width;
-    z-index: $z-index-sidebar - 1;
-    background-color: $color-background-base;
-    color: $color-text;
-    border-bottom: 1px solid $color-border-normal;
-    @include cardShadow-1;
+    padding: variables.$space*2;
+    width: variables.$sidebar-exploded-width;
+    z-index: variables.$z-index-sidebar - 1;
+    background-color: variables.$color-background-base;
+    color: variables.$color-text;
+    border-bottom: 1px solid variables.$color-border-normal;
+    @include mixins.cardShadow-1;
     
     /* Sections */
     &__section:not(:last-child) {
-        margin-bottom: $space*1.5;
-        padding-bottom: $space*2;
-        border-bottom: 1px solid $color-border-normal;
+        margin-bottom: variables.$space*1.5;
+        padding-bottom: variables.$space*2;
+        border-bottom: 1px solid variables.$color-border-normal;
     }
 
     /* Current notebook name */
     &__current-notebook-name {
         display: inline-block;
         // padding: $space/2 $space;
-        font-weight: $font-weight-bold;
-        font-size: $font-size-s;
-        border-radius: $border-radius;
+        font-weight: variables.$font-weight-bold;
+        font-size: variables.$font-size-s;
+        border-radius: variables.$border-radius;
         // background-color: $color-background-medium;
 
         .pnd-svg-icon svg {
@@ -50,17 +53,17 @@
 
     /* Utilities */
     .pnd-text {
-        margin-bottom: $space;
+        margin-bottom: variables.$space;
     }
 
     /* Status */
     &__current-notebook-status {
         display: inline-block;
-        margin-bottom: $space;
+        margin-bottom: variables.$space;
         // padding: $space/2 $space;
-        font-weight: $font-weight-bold;
-        font-size: $font-size-s;
-        border-radius: $border-radius;
+        font-weight: variables.$font-weight-bold;
+        font-size: variables.$font-size-s;
+        border-radius: variables.$border-radius;
         // background-color: $color-background-medium;
     }
     
@@ -70,8 +73,8 @@
 
         .pnd-btn {
             display: block; // ! To be removed when sharing will be implemented
-            margin-right: $space*0.5;
-            margin-bottom: $space*0.5; // ! To be removed when sharing will be implemented
+            margin-right: variables.$space*0.5;
+            margin-bottom: variables.$space*0.5; // ! To be removed when sharing will be implemented
         }
 
         .pnd-text-small {
@@ -85,18 +88,18 @@
     }
 
     &__share-button {
-        padding: 0 $space 0 $space * .5;
+        padding: 0 variables.$space 0 variables.$space * .5;
         span.button-label {
-            margin-left: $space;
+            margin-left: variables.$space;
             flex-grow: 1;
         }
         span.button-icon {
             display: block;
-            width: $font-size-s;
+            width: variables.$font-size-s;
             
             .pnd-svg-icon-plus svg {
-                width: $font-size-s;
-                height: $font-size-s;
+                width: variables.$font-size-s;
+                height: variables.$font-size-s;
             }
         }
     }

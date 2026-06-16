@@ -1,3 +1,8 @@
+@use "sass:color";
+@use "../generic/color-scheme";
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * ANNOTATION
  *
@@ -10,12 +15,12 @@
 .pnd-annotation {
     position: relative;
     // max-height: 200px;
-    margin: 0 $space*0.25 $space*0.25 $space*0.25;
-    border-radius: $border-radius;
-    background-color: $annotation-background-color;
-    border: 1px solid $annotation-border-color;
-    @include cardShadow-1;
-    transition: box-shadow $transition-durations;
+    margin: 0 variables.$space*0.25 variables.$space*0.25 variables.$space*0.25;
+    border-radius: variables.$border-radius;
+    background-color: variables.$annotation-background-color;
+    border: 1px solid variables.$annotation-border-color;
+    @include mixins.cardShadow-1;
+    transition: box-shadow variables.$transition-durations;
 }
 
 annotation {
@@ -35,8 +40,8 @@ annotation {
         justify-content: space-between;
         align-items: center;
         // margin: $space;
-        padding: $space;
-        border-bottom: 1px solid $annotation-border-color;
+        padding: variables.$space;
+        border-bottom: 1px solid variables.$annotation-border-color;
     }
 
     /* Image */
@@ -46,8 +51,8 @@ annotation {
         flex-shrink: 0;
         height: 30px;
         width: 30px;
-        margin-right: $space;
-        border-radius: $border-radius;
+        margin-right: variables.$space;
+        border-radius: variables.$border-radius;
     }
 
     &__header-initials {
@@ -57,12 +62,12 @@ annotation {
         left: 0;
         height: 30px;
         width: 30px;
-        border-radius: $border-radius;
-        background: $color-gray-03;
+        border-radius: variables.$border-radius;
+        background: color-scheme.$color-gray-03;
         text-align: center;
         line-height: 30px;
-        font-size: $font-size-s;
-        font-weight: $font-weight-bold;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
         // max-width: 30px;
         // overflow: hidden;
         // width: auto;
@@ -79,7 +84,7 @@ annotation {
         overflow: hidden;
         width: auto;
         // margin-right: $space;
-        border-radius: $border-radius;
+        border-radius: variables.$border-radius;
         
 
         &:before {
@@ -91,9 +96,9 @@ annotation {
             width: 30px;
             left: 0;
             text-align: center;
-            background-color: $color-background-light;
+            background-color: variables.$color-background-light;
             box-shadow: inset 0 0 10px rgba(0,0,0,.08);
-            border-radius: $border-radius;
+            border-radius: variables.$border-radius;
         }
     }
 
@@ -114,11 +119,11 @@ annotation {
     
     &__header-name {
         margin-bottom: 3px;
-        font-size: $font-size-s;
+        font-size: variables.$font-size-s;
         line-height: 1;
-        font-weight: $font-weight-bold;
-        color: $color-text;
-        transition: color $transition-durations;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$color-text;
+        transition: color variables.$transition-durations;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -126,29 +131,29 @@ annotation {
     
     // User name link.
     a {
-        color: $color-text;
-        text-decoration-color: rgba($color-text, .2);
-        transition: text-decoration-color $transition-durations;
+        color: variables.$color-text;
+        text-decoration-color: rgba(variables.$color-text, .2);
+        transition: text-decoration-color variables.$transition-durations;
         
         .pnd-annotation__header-name { // div
             cursor: pointer;
-            color: $color-text;
+            color: variables.$color-text;
         }
 
         &:hover, &:active, &:focus {
-            color: $color-text-link;
-            text-decoration-color: rgba($color-text-link, .6);
+            color: variables.$color-text-link;
+            text-decoration-color: rgba(variables.$color-text-link, .6);
 
             .pnd-annotation__header-name { // div
-                color: $color-text-link;
+                color: variables.$color-text-link;
             }
         }
     }
     
     &__header-additional-info {
         display: flex;
-        font-size: $font-size-xs;
-        color: $color-text-light;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
     }
 
     &__header-date {
@@ -161,20 +166,20 @@ annotation {
 
         &:before {
             content: "·";
-            margin-right: $space*0.5;
-            margin-left: $space*0.5;
+            margin-right: variables.$space*0.5;
+            margin-left: variables.$space*0.5;
         }
     }
 
     &__header-notebook-link {
-        color: $color-text;
+        color: variables.$color-text;
         cursor: pointer;
-        text-decoration-color: rgba($color-text, .2);
-        transition: text-decoration-color $transition-durations;
+        text-decoration-color: rgba(variables.$color-text, .2);
+        transition: text-decoration-color variables.$transition-durations;
         
         &:hover {
-            color: $color-text-link;
-            text-decoration-color: rgba($color-text-link, .6);
+            color: variables.$color-text-link;
+            text-decoration-color: rgba(variables.$color-text-link, .6);
         }
     }
 
@@ -192,41 +197,41 @@ annotation {
         justify-content: center;
         width: 24px;
         height: 24px;
-        margin-left: $space*0.5;
-        border-radius: $border-radius;
-        border: 1px solid $color-border-normal;
-        background-color: $color-background-light;
+        margin-left: variables.$space*0.5;
+        border-radius: variables.$border-radius;
+        border: 1px solid variables.$color-border-normal;
+        background-color: variables.$color-background-light;
         cursor: pointer;
-        color: $color-text-light;
-        font-size: $font-size-s;
-        transition: color $transition-durations;
+        color: variables.$color-text-light;
+        font-size: variables.$font-size-s;
+        transition: color variables.$transition-durations;
         
         .pnd-svg-icon, .pnd-svg-icon svg {
-            width: $font-size-s;
-            height: $font-size-s;
+            width: variables.$font-size-s;
+            height: variables.$font-size-s;
         }
 
         &:hover {
-            color: $color-text-link;
-            border: 1px solid $color-text-link;
+            color: variables.$color-text-link;
+            border: 1px solid variables.$color-text-link;
         }
     }
 
     &__menu-dropdown {
         position: absolute;
         z-index: 40;
-        top: 24px + $space*0.5;
-        right: 24px + $space*0.5;
+        top: 24px + variables.$space*0.5;
+        right: 24px + variables.$space*0.5;
         width: 140px;
         padding: 0;
-        background-color: $color-background-base;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        @include cardShadow-1;
+        background-color: variables.$color-background-base;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        @include mixins.cardShadow-1;
 
         &.has-notebooks {
             width: 240px;
-            padding: $space;
+            padding: variables.$space;
         }
 
         .pnd-notebook-selector {
@@ -234,28 +239,28 @@ annotation {
         }
 
         &.share {
-            right: $space*0.5;
+            right: variables.$space*0.5;
         }
 
     }
 
     &__menu-notebooks-header {
-        margin-bottom: $space*0.5;
+        margin-bottom: variables.$space*0.5;
     }
 
     &__menu-dropdown-action {
-        padding: $space*1 $space*1.5;
-        font-size: $font-size-s;
-        color: $color-text;
+        padding: variables.$space*1 variables.$space*1.5;
+        font-size: variables.$font-size-s;
+        color: variables.$color-text;
         cursor: pointer;
-        transition: color $transition-durations;
+        transition: color variables.$transition-durations;
 
         &:not(:last-child) {
-            border-bottom: 1px solid $color-border-normal;
+            border-bottom: 1px solid variables.$color-border-normal;
         }
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
         
         & a {
@@ -273,8 +278,8 @@ annotation {
     .pnd-annotation__highlight-text {
         display: block;
         box-sizing: border-box;
-        background-color: $color-highlight;
-        font-size: $font-size-s;
+        background-color: color-scheme.$color-highlight;
+        font-size: variables.$font-size-s;
         font-style: italic;
     }
 
@@ -285,27 +290,27 @@ annotation {
     .pnd-annotation__comment {
         position: relative;
         z-index: 20;
-        background-color: $annotation-comment-background-color;
+        background-color: variables.$annotation-comment-background-color;
     }
 
     .pnd-annotation__comment-text {
         display: block;
         box-sizing: border-box;
-        font-size: $font-size-xs;
+        font-size: variables.$font-size-xs;
 
         p, ol, ul {
-            margin: 0 0 $space;
+            margin: 0 0 variables.$space;
         }
 
         ol, ul {
-            padding: 0 0 0 $space*4;
+            padding: 0 0 0 variables.$space*4;
         }
 
         code {
-            padding: $space*0.25 $space*0.5;
+            padding: variables.$space*0.25 variables.$space*0.5;
             font-size: 90%;
-            background-color: $color-gray-01;
-            color: lighten($color-gray-05, 30%);
+            background-color: color-scheme.$color-gray-01;
+            color: color.adjust(color-scheme.$color-gray-05, $lightness: 30%);
             border-radius: 4px;
         }
 
@@ -314,7 +319,7 @@ annotation {
     .pnd-annotation__comment-plain-text {
         display: none;
         box-sizing: border-box;
-        font-size: $font-size-s;
+        font-size: variables.$font-size-s;
     }
 }
 
@@ -337,7 +342,7 @@ annotation {
         height: 20px;
         margin-left: 10px;
         padding: 0 8px;
-        background: $color-predicate;
+        background: color-scheme.$color-predicate;
 
         font-size: 13px;
         line-height: 20px;
@@ -362,26 +367,26 @@ annotation {
 
         &:before {
             top: -3px;
-            border-bottom: 3px solid $color-predicate;
+            border-bottom: 3px solid color-scheme.$color-predicate;
         }
 
         &:after {
             top: 20px;
-            border-top: 3px solid $color-predicate;
+            border-top: 3px solid color-scheme.$color-predicate;
         }
     }
 
     /* The Object in semantic annotations */
     .pnd-annotation__semantic-item-object {
-        font-size: $font-size-xs;
-        color: $color-text-light;
-        padding: $space*2 $space $space;
-        margin-top: -$space;
-        background-color: $color-gray-01;
-        border-top: $annotation-border-size solid $annotation-border-color;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
+        padding: variables.$space*2 variables.$space variables.$space;
+        margin-top: -(variables.$space);
+        background-color: color-scheme.$color-gray-01;
+        border-top: variables.$annotation-border-size solid variables.$annotation-border-color;
 
         .pnd-annotation__header {
-            padding: 0px $space;
+            padding: 0px variables.$space;
             align-items: initial;
             border-bottom: 0;
         }
@@ -403,8 +408,8 @@ annotation {
 
         a .pnd-annotation__header-name,
         .pnd-annotation__header-name {
-            font-size: $font-size-m;
-            font-weight: $font-weight-bold;
+            font-size: variables.$font-size-m;
+            font-weight: variables.$font-weight-bold;
             margin: 5px 8px;
             text-decoration: none;
         }
@@ -423,14 +428,14 @@ annotation {
             color: rgb(127, 133, 140);
             white-space: nowrap;
             text-overflow: ellipsis;
-            font-size: $font-size-xxs;
+            font-size: variables.$font-size-xxs;
             text-transform: uppercase;
             text-shadow: white 0px 1px 0px;
-            box-shadow: $color-gray-05 0px 1px 2px;
+            box-shadow: color-scheme.$color-gray-05 0px 1px 2px;
             overflow: hidden;
             border-width: 1px;
             border-style: solid;
-            border-color: $color-gray-03;
+            border-color: color-scheme.$color-gray-03;
             border-image: initial;
             list-style: none;
             border-radius: 3px;
@@ -438,7 +443,7 @@ annotation {
         }
 
         &__description {
-            padding: 0px $space ;
+            padding: 0px variables.$space ;
             align-items: initial;
             border-bottom: 0px;
         }
@@ -456,11 +461,11 @@ annotation {
     }
 
     .pnd-annotation__tags-item {
-        font-size: $font-size-xs;
-        padding: $space*0.25 $space*0.5;
-        margin: $space*0.25;
-        color: $color-text;
-        border-radius: $border-radius;
+        font-size: variables.$font-size-xs;
+        padding: variables.$space*0.25 variables.$space*0.5;
+        margin: variables.$space*0.25;
+        color: variables.$color-text;
+        border-radius: variables.$border-radius;
     }
 }
 
@@ -476,24 +481,24 @@ annotation {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        border-top: 1px solid $color-gray-03;
+        border-top: 1px solid color-scheme.$color-gray-03;
     }
 
     a.pnd-annotation__social-bar-action {
-        margin: $space*0.5;
-        color: $color-gray-04;
+        margin: variables.$space*0.5;
+        color: color-scheme.$color-gray-04;
         .pnd-svg-icon, .pnd-svg-icon svg {
-            width: $font-size-xxs;
-            height: $font-size-xxs;
+            width: variables.$font-size-xxs;
+            height: variables.$font-size-xxs;
         }
         
         &:hover, &.is-active {
             cursor: pointer;
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         .pnd-svg-icon {
-            margin-right: $space*0.5;
+            margin-right: variables.$space*0.5;
             svg {
                 height: 14px;
             }
@@ -501,11 +506,11 @@ annotation {
     }
     
     &__social-bar-action:hover {
-        margin-right: $space*0.5;
+        margin-right: variables.$space*0.5;
     }
 
     &__social-bar-action > span {
-        font-size: $font-size-xxs;
+        font-size: variables.$font-size-xxs;
     }
 }
 
@@ -515,24 +520,24 @@ annotation {
 \* ------------------------------------ */
 .pnd-annotation {
     &__reply-textarea-wrapper {
-        border-top: 1px solid $color-gray-03;
-        padding: $space 0 $space*0.5;
+        border-top: 1px solid color-scheme.$color-gray-03;
+        padding: variables.$space 0 variables.$space*0.5;
     }
 
     &__reply-textarea {
         width: calc(100% - 8px);
         height: 100px;
         resize: none;
-        margin: 0 $space*0.5;
-        font-size: $font-size-xs;
-        padding: $space;
+        margin: 0 variables.$space*0.5;
+        font-size: variables.$font-size-xs;
+        padding: variables.$space;
     }
 
     .pnd-annotation__reply__new-reply-footer,
     .pnd-annotation__reply__edit-reply-footer {
         display: flex;
         justify-content: flex-end;
-        margin: 0 $space*0.5 $space;
+        margin: 0 variables.$space*0.5 variables.$space;
 
         .pnd-notebook-selector {
             width: 100%;
@@ -546,16 +551,16 @@ annotation {
     .pnd-annotation__reply__new-reply-actions,
     .pnd-annotation__reply__edit-reply-actions {
         .pnd-btn:last-child {
-            margin-left: $space*0.5;
+            margin-left: variables.$space*0.5;
         }
     }
 
     pnd-annotation-reply {
         .pnd-annotation__header {
-            padding-left: $space*2;
+            padding-left: variables.$space*2;
             align-items: initial;
             border-bottom: 0;
-            border-top: 1px solid $color-gray-03;
+            border-top: 1px solid color-scheme.$color-gray-03;
         }
 
         .pnd-annotation__header-thumb-wrapper,
@@ -567,22 +572,22 @@ annotation {
 
         a .pnd-annotation__header-name,
         .pnd-annotation__header-name {
-            font-size: $font-size-xs;
+            font-size: variables.$font-size-xs;
             line-height: 14px;
             margin-bottom: 0;
-            margin-right: $space*0.5;
+            margin-right: variables.$space*0.5;
         }
 
         .pnd-annotation__header-reply {
-            font-size: $font-size-xs;
+            font-size: variables.$font-size-xs;
             line-height: 14px;
-            color: $color-gray-04;
+            color: color-scheme.$color-gray-04;
             margin-bottom: 0;
         }
 
         .pnd-annotation__social-bar {
-            margin-left: $space*2;
-            border-top: 1px solid $color-gray-02;
+            margin-left: variables.$space*2;
+            border-top: 1px solid color-scheme.$color-gray-02;
         }
 
         .pnd-annotation__menu-dropdown {
@@ -598,13 +603,13 @@ annotation {
     .pnd-annotation__highlight {
         max-height: 100px;
         overflow-y: auto;
-        padding: $space $space $space $space;
+        padding: variables.$space variables.$space variables.$space variables.$space;
         line-height: 20px;
     }
 
     &.has-comment {
         .pnd-annotation__highlight {
-            padding-bottom: $space*2;
+            padding-bottom: variables.$space*2;
         }
     }
 
@@ -615,13 +620,13 @@ annotation {
     .pnd-annotation__comment {
         max-height: 100px;
         overflow-y: auto;
-        padding: $space $space $space $space;
-        border-top: 1px solid $annotation-border-color;
+        padding: variables.$space variables.$space variables.$space variables.$space;
+        border-top: 1px solid variables.$annotation-border-color;
     }
 
     .pnd-annotation__tags {
-        padding: $space*0.5;
-        border-top: 1px solid $annotation-border-color;
+        padding: variables.$space*0.5;
+        border-top: 1px solid variables.$annotation-border-color;
     }
 
     /* Caret */
@@ -633,7 +638,7 @@ annotation {
         height: 0;
         border-color: transparent;
         border-style: solid;
-        border-bottom-color: $annotation-border-color;
+        border-bottom-color: variables.$annotation-border-color;
         border-top-width: 0;
         border-width: 10px;
         margin-top: -19px;
@@ -649,7 +654,7 @@ annotation {
             border-color: transparent;
             border-style: solid;
             border-width: 9px;
-            border-bottom-color: $annotation-comment-background-color;
+            border-bottom-color: variables.$annotation-comment-background-color;
             border-top-width: 0;
         }
     }
@@ -660,14 +665,14 @@ annotation {
    #COLLAPSED-ANNOTATION
 \* ------------------------------------ */
 .pnd-annotation.is-collapsed {
-    height: $annotation-collapsed-height;
+    height: variables.$annotation-collapsed-height;
     display: flex;
     align-items: center;
     cursor: pointer;
 
     pnd-highlight-annotation-section {
-        max-width: calc( 100% - #{$space} );
-        padding: 0 $space*0.5 0 $space;
+        max-width: calc( 100% - #{variables.$space} );
+        padding: 0 variables.$space*0.5 0 variables.$space;
     }
 
     .pnd-annotation__highlight-text {
@@ -683,10 +688,10 @@ annotation {
 
     /* Hover */
     &.is-hovered, &:hover {
-        @include cardShadow-2;
+        @include mixins.cardShadow-2;
 
         .pnd-annotation__highlight-text {
-            background-color: $color-highlight-hover;
+            background-color: color-scheme.$color-highlight-hover;
         }
     }
 }
@@ -707,7 +712,7 @@ annotation {
         display: flex;
         align-items: center;
         width: calc( 50% - 12px );
-        height: $annotation-collapsed-height;
+        height: variables.$annotation-collapsed-height;
         line-height: 20px;
     }
 
@@ -739,9 +744,9 @@ annotation {
         margin-top: 0;
         border-color: transparent;
         border-style: solid;
-        border-right-color: $annotation-border-color;
+        border-right-color: variables.$annotation-border-color;
         border-left-width: 0;
-        border-width: $annotation-collapsed-height*0.5;
+        border-width: variables.$annotation-collapsed-height*0.5;
 
         &:after {
             content: " ";
@@ -749,13 +754,13 @@ annotation {
             display: block;
             width: 0;
             height: 0;
-            right: - $annotation-collapsed-height*0.5;
-            bottom: -($annotation-collapsed-height*0.5)+1;
+            right: - variables.$annotation-collapsed-height*0.5;
+            bottom: -(variables.$annotation-collapsed-height*0.5)+1;
 
             border-color: transparent;
             border-style: solid;
-            border-width: $annotation-collapsed-height*0.5 - 1;
-            border-right-color: $annotation-comment-background-color;
+            border-width: variables.$annotation-collapsed-height*0.5 - 1;
+            border-right-color: variables.$annotation-comment-background-color;
             border-left-width: 0;
         }
     }
@@ -798,8 +803,8 @@ annotation {
 .pnd-sidebar.is-collapsed {
     .pnd-annotation,
     .pnd-annotation.is-collapsed.has-comment {
-        height: $annotation-collapsed-height;
-        width: $sidebar-collapsed-width - 6px;
+        height: variables.$annotation-collapsed-height;
+        width: variables.$sidebar-collapsed-width - 6px;
         cursor: pointer;
 
         .pnd-annotation__highlight {
@@ -811,7 +816,7 @@ annotation {
             right: 1px;
             max-width: none;
             padding: 0;
-            background-color: $color-highlight;
+            background-color: color-scheme.$color-highlight;
         }
 
         .pnd-annotation__tags,
@@ -830,7 +835,7 @@ annotation {
 
         &.is-hovered, &:hover {
             .pnd-annotation__highlight {
-                background-color: $color-highlight-hover;
+                background-color: color-scheme.$color-highlight-hover;
             }
         }
     }

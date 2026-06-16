@@ -1,3 +1,6 @@
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * TOOLTIP
  *
@@ -9,26 +12,26 @@
 \* ------------------------------------ */
 .pnd-tooltip {
     display: none;
-    background: $tooltip-background-color;
-    border: 1px solid $tooltip-border-color;
-    border-radius: $border-radius;
-    @include cardShadow-1;
-    z-index: $z-index-annotation-tooltip;
+    background: variables.$tooltip-background-color;
+    border: 1px solid variables.$tooltip-border-color;
+    border-radius: variables.$border-radius;
+    @include mixins.cardShadow-1;
+    z-index: variables.$z-index-annotation-tooltip;
     word-break: normal;
     
     /* Arrow css */
     &[data-popper-placement^="top"] {
         #arrow::before {
-            background-color: $tooltip-background-color;
-            border-bottom: 1px solid $tooltip-border-color;
-            border-right: 1px solid $tooltip-border-color;
+            background-color: variables.$tooltip-background-color;
+            border-bottom: 1px solid variables.$tooltip-border-color;
+            border-right: 1px solid variables.$tooltip-border-color;
         }
     }
     &[data-popper-placement^="bottom"] {
         #arrow::before {
-            background-color: $tooltip-background-color;
-            border-top: 1px solid $tooltip-border-color;
-            border-left: 1px solid $tooltip-border-color;
+            background-color: variables.$tooltip-background-color;
+            border-top: 1px solid variables.$tooltip-border-color;
+            border-left: 1px solid variables.$tooltip-border-color;
         }
     }
 
@@ -37,13 +40,13 @@
         position: absolute;
         width: 8px;
         height: 8px;
-        z-index: $z-index-annotation-tooltip - 1;
+        z-index: variables.$z-index-annotation-tooltip - 1;
     }
 
     #arrow::before {
         content: "";
         transform: rotate(45deg);
-        background: $tooltip-background-color;
+        background: variables.$tooltip-background-color;
     }
 
     &[data-popper-placement^="top"] > #arrow {
@@ -90,23 +93,23 @@
 .pnd-tooltip {
     .pnd-nav__item {
         &:not(:last-child) {
-            border-bottom: 1px solid $color-border-normal;
+            border-bottom: 1px solid variables.$color-border-normal;
         }
     }
     
     .pnd-nav__label {
         display: block;
-        padding: $space $space*1.5;
-        color: $color-text;
-        font-family: $font-family-main;
-        font-size: $font-size-s;
-        font-weight: $font-weight-bold;
+        padding: variables.$space variables.$space*1.5;
+        color: variables.$color-text;
+        font-family: variables.$font-family-main;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
         line-height: 1;
         white-space: nowrap;
-        transition: color $transition-durations;
+        transition: color variables.$transition-durations;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
     }
 }

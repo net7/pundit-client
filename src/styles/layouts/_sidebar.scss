@@ -1,3 +1,7 @@
+@use "../generic/color-scheme";
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * SIDEBAR
  *
@@ -8,11 +12,11 @@
    #GENERAL-SIDEBAR
 \* ------------------------------------ */
 .pnd-sidebar {
-    z-index: $z-index-sidebar;
-    font-family: $font-family-main;
+    z-index: variables.$z-index-sidebar;
+    font-family: variables.$font-family-main;
 
     &.is-expanded {
-        width: $sidebar-exploded-width + 1;
+        width: variables.$sidebar-exploded-width + 1;
 
         .n7-annotation__container.is-hovered {
             .n7-annotation__body {
@@ -22,7 +26,7 @@
     }
 
     &.is-collapsed {
-        width: $sidebar-collapsed-width + 1;
+        width: variables.$sidebar-collapsed-width + 1;
     }
 }
 
@@ -35,36 +39,36 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: $sidebar-header-height;
-        width: $sidebar-header-height;
-        margin-left: -$sidebar-header-height;
-        @include punditGradient-1;
-        color: $color-text-inverse;
-        font-size: $font-size-xl;
+        height: variables.$sidebar-header-height;
+        width: variables.$sidebar-header-height;
+        margin-left: -(variables.$sidebar-header-height);
+        @include mixins.punditGradient-1;
+        color: variables.$color-text-inverse;
+        font-size: variables.$font-size-xl;
         border-radius: 50%;
         cursor: pointer;
         z-index: 30;
         // transition: right $transition-durations ease-out;
 
         .pnd-svg-icon, .pnd-svg-icon svg {
-            width: $font-size-xl;
-            height: $font-size-xl;
+            width: variables.$font-size-xl;
+            height: variables.$font-size-xl;
         }
     }
 
     &.is-expanded {
         .pnd-sidebar__logo {
             position: fixed;
-            top: $space * 2;
-            right: $sidebar-exploded-width - 20px;
+            top: variables.$space * 2;
+            right: variables.$sidebar-exploded-width - 20px;
         }
     }
 
     &.is-collapsed {
         .pnd-sidebar__logo {
             position: fixed;
-            top: $space * 2;
-            right: $space * 4;
+            top: variables.$space * 2;
+            right: variables.$space * 4;
         }
     }
 }
@@ -84,14 +88,14 @@
         .pnd-sidebar__header {
             // display: none;
             opacity: 0;
-            margin-right: -$sidebar-exploded-width;
+            margin-right: -(variables.$sidebar-exploded-width);
         }
     }
 
     &.has-notebook-panel-open {
         .pnd-sidebar__header {
             box-shadow: none;
-            border-bottom-color: $color-border-light;
+            border-bottom-color: variables.$color-border-light;
         }
     }
 
@@ -101,17 +105,17 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: $sidebar-exploded-width;
-        height: $sidebar-header-height;
-        margin-top: $space * 2;
-        padding-left: $sidebar-header-height*0.5 + $space;
+        width: variables.$sidebar-exploded-width;
+        height: variables.$sidebar-header-height;
+        margin-top: variables.$space * 2;
+        padding-left: variables.$sidebar-header-height*0.5 + variables.$space;
         top: 0;
         right: 0;
-        background-color: $color-background-base;
-        color: $color-text;
-        border-top: 1px solid $color-border-normal;
-        border-bottom: 1px solid $color-border-normal;
-        @include cardShadow-1;
+        background-color: variables.$color-background-base;
+        color: variables.$color-text;
+        border-top: 1px solid variables.$color-border-normal;
+        border-bottom: 1px solid variables.$color-border-normal;
+        @include mixins.cardShadow-1;
         z-index: 20;
         opacity: 1;
         // transition: all $transition-durations ease-out;
@@ -119,46 +123,46 @@
 
     &__user-name {
         margin-right: auto;
-        font-size: $font-size-xs;
+        font-size: variables.$font-size-xs;
         cursor: pointer;
     }
 
     &__header-login, &__header-register {
-        font-weight: $font-weight-bold;
-        color: $color-text;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$color-text;
         // transition: color $transition-durations;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         &:visited,
         &:active {
-            color: $color-text;
+            color: variables.$color-text;
         }
     }
 
     &__header-separator {
-        margin: 0 $space;
-        background: $color-gray-03;
+        margin: 0 variables.$space;
+        background: color-scheme.$color-gray-03;
         width: 1px;
-        height: $font-size-xs;
+        height: variables.$font-size-xs;
         display: inline-block;
         vertical-align: middle;
     }
 
     &__user-name-link {
-        color: $color-text;
+        color: variables.$color-text;
         text-decoration: none;
         // transition: color $transition-durations;
 
         &:visited,
         &:active {
-            color: $color-text;
+            color: variables.$color-text;
         }
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
     }
 
@@ -171,23 +175,23 @@
     &__action {
         display: flex;
         box-sizing: border-box;
-        width: $sidebar-header-height;
-        height: $sidebar-header-height;
+        width: variables.$sidebar-header-height;
+        height: variables.$sidebar-header-height;
         justify-content: center;
         align-items: center;
-        border-left: 1px solid $color-border-normal;
+        border-left: 1px solid variables.$color-border-normal;
         cursor: pointer;
-        font-size: $font-size-m;
-        color: $color-text-light;
+        font-size: variables.$font-size-m;
+        color: variables.$color-text-light;
         // transition: color $transition-durations;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         &.is-active {
-            color: $color-text-link;
-            border-bottom: 3px solid $color-main;
+            color: variables.$color-text-link;
+            border-bottom: 3px solid color-scheme.$color-main;
         }
 
         .pnd-svg-icon svg {
@@ -200,7 +204,7 @@
             border-bottom: transparent
         }
         &__badge {
-            background-color: $color-main;
+            background-color: color-scheme.$color-main;
             color: white;
             width: 8px;
             height: 8px;
@@ -230,12 +234,12 @@
         z-index: 10;
         top: 0;
         right: 0;
-        width: $sidebar-exploded-width;
+        width: variables.$sidebar-exploded-width;
         height: 100vh;
-        background-color: $color-background-light;
-        border-left: 1px solid $color-border-normal;
+        background-color: variables.$color-background-light;
+        border-left: 1px solid variables.$color-border-normal;
         // transition: all $transition-durations*1.5 ease-out;
-        @include cardShadow-left;
+        @include mixins.cardShadow-left;
     }
 
     &.is-expanded {
@@ -244,7 +248,7 @@
 
     &.is-collapsed {
         .pnd-sidebar__content {
-            width: $sidebar-collapsed-width;
+            width: variables.$sidebar-collapsed-width;
             overflow: hidden;
         }
     }
@@ -256,38 +260,38 @@
 .pnd-sidebar {
     &__user-popover {
         position: absolute;
-        background-color: $color-background-base;
+        background-color: variables.$color-background-base;
         z-index: 40;
-        top: $sidebar-header-height;
-        border: 1px solid $color-border-normal;
+        top: variables.$sidebar-header-height;
+        border: 1px solid variables.$color-border-normal;
         padding: 0;
-        border-radius: $border-radius;
-        @include cardShadow-1;
+        border-radius: variables.$border-radius;
+        @include mixins.cardShadow-1;
     }
 
     &__user-popover-list {
         list-style: none;
         margin: 0;
-        padding: $space 0;
+        padding: variables.$space 0;
     }
 
     &__user-popover-item {
-        padding: $space $space*2;
-        font-size: $font-size-s;
-        color: $color-text;
+        padding: variables.$space variables.$space*2;
+        font-size: variables.$font-size-s;
+        color: variables.$color-text;
         cursor: pointer;
-        transition: color $transition-durations;
+        transition: color variables.$transition-durations;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         a {
             text-decoration: none;
-            color: $color-text;
+            color: variables.$color-text;
 
             &:hover {
-                color: $color-text-link;
+                color: variables.$color-text-link;
             }
         }
     }
@@ -304,7 +308,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        width: $sidebar-exploded-width;
+        width: variables.$sidebar-exploded-width;
         height: 100%;
         top: 0;
         right: 0;
@@ -319,24 +323,24 @@
 .pnd-sidebar__content {
 
     &__action {
-        margin: 70px  $space $space $space;
+        margin: 70px  variables.$space variables.$space variables.$space;
         width: auto;
         display: flex;
         box-sizing: border-box;
         justify-content: center;
         align-items: center;
         cursor: pointer;
-        font-size: $font-size-m;
-        color: $color-text-light;
+        font-size: variables.$font-size-m;
+        color: variables.$color-text-light;
         // transition: color $transition-durations;
 
         &:hover {
-            color: $color-text-link;
+            color: variables.$color-text-link;
         }
 
         &.is-active {
-            color: $color-text-link;
-            border-bottom: 3px solid $color-main;
+            color: variables.$color-text-link;
+            border-bottom: 3px solid color-scheme.$color-main;
         }
 
         .pnd-svg-icon svg {
@@ -350,7 +354,7 @@
 .pnd-sidebar__content {
     .pnd-dropdown {
         position: absolute;
-        margin: 70px $space;
+        margin: 70px variables.$space;
         width: calc(100% - 16px);
     }
 }

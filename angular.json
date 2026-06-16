@@ -34,15 +34,6 @@
               "seedrandom",
               "lodash"
             ],
-            "stylePreprocessorOptions": {
-              "sass": {
-                "silenceDeprecations": [
-                  "import",
-                  "global-builtin",
-                  "color-functions"
-                ]
-              }
-            },
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",

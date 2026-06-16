@@ -1,3 +1,4 @@
+@use "sass:color";
 //
 // COLOR SCHEME
 //
@@ -35,7 +36,6 @@ $color-highlight-hover: rgba(#2ee6e6, .4);
 $color-subject: #54b4e6;
 $color-predicate: #febe53;
 $color-object: #0084c8;
-$color-subject-text: lighten($color-subject, 27);
-$color-predicate-text: lighten($color-predicate, 25);
-$color-object-text: desaturate(lighten($color-object, 27), 30);
-
+$color-subject-text: color.adjust($color-subject, $lightness: 27%);
+$color-predicate-text: color.adjust($color-predicate, $lightness: 25%);
+$color-object-text: color.adjust(color.adjust($color-object, $lightness: 27%), $saturation: -30%);

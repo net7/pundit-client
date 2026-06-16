@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * UTILITIES
  *
@@ -8,25 +10,25 @@
    #UTILITIES
 \* ------------------------------------ */
 .pnd-text {
-    color: $color-text;
-    font-size: $font-size-s;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text;
+    font-size: variables.$font-size-s;
+    font-weight: variables.$font-weight-normal;
 }
 
 .pnd-text-small {
-    color: $color-text-light;
-    font-size: $font-size-xs;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text-light;
+    font-size: variables.$font-size-xs;
+    font-weight: variables.$font-weight-normal;
 }
 
 .pnd-label {
-    color: $color-text-light;
-    font-size: $font-size-s;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text-light;
+    font-size: variables.$font-size-s;
+    font-weight: variables.$font-weight-normal;
 }
 
 .pnd-value {
-    color: $color-text-light;
-    font-size: $font-size-s;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text-light;
+    font-size: variables.$font-size-s;
+    font-weight: variables.$font-weight-normal;
 }

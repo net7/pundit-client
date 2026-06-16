@@ -1,3 +1,7 @@
+@use "../generic/color-scheme";
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * RESOURCE MODAL
  *
@@ -15,36 +19,36 @@
     }
 
     &__highlight-wrapper {
-        padding: $space*2;
+        padding: variables.$space*2;
         max-height: 120px;
         overflow-x: hidden;
         overflow-y: auto;
-        border-top: 1px solid $annotation-border-color;
+        border-top: 1px solid variables.$annotation-border-color;
         line-height: 20px;
     }
 
     &__highlight {
         display: inline;
-        background-color: $color-highlight;
-        font-size: $font-size-s;
+        background-color: color-scheme.$color-highlight;
+        font-size: variables.$font-size-s;
         font-style: italic;
     }
 
     &__comment-wrapper {
-        padding: $space*2;
-        border-top: 1px solid $annotation-border-color;
-        border-bottom: 1px solid $annotation-border-color;
-        background-color: $annotation-comment-background-color;
+        padding: variables.$space*2;
+        border-top: 1px solid variables.$annotation-border-color;
+        border-bottom: 1px solid variables.$annotation-border-color;
+        background-color: variables.$annotation-comment-background-color;
     }
 
     &__comment-label {
-        margin-bottom: $space;
-        font-size: $font-size-s;
+        margin-bottom: variables.$space;
+        font-size: variables.$font-size-s;
     }
 
     &__comment-textarea {
         width: 100%;
-        height: $space*20;
+        height: variables.$space*20;
         resize: none;
     }
 
@@ -53,9 +57,9 @@
     }
 
     &__tag-wrapper {
-        padding: $space*2;
-        border-top: 1px solid $annotation-border-color;
-        border-bottom: 1px solid $annotation-border-color;
+        padding: variables.$space*2;
+        border-top: 1px solid variables.$annotation-border-color;
+        border-bottom: 1px solid variables.$annotation-border-color;
     }
 }
 
@@ -68,7 +72,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: $space*2;
+        padding: variables.$space*2;
 
         .pnd-notebook-selector {
             width: 100%;
@@ -78,7 +82,7 @@
     &__footer-notebook {
         flex-grow: 2;
         flex-shrink: 0;
-        padding-right: $space*2;
+        padding-right: variables.$space*2;
     }
 
     &__footer-actions {
@@ -87,7 +91,7 @@
         text-align: right;
         
         .pnd-btn:last-child {
-            margin-left: $space*0.5;
+            margin-left: variables.$space*0.5;
         }
     }
 }
@@ -118,19 +122,19 @@
         justify-content: center;
 
         [class^="pnd-svg-icon-"] {
-            width: $font-size-l;
-            height: $font-size-l;
-            color: $color-text-light;
-            transition: color $transition-durations;
+            width: variables.$font-size-l;
+            height: variables.$font-size-l;
+            color: variables.$color-text-light;
+            transition: color variables.$transition-durations;
             svg {
-                width: $font-size-l;
-                height: $font-size-l;
+                width: variables.$font-size-l;
+                height: variables.$font-size-l;
             }
         }
 
         &:hover {
             [class^="pnd-svg-icon-"] {
-                color: $color-text;
+                color: variables.$color-text;
             }
         }
     }
@@ -157,9 +161,9 @@
     }
 
     &__tags-hint {
-        margin: $space 0 0 0;
-        font-size: $font-size-s;
-        color: $color-text-light;
+        margin: variables.$space 0 0 0;
+        font-size: variables.$font-size-s;
+        color: variables.$color-text-light;
     }
 }
 
@@ -170,22 +174,22 @@
     &__semantic-wrapper {
         position: relative;
         z-index: 10;
-        padding: $space*2;
-        border-top: 1px solid $annotation-border-color;
-        border-bottom: 1px solid $annotation-border-color;
-        background-color: $annotation-comment-background-color;
+        padding: variables.$space*2;
+        border-top: 1px solid variables.$annotation-border-color;
+        border-bottom: 1px solid variables.$annotation-border-color;
+        background-color: variables.$annotation-comment-background-color;
     }
 
     &__semantic-label {
         display: inline-block;
-        margin-bottom: $space;
-        font-size: $font-size-s;
+        margin-bottom: variables.$space;
+        font-size: variables.$font-size-s;
     }
 
     &__semantic-row {
         display: flex;
         justify-content: space-between;
-        margin-bottom: $space;
+        margin-bottom: variables.$space;
     }
     
     &__semantic-row:last-child {
@@ -201,10 +205,10 @@
         }
         .pnd-dropdown__selected:disabled {
             cursor: not-allowed;
-            color: $color-text-light;
+            color: variables.$color-text-light;
             
             &:hover .pnd-dropdown__selected-right-icon {
-                color: $color-text-light;
+                color: variables.$color-text-light;
             }
         }
     }
@@ -216,22 +220,22 @@
     &__semantic-object {
         position: relative;
         flex-grow: 2;
-        margin: 0 $space;
+        margin: 0 variables.$space;
     }
 
     &__semantic-object-type {
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        right: $space*0.5;
+        right: variables.$space*0.5;
         margin: 0;
-        padding: $space*0.125*3 $space*0.25*3;
-        background-color: $color-background-light;
-        color: $color-text-light;
+        padding: variables.$space*0.125*3 variables.$space*0.25*3;
+        background-color: variables.$color-background-light;
+        color: variables.$color-text-light;
         text-transform: uppercase;
-        font-size: $font-size-xxs;
-        font-weight: $font-weight-bold;
-        border-radius: $border-radius;
+        font-size: variables.$font-size-xxs;
+        font-weight: variables.$font-weight-bold;
+        border-radius: variables.$border-radius;
     }
 
     &__semantic-object-input[type=text] {
@@ -239,7 +243,7 @@
         padding-right: 58px;
 
         &:disabled {
-            color: $color-text-light;
+            color: variables.$color-text-light;
             cursor: not-allowed;
         }
     }
@@ -255,22 +259,22 @@
             justify-content: center;
             width: 28px;
             height: 28px;
-            border-radius: $border-radius;
-            border: 1px solid $color-border-normal;
-            background-color: $color-background-light;
+            border-radius: variables.$border-radius;
+            border: 1px solid variables.$color-border-normal;
+            background-color: variables.$color-background-light;
             cursor: pointer;
-            color: $color-text-light;
-            font-size: $font-size-s;
-            transition: color $transition-durations;
+            color: variables.$color-text-light;
+            font-size: variables.$font-size-s;
+            transition: color variables.$transition-durations;
             
             .pnd-svg-icon, .pnd-svg-icon svg {
-                width: $font-size-s;
-                height: $font-size-s;
+                width: variables.$font-size-s;
+                height: variables.$font-size-s;
             }
     
             &:hover {
-                color: $color-text-link;
-                border: 1px solid $color-text-link;
+                color: variables.$color-text-link;
+                border: 1px solid variables.$color-text-link;
             }
         }
         
@@ -281,10 +285,10 @@
             left: auto;
             width: auto;
             padding: 0;
-            background-color: $color-background-base;
-            border: 1px solid $color-border-normal;
-            border-radius: $border-radius;
-            @include cardShadow-1;
+            background-color: variables.$color-background-base;
+            border: 1px solid variables.$color-border-normal;
+            border-radius: variables.$border-radius;
+            @include mixins.cardShadow-1;
         }
 
         .pnd-dropdown__item {
@@ -297,13 +301,13 @@
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */

@@ -1,3 +1,6 @@
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * NOTEBOOK SHARE MODAL
  */
@@ -7,7 +10,7 @@
 \* ------------------------------------ */
 .pnd-notebook-share-modal {
     &__input {
-        margin-top: $space;
+        margin-top: variables.$space;
         input {
             width: 100%;
         }
@@ -22,12 +25,12 @@
         position: absolute;
         left: 0;
         right: 0;
-        top: $space;
-        background-color: $color-background-base;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        @include cardShadow-1;
-        max-height: $notebook-selector-list-max-height;
+        top: variables.$space;
+        background-color: variables.$color-background-base;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        @include mixins.cardShadow-1;
+        max-height: variables.$notebook-selector-list-max-height;
         overflow-y: auto;
         overflow-x: hidden;
     }
@@ -36,40 +39,40 @@
     &__item {
         display: flex;
         align-items: center;
-        padding: $space * .5 $space;
+        padding: variables.$space * .5 variables.$space;
 
         &:hover {
             cursor: pointer;
-            background-color: $color-background-light;
+            background-color: variables.$color-background-light;
         }
     }
     &__item-thumb {
         img {
             height: 24px;
             width: 24px;
-            border-radius: $border-radius;
+            border-radius: variables.$border-radius;
         }
-        margin-right: $space;
+        margin-right: variables.$space;
     }
     // &__item-content {
         
     // }
     &__item-label {
-        font-weight: $font-weight-bold;
+        font-weight: variables.$font-weight-bold;
     }
     &__item-email {
-        font-size: $font-size-xs;
-        color: $color-text-light;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
     }
 
     // users list
     &__list {
-        margin-top: $space * 4;
+        margin-top: variables.$space * 4;
 
         .pnd-modal__body-title {
-            font-size: $font-size-l;
-            font-weight: $font-weight-bold;
-            margin-bottom: $space;
+            font-size: variables.$font-size-l;
+            font-weight: variables.$font-weight-bold;
+            margin-bottom: variables.$space;
         }
 
         .pnd-modal__body-list {
@@ -82,26 +85,26 @@
     &__list-item {
         display: flex;
         align-items: center;
-        padding: $space * .5 0;
+        padding: variables.$space * .5 0;
     }
 
     &__list-item-thumb {
         img {
             height: 32px;
             width: 32px;
-            border-radius: $border-radius;
+            border-radius: variables.$border-radius;
         }
-        margin-right: $space;
+        margin-right: variables.$space;
     }
     &__list-item-label {
         flex-grow: 1;
-        font-weight: $font-weight-bold;
+        font-weight: variables.$font-weight-bold;
     }
     &__list-item-role {
-        font-size: $font-size-s;
-        padding: $space * .25 $space * .5;
-        background-color: $color-background-medium;
-        border-radius: $border-radius;
+        font-size: variables.$font-size-s;
+        padding: variables.$space * .25 variables.$space * .5;
+        background-color: variables.$color-background-medium;
+        border-radius: variables.$border-radius;
     }
 
     // dropdown
@@ -120,13 +123,13 @@
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */
