@@ -17,10 +17,6 @@
       "node_modules/@types",
       "node_modules/@angular"
     ],
-    "lib": [
-      "es2018",
-      "dom"
-    ],
     "skipLibCheck": true,
     "useDefineForClassFields": false
   },

@@ -1,4 +1,4 @@
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import * as api from './pundit-api';
 
@@ -12,5 +12,8 @@ if (environment.production) {
 // pundit public api
 api.init();
 
-platformBrowserDynamic().bootstrapModule(AppModule)
+platformBrowserDynamic()
+  .bootstrapModule(AppModule, {
+    applicationProviders: [provideZoneChangeDetection()]
+  })
   .catch((err) => console.error(err));

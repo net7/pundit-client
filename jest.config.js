@@ -3,7 +3,6 @@ module.exports = {
   preset: 'jest-preset-angular',
   setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   testEnvironment: 'jsdom',
-  globalSetup: 'jest-preset-angular/global-setup',
   testMatch: ['<rootDir>/src/**/*.spec.ts'],
   moduleFileExtensions: ['ts', 'html', 'js', 'json', 'mjs'],
   // Resolve tsconfig baseUrl ('./') absolute imports like `src/app/...`.
