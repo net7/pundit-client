@@ -5,7 +5,7 @@ import { NotebookShareListItem } from '../notebook-share-modal/notebook-share-mo
 @Component({
   selector: 'pnd-notebook-share-user-item',
   templateUrl: './notebook-share-user-item.html',
-
+  standalone: false
 })
 export class NotebookShareUserItemComponent {
   @Input() item: NotebookShareListItem;

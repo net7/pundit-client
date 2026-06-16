@@ -5,6 +5,6 @@ import { Component, ViewEncapsulation } from '@angular/core';
   templateUrl: './pundit-login.component.html',
   styleUrls: ['./pundit-login.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
-
+  standalone: false
 })
 export class PunditLoginComponent {}

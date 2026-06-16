@@ -25,7 +25,7 @@ import { shareActionButtons, shareButton } from './menu-share.helper';
 @Component({
   selector: 'pnd-menu-header-section',
   templateUrl: './menu-header-section.html',
-
+  standalone: false
 })
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   id = 'header';

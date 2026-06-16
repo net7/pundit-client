@@ -13,7 +13,7 @@ export interface TextEditorData {
 @Component({
   selector: 'pnd-text-editor',
   templateUrl: './text-editor.html',
-
+  standalone: false
 })
 export class TextEditorComponent {
   @Input() public data: TextEditorData;

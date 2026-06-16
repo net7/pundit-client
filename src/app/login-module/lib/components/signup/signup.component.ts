@@ -14,7 +14,7 @@ import validationHelper from '../../helpers/validation.helper';
   selector: 'lib-pundit-login-signup',
   templateUrl: './signup.component.html',
   styleUrls: [],
-
+  standalone: false
 })
 export class SignUpComponent {
   registerForm: UntypedFormGroup;

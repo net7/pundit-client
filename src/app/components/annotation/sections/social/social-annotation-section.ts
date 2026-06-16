@@ -6,7 +6,7 @@ import { ReplyType } from './reply/reply';
 @Component({
   selector: 'pnd-social-annotation-section',
   templateUrl: './social-annotation-section.html',
-
+  standalone: false
 })
 export class SocialAnnotationSectionComponent {
   id = 'social';

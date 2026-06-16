@@ -21,7 +21,7 @@ export interface PdfErrorModalData {
 @Component({
   selector: 'pnd-pdf-error-modal',
   templateUrl: './pdf-error-modal.html',
-
+  standalone: false
 })
 export class PdfErrorModalComponent {
   @Input() public data: PdfErrorModalData;

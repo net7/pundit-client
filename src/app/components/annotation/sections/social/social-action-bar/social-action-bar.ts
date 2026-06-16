@@ -19,7 +19,7 @@ import { SocialBarState, createInitialState, resetFormState } from './social-act
 @Component({
   selector: 'pnd-social-action-bar',
   templateUrl: './social-action-bar.html',
-
+  standalone: false
 })
 export class SocialActionBarComponent implements OnInit {
   @Input() socials$: Observable<SocialStats>;

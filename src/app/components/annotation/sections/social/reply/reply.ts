@@ -30,7 +30,7 @@ export type ReplyType = 'Reply';
 @Component({
   selector: 'pnd-annotation-reply',
   templateUrl: './reply.html',
-
+  standalone: false
 })
 export class ReplyComponent implements OnInit {
   @Input() public data: Reply;

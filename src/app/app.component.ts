@@ -6,7 +6,7 @@ import { NotebookModel } from '../common/models';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   encapsulation: ViewEncapsulation.ShadowDom,
-
+  standalone: false
 })
 export class AppComponent {
   constructor() {

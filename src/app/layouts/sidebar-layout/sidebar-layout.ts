@@ -19,7 +19,7 @@ import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 @Component({
   selector: 'sidebar-layout',
   templateUrl: './sidebar-layout.html',
-
+  standalone: false
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
   @Input() appEvent$: ReplaySubject<AppEventData>;

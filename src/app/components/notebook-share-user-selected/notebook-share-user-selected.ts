@@ -5,7 +5,7 @@ import { NotebookShareModalData, NotebookShareModalResult } from '../notebook-sh
 @Component({
   selector: 'pnd-notebook-share-user-selected',
   templateUrl: './notebook-share-user-selected.html',
-
+  standalone: false
 })
 export class NotebookShareUserSelectedComponent implements OnInit {
   @Input() data: NotebookShareModalData;

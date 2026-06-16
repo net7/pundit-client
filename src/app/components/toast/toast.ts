@@ -94,7 +94,7 @@ export interface ToastAction {
 @Component({
   selector: 'pnd-toast',
   templateUrl: './toast.html',
-
+  standalone: false
 })
 export class ToastComponent {
   @Input() data: ToastData;

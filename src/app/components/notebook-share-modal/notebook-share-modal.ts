@@ -65,7 +65,7 @@ export type NotebookShareModalData = {
 @Component({
   selector: 'pnd-notebook-share-modal',
   templateUrl: './notebook-share-modal.html',
-
+  standalone: false
 })
 export class NotebookShareModalComponent {
   @Input() data: NotebookShareModalData;

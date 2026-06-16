@@ -7,7 +7,7 @@ import { ModalService } from '../../services/modal.service';
   selector: 'lib-pundit-login-modal',
   templateUrl: './modal.component.html',
   styleUrls: [],
-
+  standalone: false
 })
 export class ModalComponent implements OnDestroy {
   show: boolean;
