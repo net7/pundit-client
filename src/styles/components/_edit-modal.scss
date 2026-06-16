@@ -87,7 +87,7 @@
         text-align: right;
         
         .pnd-btn:last-child {
-            margin-left: $space/2;
+            margin-left: $space*0.5;
         }
     }
 }
@@ -223,9 +223,9 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        right: $space/2;
+        right: $space*0.5;
         margin: 0;
-        padding: $space/8*3 $space/4*3;
+        padding: $space*0.125*3 $space*0.25*3;
         background-color: $color-background-light;
         color: $color-text-light;
         text-transform: uppercase;

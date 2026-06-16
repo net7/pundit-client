@@ -8,7 +8,7 @@
    #TAGIFY
 \* ------------------------------------ */
 .tagify {
-    padding: $space/4 $space/4;
+    padding: $space*0.25 $space*0.25;
     border-radius: $form-border-radius;
     width: 100%;
 
@@ -17,9 +17,9 @@
     }
 
     .tagify__tag {
-        margin: $space/4;
+        margin: $space*0.25;
         > div {
-            padding: $space/4 $space/2;
+            padding: $space*0.25 $space*0.5;
         }
     }
 
@@ -34,8 +34,8 @@
     }
 
     .tagify__input {
-        margin: $space/4;
-        padding: $space/4 $space/2;
+        margin: $space*0.25;
+        padding: $space*0.25 $space*0.5;
         font-size: $font-size-s;
 
         &::before {

@@ -76,7 +76,7 @@
     }
 
     &__item {
-        padding: $space/2 $space;
+        padding: $space*0.5 $space;
         color: $color-text;
         font-size: $font-size-s;
         transition: color $transition-durations;

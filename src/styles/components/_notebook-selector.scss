@@ -75,7 +75,7 @@
     }
 
     &__dropdown-notebook {
-        padding: $space/2 $space;
+        padding: $space*0.5 $space;
         color: $color-text;
         font-size: $font-size-s;
         transition: color $transition-durations;
@@ -102,7 +102,7 @@
     }
 
     &__dropdown-new {
-        padding: $space/2 $space;
+        padding: $space*0.5 $space;
         font-weight: $font-weight-bold;
         color: $color-text;
         font-size: $font-size-s;
@@ -136,7 +136,7 @@
     }
 
     &__create-btn-save {
-        margin-left: $space/2;
+        margin-left: $space*0.5;
     }
 
     /* Displayed while saving */

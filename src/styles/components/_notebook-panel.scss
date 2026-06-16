@@ -70,8 +70,8 @@
 
         .pnd-btn {
             display: block; // ! To be removed when sharing will be implemented
-            margin-right: $space/2;
-            margin-bottom: $space/2; // ! To be removed when sharing will be implemented
+            margin-right: $space*0.5;
+            margin-bottom: $space*0.5; // ! To be removed when sharing will be implemented
         }
 
         .pnd-text-small {

@@ -104,7 +104,7 @@
     }
 
     &__link-btn-save {
-        margin-left: $space/2;
+        margin-left: $space*0.5;
     }
 }
 
@@ -138,7 +138,7 @@
         }
 
         .ProseMirror li p {
-            margin: $space / 2 0;
+            margin: $space * 0.5 0;
         }
 
         .ProseMirror-hideselection *::selection {

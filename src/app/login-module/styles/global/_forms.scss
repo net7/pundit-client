@@ -76,7 +76,7 @@ textarea, .form-control textarea {
 
 /* Checkboxes and radios */
 input[type="checkbox"], input[type="radio"] {
-    margin-right: $space/2;
+    margin-right: $space*0.5;
 
     + label {
         color: $color-text;
