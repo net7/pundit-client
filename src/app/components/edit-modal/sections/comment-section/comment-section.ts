@@ -20,7 +20,8 @@ export type CommentSectionOptions = {
 
 @Component({
   selector: 'pnd-comment-section',
-  templateUrl: './comment-section.html'
+  templateUrl: './comment-section.html',
+
 })
 export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   CommentSectionValue, CommentSectionOptions

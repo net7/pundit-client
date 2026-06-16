@@ -20,7 +20,8 @@ export interface DeleteModalData {
 
 @Component({
   selector: 'pnd-delete-modal',
-  templateUrl: './delete-modal.html'
+  templateUrl: './delete-modal.html',
+
 })
 export class DeleteModalComponent {
   @Input() public data: DeleteModalData;

@@ -7,6 +7,7 @@ import { ImageDataService } from 'src/app/services/image-data.service';
 @Component({
   selector: 'pnd-semantic-annotation-section',
   templateUrl: './semantic-annotation-section.html',
+
 })
 export class SemanticAnnotationSectionComponent implements OnInit {
   id = 'semantic';

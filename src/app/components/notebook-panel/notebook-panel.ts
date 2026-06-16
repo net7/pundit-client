@@ -16,7 +16,8 @@ export interface NotebookPanelData {
 
 @Component({
   selector: 'notebook-panel',
-  templateUrl: './notebook-panel.html'
+  templateUrl: './notebook-panel.html',
+
 })
 export class NotebookPanelComponent implements OnInit {
   @Input() public data: NotebookPanelData;

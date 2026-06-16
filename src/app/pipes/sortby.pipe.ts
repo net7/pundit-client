@@ -5,7 +5,10 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { orderBy } from 'lodash';
 
-@Pipe({ name: 'sortBy' })
+@Pipe({
+  name: 'sortBy',
+
+})
 export class SortByPipe implements PipeTransform {
   transform(value: any[], order = '', column = ''): any[] {
     if (!value || order === '' || !order) { return value; } // no array

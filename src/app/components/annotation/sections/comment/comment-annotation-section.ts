@@ -6,6 +6,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'pnd-comment-annotation-section',
   templateUrl: './comment-annotation-section.html',
+
 })
 export class CommentAnnotationSectionComponent implements OnInit {
   id = 'comment';

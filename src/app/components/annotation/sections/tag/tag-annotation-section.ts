@@ -9,6 +9,7 @@ type TagType = { label: string; color: string };
 @Component({
   selector: 'pnd-tag-annotation-section',
   templateUrl: './tag-annotation-section.html',
+
 })
 export class TagAnnotationSectionComponent implements OnInit {
   id = 'tags';

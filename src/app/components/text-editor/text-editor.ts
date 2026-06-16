@@ -12,7 +12,8 @@ export interface TextEditorData {
 
 @Component({
   selector: 'pnd-text-editor',
-  templateUrl: './text-editor.html'
+  templateUrl: './text-editor.html',
+
 })
 export class TextEditorComponent {
   @Input() public data: TextEditorData;

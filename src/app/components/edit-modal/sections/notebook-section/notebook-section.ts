@@ -18,7 +18,8 @@ export type NotebookSectionOptions = Record<string, never>;
 
 @Component({
   selector: 'pnd-notebook-section',
-  templateUrl: './notebook-section.html'
+  templateUrl: './notebook-section.html',
+
 })
 export class NotebookSectionComponent implements OnInit, FormSection<
   NotebookSectionValue, NotebookSectionOptions

@@ -10,7 +10,8 @@ export interface SvgIconData {
 
 @Component({
   selector: 'pnd-svg-icon',
-  templateUrl: './svg-icon.html'
+  templateUrl: './svg-icon.html',
+
 })
 export class SvgIconComponent {
     @Input() public data: SvgIconData;

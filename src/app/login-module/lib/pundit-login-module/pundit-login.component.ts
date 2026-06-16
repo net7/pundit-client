@@ -4,6 +4,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
   selector: 'lib-pundit-login',
   templateUrl: './pundit-login.component.html',
   styleUrls: ['./pundit-login.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
+
 })
 export class PunditLoginComponent {}

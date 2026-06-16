@@ -13,7 +13,8 @@ import validationHelper from '../../helpers/validation.helper';
 @Component({
   selector: 'lib-pundit-login-signup',
   templateUrl: './signup.component.html',
-  styleUrls: []
+  styleUrls: [],
+
 })
 export class SignUpComponent {
   registerForm: UntypedFormGroup;

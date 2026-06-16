@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 @Component({
   selector: 'pnd-highlight-annotation-section',
   templateUrl: './highlight-annotation-section.html',
+
 })
 export class HighlightAnnotationSectionComponent implements OnInit {
   id = 'highlight';

@@ -13,7 +13,8 @@ export interface TooltipData {
 
 @Component({
   selector: 'pnd-tooltip',
-  templateUrl: './tooltip.html'
+  templateUrl: './tooltip.html',
+
 })
 export class TooltipComponent {
     @Input() public data: TooltipData;

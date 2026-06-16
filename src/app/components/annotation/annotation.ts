@@ -101,7 +101,8 @@ export interface AnnotationData {
 
 @Component({
   selector: 'annotation',
-  templateUrl: './annotation.html'
+  templateUrl: './annotation.html',
+
 })
 export class AnnotationComponent implements OnInit {
   @Input() data: AnnotationData;

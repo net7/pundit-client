@@ -24,7 +24,8 @@ export type TagsSectionOptions = {
 
 @Component({
   selector: 'pnd-tags-section',
-  templateUrl: './tags-section.html'
+  templateUrl: './tags-section.html',
+
 })
 export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions

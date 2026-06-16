@@ -43,7 +43,8 @@ export interface TextEditorMenuButton {
 
 @Component({
   selector: 'pnd-text-editor-menu',
-  templateUrl: './text-editor-menu.html'
+  templateUrl: './text-editor-menu.html',
+
 })
 export class TextEditorMenuComponent {
   @Input() public data: TextEditorMenuData;

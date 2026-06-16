@@ -25,7 +25,8 @@ export interface NotebookSelectorData {
 
 @Component({
   selector: 'notebook-selector',
-  templateUrl: './notebook-selector.html'
+  templateUrl: './notebook-selector.html',
+
 })
 export class NotebookSelectorComponent {
   @Input() public data: NotebookSelectorData;

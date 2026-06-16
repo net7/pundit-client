@@ -5,7 +5,8 @@ import { NotebookModel } from '../common/models';
   selector: 'pnd-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom
+  encapsulation: ViewEncapsulation.ShadowDom,
+
 })
 export class AppComponent {
   constructor() {

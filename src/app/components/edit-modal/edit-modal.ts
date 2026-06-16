@@ -52,7 +52,8 @@ export type EditModalFormState = {
 
 @Component({
   selector: 'pnd-edit-modal',
-  templateUrl: './edit-modal.html'
+  templateUrl: './edit-modal.html',
+
 })
 export class EditModalComponent implements AfterContentChecked {
   @ViewChild('saveButton') saveButton: ElementRef;

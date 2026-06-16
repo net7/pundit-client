@@ -14,7 +14,8 @@ import { environment as env } from '../../../../../environments/environment';
 @Component({
   selector: 'lib-pundit-login-signin',
   templateUrl: './signin.component.html',
-  styleUrls: []
+  styleUrls: [],
+
 })
 export class SignInComponent {
   email: EmailAuthProvider;

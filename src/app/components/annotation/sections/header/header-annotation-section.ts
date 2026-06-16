@@ -13,6 +13,7 @@ import { UserData, UserService } from 'src/app/services/user.service';
 @Component({
   selector: 'pnd-header-annotation-section',
   templateUrl: './header-annotation-section.html',
+
 })
 export class HeaderAnnotationSectionComponent implements OnInit {
   id = 'header';

@@ -62,7 +62,8 @@ export const getObjectType = (value: string) => {
 
 @Component({
   selector: 'pnd-semantic-section',
-  templateUrl: './semantic-section.html'
+  templateUrl: './semantic-section.html',
+
 })
 export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   SemanticSectionValue, SemanticSectionOptions
