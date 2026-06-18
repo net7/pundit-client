@@ -3,7 +3,7 @@ import { SemanticItem } from '../types';
 
 @Injectable()
 export class SemanticPredicateService {
-  private items: SemanticItem[];
+  private items!: SemanticItem[];
 
   load(items: SemanticItem[]) {
     if (Array.isArray(items)) {

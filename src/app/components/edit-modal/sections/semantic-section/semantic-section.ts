@@ -93,9 +93,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       }
     };
 
-  @Input() public data: FormSectionData<SemanticSectionValue, SemanticSectionOptions>;
+  @Input() public data!: FormSectionData<SemanticSectionValue, SemanticSectionOptions>;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
   private destroy$: Subject<void> = new Subject();
 

@@ -23,7 +23,7 @@ export interface NotebookPanelData {
   standalone: false
 })
 export class NotebookPanelComponent implements OnInit {
-  @Input() public data: NotebookPanelData;
+  @Input() public data!: NotebookPanelData;
 
   @Input() public emit: any;
 

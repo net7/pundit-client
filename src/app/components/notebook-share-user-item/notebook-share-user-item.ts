@@ -9,9 +9,9 @@ import { NotebookShareListItem } from '../notebook-share-modal/notebook-share-mo
   standalone: false
 })
 export class NotebookShareUserItemComponent {
-  @Input() item: NotebookShareListItem;
+  @Input() item!: NotebookShareListItem;
 
-  @Input() emit: (type: string, payload?: unknown) => void;
+  @Input() emit!: (type: string, payload?: unknown) => void;
 
   constructor(
     public imageDataService: ImageDataService

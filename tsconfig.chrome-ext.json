@@ -6,6 +6,7 @@
     "strict": false,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "./dist/chrome-ext-tmp",
     "sourceMap": true,
     "declaration": false,

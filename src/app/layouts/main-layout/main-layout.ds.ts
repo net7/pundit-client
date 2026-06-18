@@ -38,29 +38,29 @@ type MainLayoutState = {
 }
 
 export class MainLayoutDS extends LayoutDataSource {
-  public userService: UserService;
+  public userService!: UserService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public tagService: TagService;
+  public tagService!: TagService;
 
-  public socialService: SocialService;
+  public socialService!: SocialService;
 
-  public replyService: ReplyService;
+  public replyService!: ReplyService;
 
-  public semanticPredicateService: SemanticPredicateService;
+  public semanticPredicateService!: SemanticPredicateService;
 
-  public anchorService: AnchorService;
+  public anchorService!: AnchorService;
 
-  public punditLoginService: PunditLoginService;
+  public punditLoginService!: PunditLoginService;
 
-  public toastService: ToastService;
+  public toastService!: ToastService;
 
-  public pdfService: PdfService;
+  public pdfService!: PdfService;
 
-  public documentInfoService: DocumentInfoService;
+  public documentInfoService!: DocumentInfoService;
 
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);

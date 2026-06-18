@@ -7,9 +7,9 @@ import { AnnotationService } from '../services/annotation.service';
 import { NotebookService } from '../services/notebook.service';
 
 export class AnnotationEH extends EventHandler {
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
   private onMenuFocusLost = new Subject();
 

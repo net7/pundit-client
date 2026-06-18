@@ -19,7 +19,7 @@ import { environment as env } from '../../../../../environments/environment';
   standalone: false
 })
 export class SignInComponent {
-  email: EmailAuthProvider;
+  email!: EmailAuthProvider;
 
   google: OAuthProvider | undefined;
 
@@ -27,11 +27,11 @@ export class SignInComponent {
 
   facebook: OAuthProvider | undefined;
 
-  loginForm: UntypedFormGroup;
+  loginForm!: UntypedFormGroup;
 
   isLoading = false;
 
-  serviceErrorMessage: string | null;
+  serviceErrorMessage!: string | null;
 
   terms: TermsParameters | undefined;
 

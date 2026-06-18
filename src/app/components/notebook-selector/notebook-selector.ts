@@ -32,7 +32,7 @@ export interface NotebookSelectorData {
   standalone: false
 })
 export class NotebookSelectorComponent {
-  @Input() public data: NotebookSelectorData;
+  @Input() public data!: NotebookSelectorData;
 
   @Input() public emit: any;
 

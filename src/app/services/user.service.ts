@@ -13,7 +13,7 @@ export type UserData = {
 
 @Injectable()
 export class UserService {
-  private me: UserData;
+  private me!: UserData;
 
   private users: UserData[] = [];
 

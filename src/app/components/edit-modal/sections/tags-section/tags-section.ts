@@ -34,11 +34,11 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
 > {
   id = 'tags';
 
-  @Input() public data: FormSectionData<TagsSectionValue, TagsSectionOptions>;
+  @Input() public data!: FormSectionData<TagsSectionValue, TagsSectionOptions>;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
-  @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
+  @ViewChild('tagifyInputRef') tagifyInputRef!: ElementRef<HTMLInputElement>;
 
   private destroy$: Subject<void> = new Subject();
 

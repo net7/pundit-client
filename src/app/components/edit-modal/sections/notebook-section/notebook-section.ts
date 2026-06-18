@@ -28,13 +28,13 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 > {
   id = 'notebook';
 
-  @Input() public data: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
+  @Input() public data!: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
-  public notebookSelectorData: NotebookSelectorData;
+  public notebookSelectorData!: NotebookSelectorData;
 
   public currentNotebook: NotebookData | null = null;
 

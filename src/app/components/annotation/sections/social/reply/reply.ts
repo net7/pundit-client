@@ -36,21 +36,21 @@ export type ReplyType = 'Reply';
   standalone: false
 })
 export class ReplyComponent implements OnInit {
-  @Input() public data: Reply;
+  @Input() public data!: Reply;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
   @Input() public emit: any;
 
   public readonly ACTIONS: SocialType[] = ['Like', 'Dislike', 'Report'];
 
-  public socials$: Observable<any>;
+  public socials$!: Observable<any>;
 
   public menuData: any;
 
   public activeMenu: any;
 
-  public formState: ReplyFormState;
+  public formState!: ReplyFormState;
 
   public userData: any;
 

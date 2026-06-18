@@ -13,11 +13,11 @@ import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-edito
 import { isMarkActive, isNodeActive } from './helpers';
 
 class Editor {
-  private editorView: EditorView;
+  private editorView!: EditorView;
 
-  private schema: Schema;
+  private schema!: Schema;
 
-  private menu: TextEditorMenuData;
+  private menu!: TextEditorMenuData;
 
   public menuEvent$: Subject<{
     type: string;

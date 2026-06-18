@@ -11,7 +11,7 @@ import { ModalService } from '../../services/modal.service';
   standalone: false
 })
 export class ModalComponent implements OnDestroy {
-  show: boolean;
+  show!: boolean;
 
   status: modalStateType = 'SIGNIN';
 

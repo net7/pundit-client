@@ -7,7 +7,7 @@ import { EditModalParams, FormSectionData } from '../types';
 export class EditModalDS extends DataSource {
   private draggableInstance: any;
 
-  private defaultPosition: { x: number; y: number };
+  private defaultPosition!: { x: number; y: number };
 
   transform(data: EditModalParams): EditModalData {
     const {

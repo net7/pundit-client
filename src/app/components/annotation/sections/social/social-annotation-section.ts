@@ -12,11 +12,11 @@ import { ReplyType } from './reply/reply';
 export class SocialAnnotationSectionComponent {
   id = 'social';
 
-  @Input() public socials$: Observable<any>;
+  @Input() public socials$!: Observable<any>;
 
-  @Input() public replies$: Observable<Reply[]>;
+  @Input() public replies$!: Observable<Reply[]>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
   @Input() public emit: any;
 

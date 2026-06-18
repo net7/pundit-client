@@ -7,7 +7,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
   standalone: false
 })
 export class ErrorComponent {
-  errorTitle: string;
+  errorTitle!: string;
 
-  errorDescription: string;
+  errorDescription!: string;
 }

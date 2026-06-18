@@ -21,9 +21,9 @@ export class PdfService {
   private pdfApp: PDFViewerApp;
 
   // PDF through proxy to work around CORS restrictions
-  private documentUrl: string;
+  private documentUrl!: string;
 
-  private originalUrl: string;
+  private originalUrl!: string;
 
   private allowedEvents: PdfViewerEvents[] = [
     PdfViewerEvents.PageRendered,

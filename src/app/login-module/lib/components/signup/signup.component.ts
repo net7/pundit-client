@@ -18,9 +18,9 @@ import validationHelper from '../../helpers/validation.helper';
   standalone: false
 })
 export class SignUpComponent {
-  registerForm: UntypedFormGroup;
+  registerForm!: UntypedFormGroup;
 
-  email: EmailAuthProvider;
+  email!: EmailAuthProvider;
 
   google: OAuthProvider | undefined;
 
@@ -30,7 +30,7 @@ export class SignUpComponent {
 
   isLoading = false;
 
-  serviceErrorMessage: string | null;
+  serviceErrorMessage!: string | null;
 
   private inputTextValues: {
     [key: string]: string | null;

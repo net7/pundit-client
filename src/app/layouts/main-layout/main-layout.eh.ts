@@ -15,11 +15,11 @@ import { MainLayoutDS } from './main-layout.ds';
 export class MainLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
 
-  public appEvent$: ReplaySubject<AppEventData>;
+  public appEvent$!: ReplaySubject<AppEventData>;
 
-  public dataSource: MainLayoutDS;
+  public dataSource!: MainLayoutDS;
 
-  public changeDetectorRef: ChangeDetectorRef;
+  public changeDetectorRef!: ChangeDetectorRef;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

@@ -20,7 +20,7 @@ export interface TooltipData {
   standalone: false
 })
 export class TooltipComponent {
-    @Input() public data: TooltipData;
+    @Input() public data!: TooltipData;
 
     @Input() public emit: any;
 

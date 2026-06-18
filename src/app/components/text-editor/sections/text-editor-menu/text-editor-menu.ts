@@ -48,7 +48,7 @@ export interface TextEditorMenuButton {
   standalone: false
 })
 export class TextEditorMenuComponent {
-  @Input() public data: TextEditorMenuData;
+  @Input() public data!: TextEditorMenuData;
 
   onClick(button: TextEditorMenuButton) {
     this.data.menuEvent$.next({

@@ -52,7 +52,7 @@ export type SharedWithChanged = {
 export class NotebookService {
   private notebooks: NotebookData[] = [];
 
-  private selectedId: string | null;
+  private selectedId!: string | null;
 
   public selectedChanged$: Subject<void> = new Subject();
 

@@ -69,9 +69,9 @@ export type NotebookShareModalData = {
   standalone: false
 })
 export class NotebookShareModalComponent {
-  @Input() data: NotebookShareModalData;
+  @Input() data!: NotebookShareModalData;
 
-  @Input() emit: (type: string, payload?: unknown) => void;
+  @Input() emit!: (type: string, payload?: unknown) => void;
 
   constructor(
     public imageDataService: ImageDataService

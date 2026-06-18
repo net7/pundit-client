@@ -20,15 +20,15 @@ import { UserData, UserService } from 'src/app/services/user.service';
 export class HeaderAnnotationSectionComponent implements OnInit {
   id = 'header';
 
-  @Input() public data$: BehaviorSubject<Annotation>;
+  @Input() public data$!: BehaviorSubject<Annotation>;
 
   @Input() public emit: any;
 
-  @Input() public state$: BehaviorSubject<AnnotationState>;
+  @Input() public state$!: BehaviorSubject<AnnotationState>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -37,7 +37,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     public imageDataService: ImageDataService,
   ) { }
 
-  public header$: Observable<any>;
+  public header$!: Observable<any>;
 
   public logoHypothesis = _c('hypothesisLogo');
 

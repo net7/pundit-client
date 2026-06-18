@@ -15,7 +15,7 @@ export interface DocumentInfoWebpage extends DocumentInfo {
 
 @Injectable()
 export class DocumentInfoWebpageService {
-  private cache: DocumentInfoWebpage;
+  private cache!: DocumentInfoWebpage;
 
   get(): Observable<DocumentInfoWebpage> {
     if (!this.cache) {

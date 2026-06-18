@@ -21,19 +21,19 @@ import { SocialBarState, createInitialState, resetFormState } from './social-act
   standalone: false
 })
 export class SocialActionBarComponent implements OnInit {
-  @Input() socials$: Observable<SocialStats>;
+  @Input() socials$!: Observable<SocialStats>;
 
-  @Input() replies$: Observable<Reply[]>;
+  @Input() replies$!: Observable<Reply[]>;
 
-  @Input() annotationId: string;
+  @Input() annotationId!: string;
 
-  @Input() parentId: string;
+  @Input() parentId!: string;
 
   @Input() emit: any;
 
-  @Input() actions: (SocialType | ReplyType)[];
+  @Input() actions!: (SocialType | ReplyType)[];
 
-  public state: SocialBarState;
+  public state!: SocialBarState;
 
   public labels = {
     reply: _t('social#reply'),

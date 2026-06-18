@@ -25,9 +25,9 @@ export interface PdfErrorModalData {
   standalone: false
 })
 export class PdfErrorModalComponent {
-  @Input() public data: PdfErrorModalData;
+  @Input() public data!: PdfErrorModalData;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
   onClick(ev: Event, payload: any) {
     if (!this.emit) {

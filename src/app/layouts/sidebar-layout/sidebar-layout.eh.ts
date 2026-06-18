@@ -20,27 +20,27 @@ import { SidebarLayoutDS } from './sidebar-layout.ds';
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
 
-  public appEvent$: ReplaySubject<AppEventData>;
+  public appEvent$!: ReplaySubject<AppEventData>;
 
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
-  public anchorService: AnchorService;
+  public anchorService!: AnchorService;
 
-  public userService: UserService;
+  public userService!: UserService;
 
-  public punditLoginService: PunditLoginService;
+  public punditLoginService!: PunditLoginService;
 
-  public toastService: ToastService;
+  public toastService!: ToastService;
 
-  public tagService: TagService;
+  public tagService!: TagService;
 
-  public pdfService: PdfService;
+  public pdfService!: PdfService;
 
-  public changeDetectorRef: ChangeDetectorRef;
+  public changeDetectorRef!: ChangeDetectorRef;
 
-  public dataSource: SidebarLayoutDS;
+  public dataSource!: SidebarLayoutDS;
 
   private callHypoDone = false;
 

@@ -15,9 +15,9 @@ import { ImageDataService } from 'src/app/services/image-data.service';
 export class SemanticAnnotationSectionComponent implements OnInit {
   id = 'semantic';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  public semantic$: Observable<any>;
+  public semantic$!: Observable<any>;
 
   constructor(public imageDataService: ImageDataService) {
   }

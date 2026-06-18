@@ -58,11 +58,11 @@ export type EditModalFormState = {
   standalone: false
 })
 export class EditModalComponent implements AfterContentChecked {
-  @ViewChild('saveButton') saveButton: ElementRef;
+  @ViewChild('saveButton') saveButton!: ElementRef;
 
-  @Input() public data: EditModalData;
+  @Input() public data!: EditModalData;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
   private lastInternalId: string | null = null;
 

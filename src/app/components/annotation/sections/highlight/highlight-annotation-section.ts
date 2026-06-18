@@ -15,13 +15,13 @@ import { map } from 'rxjs/operators';
 export class HighlightAnnotationSectionComponent implements OnInit {
   id = 'highlight';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
   public classHypo = '';
 
-  public highlight$: Observable<any>;
+  public highlight$!: Observable<any>;
 
   ngOnInit(): void {
     this.highlight$ = this.data$.pipe(map(this.transformData));

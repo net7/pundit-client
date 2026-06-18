@@ -17,5 +17,5 @@ export interface TextEditorData {
   standalone: false
 })
 export class TextEditorComponent {
-  @Input() public data: TextEditorData;
+  @Input() public data!: TextEditorData;
 }

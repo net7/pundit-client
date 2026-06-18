@@ -15,5 +15,5 @@ export interface SvgIconData {
   standalone: false
 })
 export class SvgIconComponent {
-    @Input() public data: SvgIconData;
+    @Input() public data!: SvgIconData;
 }

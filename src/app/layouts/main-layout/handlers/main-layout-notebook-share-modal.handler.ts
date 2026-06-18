@@ -20,7 +20,7 @@ import { MainLayoutEH } from '../main-layout.eh';
 export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private autocomplete$: Subject<string> = new Subject();
 
-  notebookShareModalDS: NotebookShareModalDS;
+  notebookShareModalDS!: NotebookShareModalDS;
 
   constructor(
     private layoutDS: MainLayoutDS,

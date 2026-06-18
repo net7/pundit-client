@@ -32,17 +32,17 @@ import { shareActionButtons, shareButton } from './menu-share.helper';
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   id = 'header';
 
-  @Input() public data$: BehaviorSubject<Annotation>;
+  @Input() public data$!: BehaviorSubject<Annotation>;
 
   @Input() public emit: any;
 
-  @Input() public state$: BehaviorSubject<AnnotationState>;
+  @Input() public state$!: BehaviorSubject<AnnotationState>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
-  public menu$: Observable<any>;
+  public menu$!: Observable<any>;
 
   public notebookSelectorData: any;
 

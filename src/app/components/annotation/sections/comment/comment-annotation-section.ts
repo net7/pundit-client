@@ -14,9 +14,9 @@ import { map } from 'rxjs/operators';
 export class CommentAnnotationSectionComponent implements OnInit {
   id = 'comment';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  public comment$: Observable<any>;
+  public comment$!: Observable<any>;
 
   ngOnInit(): void {
     this.comment$ = this.data$.pipe(map(this.transformData));

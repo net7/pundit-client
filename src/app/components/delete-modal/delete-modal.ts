@@ -25,9 +25,9 @@ export interface DeleteModalData {
   standalone: false
 })
 export class DeleteModalComponent {
-  @Input() public data: DeleteModalData;
+  @Input() public data!: DeleteModalData;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
   onClick(ev: Event, payload: any) {
     if (!this.emit) {

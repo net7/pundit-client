@@ -3,7 +3,7 @@ import { NotebookShareModalDS } from '../data-sources';
 import { getEventType, MainLayoutEvent, NotebookShareModalEvent } from '../event-types';
 
 export class NotebookShareModalEH extends EventHandler {
-  dataSource: NotebookShareModalDS;
+  dataSource!: NotebookShareModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

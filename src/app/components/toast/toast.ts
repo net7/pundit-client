@@ -98,7 +98,7 @@ export interface ToastAction {
   standalone: false
 })
 export class ToastComponent {
-  @Input() data: ToastData;
+  @Input() data!: ToastData;
 
   @Input() emit: any;
 

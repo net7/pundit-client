@@ -11,14 +11,14 @@ import { NotebookShareModalData, NotebookShareModalResult } from '../notebook-sh
   standalone: false
 })
 export class NotebookShareUserSelectedComponent implements OnInit {
-  @Input() data: NotebookShareModalData;
+  @Input() data!: NotebookShareModalData;
 
   actions = [
     { label: 'Can view', value: 'read' },
     { label: 'Can edit', value: 'write' }
   ];
 
-  item: NotebookShareModalResult;
+  item!: NotebookShareModalResult;
 
   dropdownExpanded = false;
 

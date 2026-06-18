@@ -107,21 +107,21 @@ export interface AnnotationData {
   standalone: false
 })
 export class AnnotationComponent implements OnInit {
-  @Input() data: AnnotationData;
+  @Input() data!: AnnotationData;
 
   @Input() emit: any;
 
-  @Input() data$: BehaviorSubject<Annotation>;
+  @Input() data$!: BehaviorSubject<Annotation>;
 
-  @Input() state$: BehaviorSubject<AnnotationState>;
+  @Input() state$!: BehaviorSubject<AnnotationState>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
-  public socials$: Observable<any>;
+  public socials$!: Observable<any>;
 
-  public replies$: Observable<Reply[]>;
+  public replies$!: Observable<Reply[]>;
 
   constructor(
     private ref: ChangeDetectorRef,

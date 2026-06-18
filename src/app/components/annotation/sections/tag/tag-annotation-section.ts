@@ -17,9 +17,9 @@ type TagType = { label: string; color: string };
 export class TagAnnotationSectionComponent implements OnInit {
   id = 'tags';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  public tags$: Observable<any>;
+  public tags$!: Observable<any>;
 
   ngOnInit(): void {
     this.tags$ = this.data$.pipe(map(this.transformData));

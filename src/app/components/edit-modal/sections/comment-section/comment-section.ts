@@ -32,11 +32,11 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
 
   editor: any;
 
-  @Input() public data: FormSectionData<CommentSectionValue, CommentSectionOptions>;
+  @Input() public data!: FormSectionData<CommentSectionValue, CommentSectionOptions>;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
-  public editorData: TextEditorData;
+  public editorData!: TextEditorData;
 
   private destroy$: Subject<void> = new Subject();
 

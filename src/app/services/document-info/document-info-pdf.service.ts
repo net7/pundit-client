@@ -9,7 +9,7 @@ export interface DocumentInfoPdf extends DocumentInfo {}
 
 @Injectable()
 export class DocumentInfoPdfService {
-  private cache: DocumentInfoPdf;
+  private cache!: DocumentInfoPdf;
 
   constructor(
     private pdfService: PdfService

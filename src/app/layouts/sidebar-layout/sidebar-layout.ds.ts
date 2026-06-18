@@ -13,15 +13,15 @@ import { NotebookService } from '../../services/notebook.service';
 const REPORT_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSfC-bkKWVOa52BP05FWwyZW446KlVnEv2w5gmZhs1BMvZn0Rg/viewform?usp=pp_url&entry.1925380618';
 
 export class SidebarLayoutDS extends LayoutDataSource {
-  private annotationService: AnnotationService;
+  private annotationService!: AnnotationService;
 
-  private annotationPositionService: AnnotationPositionService;
+  private annotationPositionService!: AnnotationPositionService;
 
-  private notebookService: NotebookService;
+  private notebookService!: NotebookService;
 
-  private tagService: TagService;
+  private tagService!: TagService;
 
-  public userService: UserService;
+  public userService!: UserService;
 
   /** open/close the sidebar */
   public isCollapsed = new BehaviorSubject(false);

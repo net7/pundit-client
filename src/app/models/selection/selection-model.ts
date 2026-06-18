@@ -8,9 +8,9 @@ import { fromEvent, Subject } from 'rxjs';
 class SelectionModel {
   public changed$: Subject<void> = new Subject<void>();
 
-  private currentSelection: Selection | null;
+  private currentSelection!: Selection | null;
 
-  private currentRange: Range | null;
+  private currentRange!: Range | null;
 
   constructor() {
     this.listen();

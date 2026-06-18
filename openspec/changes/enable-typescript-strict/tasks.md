@@ -24,9 +24,9 @@
 
 ## 4. strictPropertyInitialization
 
-- [ ] 4.1 Enable `strictPropertyInitialization` in both tsconfigs
-- [ ] 4.2 Fix uninitialized-property errors by initializing, marking optional, or definite-assignment (`!`) consistent with actual runtime usage
-- [ ] 4.3 Verify both builds compile cleanly; commit this increment
+- [x] 4.1 Enable `strictPropertyInitialization` in `tsconfig.json` and `tsconfig.chrome-ext.json`
+- [x] 4.2 Fix all uninitialized-property errors (139, all TS2564) with definite-assignment assertions (`!`) — these are Angular DI-injected services, `@Input` fields, and lifecycle-set properties that are assigned outside the constructor; `!` is the idiomatic Angular fix. Applied mechanically via the compiler's reported file/line/column + property name.
+- [x] 4.3 Verified all 4 tsconfig projects report 0 errors; `npm run build`, `npm run build:chrome-ext-prod`, `npm test` (8/8), and `npm run lint` all pass.
 
 ## 5. Consolidate to strict
 
