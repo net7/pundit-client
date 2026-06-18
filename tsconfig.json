@@ -18,6 +18,11 @@
       "node_modules/@types",
       "node_modules/@angular"
     ],
+    "types": [
+      "chrome",
+      "jest",
+      "node"
+    ],
     "skipLibCheck": true,
     "useDefineForClassFields": false
   },
