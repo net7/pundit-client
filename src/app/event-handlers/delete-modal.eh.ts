@@ -3,7 +3,7 @@ import { DeleteModalDS } from '../data-sources';
 import { DeleteModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 
 export class DeleteModalEH extends EventHandler {
-  public dataSource: DeleteModalDS;
+  public dataSource!: DeleteModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

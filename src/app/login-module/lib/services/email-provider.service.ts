@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
 import {
   EMPTY, from, Observable, of, Subject
@@ -19,16 +18,14 @@ import { PopupService } from './popup.service';
   providedIn: 'root'
 })
 export class EmailProviderService implements OnDestroy {
+  private authEventService = inject(AuthEventService);
+  private popupService = inject(PopupService);
+
   error$: Subject<object> = new Subject();
 
   isLoading$: Subject<boolean> = new Subject<boolean>();
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
-
-  constructor(
-    private authEventService: AuthEventService,
-    private popupService: PopupService
-  ) { }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);
@@ -37,21 +34,23 @@ export class EmailProviderService implements OnDestroy {
 
   login(
     data: UserLoginRequestParams,
-    terms: TermsParameters
+    terms: TermsParameters | undefined
   ) {
     this.isLoading$.next(true);
     from(AuthModel.login(data))
-      .pipe(take(1),
+      .pipe(
+        take(1),
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
           if (this.mustAcceptTerms(err)) {
-            this.openTermsPopup(terms);
+            this.openTermsPopup(terms!);
             return EMPTY;
           }
           this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
-        })).subscribe((authResp: LoginResponse) => {
+        })
+      ).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
 
@@ -83,13 +82,15 @@ export class EmailProviderService implements OnDestroy {
     };
     this.isLoading$.next(true);
     from(AuthModel.signup(request))
-      .pipe(take(1),
+      .pipe(
+        take(1),
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
           this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
-        })).subscribe((authResp: LoginResponse) => {
+        })
+      ).subscribe((authResp: LoginResponse) => {
         if (authResp && !('error' in authResp)) {
           this.authEventService.set(authResp);
 
@@ -110,14 +111,14 @@ export class EmailProviderService implements OnDestroy {
   private openTermsPopup = (params: TermsParameters) => {
     const event$ = this.popupService.open(params.url, params.popup, 'pundit-terms');
     this.listenEvent(event$);
-  }
+  };
 
   private listenEvent(event$: Observable<MessageEvent>) {
     event$.pipe(
       takeUntil(this.destroy$),
       map(fromEvent),
       catchError((err) => of({ error: JSON.stringify(err), source: 'login' }))
-    ).subscribe((authResp: LoginResponse) => {
+    ).subscribe((authResp: any) => {
       if (authResp) {
         this.authEventService.set(authResp);
       }

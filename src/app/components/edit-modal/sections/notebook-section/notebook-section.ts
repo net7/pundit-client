@@ -1,8 +1,4 @@
-import {
-  OnInit,
-  Component,
-  Input,
-} from '@angular/core';
+import { OnInit, Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
@@ -11,34 +7,36 @@ import { EditModalEvent, getEventType } from 'src/app/event-types';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { FormSection, FormSectionData } from 'src/app/types';
+import { NotebookSelectorComponent } from '../../../notebook-selector/notebook-selector';
 
 export type NotebookSectionValue = string;
 
-export type NotebookSectionOptions = {};
+export type NotebookSectionOptions = Record<string, never>;
 
 @Component({
-  selector: 'pnd-notebook-section',
-  templateUrl: './notebook-section.html'
+    selector: 'pnd-notebook-section',
+    templateUrl: './notebook-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NotebookSelectorComponent]
 })
 export class NotebookSectionComponent implements OnInit, FormSection<
   NotebookSectionValue, NotebookSectionOptions
 > {
+  private notebookService = inject(NotebookService);
+  private userService = inject(UserService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
   id = 'notebook';
 
-  @Input() public data: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
+  @Input() public data!: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
-  public notebookSelectorData: NotebookSelectorData;
+  public notebookSelectorData!: NotebookSelectorData;
 
-  public currentNotebook: NotebookData = null;
-
-  constructor(
-    private notebookService: NotebookService,
-    private userService: UserService,
-  ) {}
+  public currentNotebook: NotebookData | null = null;
 
   ngOnInit() {
     this.init();
@@ -48,9 +46,9 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   private init = () => {
     const { initialValue } = this.data;
     this.setNotebookSelectorData(initialValue);
-  }
+  };
 
-  private setNotebookSelectorData(notebookId: string) {
+  private setNotebookSelectorData(notebookId: string | undefined) {
     const notebooks = this.notebookService.getByUserIdShared(this.userService.whoami().id);
     this.currentNotebook = this.notebookService.getSelected();
 
@@ -72,9 +70,9 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onEmit = (type, payload) => {
+  onEmit = (type: string, payload: any) => {
     if (type === 'option') {
-      if (this.currentNotebook.id !== payload) {
+      if (this.currentNotebook!.id !== payload) {
         this.triggerChanged(payload);
         // update default notebook
         this.notebookService.setSelected(payload, true);
@@ -86,11 +84,14 @@ export class NotebookSectionComponent implements OnInit, FormSection<
     } else if (type === 'modechanged') {
       this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), payload);
     }
-  }
+  };
 
   private createNotebook(label: string) {
     // update state
-    this.notebookSelectorData.isLoading = true;
+    this.notebookSelectorData = {
+      ...this.notebookSelectorData,
+      isLoading: true
+    };
     this.notebookService.create(label).pipe(
       catchError((e) => {
         // emit signal
@@ -120,15 +121,19 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 
   private resetDropdownState() {
     const mode = 'select';
-    this.notebookSelectorData.isLoading = false;
-    this.notebookSelectorData.mode = mode;
+    this.notebookSelectorData = {
+      ...this.notebookSelectorData,
+      isLoading: false,
+      mode
+    };
     // emit signal
     this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), mode);
+    this.changeDetectorRef.markForCheck();
   }
 
   private onReset = () => {
     const { initialValue } = this.data;
     this.resetDropdownState();
     this.setNotebookSelectorData(initialValue);
-  }
+  };
 }

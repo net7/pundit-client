@@ -1,4 +1,5 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
 
 /**
  * Interface for DeleteModal's "data"
@@ -19,13 +20,15 @@ export interface DeleteModalData {
 }
 
 @Component({
-  selector: 'pnd-delete-modal',
-  templateUrl: './delete-modal.html'
+    selector: 'pnd-delete-modal',
+    templateUrl: './delete-modal.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SvgIconComponent]
 })
 export class DeleteModalComponent {
-  @Input() public data: DeleteModalData;
+  @Input() public data!: DeleteModalData;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public emit!: (type: string, payload?: any) => void;
 
   onClick(ev: Event, payload: any) {
     if (!this.emit) {

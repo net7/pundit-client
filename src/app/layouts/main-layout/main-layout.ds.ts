@@ -28,39 +28,39 @@ import { AnnotationModel, SemanticPredicateModel } from '../../../common/models'
 type MainLayoutState = {
   isLogged: boolean;
   annotation: {
-    pendingPayload: HighlightAnnotation | CommentAnnotation;
-    updatePayload: Annotation;
-    deleteId: string;
+    pendingPayload: HighlightAnnotation | CommentAnnotation | null;
+    updatePayload: Annotation | null;
+    deleteId: string | null;
   };
-  anonymousSelectionRange: Range;
-  emailVerifiedToast: ToastInstance;
+  anonymousSelectionRange: Range | null;
+  emailVerifiedToast: ToastInstance | null;
   identitySyncLoading: boolean;
 }
 
 export class MainLayoutDS extends LayoutDataSource {
-  public userService: UserService;
+  public userService!: UserService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public tagService: TagService;
+  public tagService!: TagService;
 
-  public socialService: SocialService;
+  public socialService!: SocialService;
 
-  public replyService: ReplyService;
+  public replyService!: ReplyService;
 
-  public semanticPredicateService: SemanticPredicateService;
+  public semanticPredicateService!: SemanticPredicateService;
 
-  public anchorService: AnchorService;
+  public anchorService!: AnchorService;
 
-  public punditLoginService: PunditLoginService;
+  public punditLoginService!: PunditLoginService;
 
-  public toastService: ToastService;
+  public toastService!: ToastService;
 
-  public pdfService: PdfService;
+  public pdfService!: PdfService;
 
-  public documentInfoService: DocumentInfoService;
+  public documentInfoService!: DocumentInfoService;
 
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
@@ -79,9 +79,9 @@ export class MainLayoutDS extends LayoutDataSource {
     identitySyncLoading: false
   };
 
-  public usersList = []
+  public usersList: any[] = [];
 
-  onInit(payload) {
+  onInit(payload: any) {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
@@ -102,7 +102,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata, true)).pipe(
+        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[], true)).pipe(
           tap((response) => {
             const { data: searchData } = response;
             // remove private annotations
@@ -121,7 +121,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata)).pipe(
+        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[])).pipe(
           tap(({ data: searchData }) => {
             this.handleSearchResponse(searchData);
             this.hasLoaded$.next(true);
@@ -141,7 +141,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   getUserSemanticPredicates() {
     return from(SemanticPredicateModel.get()).pipe(
-      tap(({ data }) => {
+      tap(({ data }: any) => {
         this.semanticPredicateService.load(data);
       })
     );
@@ -151,7 +151,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.notebookService.search();
   }
 
-  public saveAnnotation(payload) {
+  public saveAnnotation(payload: any) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
@@ -159,9 +159,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.annotationService.create(payload).pipe(
       switchMap(({ data }) => {
         const { id } = data;
-        const newAnnotation = this.annotationService.getAnnotationFromPayload(
-          id, payload
-        );
+        const newAnnotation = this.annotationService.getAnnotationFromPayload(id, payload);
         this.anchorService.add(newAnnotation);
         this.removePendingAnnotation();
         return of(newAnnotation);
@@ -209,7 +207,7 @@ export class MainLayoutDS extends LayoutDataSource {
     }
   }
 
-  public checkUserVerified(user) {
+  public checkUserVerified(user: any) {
     if (!user.is_verified) {
       this.openEmailVerifiedToast();
     } else {
@@ -245,7 +243,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private doEmailVerifyRequest() {
-    this.state.emailVerifiedToast.close();
+    this.state.emailVerifiedToast?.close();
     // working toast
     const workingToast = this.toastService.working();
     // TODO Vedere verify
@@ -270,7 +268,7 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  private handleSearchResponse(searchData) {
+  private handleSearchResponse(searchData: any) {
     const {
       users, annotations, notebooks, socials, replies
     } = searchData;
@@ -288,7 +286,7 @@ export class MainLayoutDS extends LayoutDataSource {
     }
   }
 
-  private removePrivateAnnotations(searchData) {
+  private removePrivateAnnotations(searchData: any) {
     const { annotations }: { annotations: Annotation[] } = searchData;
     const annotationIds = annotations.map(({ id }) => id);
     const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);
@@ -302,7 +300,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public addPendingAnnotation$(): Observable<Annotation> {
     return this.annotationService.getAnnotationRequestPayload$().pipe(
-      switchMap((pendingPayload: HighlightAnnotation) => {
+      switchMap((pendingPayload: HighlightAnnotation | CommentAnnotation) => {
         this.state.annotation.pendingPayload = pendingPayload;
         const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
           this.pendingAnnotationId,
@@ -316,7 +314,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   updateShareModal(openModal = false) {
-    const notebook = this.notebookService.getSelected();
+    const notebook = this.notebookService.getSelected()!;
     notebook.users = this.usersList;
     if (openModal) {
       this.one('notebook-share-modal').update(notebook);

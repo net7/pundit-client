@@ -4,7 +4,7 @@
  * Provides functionality for working with different annotation types
  * (highlights, comments, links) and manages their state.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Annotation,
   AnnotationAttributes,
@@ -39,6 +39,7 @@ export type AnnotationState = {
   isNotebookSelectorLoading: boolean;
   source: 'box';
   isCollapsed: boolean;
+  classes?: AnnotationCssClass;
 }
 
 export type AnnotationConfig = {
@@ -46,8 +47,16 @@ export type AnnotationConfig = {
   state$: BehaviorSubject<AnnotationState>;
   data$: BehaviorSubject<Annotation>;
 }
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnnotationService {
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  private pdfService = inject(PdfService);
+  private documentInfoService = inject(DocumentInfoService);
+  private http = inject(HttpClient);
+
   private annotations: AnnotationConfig[] = [];
 
   private rawAnnotations: Annotation[] = [];
@@ -59,14 +68,6 @@ export class AnnotationService {
   public hypothesisAnnotation$: Subject<any> = new Subject();
 
   private hypothesisBaseUrl = 'https://api.hypothes.is/api/search';
-
-  constructor(
-    private userService: UserService,
-    private notebookService: NotebookService,
-    private pdfService: PdfService,
-    private documentInfoService: DocumentInfoService,
-    private http: HttpClient
-  ) { }
 
   load(rawAnnotations: Annotation[]) {
     rawAnnotations.forEach((rawAnnotation) => {
@@ -83,9 +84,7 @@ export class AnnotationService {
       tap(({ data }) => {
         const { id } = data;
         const requestPayload = attributes;
-        const newAnnotation = this.getAnnotationFromPayload(
-          id, requestPayload
-        );
+        const newAnnotation = this.getAnnotationFromPayload(id, requestPayload);
         this.add(newAnnotation);
       })
     );
@@ -99,7 +98,7 @@ export class AnnotationService {
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
     // if annotation exists update auth related info
     if (currentAnnotation) {
-      const { data$ } = this.getAnnotationById(rawAnnotation.id);
+      const { data$ } = currentAnnotation;
       // reset state classes
       this.updateAnnotationState(rawAnnotation.id, {
         classes: AnnotationCssClass.Empty
@@ -207,7 +206,7 @@ export class AnnotationService {
         if (aStartPosition === bStartPosition) {
           return new Date(aCreated).getTime() - new Date(bCreated).getTime();
         }
-        return aStartPosition - bStartPosition;
+        return aStartPosition! - bStartPosition!;
       });
   }
 
@@ -246,7 +245,7 @@ export class AnnotationService {
   ): Observable<HighlightAnnotation | CommentAnnotation> {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const selectedNotebookId = this.notebookService.getSelected().id;
+    const selectedNotebookId = this.notebookService.getSelected()!.id;
     const options = {};
     return this.documentInfoService.get().pipe(
       switchMap((documentInfo) => of(createRequestPayload({
@@ -255,7 +254,7 @@ export class AnnotationService {
         options,
         documentInfo,
         notebookId: selectedNotebookId,
-        selection: range,
+        selection: range as Range,
       })))
     );
   }
@@ -282,8 +281,8 @@ export class AnnotationService {
       const url = `${this.hypothesisBaseUrl}?uri=${response.pageContext}`;
       this.http.get(url).subscribe((res) => {
         const hypothesisAnnotations = Object.assign(res);
-        const annotations = [];
-        hypothesisAnnotations.rows.forEach((hypoAnnotation) => {
+        const annotations: any[] = [];
+        hypothesisAnnotations.rows.forEach((hypoAnnotation: any) => {
           if (hypoAnnotation.target[0].selector) {
             annotations.push(this.convertIntoAnnotation(hypoAnnotation, false));
           } else {
@@ -295,41 +294,64 @@ export class AnnotationService {
     });
   }
 
-  private convertIntoAnnotation(hypoAnnotation, isPageAnnotation) {
-    const { source } = hypoAnnotation.target[0];
-    let selected = null;
-    if (!isPageAnnotation) {
-      const { selector } = hypoAnnotation.target[0];
-      const textPosition = (selector) ? selector.find((item) => item.type === 'TextPositionSelector') : null;
-      const textQuote = (selector) ? selector.find((item) => item.type === 'TextQuoteSelector') : null;
-      const range = (selector) ? selector.find((item) => item.type === 'RangeSelector') : null;
-      selected = {
-        text: (selector) ? textQuote.exact : null,
-        textPositionSelector: {
-          start: (selector) ? textPosition.start : null,
-          end: (selector) ? textPosition.end : null,
-        },
-        textQuoteSelector: {
-          exact: (selector) ? textQuote.exact : null,
-          prefix: (selector) ? textQuote.prefix : null,
-          suffix: (selector) ? textQuote.suffix : null,
-        },
-        rangeSelector: {
-          startOffset: (selector) ? range.startOffset : null,
-          endOffset: (selector) ? range.endOffset : null,
-          startContainer: (selector) ? range.startContainer : null,
-          endContainer: (selector) ? range.endContainer : null,
-        }
-      };
+  private emptySelected(): {
+    text: string | null;
+    textPositionSelector: { start: number | null; end: number | null };
+    textQuoteSelector: { exact: string | null; prefix: string | null; suffix: string | null };
+    rangeSelector: { startOffset: number | null; endOffset: number | null; startContainer: string | null; endContainer: string | null };
+  } {
+    return {
+      text: null,
+      textPositionSelector: { start: null, end: null },
+      textQuoteSelector: { exact: null, prefix: null, suffix: null },
+      rangeSelector: {
+        startOffset: null,
+        endOffset: null,
+        startContainer: null,
+        endContainer: null,
+      }
+    };
+  }
+
+  private buildSelected(target: any) {
+    const { selector } = target;
+    if (!selector) {
+      return this.emptySelected();
     }
+    const textPosition = selector.find((item: any) => item.type === 'TextPositionSelector');
+    const textQuote = selector.find((item: any) => item.type === 'TextQuoteSelector');
+    const range = selector.find((item: any) => item.type === 'RangeSelector');
+    return {
+      text: textQuote.exact,
+      textPositionSelector: {
+        start: textPosition.start,
+        end: textPosition.end,
+      },
+      textQuoteSelector: {
+        exact: textQuote.exact,
+        prefix: textQuote.prefix,
+        suffix: textQuote.suffix,
+      },
+      rangeSelector: {
+        startOffset: range.startOffset,
+        endOffset: range.endOffset,
+        startContainer: range.startContainer,
+        endContainer: range.endContainer,
+      }
+    };
+  }
+
+  private convertIntoAnnotation(hypoAnnotation: any, isPageAnnotation: boolean) {
+    const { source } = hypoAnnotation.target[0];
+    const selected = isPageAnnotation ? null : this.buildSelected(hypoAnnotation.target[0]);
     const annotation = {
       changed: hypoAnnotation.updated,
       created: hypoAnnotation.created,
       id: hypoAnnotation.id,
       serializedBy: 'hypothesis',
-      userId: null,
+      userId: null as string | null,
       userName: hypoAnnotation.user.replace('acct:', ''),
-      notebookId: null,
+      notebookId: null as string | null,
       uri: hypoAnnotation.uri,
       type: 'Commenting',
       tags: hypoAnnotation.tags,

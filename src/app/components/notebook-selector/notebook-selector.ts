@@ -1,13 +1,16 @@
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { SortByPipe } from '../../pipes/sortby.pipe';
 
 /**
  * Data for NotebookSelector Component.
  */
 export interface NotebookSelectorData {
   /** ID of the default selected notebook */
-  selectedNotebook: NotebookData;
+  selectedNotebook: NotebookData | null;
   /** Data for the list of notebooks */
   notebookList: NotebookData[];
   /** Data for the contextual notebook creation */
@@ -24,11 +27,16 @@ export interface NotebookSelectorData {
 }
 
 @Component({
-  selector: 'notebook-selector',
-  templateUrl: './notebook-selector.html'
+    selector: 'notebook-selector',
+    templateUrl: './notebook-selector.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgTemplateOutlet, SvgIconComponent, NgClass, SortByPipe]
 })
 export class NotebookSelectorComponent {
-  @Input() public data: NotebookSelectorData;
+  private ref = inject(ChangeDetectorRef);
+  private notebookService = inject(NotebookService);
+
+  @Input() public data!: NotebookSelectorData;
 
   @Input() public emit: any;
 
@@ -37,12 +45,7 @@ export class NotebookSelectorComponent {
     create: _t('notebookselector#create')
   };
 
-  constructor(
-    private ref: ChangeDetectorRef,
-    private notebookService: NotebookService
-  ) {}
-
-  onClick(type, payload) {
+  onClick(type: string, payload: any) {
     if (!this.emit) return;
     if (payload === 'createmode') {
       this.setMode('input');
@@ -51,26 +54,23 @@ export class NotebookSelectorComponent {
       this.setMode('select');
     } else {
       // if a notebook option is clicked
-      this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload);
+      this.updateData({
+        selectedNotebook: this.data.notebookList.find((nb) => nb.id === payload) || null
+      });
       this.notebookService.getListOfUsers();
     }
     // collapse the list of notebooks
-    this.data._meta.isExpanded = false;
+    this.updateMeta({ isExpanded: false });
     this.emit(type, payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   onToggleExpand() {
-    if (!this.data._meta) {
-      this.data._meta = { isExpanded: false };
-    } else if (!this.data._meta.isExpanded) {
-      this.data._meta.isExpanded = false;
-    }
-    this.data._meta.isExpanded = !this.data._meta.isExpanded;
+    this.updateMeta({ isExpanded: !this.data._meta?.isExpanded });
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
@@ -80,14 +80,14 @@ export class NotebookSelectorComponent {
     this.setMode('input');
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
    * When pressing the "save new notebook" button.
    * @param payload Label of the newly created notebook.
    */
-  onCreation(payload) {
+  onCreation(payload: any) {
     if (!this.emit) return;
     if (typeof payload === 'string' && payload.trim().length > 0) {
       this.emit('createnotebook', payload.trim());
@@ -97,21 +97,18 @@ export class NotebookSelectorComponent {
     }
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
    * When typing the new name of the notebook
    * @param payload Name of the new notebook
    */
-  onInput(payload) {
-    if (!this.data._meta) {
-      this.data._meta = {};
-    }
-    this.data._meta.inputValue = payload;
+  onInput(payload: any) {
+    this.updateMeta({ inputValue: payload });
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /** Listen for enter key press */
@@ -126,14 +123,30 @@ export class NotebookSelectorComponent {
       }
 
       // trigger change detector
-      this.ref.detectChanges();
+      this.ref.markForCheck();
     }
   }
 
   private setMode(mode: 'input' | 'select') {
-    this.data.mode = mode;
+    this.updateData({ mode });
 
     // signal
     this.emit('modechanged', mode);
+  }
+
+  private updateData(data: Partial<NotebookSelectorData>) {
+    this.data = {
+      ...this.data,
+      ...data
+    };
+  }
+
+  private updateMeta(meta: Record<string, unknown>) {
+    this.updateData({
+      _meta: {
+        ...this.data._meta,
+        ...meta
+      }
+    });
   }
 }

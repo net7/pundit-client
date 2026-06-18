@@ -13,7 +13,7 @@ export const onBrowserActionClicked = ({ id }: chrome.tabs.Tab, skipCheck = fals
     })
     .then(() => {
       if (!skipCheck) {
-        helpers.checkActiveState(id);
+        helpers.checkActiveState(id!);
       }
     });
 };

@@ -1,91 +1,104 @@
-<div *ngIf="data" [hidden]="!data.visible" class="pnd-modal pnd-notebook-share-modal">
+@if (data) {
+  <div [hidden]="!data.visible" class="pnd-modal pnd-notebook-share-modal">
     <div class="pnd-modal__overlay" (click)="onClose($event.target)">
-        <div class="pnd-modal__window">
-            <div class="pnd-modal__close">
-                <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
-            </div>
-            
-            <div class="pnd-modal__header">
-                <div class="pnd-modal__header-text">
-                    {{ data.header.label }}
-                </div>
-            </div>
-            
-            <div class="pnd-modal__body">
-                <ng-container *ngIf="!data.body.confirmSection">
-                    <!-- FORM SECTION -->
-                    <div *ngIf="data.body.formSection as form" 
-                    class="pnd-notebook-share-modal__section pnd-notebook-share-modal__section-confirm">
-                        <div class="pnd-modal__body-text">
-                            {{ form.text }}
-                        </div>
-                        <div *ngIf="form.autocomplete as autocomplete" class="pnd-notebook-share-modal__autocomplete">
-                            <div class="pnd-notebook-share-modal__input">
-                                <input type="text"
-                                    name="notebook-autocomplete"
-                                    class="small"
-                                    [placeholder]="autocomplete.input.placeholder"
-                                    (input)="onInput($event.target.value)">
-                            </div>
-                            <div class="pnd-notebook-share-modal__results-wrapper">
-                                <div *ngIf="autocomplete.results?.length" class="pnd-notebook-share-modal__results">
-                                    <div *ngFor="let item of autocomplete.results" 
-                                    (click)="onAutocompleteClick(item)"
-                                    class="pnd-notebook-share-modal__item">
-                                        <div *ngIf="item.thumb" class="pnd-notebook-share-modal__item-thumb">
-                                            <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
-                                                onerror="this.style.display='none'">
-                                        </div>
-                                        <div *ngIf="item.username; else unregistered" class="pnd-notebook-share-modal__item-content">
-                                            <div class="pnd-notebook-share-modal__item-label">{{ item.username }}</div>
-                                            <div [hidden]="item.hideEmail" class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
-                                        </div>
-                                        <ng-template #unregistered>
-                                            <div class="pnd-notebook-share-modal__item-content">
-                                                <div class="pnd-notebook-share-modal__item-label">{{ item.email }}</div>
-                                                <div class="pnd-notebook-share-modal__item-email">Invite to the notebook</div>
-                                            </div>                                            
-                                        </ng-template>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end/FORM SECTION -->
-
-                    <!-- LIST SECTION -->
-                    <div *ngIf="data.body.listSection as list" 
-                    class="pnd-notebook-share-modal__section pnd-notebook-share-modal__list">
-                        <div class="pnd-modal__body-title">
-                            {{ list.title }}
-                        </div>
-                        <div class="pnd-modal__body-list">
-                            <pnd-notebook-share-user-item *ngFor="let item of list.items" 
-                            [item]="item" [emit]="emit"></pnd-notebook-share-user-item>
-                        </div>
-                    </div>
-                    <!-- end/LIST SECTION -->
-                </ng-container>
-
-                <!-- CONFIRM SECTION -->
-                <ng-container *ngIf="data.body.confirmSection as confirm">
-                    <div class="pnd-notebook-share-modal__section pnd-notebook-share-modal__section-confirm">
-                        <div class="pnd-modal__body-text">
-                            {{ confirm.text }}
-                        </div>
-                        <pnd-notebook-share-user-selected [data]="data"></pnd-notebook-share-user-selected>
-                    </div>
-                </ng-container>
-                <!-- end/CONFIRM SECTION -->
-            </div>
-            
-            <div class="pnd-modal__actions">
-                <a *ngFor="let action of data.actions" class="pnd-btn {{ action.classes || '' }}" 
-                (click)="onClick($event, action.payload)">
-                    {{ action.label }}
-                </a>
-            </div>
-
+      <div class="pnd-modal__window">
+        <div class="pnd-modal__close">
+          <pnd-svg-icon [data]="{ id: 'times' }" (click)="onClose()"></pnd-svg-icon>
         </div>
+        <div class="pnd-modal__header">
+          <div class="pnd-modal__header-text">
+            {{ data.header.label }}
+          </div>
+        </div>
+        <div class="pnd-modal__body">
+          @if (!data.body.confirmSection) {
+            <!-- FORM SECTION -->
+            @if (data.body.formSection; as form) {
+              <div
+                class="pnd-notebook-share-modal__section pnd-notebook-share-modal__section-confirm">
+                <div class="pnd-modal__body-text">
+                  {{ form.text }}
+                </div>
+                @if (form.autocomplete; as autocomplete) {
+                  <div class="pnd-notebook-share-modal__autocomplete">
+                    <div class="pnd-notebook-share-modal__input">
+                      <input type="text"
+                        name="notebook-autocomplete"
+                        class="small"
+                        [placeholder]="autocomplete.input.placeholder"
+                        (input)="onInput($event.target.value)">
+                    </div>
+                    <div class="pnd-notebook-share-modal__results-wrapper">
+                      @if (autocomplete.results?.length) {
+                        <div class="pnd-notebook-share-modal__results">
+                          @for (item of autocomplete.results; track item) {
+                            <div
+                              (click)="onAutocompleteClick(item)"
+                              class="pnd-notebook-share-modal__item">
+                              @if (item.thumb) {
+                                <div class="pnd-notebook-share-modal__item-thumb">
+                                  <img [src]="(imageDataService.images[item.thumb]?.data | async) || item.thumb"
+                                    onerror="this.style.display='none'">
+                                </div>
+                              }
+                              @if (item.username) {
+                                <div class="pnd-notebook-share-modal__item-content">
+                                  <div class="pnd-notebook-share-modal__item-label">{{ item.username }}</div>
+                                  <div [hidden]="item.hideEmail" class="pnd-notebook-share-modal__item-email">{{ item.email }}</div>
+                                </div>
+                              } @else {
+                                <div class="pnd-notebook-share-modal__item-content">
+                                  <div class="pnd-notebook-share-modal__item-label">{{ item.email }}</div>
+                                  <div class="pnd-notebook-share-modal__item-email">Invite to the notebook</div>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            <!-- end/FORM SECTION -->
+            <!-- LIST SECTION -->
+            @if (data.body.listSection; as list) {
+              <div
+                class="pnd-notebook-share-modal__section pnd-notebook-share-modal__list">
+                <div class="pnd-modal__body-title">
+                  {{ list.title }}
+                </div>
+                <div class="pnd-modal__body-list">
+                  @for (item of list.items; track item) {
+                    <pnd-notebook-share-user-item
+                    [item]="item" [emit]="emit"></pnd-notebook-share-user-item>
+                  }
+                </div>
+              </div>
+            }
+            <!-- end/LIST SECTION -->
+          }
+          <!-- CONFIRM SECTION -->
+          @if (data.body.confirmSection; as confirm) {
+            <div class="pnd-notebook-share-modal__section pnd-notebook-share-modal__section-confirm">
+              <div class="pnd-modal__body-text">
+                {{ confirm.text }}
+              </div>
+              <pnd-notebook-share-user-selected [data]="data"></pnd-notebook-share-user-selected>
+            </div>
+          }
+          <!-- end/CONFIRM SECTION -->
+        </div>
+        <div class="pnd-modal__actions">
+          @for (action of data.actions; track action) {
+            <a class="pnd-btn {{ action.classes || '' }}"
+              (click)="onClick($event, action.payload)">
+              {{ action.label }}
+            </a>
+          }
+        </div>
+      </div>
     </div>
-</div>
+  </div>
+}

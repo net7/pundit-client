@@ -1,6 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { NotebookShareUserItemComponent } from '../notebook-share-user-item/notebook-share-user-item';
+import { NotebookShareUserSelectedComponent } from '../notebook-share-user-selected/notebook-share-user-selected';
+import { AsyncPipe } from '@angular/common';
 
 export type NotebookShareModalResult = {
   username: string;
@@ -63,17 +67,17 @@ export type NotebookShareModalData = {
 }
 
 @Component({
-  selector: 'pnd-notebook-share-modal',
-  templateUrl: './notebook-share-modal.html'
+    selector: 'pnd-notebook-share-modal',
+    templateUrl: './notebook-share-modal.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SvgIconComponent, NotebookShareUserItemComponent, NotebookShareUserSelectedComponent, AsyncPipe]
 })
 export class NotebookShareModalComponent {
-  @Input() data: NotebookShareModalData;
+  imageDataService = inject(ImageDataService);
 
-  @Input() emit: (type: string, payload?: unknown) => void;
+  @Input() data!: NotebookShareModalData;
 
-  constructor(
-    public imageDataService: ImageDataService
-  ) {}
+  @Input() emit!: (type: string, payload?: unknown) => void;
 
   onClick(ev: Event, payload: any) {
     if (!this.emit) return;
@@ -89,25 +93,47 @@ export class NotebookShareModalComponent {
     this.emit('close');
   }
 
-  onInput(payload) {
+  onInput(payload: any) {
     if (!this.emit) return;
 
     this.emit('input', payload);
   }
 
-  onAutocompleteClick(payload) {
+  onAutocompleteClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('autocompleteclick', payload);
   }
 
-  onActionClick(payload) {
+  onActionClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('actionclick', payload);
   }
 
-  dropdownToggle(item) {
-    item.dropdown.isExpanded = !item.dropdown.isExpanded;
+  dropdownToggle(item: any) {
+    const items: NotebookShareListItem[] = this.data.body.listSection.items.map((listItem) => {
+      if (listItem !== item) {
+        return listItem;
+      }
+      const dropdown = listItem.dropdown!;
+      return {
+        ...listItem,
+        dropdown: {
+          actions: dropdown.actions,
+          isExpanded: !dropdown.isExpanded
+        }
+      };
+    });
+    this.data = {
+      ...this.data,
+      body: {
+        ...this.data.body,
+        listSection: {
+          ...this.data.body.listSection,
+          items
+        }
+      }
+    };
   }
 }

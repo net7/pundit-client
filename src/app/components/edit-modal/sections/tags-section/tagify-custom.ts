@@ -1,13 +1,13 @@
 // clone of tagify dropdown hide method
 // to fix shadowroot check
 // <tagify>/src/parts/dropdown.js:hide( force )
-export function customDropdownHide(force = false): any {
+export function customDropdownHide(this: any, force = false): any {
   const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
   const { scope, dropdown } = this.DOM;
   const isManual = this.settings.dropdown.position === 'manual' && !force;
 
   // if there's no dropdown, this means the dropdown events aren't binded
-  if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
+  if (!dropdown || !shadowRoot!.contains(dropdown) || isManual) {
     return null;
   }
 
@@ -35,7 +35,7 @@ export function customDropdownHide(force = false): any {
   return this;
 }
 
-export function getNodeHeight(node) {
+export function getNodeHeight(node: any) {
   const clone = node.cloneNode(true);
   clone.style.cssText = 'position:fixed; top:-9999px; opacity:0';
   document.body.appendChild(clone);
@@ -47,7 +47,7 @@ export function getNodeHeight(node) {
 // clone of tagify dropdown render method
 // to fix shadowroot check
 // <tagify>/src/parts/dropdown.js:render()
-export function customShadowRootRender() {
+export function customShadowRootRender(this: any) {
   const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
   // let the element render in the DOM first, to accurately measure it.
   // this.DOM.dropdown.style.cssText = "left:-9999px; top:-9999px;";
@@ -58,7 +58,7 @@ export function customShadowRootRender() {
 
   // if the dropdown has yet to be appended to the DOM,
   // append the dropdown to the body element & handle events
-  if (!shadowRoot.contains(this.DOM.dropdown)) {
+  if (!shadowRoot!.contains(this.DOM.dropdown)) {
     this.DOM.dropdown.classList.add(_s.classNames.dropdownInital);
     this.dropdown.position(ddHeight);
     _s.dropdown.appendTarget.appendChild(this.DOM.dropdown);

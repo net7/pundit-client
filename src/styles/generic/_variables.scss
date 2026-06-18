@@ -1,3 +1,6 @@
+@use "sass:color";
+@use "color-scheme";
+
 //
 // VARIABLES
 //
@@ -20,7 +23,9 @@ $grid-gutter-v: $space;
 // ------------------------------------ //
 // FONTS
 // ------------------------------------ //
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,300;0,500;1,300;1,500&display=swap');
+// NOTE: the Google Fonts @import lives at the top of app.component.scss.
+// A plain CSS @import (remote url) must be top-level; nested inside :host it
+// would be emitted as an invalid non-top-level @import.
 
 
 // ------------------------------------ //
@@ -47,23 +52,23 @@ $font-weight-bold: 500;
 // COLORS
 // ------------------------------------ //
 // Text Colors
-$color-text: $color-gray-05;
-$color-text-inverse: $color-gray-00;
-$color-text-light: lighten($color-gray-05, 42); // $color-gray-04;
-$color-text-link: $color-main;
-$color-text-link-hover: $color-text-hover;
-$color-text-link-visited: $color-text-hover;
-$color-text-form-placeholder: $color-gray-04;
+$color-text: color-scheme.$color-gray-05;
+$color-text-inverse: color-scheme.$color-gray-00;
+$color-text-light: color.adjust(color-scheme.$color-gray-05, $lightness: 42%); // $color-gray-04;
+$color-text-link: color-scheme.$color-main;
+$color-text-link-hover: color-scheme.$color-text-hover;
+$color-text-link-visited: color-scheme.$color-text-hover;
+$color-text-form-placeholder: color-scheme.$color-gray-04;
 
 // Borders
-$color-border-light: $color-gray-02;
-$color-border-normal: $color-gray-03;
+$color-border-light: color-scheme.$color-gray-02;
+$color-border-normal: color-scheme.$color-gray-03;
 
 // Backgrounds
-$color-background-base: $color-gray-00;
-$color-background-light: $color-gray-01;
-$color-background-medium: $color-gray-02;
-$color-background-dark: $color-gray-03;
+$color-background-base: color-scheme.$color-gray-00;
+$color-background-light: color-scheme.$color-gray-01;
+$color-background-medium: color-scheme.$color-gray-02;
+$color-background-dark: color-scheme.$color-gray-03;
 
 
 // ------------------------------------ //
@@ -93,35 +98,35 @@ $button-xlarge-height: 36px;
 $color-button-text: $color-text;
 $color-button-text-hover: $color-text-link;
 $color-button-text-disabled: rgba($color-text, .4);
-$color-button-bg: $color-gray-01;
-$color-button-bg-hover: $color-gray-02;
-$color-button-bg-disabled: $color-gray-02;
-$color-button-border: $color-gray-05;
+$color-button-bg: color-scheme.$color-gray-01;
+$color-button-bg-hover: color-scheme.$color-gray-02;
+$color-button-bg-disabled: color-scheme.$color-gray-02;
+$color-button-border: color-scheme.$color-gray-05;
 $color-button-border-hover: $color-text-link;
-$color-button-border-disabled: $color-gray-04;
+$color-button-border-disabled: color-scheme.$color-gray-04;
 
 // Light button (no background or border, only text)
 $color-button-light-text: $color-text;
 $color-button-light-text-hover: $color-text-link-hover;
 $color-button-light-text-disabled: rgba($color-text, .4);
-$color-button-light-bg: $color-gray-01;
-$color-button-light-bg-hover: $color-gray-02;
-$color-button-light-bg-disabled: $color-gray-01;
-$color-button-light-border: $color-gray-03;
-$color-button-light-border-hover: $color-gray-03;
-$color-button-light-border-disabled: $color-gray-02;
+$color-button-light-bg: color-scheme.$color-gray-01;
+$color-button-light-bg-hover: color-scheme.$color-gray-02;
+$color-button-light-bg-disabled: color-scheme.$color-gray-01;
+$color-button-light-border: color-scheme.$color-gray-03;
+$color-button-light-border-hover: color-scheme.$color-gray-03;
+$color-button-light-border-disabled: color-scheme.$color-gray-02;
 
 // Call to action button
 $color-button-cta-text: $color-text-inverse;
 $color-button-cta-text-hover: $color-text-inverse;
 $color-button-cta-text-disabled: rgba($color-text-inverse, .65);
-$color-button-cta-bg: $color-main;
-$color-button-cta-bg-hover: darken($color-main, 40);
-$color-button-cta-bg-disabled: lighten($color-main, 10);
-$color-button-cta-bg-focus: darken($color-main, 40);
-$color-button-cta-border: darken($color-main, 5);
-$color-button-cta-border-hover: darken($color-main, 5);
-$color-button-cta-border-disabled: darken($color-main, 5);
+$color-button-cta-bg: color-scheme.$color-main;
+$color-button-cta-bg-hover: color.adjust(color-scheme.$color-main, $lightness: -40%);
+$color-button-cta-bg-disabled: color.adjust(color-scheme.$color-main, $lightness: 10%);
+$color-button-cta-bg-focus: color.adjust(color-scheme.$color-main, $lightness: -40%);
+$color-button-cta-border: color.adjust(color-scheme.$color-main, $lightness: -5%);
+$color-button-cta-border-hover: color.adjust(color-scheme.$color-main, $lightness: -5%);
+$color-button-cta-border-disabled: color.adjust(color-scheme.$color-main, $lightness: -5%);
 
 
 // ------------------------------------ //
@@ -172,7 +177,7 @@ $notebook-selector-list-max-height: 200px;
 // ------------------------------------ //
 // #TOAST
 // ------------------------------------ //
-$toast-background-color: $color-gray-05;
+$toast-background-color: color-scheme.$color-gray-05;
 $toast-title-color: $color-text-inverse;
 $toast-text-color: $color-text-inverse;
 $toast-max-width: 420px;
@@ -206,7 +211,7 @@ $z-index-modal:                 $z-internal-index-max - 0;
 // ------------------------------------ //
 $form-input-height: 38px;
 $form-input-small-height: 28px;
-$form-input-placeholder-color: $color-gray-04;
+$form-input-placeholder-color: color-scheme.$color-gray-04;
 $form-border-radius: $border-radius;
 $form-dropdown-height: 30px;
 
@@ -214,5 +219,5 @@ $form-dropdown-height: 30px;
 // ------------------------------------ //
 // #LOADER
 // ------------------------------------ //
-$loader-color-front: $color-gray-04;
-$loader-color-back: $color-gray-03;
+$loader-color-front: color-scheme.$color-gray-04;
+$loader-color-back: color-scheme.$color-gray-03;

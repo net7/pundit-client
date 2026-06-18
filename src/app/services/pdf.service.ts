@@ -16,14 +16,16 @@ const PDF_BODY_CLASS = 'pnd-document-is-pdf';
 
 const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PdfService {
   private pdfApp: PDFViewerApp;
 
   // PDF through proxy to work around CORS restrictions
-  private documentUrl: string;
+  private documentUrl!: string;
 
-  private originalUrl: string;
+  private originalUrl!: string;
 
   private allowedEvents: PdfViewerEvents[] = [
     PdfViewerEvents.PageRendered,
@@ -73,9 +75,9 @@ export class PdfService {
 
   isActive = () => !!this.pdfApp;
 
-  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID);
+  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID)!;
 
-  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID);
+  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID)!;
 
   getViewerToolbarHeight = () => PDF_VIEWER_TOOLBAR_HEIGHT;
 
@@ -84,7 +86,7 @@ export class PdfService {
   getFingerprint(): string {
     const { pdfDocument } = this.pdfApp;
     if (Array.isArray(pdfDocument.fingerprints)) {
-      return pdfDocument.fingerprints[0];
+      return pdfDocument.fingerprints[0]!;
     }
     return pdfDocument.fingerprint;
   }
@@ -103,7 +105,7 @@ export class PdfService {
         url: this.documentUrl,
         originalUrl: this.originalUrl,
       });
-    } catch (err) {
+    } catch (err: any) {
       this.error$.next({
         type: err.name,
         payload: this.pdfApp
@@ -143,9 +145,9 @@ export class PdfService {
     return pathSegments[pathSegments.length - 1];
   }
 
-  onScroll({ target }) {
+  onScroll({ target }: { target: any }) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const sidebarAnnotationsContainer = shadowRoot.querySelector('.pnd-sidebar__content') as HTMLElement;
+    const sidebarAnnotationsContainer = shadowRoot!.querySelector('.pnd-sidebar__content') as HTMLElement;
     const { scrollTop } = target;
     sidebarAnnotationsContainer.style.marginTop = `${-scrollTop}px`;
   }

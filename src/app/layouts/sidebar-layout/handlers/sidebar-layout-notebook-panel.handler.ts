@@ -97,7 +97,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     });
   }
 
-  private onActionClick = (payload) => {
+  private onActionClick = (payload: any) => {
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
@@ -109,11 +109,11 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
       default:
         break;
     }
-  }
+  };
 
-  private onDelete(payload) {
+  private onDelete(payload: any) {
     const { notebookService } = this.layoutEH;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     const body = {
       email: payload.email
     };
@@ -128,16 +128,16 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     });
   }
 
-  private onResend(payload) {
+  private onResend(payload: any) {
     const { notebookService } = this.layoutEH;
-    const currentNotebookId = notebookService.getSelected()?.id;
+    const currentNotebookId = notebookService.getSelected()!.id;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
-    body.userWithReadAccess.push(payload.email);
+    body.userWithReadAccess!.push(payload.email);
     if (payload.permission === 'write') {
-      body.userWithWriteAccess.push(payload.email);
+      body.userWithWriteAccess!.push(payload.email);
     }
     return notebookService.userInviteWithEmail(currentNotebookId, body).subscribe((response) => {
       if (response.status === 200) {

@@ -1,39 +1,39 @@
 // ------------------------------------ //
 // #PUNDIT-LOGIN-COLOR-SCHEME
 // ------------------------------------ //
-@import './generic/color_scheme';
+@use 'generic/color_scheme';
 
 
 // ------------------------------------ //
 // #PUNDIT-LOGIN-GENERIC
 // ------------------------------------ //
-@import './generic/variables';
-@import './generic/mixins';
+@use 'generic/variables';
+@use 'generic/mixins';
 
 
 // ------------------------------------ //
 // #PUNDIT-LOGIN-GLOBAL
 // ------------------------------------ //
-@import './global/forms';
-@import './global/typography';
+@use 'global/forms';
+@use 'global/typography';
 
 
 // ------------------------------------ //
 // #PUNDIT-LOGIN-ATOMS
 // ------------------------------------ //
-@import "./atoms/button";
+@use "atoms/button";
 
 
 // ------------------------------------ //
 // #PUNDIT-LOGIN-COMPONENTS
 // ------------------------------------ //
-@import './components/modal';
+@use 'components/modal';
 
 
 // ------------------------------------ //
 // #PUNDIT-LOGIN-UTILITIES
 // ------------------------------------ //
-@import './utilities/grids';
+@use 'utilities/grids';
 
 
 // ------------------------------------ //

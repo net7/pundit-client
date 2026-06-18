@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Interface for SvgIcon's "data"
@@ -9,9 +9,10 @@ export interface SvgIconData {
 }
 
 @Component({
-  selector: 'lib-svg-icon',
-  templateUrl: './svg-icon.html'
+    selector: 'lib-svg-icon',
+    templateUrl: './svg-icon.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SvgIconComponent {
-    @Input() public data: SvgIconData;
+    @Input() public data!: SvgIconData;
 }

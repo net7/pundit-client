@@ -1,18 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-comment-annotation-section',
-  templateUrl: './comment-annotation-section.html',
+    selector: 'pnd-comment-annotation-section',
+    templateUrl: './comment-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [AsyncPipe]
 })
 export class CommentAnnotationSectionComponent implements OnInit {
   id = 'comment';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  public comment$: Observable<any>;
+  public comment$!: Observable<any>;
 
   ngOnInit(): void {
     this.comment$ = this.data$.pipe(map(this.transformData));
@@ -27,7 +32,7 @@ export class CommentAnnotationSectionComponent implements OnInit {
 
   private transformData = (annotation: Annotation): any => {
     if (annotation.type !== 'Commenting') return {};
-    const { comment: text } = annotation?.content;
+    const { comment: text } = annotation.content;
     return { text };
   };
 }

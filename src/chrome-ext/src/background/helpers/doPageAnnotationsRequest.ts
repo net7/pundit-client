@@ -6,13 +6,13 @@ const StorageCacheKey = 'page-annotations-cache';
 const SIZE_LIMIT = 1000;
 const TIME_LIMIT = 60 * 60 * 24 * 7; // one week in seconds
 
-const cacheCheck = (cacheKey, active) => ChromeExtStorage.get(StorageCacheKey)
+const cacheCheck = (cacheKey: string, active: boolean) => (ChromeExtStorage.get(StorageCacheKey) as Promise<ChromePageAnnotationCacheItem[]>)
   .then((cache: ChromePageAnnotationCacheItem[]) => {
     const newCache = cache || [];
     const cacheItem = newCache.find(({ key }) => key === cacheKey);
     let value = null;
     let indexToRemove = -1;
-    let cacheUpdate$ = Promise.resolve(null);
+    let cacheUpdate$: Promise<any> = Promise.resolve(null);
     // pundit inactive
     if (!active) {
       // key exists
@@ -46,7 +46,7 @@ const cacheCheck = (cacheKey, active) => ChromeExtStorage.get(StorageCacheKey)
     return cacheUpdate$.then(() => Promise.resolve({ cache: newCache, value }));
   });
 
-const getCacheKey = ({ pageContext, pageMetadata }) => {
+const getCacheKey = ({ pageContext, pageMetadata }: { pageContext: any; pageMetadata: any }) => {
   // canonical url
   if (pageMetadata) {
     return pageMetadata[0].value;
@@ -56,15 +56,15 @@ const getCacheKey = ({ pageContext, pageMetadata }) => {
 };
 
 export const doPageAnnotationsRequest = (
-  tabId,
-  payload
+  tabId: number,
+  payload: any
 ) => {
   const cacheKey = getCacheKey(payload);
   const { active } = payload;
   return cacheCheck(cacheKey, active).then(({ cache, value }) => {
     // pundit active (skip)
     if (active) {
-      return Promise.resolve({ tabId, total: null });
+      return Promise.resolve({ tabId, total: null as number | null });
     }
 
     // has cache value

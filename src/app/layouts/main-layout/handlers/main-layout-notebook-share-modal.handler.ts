@@ -20,7 +20,7 @@ import { MainLayoutEH } from '../main-layout.eh';
 export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
   private autocomplete$: Subject<string> = new Subject();
 
-  notebookShareModalDS: NotebookShareModalDS;
+  notebookShareModalDS!: NotebookShareModalDS;
 
   constructor(
     private layoutDS: MainLayoutDS,
@@ -76,13 +76,13 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private doAutocompleteRequest$ = (value): Observable<any> => {
+  private doAutocompleteRequest$ = (value: any): Observable<any> => {
     const query = value?.length ? value.trim() : value;
     if (query?.length < 3) return of(null);
     return this.layoutDS.notebookService.userSearch(query);
-  }
+  };
 
-  private onActionClick = (payload) => {
+  private onActionClick = (payload: any) => {
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
@@ -94,11 +94,11 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
       default:
         break;
     }
-  }
+  };
 
-  private onDelete(payload) {
+  private onDelete(payload: any) {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     const body = {
       email: payload.email
     };
@@ -114,9 +114,9 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onResend(payload) {
+  private onResend(payload: any) {
     const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
+    const currentNotebookId = notebookService.getSelected()!.id;
     const body = {
       email: payload.email
     };
@@ -127,16 +127,16 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onConfirm(payload) {
+  private onConfirm(payload: any) {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
-    body.userWithReadAccess.push(payload.email);
+    body.userWithReadAccess!.push(payload.email);
     if (payload.action === 'write') {
-      body.userWithWriteAccess.push(payload.email);
+      body.userWithWriteAccess!.push(payload.email);
     }
     return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
@@ -149,7 +149,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private openShareModal() {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     notebook.users = this.layoutDS.usersList;
     this.layoutDS.one('notebook-share-modal').update(notebook);
   }

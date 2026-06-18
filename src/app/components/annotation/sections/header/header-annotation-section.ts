@@ -1,6 +1,4 @@
-import {
-  ChangeDetectorRef, Component, Input, OnInit
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -9,32 +7,34 @@ import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
+import { MenuHeaderSectionComponent } from '../menu-header/menu-header-section';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-header-annotation-section',
-  templateUrl: './header-annotation-section.html',
+    selector: 'pnd-header-annotation-section',
+    templateUrl: './header-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [MenuHeaderSectionComponent, AsyncPipe]
 })
 export class HeaderAnnotationSectionComponent implements OnInit {
+  private ref = inject(ChangeDetectorRef);
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  imageDataService = inject(ImageDataService);
+
   id = 'header';
 
-  @Input() public data$: BehaviorSubject<Annotation>;
+  @Input() public data$!: BehaviorSubject<Annotation>;
 
   @Input() public emit: any;
 
-  @Input() public state$: BehaviorSubject<AnnotationState>;
+  @Input() public state$!: BehaviorSubject<AnnotationState>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
-  constructor(
-    private ref: ChangeDetectorRef,
-    private userService: UserService,
-    private notebookService: NotebookService,
-    public imageDataService: ImageDataService,
-  ) { }
-
-  public header$: Observable<any>;
+  public header$!: Observable<any>;
 
   public logoHypothesis = _c('hypothesisLogo');
 
@@ -49,7 +49,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
   });
 
   private getUserData(userId: string) {
-    const user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId)!;
     let separator = ' ';
     // is email check
     if (user.username.includes('@')) {
@@ -72,7 +72,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     };
   }
 
-  private createHypothesisUser(annotation) {
+  private createHypothesisUser(annotation: any) {
     return {
       initials: '',
       image: _c('userDefaultThumb'),
@@ -104,8 +104,8 @@ export class HeaderAnnotationSectionComponent implements OnInit {
         anchor: '',
       };
     } else {
-      const notebook = this.notebookService.getNotebookById(annotation.notebookId);
-      const user = this.userService.getUserById(annotation.userId);
+      const notebook = this.notebookService.getNotebookById(annotation.notebookId)!;
+      const user = this.userService.getUserById(annotation.userId)!;
       notebookData = {
         name: notebook.label,
         anchor: this.isCurrentUser(user)
@@ -116,14 +116,14 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     return notebookData;
   }
 
-  private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`
+  private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`;
 
-  onClick(ev: Event, payload) {
+  onClick(ev: Event, payload: any) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
     this.emit('click', payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 }

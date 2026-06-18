@@ -3,7 +3,7 @@
  * Handles the creation, updating, and removal of annotation highlights.
  * Provides functionality for attaching event listeners to highlights and managing their state.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
@@ -21,8 +21,12 @@ import { AnnotationService } from './annotation.service';
 
 const HOVER_CLASS = 'is-hovered';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnchorService {
+  private annotationService = inject(AnnotationService);
+
   private annotationHighlights: AnnotationHighlight[] = [];
 
   private orphans: Annotation[] = [];
@@ -34,10 +38,6 @@ export class AnchorService {
 
   // fix analytics duplicates
   private analyticsOrphansIds: string[] = [];
-
-  constructor(
-    private annotationService: AnnotationService
-  ) {}
 
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {
@@ -67,7 +67,7 @@ export class AnchorService {
             }
           });
         }
-      } catch (_e) {
+      } catch {
         this.orphans.push(annotation);
 
         // analytics
@@ -86,7 +86,7 @@ export class AnchorService {
 
   remove(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       removeHighlights(highlights);
       this.detachEvents(highlights);
       const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
@@ -112,18 +112,18 @@ export class AnchorService {
     });
   }
 
-  addHoverClass(annotationId) {
+  addHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       highlights.forEach((el) => {
         el.classList.add(HOVER_CLASS);
       });
     }
   }
 
-  removeHoverClass(annotationId) {
+  removeHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       highlights.forEach((el) => {
         el.classList.remove(HOVER_CLASS);
       });
@@ -176,7 +176,7 @@ export class AnchorService {
     });
   }
 
-  private onMouseOver(payload) {
+  private onMouseOver(payload: any) {
     this.addHoverClass(payload);
 
     // signal
@@ -186,7 +186,7 @@ export class AnchorService {
     });
   }
 
-  private onMouseLeave(payload) {
+  private onMouseLeave(payload: any) {
     this.removeHoverClass(payload);
 
     // signal
@@ -196,7 +196,7 @@ export class AnchorService {
     });
   }
 
-  private onClick(payload) {
+  private onClick(payload: any) {
     this.events$.next({
       payload,
       type: AnchorEvent.Click,

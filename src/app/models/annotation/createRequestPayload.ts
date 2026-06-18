@@ -33,7 +33,7 @@ type AnnotationPayload = {
   };
 };
 
-const createRangeSelector = (selectors: any): RangeSelector => {
+const createRangeSelector = (selectors: any): RangeSelector | undefined => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
   const value = selectors.find((selector) => selector.type === 'RangeSelector');
   if (!value) return undefined;
@@ -45,7 +45,7 @@ const createRangeSelector = (selectors: any): RangeSelector => {
     .build();
   return selector;
 };
-const createTextQuoteSelector = (selectors: any): TextQuoteSelector => {
+const createTextQuoteSelector = (selectors: any): TextQuoteSelector | undefined => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
   const value = selectors.find((selector) => selector.type === 'TextQuoteSelector');
   if (!value) return undefined;
@@ -56,7 +56,7 @@ const createTextQuoteSelector = (selectors: any): TextQuoteSelector => {
     .build();
   return selector;
 };
-const createTextPositionSelector = (selectors: any): TextPositionSelector => {
+const createTextPositionSelector = (selectors: any): TextPositionSelector | undefined => {
   if (!selectors || !Array.isArray(selectors)) return undefined;
   const value = selectors.find((selector) => selector.type === 'TextPositionSelector');
   if (!value) return undefined;
@@ -90,10 +90,10 @@ const createWebPageFragment = (
     const textPositionSelctor = createTextPositionSelector(selectors);
     const textQuoteSelector = createTextQuoteSelector(selectors);
     pageBuilder.selected(
-      textQuoteSelector.exact,
-      rangeSelector,
-      textPositionSelctor,
-      textQuoteSelector
+      textQuoteSelector!.exact,
+      rangeSelector!,
+      textPositionSelctor!,
+      textQuoteSelector!
     );
   }
   const page = pageBuilder.build();

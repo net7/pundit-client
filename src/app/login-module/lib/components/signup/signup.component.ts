@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { filter, first, switchMap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -9,47 +9,52 @@ import { LoginConfigurationService } from '../../services/configuration.service'
 import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'lib-pundit-login-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: []
+    selector: 'lib-pundit-login-signup',
+    templateUrl: './signup.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [FormsModule, ReactiveFormsModule, NgClass]
 })
 export class SignUpComponent {
-  registerForm: UntypedFormGroup;
+  private configService = inject(LoginConfigurationService);
+  private emailProvider = inject(EmailProviderService);
+  private oauthProviders = inject(OauthProviderService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  email: EmailAuthProvider;
+  registerForm!: UntypedFormGroup;
 
-  google: OAuthProvider;
+  email!: EmailAuthProvider;
 
-  egi: OAuthProvider;
+  google: OAuthProvider | undefined;
 
-  facebook: OAuthProvider;
+  egi: OAuthProvider | undefined;
+
+  facebook: OAuthProvider | undefined;
 
   isLoading = false;
 
-  serviceErrorMessage: string;
+  serviceErrorMessage!: string | null;
 
   private inputTextValues: {
-    [key: string]: string;
+    [key: string]: string | null;
   } = {
-    firstname: null,
-    lastname: null,
-    email: null,
-    password: null
-  };
+      firstname: null,
+      lastname: null,
+      email: null,
+      password: null
+    };
 
-  constructor(
-    private configService: LoginConfigurationService,
-    private emailProvider: EmailProviderService,
-    private oauthProviders: OauthProviderService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();
     this.initProviders(oauth, email);
     this.emailProvider.isLoading$.subscribe((val) => {
       this.isLoading = !!val;
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -71,10 +76,11 @@ export class SignUpComponent {
       // on form change clear service error
       this.registerForm.valueChanges.subscribe(() => {
         this.serviceErrorMessage = null;
+        this.changeDetectorRef.markForCheck();
       });
 
       // on checkbox change (for analytics)
-      this.registerForm.get('termsconditions').valueChanges.pipe(
+      this.registerForm.get('termsconditions')!.valueChanges.pipe(
         filter((value) => value)
       ).subscribe(() => {
         // analytics
@@ -82,7 +88,7 @@ export class SignUpComponent {
           action: AnalyticsAction.RegisterCheck1Filled,
         });
       });
-      this.registerForm.get('tracking').valueChanges.pipe(
+      this.registerForm.get('tracking')!.valueChanges.pipe(
         filter((value) => value)
       ).subscribe(() => {
         // analytics
@@ -97,7 +103,7 @@ export class SignUpComponent {
     let inputsFilled = true;
     let hasChanged = false;
     ['firstname', 'lastname', 'email', 'password'].forEach((input) => {
-      const formInput = this.registerForm.get(input);
+      const formInput = this.registerForm.get(input)!;
       if (!(formInput.value && formInput.valid)) {
         inputsFilled = false;
       }
@@ -152,6 +158,7 @@ export class SignUpComponent {
       switchMap(({ status }: any) => of(validationHelper.getServiceErrorMessage(status)))
     ).subscribe((errorMessage) => {
       this.serviceErrorMessage = errorMessage;
+      this.changeDetectorRef.markForCheck();
     });
     this.emailProvider.register(this.registerForm.value);
 
@@ -161,10 +168,10 @@ export class SignUpComponent {
     });
   }
 
-  getErrorMessage = (input) => {
-    if (!this.registerForm.get(input).touched) {
+  getErrorMessage = (input: string) => {
+    if (!this.registerForm.get(input)!.touched) {
       return null;
     }
-    return validationHelper.getErrorMessage(input, this.registerForm.get(input).errors);
-  }
+    return validationHelper.getErrorMessage(input, this.registerForm.get(input)!.errors);
+  };
 }

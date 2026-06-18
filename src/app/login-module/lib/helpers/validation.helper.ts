@@ -38,9 +38,10 @@ const SERVICE_ERRORS_MAP = {
 };
 
 export default {
-  getErrorMessage(input, errors) {
-    let error = null;
-    Object.keys(ERRORS_MAP[input]).forEach((errorType) => {
+  getErrorMessage(input: string, errors: any): string | null {
+    const errorMap = ERRORS_MAP[input as keyof typeof ERRORS_MAP] as Record<string, string>;
+    let error: string | null = null;
+    Object.keys(errorMap).forEach((errorType) => {
       let hasError = null;
       if (errors) {
         hasError = ['minlength', 'maxlength'].includes(errorType)
@@ -49,12 +50,12 @@ export default {
       }
 
       if (hasError) {
-        error = ERRORS_MAP[input][errorType];
+        error = errorMap[errorType];
       }
     });
     return error;
   },
-  getServiceErrorMessage(status): string {
-    return SERVICE_ERRORS_MAP[status] || SERVICE_ERRORS_MAP.fallback;
+  getServiceErrorMessage(status: number): string {
+    return SERVICE_ERRORS_MAP[status as keyof typeof SERVICE_ERRORS_MAP] || SERVICE_ERRORS_MAP.fallback;
   }
 };

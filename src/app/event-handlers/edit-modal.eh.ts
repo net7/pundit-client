@@ -5,7 +5,7 @@ import {
 } from '../event-types';
 
 export class EditModalEH extends EventHandler {
-  public dataSource: EditModalDS;
+  public dataSource!: EditModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

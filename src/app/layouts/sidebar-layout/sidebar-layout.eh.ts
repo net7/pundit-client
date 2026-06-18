@@ -20,132 +20,33 @@ import { SidebarLayoutDS } from './sidebar-layout.ds';
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
 
-  public appEvent$: ReplaySubject<AppEventData>;
+  public appEvent$!: ReplaySubject<AppEventData>;
 
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
-  public anchorService: AnchorService;
+  public anchorService!: AnchorService;
 
-  public userService: UserService;
+  public userService!: UserService;
 
-  public punditLoginService: PunditLoginService;
+  public punditLoginService!: PunditLoginService;
 
-  public toastService: ToastService;
+  public toastService!: ToastService;
 
-  public tagService: TagService;
+  public tagService!: TagService;
 
-  public pdfService: PdfService;
+  public pdfService!: PdfService;
 
-  public changeDetectorRef: ChangeDetectorRef;
+  public changeDetectorRef!: ChangeDetectorRef;
 
-  public dataSource: SidebarLayoutDS;
+  public dataSource!: SidebarLayoutDS;
 
   private callHypoDone = false;
 
   public listen() {
-    this.innerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case SidebarLayoutEvent.Init:
-          this.annotationService = payload.annotationService;
-          this.notebookService = payload.notebookService;
-          this.anchorService = payload.anchorService;
-          this.appEvent$ = payload.appEvent$;
-          this.userService = payload.userService;
-          this.punditLoginService = payload.punditLoginService;
-          this.toastService = payload.toastService;
-          this.tagService = payload.tagService;
-          this.pdfService = payload.pdfService;
-          this.changeDetectorRef = payload.changeDetectorRef;
-
-          this.dataSource.onInit(payload);
-          this.listenDocumentResize();
-          this.listenSidebarCollapse();
-          this.listenHypothesisAnnotation();
-          this.listenSharedUsersChanges();
-          break;
-        case SidebarLayoutEvent.Destroy:
-          this.destroy$.next();
-          break;
-        case SidebarLayoutEvent.ClickLogo:
-          {
-            // invert the state of the sidebar
-            const state = this.dataSource.isCollapsed.value;
-            this.dataSource.isCollapsed.next(!state);
-          }
-          break;
-        case SidebarLayoutEvent.ClickNotebookPanel:
-          {
-            const state = this.dataSource.notebookEditor.getValue();
-            this.dataSource.notebookEditor.next(!state);
-          }
-          break;
-        case SidebarLayoutEvent.ClickPageAnnotationPanel:
-          {
-            const state = this.annotationService.showPageAnnotations$.getValue();
-            this.annotationService.showPageAnnotations$.next(!state);
-            this.appEvent$.next({
-              type: state ? AppEvent.HidePageAnnotations : AppEvent.ShowPageAnnotations
-            });
-          }
-          break;
-        case SidebarLayoutEvent.ClickNewFullPageAnnotation:
-          this.dataSource.onFullpageDropdownToggle();
-          this.appEvent$.next({
-            type: AppEvent.AnnotationNewFullPage,
-            payload
-          });
-          break;
-        case SidebarLayoutEvent.Close:
-          // Close the sidebar
-          this.dataSource.isCollapsed.next(true);
-          break;
-        case SidebarLayoutEvent.ClickUsername:
-          console.warn('FIXME: gestire username click');
-          break;
-        case SidebarLayoutEvent.ClickLogout:
-          this.appEvent$.next({
-            type: AppEvent.SidebarLogoutClick,
-          });
-          break;
-        case SidebarLayoutEvent.ClickShowHypothesis:
-          if (!this.callHypoDone) {
-            this.annotationService.getHypothesisAnnotations();
-            return;
-          }
-          this.showHypothesisAnnotations();
-          break;
-        case SidebarLayoutEvent.ClickHideHypothesis:
-          this.hideHypothesisAnnotations();
-          break;
-        case SidebarLayoutEvent.RequestLogin:
-        case SidebarLayoutEvent.RequestRegister: {
-          const isRegister = type === SidebarLayoutEvent.RequestRegister;
-          this.punditLoginService.start(isRegister);
-          // clear anonymous (before login) selection range
-          // only available with tooltip login click
-          this.appEvent$.next({
-            type: AppEvent.ClearAnonymousSelectionRange,
-          });
-
-          // analytics
-          AnalyticsModel.track({
-            action: isRegister
-              ? AnalyticsAction.RegisterButtonClick
-              : AnalyticsAction.LoginButtonClick,
-            payload: {
-              location: 'header',
-            },
-          });
-          break;
-        }
-        default:
-          console.warn('unhandled inner event of type', type);
-          break;
-      }
-
-      this.detectChanges();
+    this.innerEvents$.subscribe((event) => {
+      this.handleInnerEvent(event);
     });
 
     this.outerEvents$
@@ -153,8 +54,121 @@ export class SidebarLayoutEH extends EventHandler {
         delay(1) // symbolic timeout
       )
       .subscribe(() => {
-        this.detectChanges();
+        this.handleOuterEvent();
       });
+  }
+
+  private handleInnerEvent({ type, payload }: AppEventData) {
+    const handler = this.innerEventHandlers[type];
+    if (handler) {
+      const result = handler(payload, type);
+      // preserve early-return guard for ClickShowHypothesis
+      if (result === false) {
+        return;
+      }
+    } else {
+      console.warn('unhandled inner event of type', type);
+    }
+
+    this.detectChanges();
+  }
+
+  private get innerEventHandlers(): { [key: string]: (payload?: any, type?: string) => boolean | void } {
+    return {
+      [SidebarLayoutEvent.Init]: (payload) => {
+        this.annotationService = payload.annotationService;
+        this.notebookService = payload.notebookService;
+        this.anchorService = payload.anchorService;
+        this.appEvent$ = payload.appEvent$;
+        this.userService = payload.userService;
+        this.punditLoginService = payload.punditLoginService;
+        this.toastService = payload.toastService;
+        this.tagService = payload.tagService;
+        this.pdfService = payload.pdfService;
+        this.changeDetectorRef = payload.changeDetectorRef;
+
+        this.dataSource.onInit(payload);
+        this.listenDocumentResize();
+        this.listenSidebarCollapse();
+        this.listenHypothesisAnnotation();
+        this.listenSharedUsersChanges();
+      },
+      [SidebarLayoutEvent.Destroy]: () => {
+        this.destroy$.next();
+      },
+      [SidebarLayoutEvent.ClickLogo]: () => {
+        // invert the state of the sidebar
+        const state = this.dataSource.isCollapsed.value;
+        this.dataSource.isCollapsed.next(!state);
+      },
+      [SidebarLayoutEvent.ClickNotebookPanel]: () => {
+        const state = this.dataSource.notebookEditor.getValue();
+        this.dataSource.notebookEditor.next(!state);
+      },
+      [SidebarLayoutEvent.ClickPageAnnotationPanel]: () => {
+        const state = this.annotationService.showPageAnnotations$.getValue();
+        this.annotationService.showPageAnnotations$.next(!state);
+        this.appEvent$.next({
+          type: state ? AppEvent.HidePageAnnotations : AppEvent.ShowPageAnnotations
+        });
+      },
+      [SidebarLayoutEvent.ClickNewFullPageAnnotation]: (payload) => {
+        this.dataSource.onFullpageDropdownToggle();
+        this.appEvent$.next({
+          type: AppEvent.AnnotationNewFullPage,
+          payload
+        });
+      },
+      [SidebarLayoutEvent.Close]: () => {
+        // Close the sidebar
+        this.dataSource.isCollapsed.next(true);
+      },
+      [SidebarLayoutEvent.ClickUsername]: () => {
+        console.warn('FIXME: gestire username click');
+      },
+      [SidebarLayoutEvent.ClickLogout]: () => {
+        this.appEvent$.next({
+          type: AppEvent.SidebarLogoutClick,
+        });
+      },
+      [SidebarLayoutEvent.ClickShowHypothesis]: () => {
+        if (!this.callHypoDone) {
+          this.annotationService.getHypothesisAnnotations();
+          return false;
+        }
+        this.showHypothesisAnnotations();
+        return undefined;
+      },
+      [SidebarLayoutEvent.ClickHideHypothesis]: () => {
+        this.hideHypothesisAnnotations();
+      },
+      [SidebarLayoutEvent.RequestLogin]: (payload, type) => this.handleRequestLogin(type),
+      [SidebarLayoutEvent.RequestRegister]: (payload, type) => this.handleRequestLogin(type),
+    };
+  }
+
+  private handleRequestLogin(type: string | undefined) {
+    const isRegister = type === SidebarLayoutEvent.RequestRegister;
+    this.punditLoginService.start(isRegister);
+    // clear anonymous (before login) selection range
+    // only available with tooltip login click
+    this.appEvent$.next({
+      type: AppEvent.ClearAnonymousSelectionRange,
+    });
+
+    // analytics
+    AnalyticsModel.track({
+      action: isRegister
+        ? AnalyticsAction.RegisterButtonClick
+        : AnalyticsAction.LoginButtonClick,
+      payload: {
+        location: 'header',
+      },
+    });
+  }
+
+  private handleOuterEvent() {
+    this.detectChanges();
   }
 
   private listenDocumentResize() {
@@ -235,14 +249,14 @@ export class SidebarLayoutEH extends EventHandler {
   public detectChanges() {
     // force-reload change detection
     if (this.changeDetectorRef) {
-      this.changeDetectorRef.detectChanges();
+      this.changeDetectorRef.markForCheck();
     }
   }
 
-  private transformUsers(users) {
+  private transformUsers(users: any[]) {
     return (users || []).map(({
       id, username, email, thumb, role, status, action
-    }) => ({
+    }: any) => ({
       id,
       username,
       email,
@@ -257,14 +271,19 @@ export class SidebarLayoutEH extends EventHandler {
     }));
   }
 
-  private getDropdown(id: string, role: NotebookUserRole, status: NotebookUserStatus,
-    email: string, permission: string) {
+  private getDropdown(
+    id: string,
+    role: NotebookUserRole,
+    status: NotebookUserStatus,
+    email: string,
+    permission: string
+  ) {
     if (role === NotebookUserRole.Owner) return null;
     const dropdown = {
-      actions: [],
+      actions: [] as any[],
       isExpanded: false
     };
-    let actionKeys = [];
+    let actionKeys: string[] = [];
     if (status === NotebookUserStatus.Pending) {
       actionKeys = ['delete_invite', 'resend_invite'];
     } else if (status === NotebookUserStatus.Joined) {

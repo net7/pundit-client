@@ -1,11 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  AfterViewInit,
-  ViewChild,
-  OnDestroy,
-} from '@angular/core';
+import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
@@ -23,27 +16,29 @@ export type TagsSectionOptions = {
 };
 
 @Component({
-  selector: 'pnd-tags-section',
-  templateUrl: './tags-section.html'
+    selector: 'pnd-tags-section',
+    templateUrl: './tags-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
+  private tagService = inject(TagService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
   id = 'tags';
 
-  @Input() public data: FormSectionData<TagsSectionValue, TagsSectionOptions>;
+  @Input() public data!: FormSectionData<TagsSectionValue, TagsSectionOptions>;
 
-  @Input() public reset$: Subject<void>;
+  @Input() public reset$!: Subject<void>;
 
-  @ViewChild('tagifyInputRef') tagifyInputRef: ElementRef<HTMLInputElement>;
+  @ViewChild('tagifyInputRef') tagifyInputRef!: ElementRef<HTMLInputElement>;
 
   private destroy$: Subject<void> = new Subject();
 
-  private formInstance;
+  private formInstance: any;
 
   public tagsHint = _c('tagsHint');
-
-  constructor(private tagService: TagService) {}
 
   ngAfterViewInit() {
     this.init();
@@ -59,7 +54,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
 
   private init = () => {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tags-input-wrapper');
+    const targetRef = shadowRoot!.querySelector('.pnd-edit-modal__tags-input-wrapper');
     const tagFormConfig = {
       pattern: /^\w{2,128}$/,
       delimiters: ',| ',
@@ -92,8 +87,9 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
           const elements = this.formInstance.getTagElms();
           this.data.changed$.next({
             id: this.id,
-            value: elements.map((el) => el.innerText)
+            value: elements.map((el: any) => el.innerText)
           });
+          this.changeDetectorRef.markForCheck();
         });
       }
     );
@@ -101,12 +97,12 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
     this.tagService.get$().pipe().subscribe((whitelist) => {
       this.formInstance.settings.whitelist = whitelist;
     });
-  }
+  };
 
-  private transformTag = (tagData) => {
+  private transformTag = (tagData: any) => {
     const tagColor = getTagColor(tagData.value);
     tagData.style = `--tag-bg:${tagColor}`;
-  }
+  };
 
   private onReset = () => {
     const { initialValue } = this.data;
@@ -115,7 +111,8 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       this.formInstance.addTags(initialValue);
     }
     this.checkFocus();
-  }
+    this.changeDetectorRef.markForCheck();
+  };
 
   private checkFocus = () => {
     const { focus } = this.data;
@@ -125,5 +122,5 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
         (input as HTMLInputElement).focus();
       });
     }
-  }
+  };
 }

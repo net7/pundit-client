@@ -2,7 +2,7 @@ import { of } from 'rxjs';
 import { SemanticItem, SemanticProvider } from 'src/app/types';
 
 export class SemanticGenericProvider implements SemanticProvider {
-  selected: SemanticItem = null;
+  selected: SemanticItem | null = null;
 
   public id: string;
 

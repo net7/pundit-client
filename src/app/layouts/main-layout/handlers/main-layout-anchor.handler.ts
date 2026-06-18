@@ -40,10 +40,10 @@ export class MainLayoutAnchorHandler implements LayoutHandler {
     });
   }
 
-  private skipEvent = (data) => {
+  private skipEvent = (data: any) => {
     if (!data) return true;
     const { payload, type } = data;
     const isMouseOverOrLeave = (type === AnchorEvent.MouseOver || type === AnchorEvent.MouseLeave);
     return !(payload === this.layoutDS.pendingAnnotationId && isMouseOverOrLeave);
-  }
+  };
 }

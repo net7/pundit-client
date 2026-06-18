@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
-
 import { config } from './app/models/config';
 
 const OVERRIDABLE_CONFIG_PARAMETERS = [
@@ -26,6 +24,6 @@ export const init = () => {
 
   // hooks
   HOOKS.forEach((hook) => {
-    (window as any).Pundit_API[hook] = (window as any).Pundit_API[hook] || (() => null);
+    (window as any).Pundit_API[hook] = (window as any).Pundit_API[hook] || ((): null => null);
   });
 };

@@ -122,7 +122,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   private onTooltipComment() {
     this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
       this.layoutDS.openEditModal({
-        textQuote: pendingAnnotation.subject.selected.text,
+        textQuote: pendingAnnotation.subject.selected!.text,
         sections: [{
           id: 'comment',
           required: true,
@@ -139,7 +139,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   private onTooltipTag() {
     this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
       this.layoutDS.openEditModal({
-        textQuote: pendingAnnotation.subject.selected.text,
+        textQuote: pendingAnnotation.subject.selected!.text,
         saveButtonLabel: _t('editmodal#save_tags'),
         sections: [{
           id: 'tags',
@@ -155,7 +155,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
   private onTooltipSemantic() {
     this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
       this.layoutDS.openEditModal({
-        textQuote: pendingAnnotation.subject.selected.text,
+        textQuote: pendingAnnotation.subject.selected!.text,
         saveButtonLabel: _t('editmodal#save_semantic'),
         sections: [{
           id: 'semantic',

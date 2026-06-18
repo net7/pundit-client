@@ -13,9 +13,11 @@ export interface DocumentInfoWebpage extends DocumentInfo {
   pageFavicon: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DocumentInfoWebpageService {
-  private cache: DocumentInfoWebpage;
+  private cache!: DocumentInfoWebpage;
 
   get(): Observable<DocumentInfoWebpage> {
     if (!this.cache) {
@@ -57,11 +59,11 @@ export class DocumentInfoWebpageService {
       return `${protocol}${faviconPath}`;
     }
     try {
-      const faviconURL = new URL(faviconPath, origin);
+      const faviconURL = new URL(faviconPath as string, origin);
       return faviconURL.toJSON();
     } catch (error) {
       console.warn(error);
     }
-    return faviconPath;
+    return faviconPath as string;
   }
 }

@@ -7,7 +7,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ModalService {
   private modalObserver$ = new BehaviorSubject<boolean>(false);
 
-  public isRegister: boolean;
+  public isRegister!: boolean;
 
   open(isRegister = false) {
     this.isRegister = isRegister;

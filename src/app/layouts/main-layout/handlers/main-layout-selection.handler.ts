@@ -40,13 +40,13 @@ export class MainLayoutSelectionHandler implements LayoutHandler {
       selectionModel.getCurrentSelection()
       // anchoring describe method must return 3 strategies
       // (RangeAnchor, TextPositionAnchor, TextQuoteAnchor)
-      && describe(document.body, selectionModel.getCurrentRange()).length === 3
+      && describe(document.body, selectionModel.getCurrentRange()!).length === 3
     );
   }
 
   private onSelectionChange() {
     if (this.hasSelection()) {
-      tooltipModel.show(selectionModel.getCurrentSelection());
+      tooltipModel.show(selectionModel.getCurrentSelection()!);
     } else {
       tooltipModel.hide();
     }

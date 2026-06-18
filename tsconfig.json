@@ -2,26 +2,29 @@
   "compileOnSave": false,
   "compilerOptions": {
     "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
+    "strict": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "downlevelIteration": true,
     "experimentalDecorators": true,
     "module": "es2020",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "importHelpers": true,
-    "target": "es2020",
+    "target": "ES2022",
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "typeRoots": [
       "node_modules/@types",
       "node_modules/@angular"
     ],
-    "lib": [
-      "es2018",
-      "dom"
+    "types": [
+      "chrome",
+      "jest",
+      "node"
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "useDefineForClassFields": false
   },
   "include": [
     "src/**/*.ts"

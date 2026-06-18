@@ -1,5 +1,4 @@
-/* eslint-disable @typescript-eslint/camelcase */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
 import { LoginResponse } from '@pundit/communication';
 import { catchError, map } from 'rxjs/operators';
@@ -11,10 +10,9 @@ import { responseTransformer, transformFromHttpError } from '../helpers/transfor
   providedIn: 'root'
 })
 export class PunditLoginService {
-  constructor(
-    private modalService: ModalService,
-    private authEventService: AuthEventService
-  ) { }
+  private modalService = inject(ModalService);
+  private authEventService = inject(AuthEventService);
+
 
   start(isRegister = false) {
     this.modalService.open(isRegister);
@@ -24,7 +22,7 @@ export class PunditLoginService {
     this.modalService.close();
   }
 
-  onAuth = (): Observable<LoginResponse> => this.authEventService.get()
+  onAuth = (): Observable<LoginResponse> => this.authEventService.get();
 
   logout() {
     return AuthModel.logout();

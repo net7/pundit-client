@@ -1,6 +1,7 @@
 import { _t } from '@net7/core';
 import { SemanticTripleType } from '@pundit/communication';
-import { EMPTY, of } from 'rxjs';
+import { cloneDeep } from 'lodash';
+import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
 import {
@@ -29,105 +30,9 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         case EditModalEvent.Close:
           this.onEditModalClose();
           break;
-        case EditModalEvent.Save: {
-          const isUpdate = this.isUpdate();
-          let workingToast: ToastInstance;
-          if (!isUpdate) {
-            // toast "working..."
-            workingToast = this.layoutDS.toastService.working();
-          }
-          this.onEditModalSave(payload).pipe(
-            catchError((e) => {
-              this.layoutEH.handleError(e);
-              // toast
-              this.layoutDS.toastService.error({
-                title: _t('toast#annotationsave_error_title'),
-                text: _t('toast#annotationsave_error_text'),
-                timer: _c('toastTimer'),
-                onLoad: () => {
-                  workingToast.close();
-                }
-              });
-              return EMPTY;
-            }),
-            filter((data) => data)
-          ).subscribe((data) => {
-            // clear previous annotation payload
-            this.layoutDS.state.annotation.pendingPayload = null;
-            this.layoutDS.state.annotation.updatePayload = null;
-
-            if (data.isUpdate) {
-              // signal
-              this.layoutEH.appEvent$.next({
-                type: AppEvent.CommentUpdate,
-                payload: data.requestPayload
-              });
-            } else {
-              // signal
-              this.layoutEH.emitOuter(
-                getEventType(MainLayoutEvent.AnnotationCreated), {
-                  payload: data
-                }
-              );
-              this.layoutEH.appEvent$.next({
-                type: AppEvent.AnnotationCreateSuccess,
-                payload: data
-              });
-
-              // toast
-              this.layoutDS.toastService.success({
-                title: _t('toast#annotationsave_success_title'),
-                text: _t('toast#annotationsave_success_text'),
-                timer: _c('toastTimer'),
-                onLoad: () => {
-                  workingToast.close();
-                }
-              });
-
-              // update tags;
-              this.layoutDS.tagService.addMany(data?.tags);
-
-              // analytics
-              let analyticsData: AnalyticsData;
-              // comment
-              if (data.type === 'Commenting') {
-                analyticsData = {
-                  action: AnalyticsAction.CommentAnnotationCreated,
-                  payload: {
-                    scope: 'fragment'
-                  }
-                };
-              // semantic
-              } else if (data.type === 'Linking') {
-                const { content }: { content: SemanticTripleType[] } = data;
-                analyticsData = {
-                  action: AnalyticsAction.SemanticAnnotationCreated,
-                  payload: {
-                    scope: 'fragment',
-                    predicate: content.map(({ predicate }) => predicate.label),
-                    'object-type': content.map(({ objectType }) => objectType),
-                    'object-lod': content.map((triple) => (
-                      triple.objectType === 'uri'
-                        ? triple.object.label
-                        : null
-                    )),
-                    'number-triples': content.length,
-                  }
-                };
-              // tags
-              } else if (Array.isArray(data.tags) && data.tags.length) {
-                analyticsData = {
-                  action: AnalyticsAction.TagAnnotationCreated,
-                  payload: {
-                    scope: 'fragment',
-                    tags: data.tags
-                  }
-                };
-              }
-              AnalyticsModel.track(analyticsData);
-            }
-          });
-        } break;
+        case EditModalEvent.Save:
+          this.onEditModalSaveEvent(payload);
+          break;
         case EditModalEvent.CreateNotebookError:
           this.onCreateNotebookError(payload);
           break;
@@ -140,7 +45,117 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-  private onCreateNotebookError(payload) {
+  private onEditModalSaveEvent(payload: any) {
+    const isUpdate = this.isUpdate();
+    let workingToast: ToastInstance;
+    if (!isUpdate) {
+      // toast "working..."
+      workingToast = this.layoutDS.toastService.working();
+    }
+    this.onEditModalSave(payload).pipe(
+      catchError((e) => {
+        this.layoutEH.handleError(e);
+        // toast
+        this.layoutDS.toastService.error({
+          title: _t('toast#annotationsave_error_title'),
+          text: _t('toast#annotationsave_error_text'),
+          timer: _c('toastTimer'),
+          onLoad: () => {
+            workingToast.close();
+          }
+        });
+        return EMPTY;
+      }),
+      filter((data) => data)
+    ).subscribe((data) => {
+      // clear previous annotation payload
+      this.layoutDS.state.annotation.pendingPayload = null;
+      this.layoutDS.state.annotation.updatePayload = null;
+
+      if (data.isUpdate) {
+        // signal
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.CommentUpdate,
+          payload: data.requestPayload
+        });
+        // close the edit modal — the create flow closes it via onAnnotationCreated;
+        // the update flow must emit the same close signal (EditModalEH listens to
+        // MainLayoutEvent.AnnotationCreated to run closeModal()).
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated));
+      } else {
+        this.onAnnotationCreated(data, workingToast);
+      }
+    });
+  }
+
+  private onAnnotationCreated(data: any, workingToast: ToastInstance) {
+    // signal
+    this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
+      payload: data
+    });
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.AnnotationCreateSuccess,
+      payload: data
+    });
+
+    // toast
+    this.layoutDS.toastService.success({
+      title: _t('toast#annotationsave_success_title'),
+      text: _t('toast#annotationsave_success_text'),
+      timer: _c('toastTimer'),
+      onLoad: () => {
+        workingToast.close();
+      }
+    });
+
+    // update tags;
+    this.layoutDS.tagService.addMany(data?.tags);
+
+    // analytics
+    AnalyticsModel.track(this.getAnnotationCreatedAnalytics(data));
+  }
+
+  private getAnnotationCreatedAnalytics(data: any): AnalyticsData {
+    let analyticsData: AnalyticsData | undefined;
+    // comment
+    if (data.type === 'Commenting') {
+      analyticsData = {
+        action: AnalyticsAction.CommentAnnotationCreated,
+        payload: {
+          scope: 'fragment'
+        }
+      };
+    // semantic
+    } else if (data.type === 'Linking') {
+      const { content }: { content: SemanticTripleType[] } = data;
+      analyticsData = {
+        action: AnalyticsAction.SemanticAnnotationCreated,
+        payload: {
+          scope: 'fragment',
+          predicate: content.map(({ predicate }) => predicate.label),
+          'object-type': content.map(({ objectType }) => objectType),
+          'object-lod': content.map((triple) => (
+            triple.objectType === 'uri'
+              ? triple.object.label
+              : null
+          )),
+          'number-triples': content.length,
+        }
+      };
+    // tags
+    } else if (Array.isArray(data.tags) && data.tags.length) {
+      analyticsData = {
+        action: AnalyticsAction.TagAnnotationCreated,
+        payload: {
+          scope: 'fragment',
+          tags: data.tags
+        }
+      };
+    }
+    return analyticsData!;
+  }
+
+  private onCreateNotebookError(payload: any) {
     this.layoutEH.handleError(payload);
 
     // toast
@@ -184,26 +199,38 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
   }
 
-  private onEditModalSave(payload) {
+  private onEditModalSave(payload: any): Observable<any> {
     const isUpdate = this.isUpdate();
-    let source$ = of(null);
     if (isUpdate) {
+      const updatePayload = this.layoutDS.state.annotation.updatePayload;
+      if (!updatePayload) {
+        return this.missingAnnotationPayloadError('update');
+      }
       const updateRequestPayload = this.getEditRequestPayload(
-        this.layoutDS.state.annotation.updatePayload,
+        cloneDeep(updatePayload),
         payload
       );
-      source$ = of({ requestPayload: updateRequestPayload, isUpdate });
-    } else {
-      const pendingRequestPayload = this.getEditRequestPayload(
-        this.layoutDS.state.annotation.pendingPayload,
-        payload
-      );
-      source$ = this.layoutDS.saveAnnotation(pendingRequestPayload);
+      return of({ requestPayload: updateRequestPayload, isUpdate });
     }
-    return source$;
+    const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
+    if (!pendingPayload) {
+      return this.missingAnnotationPayloadError('create');
+    }
+    const pendingRequestPayload = this.getEditRequestPayload(
+      cloneDeep(pendingPayload),
+      payload
+    );
+    return this.layoutDS.saveAnnotation(pendingRequestPayload);
   }
 
-  private getEditRequestPayload(annotationPayload, formState: EditModalFormState) {
+  private missingAnnotationPayloadError(mode: 'create' | 'update') {
+    return new Observable<never>((subscriber) => {
+      subscriber.error(new Error(`Cannot save annotation ${mode}: missing annotation payload`));
+    });
+  }
+
+  // eslint-disable-next-line complexity -- Existing payload assembly branches predate the flat-config migration.
+  private getEditRequestPayload(annotationPayload: any, formState: EditModalFormState) {
     const notebook = formState?.notebook?.value || null;
     const comment = typeof formState?.comment?.value === 'string'
       ? formState?.comment?.value.trim()
@@ -215,6 +242,17 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload.notebookId = notebook;
     }
     // check comment value
+    this.applyCommentPayload(annotationPayload, comment);
+    // check tags value
+    if (Array.isArray(tags)) {
+      annotationPayload.tags = tags.length ? tags : undefined;
+    }
+    // check semantic value
+    this.applySemanticPayload(annotationPayload, semantic);
+    return annotationPayload;
+  }
+
+  private applyCommentPayload(annotationPayload: any, comment: string | null) {
     if (comment) {
       annotationPayload.type = 'Commenting';
       annotationPayload.content = { comment };
@@ -222,36 +260,36 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload.type = 'Highlighting';
       annotationPayload.content = undefined;
     }
-    // check tags value
-    if (Array.isArray(tags)) {
-      annotationPayload.tags = tags.length ? tags : undefined;
-    }
-    // check semantic value
-    if (Array.isArray(semantic)) {
-      annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
-      annotationPayload.content = semantic.length
-        ? semantic.map((row) => {
-          const {
-            predicate, object, objectType
-          } = row;
-          // old semantic annotation check
-          if (object?.rdfTypes?.length) {
-            return row;
-          }
-          const objectPayload = this.getObjectPayload(object, objectType);
-          return {
-            predicate: {
-              label: predicate.label,
-              uri: predicate.uri
-            },
-            ...objectPayload
-          };
-        }) : undefined;
-    }
-    return annotationPayload;
   }
 
-  private getObjectPayload = (object, objectType: string) => {
+  private applySemanticPayload(annotationPayload: any, semantic: any) {
+    if (!Array.isArray(semantic)) {
+      return;
+    }
+    annotationPayload.type = semantic.length ? 'Linking' : 'Highlighting';
+    annotationPayload.content = semantic.length
+      ? semantic.map((row) => this.getSemanticContentRow(row)) : undefined;
+  }
+
+  private getSemanticContentRow(row: any) {
+    const {
+      predicate, object, objectType
+    } = row;
+    // old semantic annotation check
+    if (object?.rdfTypes?.length) {
+      return row;
+    }
+    const objectPayload = this.getObjectPayload(object, objectType);
+    return {
+      predicate: {
+        label: predicate.label,
+        uri: predicate.uri
+      },
+      ...objectPayload
+    };
+  }
+
+  private getObjectPayload = (object: any, objectType: string) => {
     if (objectType === 'literal') {
       return { objectType, object: { text: object.label } };
     } if (objectType === 'uri') {
@@ -264,7 +302,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       };
     }
     return {};
-  }
+  };
 
   private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;
 }

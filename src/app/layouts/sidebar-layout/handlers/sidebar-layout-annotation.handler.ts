@@ -21,88 +21,95 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
 
   public listen() {
     this.layoutEH.outerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case AnnotationEvent.Delete:
-          this.handleAnnotationDelete(payload);
-          break;
-
-        case AnnotationEvent.UpdateNotebook: // move an annotation to another notebook
-          this.updateAnnotationNotebook(payload.annotation, payload.notebook);
-          this.layoutEH.appEvent$.next({
-            payload,
-            type: AppEvent.AnnotationUpdateNotebook,
-          });
-          // analytics
-          AnalyticsModel.track({
-            action: AnalyticsAction.NotebookCurrentChanged,
-            payload: {
-              location: 'annotation'
-            }
-          });
-          break;
-
-        case AnnotationEvent.ToggleCollapsed: // collapse an annotation (UI)
-          {
-            const sidebarIsCollapsed = this.layoutDS.isCollapsed.value;
-            const { collapsed } = payload;
-            if (!collapsed && sidebarIsCollapsed) {
-            // Open sidebar
-              this.layoutDS.isCollapsed.next(false);
-            }
-            this.layoutDS.updateAnnotations();
-          } break;
-
-        case AnnotationEvent.MouseEnter: // highlight the corresponding annotation in the host
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.AnnotationMouseEnter,
-            payload
-          });
-          break;
-
-        case AnnotationEvent.MouseLeave: // remove the highlight from the corresponding annotation
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.AnnotationMouseLeave,
-            payload
-          });
-          break;
-
-        case AnnotationEvent.EditComment: // open the comment modal and let the user edit
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.AnnotationEditComment,
-            payload
-          });
-          break;
-        case AnnotationEvent.EditTags: // open the comment modal and let the user edit
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.AnnotationEditTags,
-            payload
-          });
-          break;
-        case AnnotationEvent.EditSemantic: // open the comment modal and let the user edit
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.AnnotationEditSemantic,
-            payload
-          });
-          break;
-        case AnnotationEvent.CreateNotebook:
-          this.createAnnotationNotebook({
-            label: payload.notebook,
-            annotationID: payload.annotation
-          });
-          break;
-        case AnnotationEvent.ReplyChanged:
-          this.layoutDS.updateAnnotations();
-          break;
-        case AnnotationEvent.ShareLinkCopied:
-          this.layoutEH.toastService.success({
-            title: _t('toast#annotation_share_link_copied_title'),
-            autoClose: true
-          });
-          break;
-        default:
-          break;
-      }
+      this.handleOuterEvent(type, payload);
     });
+  }
+
+  private handleOuterEvent(type: string, payload: any) {
+    const handlers: { [key: string]: () => void } = {
+      [AnnotationEvent.Delete]: () => {
+        this.handleAnnotationDelete(payload);
+      },
+
+      [AnnotationEvent.UpdateNotebook]: () => { // move an annotation to another notebook
+        this.updateAnnotationNotebook(payload.annotation, payload.notebook);
+        this.layoutEH.appEvent$.next({
+          payload,
+          type: AppEvent.AnnotationUpdateNotebook,
+        });
+        // analytics
+        AnalyticsModel.track({
+          action: AnalyticsAction.NotebookCurrentChanged,
+          payload: {
+            location: 'annotation'
+          }
+        });
+      },
+
+      [AnnotationEvent.ToggleCollapsed]: () => { // collapse an annotation (UI)
+        const sidebarIsCollapsed = this.layoutDS.isCollapsed.value;
+        const { collapsed } = payload;
+        if (!collapsed && sidebarIsCollapsed) {
+          // Open sidebar
+          this.layoutDS.isCollapsed.next(false);
+        }
+        this.layoutDS.updateAnnotations();
+      },
+
+      [AnnotationEvent.MouseEnter]: () => { // highlight the corresponding annotation in the host
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationMouseEnter,
+          payload
+        });
+      },
+
+      // remove the highlight from the corresponding annotation
+      [AnnotationEvent.MouseLeave]: () => {
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationMouseLeave,
+          payload
+        });
+      },
+
+      [AnnotationEvent.EditComment]: () => { // open the comment modal and let the user edit
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationEditComment,
+          payload
+        });
+      },
+      [AnnotationEvent.EditTags]: () => { // open the comment modal and let the user edit
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationEditTags,
+          payload
+        });
+      },
+      [AnnotationEvent.EditSemantic]: () => { // open the comment modal and let the user edit
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AnnotationEditSemantic,
+          payload
+        });
+      },
+      [AnnotationEvent.CreateNotebook]: () => {
+        this.createAnnotationNotebook({
+          label: payload.notebook,
+          annotationID: payload.annotation
+        });
+      },
+      [AnnotationEvent.ReplyChanged]: () => {
+        this.layoutDS.updateAnnotations();
+      },
+      [AnnotationEvent.ShareLinkCopied]: () => {
+        this.layoutEH.toastService.success({
+          title: _t('toast#annotation_share_link_copied_title'),
+          autoClose: true
+        });
+      }
+    };
+
+    const handler = handlers[type];
+    if (handler) {
+      handler();
+    }
   }
 
   private handleAnnotationDelete(annotationID: string) {
@@ -121,7 +128,7 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
     // toast "working..."
     const workingToast = this.layoutEH.toastService.working();
     // update the annotation on the back end
-    const { data$ } = this.layoutEH.annotationService.getAnnotationById(annotationID);
+    const { data$ } = this.layoutEH.annotationService.getAnnotationById(annotationID)!;
     const rawAnnotation = data$.getValue();
     const annotationUpdate = this.createUpdatePayload(rawAnnotation, notebookId);
     this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {

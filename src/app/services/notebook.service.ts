@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { from, Subject, EMPTY } from 'rxjs';
 import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
@@ -48,23 +48,23 @@ export type SharedWithChanged = {
   openModal: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class NotebookService {
+  private userService = inject(UserService);
+
   private notebooks: NotebookData[] = [];
 
-  private selectedId: string;
+  private selectedId!: string | null;
 
   public selectedChanged$: Subject<void> = new Subject();
 
   public sharedWithChanged$: Subject<SharedWithChanged> = new Subject();
 
-  constructor(
-    private userService: UserService
-  ) {}
-
   public getSelected = () => this.getNotebookById(this.selectedId);
 
-  public setSelected(id: string, sync = false) {
+  public setSelected(id: string | null, sync = false) {
     if (!id || id === this.selectedId) return;
     const previousId = this.selectedId;
     this.selectedId = id;
@@ -83,9 +83,9 @@ export class NotebookService {
   /**
    * Updates notebook & notebook data.
    */
-  update(notebookID, data: NotebookUpdate) {
+  update(notebookID: string, data: NotebookUpdate) {
     const userId = this.userService.whoami().id;
-    const nb = this.getNotebookById(notebookID);
+    const nb = this.getNotebookById(notebookID)!;
     return from(NotebookModel.update(notebookID, {
       data: {
         userId,
@@ -120,7 +120,12 @@ export class NotebookService {
         id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
       } = rawNotebook;
       this.notebooks.push({
-        id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
+        id,
+        label,
+        sharingMode,
+        userId,
+        userWithReadAccess: userWithReadAccess || [],
+        userWithWriteAccess: userWithWriteAccess || []
       });
     }
   }
@@ -176,7 +181,7 @@ export class NotebookService {
     return from(NotebookModel.getData(id));
   }
 
-  getNotebookById(notebookId: string): NotebookData | null {
+  getNotebookById(notebookId: string | null): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
   }
 
@@ -199,13 +204,13 @@ export class NotebookService {
   getListOfUsers(openModal = false) {
     const userId = this.userService.whoami().id;
     this.search().subscribe((response) => {
-      const selected = Object.assign(response.data.notebooks
-        .find((item) => item.id === this.selectedId));
+      const selected: any = response.data.notebooks
+        .find((item: any) => item.id === this.selectedId);
       const { users } = response.data;
       const readAccess = selected.userWithReadAccess
-        .filter((item) => !selected.userWithWriteAccess.includes(item));
+        .filter((item: any) => !selected.userWithWriteAccess.includes(item));
       const readPending = selected.userWithPendingReadingRequest
-        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
+        .filter((item: any) => !selected.userWithPendingWritingRequest.includes(item));
       const userList = {
         owner: this.createOwner(users, userId),
         read: this.createUsers(readAccess, users, false, false),
@@ -213,8 +218,12 @@ export class NotebookService {
         pendingRead: this.createUsers(readPending, users, true, false),
         pendingWrite: this.createUsers(selected.userWithPendingWritingRequest, users, true, true)
       };
-      const userArray = userList.owner.concat(userList.read, userList.write,
-        userList.pendingRead, userList.pendingWrite);
+      const userArray = userList.owner.concat(
+        userList.read,
+        userList.write,
+        userList.pendingRead,
+        userList.pendingWrite
+      );
       this.sharedWithChanged$.next({
         users: userArray,
         openModal
@@ -222,11 +231,11 @@ export class NotebookService {
     });
   }
 
-  private createOwner(users, ownerId) {
-    const owner = users.filter((item) => item.id === ownerId);
+  private createOwner(users: any[], ownerId: string) {
+    const owner = users.filter((item: any) => item.id === ownerId);
     const ownerItem = owner.map(({
       id, username, thumb, emailAddress
-    }) => ({
+    }: any) => ({
       id,
       username,
       email: emailAddress,
@@ -238,10 +247,10 @@ export class NotebookService {
     return ownerItem;
   }
 
-  private createUsers(array, users, isPending, canWrite) {
+  private createUsers(array: any[], users: any[], isPending: boolean, canWrite: boolean) {
     const list = (isPending) ? array
-      : users.filter((item) => array.find((element) => element === item.id));
-    const userList = list.map((item) => ({
+      : users.filter((item: any) => array.find((element: any) => element === item.id));
+    const userList = list.map((item: any) => ({
       id: (isPending) ? '' : item.id,
       username: (isPending) ? item : item.username,
       email: (isPending) ? item : item.emailAddress,

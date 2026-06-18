@@ -1,4 +1,4 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Social, SocialAttributes } from '@pundit/communication';
 import {
   BehaviorSubject, EMPTY, from, Observable
@@ -25,26 +25,26 @@ type SocialConfig = {
   stats$: BehaviorSubject<SocialStats>;
 }
 
-@Injectable()
-export class SocialService implements OnInit {
+@Injectable({
+  providedIn: 'root'
+})
+export class SocialService {
+  private userService = inject(UserService);
+
   private socialCache: Social[] = [];
 
   private socialStatsByAnnotationId: SocialConfig[] = [];
 
-  constructor(
-    private userService: UserService
-  ) { }
-
-  ngOnInit() {
+  constructor() {
     this.userService.logged$.subscribe(() => {
       this.refreshStats();
     });
   }
 
-  load= (rawSocials: Social[]) => {
+  load = (rawSocials: Social[]) => {
     rawSocials.forEach((social) => this.addToCache(social));
     this.refreshStats();
-  }
+  };
 
   /**
    * Load a social that already exists into the client
@@ -57,7 +57,7 @@ export class SocialService implements OnInit {
     } else {
       this.socialCache.push(rawSocial);
     }
-  }
+  };
 
   removeCached(socialId: string) {
     const index = this.socialCache.findIndex((s) => s.id === socialId);
@@ -97,12 +97,12 @@ export class SocialService implements OnInit {
     });
   }
 
-  private calculateStats(annotaitonId: string, parentId: string): SocialStats {
+  private calculateStats(annotaitonId: string, parentId?: string): SocialStats {
     const socials = this.socialCache.filter(
       (s) => s.annotationId === annotaitonId && s.parentId === parentId
     );
     const currentUserId = this.userService.whoami()?.id;
-    const isSocialFromCurrentUser = (s) => s.userId === currentUserId;
+    const isSocialFromCurrentUser = (s: Social) => s.userId === currentUserId;
 
     const likes = socials.filter((s) => s.type === 'Like');
     const totalLikes = likes.length;
@@ -161,9 +161,7 @@ export class SocialService implements OnInit {
         if (data) {
           const { id } = data;
           const requestPayload = attributes;
-          const newSocial = this.getSocialFromPayload(
-            id, requestPayload
-          );
+          const newSocial = this.getSocialFromPayload(id, requestPayload);
           this.addToCache(newSocial);
 
           // analytics
@@ -172,9 +170,9 @@ export class SocialService implements OnInit {
             Dislike: AnalyticsAction.SocialDislike,
             Report: AnalyticsAction.SocialReport,
           };
-          if (actionMap[attributes.type]) {
+          if (actionMap[attributes.type as keyof typeof actionMap]) {
             AnalyticsModel.track({
-              action: actionMap[attributes.type]
+              action: actionMap[attributes.type as keyof typeof actionMap]
             });
           }
         }
