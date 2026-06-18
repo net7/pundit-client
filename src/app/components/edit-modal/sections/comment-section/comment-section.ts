@@ -13,7 +13,7 @@ import { editor } from '../../../text-editor/editor/editor';
 
 const TEXT_MIN_LIMIT = 3;
 
-export type CommentSectionValue = string;
+export type CommentSectionValue = string | null;
 
 export type CommentSectionOptions = {
   label: string;
@@ -55,8 +55,8 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
   init() {
     setTimeout(() => {
       const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-      const appendTo: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__view');
-      const target: HTMLElement = shadowRoot.querySelector('.pnd-text-editor__content');
+      const appendTo = shadowRoot!.querySelector('.pnd-text-editor__view') as HTMLElement;
+      const target = shadowRoot!.querySelector('.pnd-text-editor__content') as HTMLElement;
 
       editor.init({
         target,
@@ -90,7 +90,7 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
   private onReset = () => {
     const { initialValue } = this.data;
     setTimeout(() => {
-      editor.setContent(initialValue);
+      editor.setContent(initialValue || '');
       this.checkFocus();
     });
   };

@@ -5,6 +5,7 @@
     "ignoreDeprecations": "6.0",
     "strict": false,
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "outDir": "./dist/chrome-ext-tmp",
     "sourceMap": true,
     "declaration": false,

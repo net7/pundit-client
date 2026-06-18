@@ -27,7 +27,7 @@ export class UserService {
 
   public iam({ id, username, thumb }: UserData) {
     this.add({ id, username, thumb });
-    this.me = this.getUserById(id);
+    this.me = this.getUserById(id)!;
 
     // set analytics user
     AnalyticsModel.userId = id;
@@ -68,7 +68,7 @@ export class UserService {
 
   clear() {
     this.users = [];
-    this.me = null;
+    this.me = null as any;
 
     // remove analytics user
     AnalyticsModel.userId = null;

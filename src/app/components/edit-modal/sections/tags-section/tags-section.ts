@@ -62,7 +62,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
 
   private init = () => {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const targetRef = shadowRoot.querySelector('.pnd-edit-modal__tags-input-wrapper');
+    const targetRef = shadowRoot!.querySelector('.pnd-edit-modal__tags-input-wrapper');
     const tagFormConfig = {
       pattern: /^\w{2,128}$/,
       delimiters: ',| ',

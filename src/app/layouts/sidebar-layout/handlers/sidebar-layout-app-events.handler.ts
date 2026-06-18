@@ -180,7 +180,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         this.layoutDS.updateAnnotations();
 
         // update tags;
-        this.layoutEH.tagService.addMany(rawAnnotation?.tags);
+        this.layoutEH.tagService.addMany(rawAnnotation?.tags || []);
 
         // annotation changed successfully
         this.layoutEH.toastService.success({

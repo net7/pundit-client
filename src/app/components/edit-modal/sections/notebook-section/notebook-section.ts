@@ -36,7 +36,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 
   public notebookSelectorData: NotebookSelectorData;
 
-  public currentNotebook: NotebookData = null;
+  public currentNotebook: NotebookData | null = null;
 
   constructor(
     private notebookService: NotebookService,
@@ -53,7 +53,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
     this.setNotebookSelectorData(initialValue);
   };
 
-  private setNotebookSelectorData(notebookId: string) {
+  private setNotebookSelectorData(notebookId: string | undefined) {
     const notebooks = this.notebookService.getByUserIdShared(this.userService.whoami().id);
     this.currentNotebook = this.notebookService.getSelected();
 
@@ -77,7 +77,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
    */
   onEmit = (type: string, payload: any) => {
     if (type === 'option') {
-      if (this.currentNotebook.id !== payload) {
+      if (this.currentNotebook!.id !== payload) {
         this.triggerChanged(payload);
         // update default notebook
         this.notebookService.setSelected(payload, true);

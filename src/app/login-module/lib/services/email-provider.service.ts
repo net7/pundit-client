@@ -36,7 +36,7 @@ export class EmailProviderService implements OnDestroy {
 
   login(
     data: UserLoginRequestParams,
-    terms: TermsParameters
+    terms: TermsParameters | undefined
   ) {
     this.isLoading$.next(true);
     from(AuthModel.login(data))
@@ -46,7 +46,7 @@ export class EmailProviderService implements OnDestroy {
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
           if (this.mustAcceptTerms(err)) {
-            this.openTermsPopup(terms);
+            this.openTermsPopup(terms!);
             return EMPTY;
           }
           this.error$.next(err?.response);

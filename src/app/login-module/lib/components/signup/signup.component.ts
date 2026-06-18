@@ -22,18 +22,18 @@ export class SignUpComponent {
 
   email: EmailAuthProvider;
 
-  google: OAuthProvider;
+  google: OAuthProvider | undefined;
 
-  egi: OAuthProvider;
+  egi: OAuthProvider | undefined;
 
-  facebook: OAuthProvider;
+  facebook: OAuthProvider | undefined;
 
   isLoading = false;
 
-  serviceErrorMessage: string;
+  serviceErrorMessage: string | null;
 
   private inputTextValues: {
-    [key: string]: string;
+    [key: string]: string | null;
   } = {
       firstname: null,
       lastname: null,
@@ -76,7 +76,7 @@ export class SignUpComponent {
       });
 
       // on checkbox change (for analytics)
-      this.registerForm.get('termsconditions').valueChanges.pipe(
+      this.registerForm.get('termsconditions')!.valueChanges.pipe(
         filter((value) => value)
       ).subscribe(() => {
         // analytics
@@ -84,7 +84,7 @@ export class SignUpComponent {
           action: AnalyticsAction.RegisterCheck1Filled,
         });
       });
-      this.registerForm.get('tracking').valueChanges.pipe(
+      this.registerForm.get('tracking')!.valueChanges.pipe(
         filter((value) => value)
       ).subscribe(() => {
         // analytics
@@ -99,7 +99,7 @@ export class SignUpComponent {
     let inputsFilled = true;
     let hasChanged = false;
     ['firstname', 'lastname', 'email', 'password'].forEach((input) => {
-      const formInput = this.registerForm.get(input);
+      const formInput = this.registerForm.get(input)!;
       if (!(formInput.value && formInput.valid)) {
         inputsFilled = false;
       }
@@ -164,9 +164,9 @@ export class SignUpComponent {
   }
 
   getErrorMessage = (input: string) => {
-    if (!this.registerForm.get(input).touched) {
+    if (!this.registerForm.get(input)!.touched) {
       return null;
     }
-    return validationHelper.getErrorMessage(input, this.registerForm.get(input).errors);
+    return validationHelper.getErrorMessage(input, this.registerForm.get(input)!.errors);
   };
 }

@@ -10,7 +10,7 @@ const toDataURL = (url: string) => fetch(url)
   }));
 
 export const doImageDataRequest = (tab: chrome.tabs.Tab, payload: any) => {
-  const { id: tabId } = tab;
+  const tabId = tab.id!;
   const { url } = payload;
 
   toDataURL(url)

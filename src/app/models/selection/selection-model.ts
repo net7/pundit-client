@@ -26,10 +26,11 @@ class SelectionModel {
 
   public clearSelection() {
     if (window.getSelection) {
-      if (window.getSelection().empty) { // Chrome
-        window.getSelection().empty();
-      } else if (window.getSelection().removeAllRanges) { // Firefox
-        window.getSelection().removeAllRanges();
+      const selection = window.getSelection()!;
+      if (selection.empty) { // Chrome
+        selection.empty();
+      } else if (selection.removeAllRanges) { // Firefox
+        selection.removeAllRanges();
       }
     } else if ((document as any).selection) { // IE?
       (document as any).selection.empty();
@@ -44,7 +45,7 @@ class SelectionModel {
   }
 
   public setSelectionFromRange(range: Range) {
-    const newSelection = window.getSelection();
+    const newSelection = window.getSelection()!;
     const newRange = document.createRange();
     newRange.setStart(range.startContainer, range.startOffset);
     newRange.setEnd(range.endContainer, range.endOffset);

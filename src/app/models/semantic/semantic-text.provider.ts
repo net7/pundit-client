@@ -4,7 +4,7 @@ export class SemanticTextProvider extends SemanticGenericProvider {
   get(uri: string) {
     return {
       label: uri,
-      uri: null as string,
+      uri: null as unknown as string,
     };
   }
 }

@@ -9,7 +9,7 @@ import { NotebookData, NotebookService } from 'src/app/services/notebook.service
  */
 export interface NotebookSelectorData {
   /** ID of the default selected notebook */
-  selectedNotebook: NotebookData;
+  selectedNotebook: NotebookData | null;
   /** Data for the list of notebooks */
   notebookList: NotebookData[];
   /** Data for the contextual notebook creation */
@@ -55,7 +55,7 @@ export class NotebookSelectorComponent {
       this.setMode('select');
     } else {
       // if a notebook option is clicked
-      this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload);
+      this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload) || null;
       this.notebookService.getListOfUsers();
     }
     // collapse the list of notebooks

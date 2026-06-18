@@ -115,7 +115,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   }
 
   private getAnnotationCreatedAnalytics(data: any): AnalyticsData {
-    let analyticsData: AnalyticsData;
+    let analyticsData: AnalyticsData | undefined;
     // comment
     if (data.type === 'Commenting') {
       analyticsData = {
@@ -151,7 +151,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         }
       };
     }
-    return analyticsData;
+    return analyticsData!;
   }
 
   private onCreateNotebookError(payload: any) {

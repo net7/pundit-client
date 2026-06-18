@@ -30,6 +30,6 @@ export class TagAnnotationSectionComponent implements OnInit {
       label: tag,
       color: getTagColor(tag),
     }));
-    return tags;
+    return tags || [];
   };
 }

@@ -32,7 +32,7 @@ const handlePdfState = (
       skipIconUpdate = true;
       setTimeout(() => {
         onBrowserActionClicked(tab, true);
-        updateExtensionIcon(tab.id, true);
+        updateExtensionIcon(tab.id!, true);
       });
     }
   } else if (active && isPdf) {
@@ -70,10 +70,7 @@ export const checkActiveState = (tabId: number) => {
         }
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         ChromeExtStorage.get(activeKey).then(async (active: boolean) => {
-          const {
-            url: tabUrl,
-            // status: tabStatus
-          } = tab;
+          const tabUrl = tab.url!;
 
           const isViewer = isPdfViewer(tabUrl);
           const isFeedWeb = isFeedWebUrl(tabUrl);

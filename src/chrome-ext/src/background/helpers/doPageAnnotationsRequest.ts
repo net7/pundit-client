@@ -12,7 +12,7 @@ const cacheCheck = (cacheKey: string, active: boolean) => ChromeExtStorage.get(S
     const cacheItem = newCache.find(({ key }) => key === cacheKey);
     let value = null;
     let indexToRemove = -1;
-    let cacheUpdate$ = Promise.resolve(null);
+    let cacheUpdate$: Promise<any> = Promise.resolve(null);
     // pundit inactive
     if (!active) {
       // key exists
@@ -64,7 +64,7 @@ export const doPageAnnotationsRequest = (
   return cacheCheck(cacheKey, active).then(({ cache, value }) => {
     // pundit active (skip)
     if (active) {
-      return Promise.resolve({ tabId, total: null });
+      return Promise.resolve({ tabId, total: null as number | null });
     }
 
     // has cache value

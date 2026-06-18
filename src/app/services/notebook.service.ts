@@ -52,7 +52,7 @@ export type SharedWithChanged = {
 export class NotebookService {
   private notebooks: NotebookData[] = [];
 
-  private selectedId: string;
+  private selectedId: string | null;
 
   public selectedChanged$: Subject<void> = new Subject();
 
@@ -64,7 +64,7 @@ export class NotebookService {
 
   public getSelected = () => this.getNotebookById(this.selectedId);
 
-  public setSelected(id: string, sync = false) {
+  public setSelected(id: string | null, sync = false) {
     if (!id || id === this.selectedId) return;
     const previousId = this.selectedId;
     this.selectedId = id;
@@ -85,7 +85,7 @@ export class NotebookService {
    */
   update(notebookID: string, data: NotebookUpdate) {
     const userId = this.userService.whoami().id;
-    const nb = this.getNotebookById(notebookID);
+    const nb = this.getNotebookById(notebookID)!;
     return from(NotebookModel.update(notebookID, {
       data: {
         userId,
@@ -120,7 +120,12 @@ export class NotebookService {
         id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
       } = rawNotebook;
       this.notebooks.push({
-        id, label, sharingMode, userId, userWithReadAccess, userWithWriteAccess
+        id,
+        label,
+        sharingMode,
+        userId,
+        userWithReadAccess: userWithReadAccess || [],
+        userWithWriteAccess: userWithWriteAccess || []
       });
     }
   }
@@ -176,7 +181,7 @@ export class NotebookService {
     return from(NotebookModel.getData(id));
   }
 
-  getNotebookById(notebookId: string): NotebookData | null {
+  getNotebookById(notebookId: string | null): NotebookData | null {
     return this.notebooks.find(({ id }) => id === notebookId) || null;
   }
 
@@ -199,8 +204,8 @@ export class NotebookService {
   getListOfUsers(openModal = false) {
     const userId = this.userService.whoami().id;
     this.search().subscribe((response) => {
-      const selected = Object.assign(response.data.notebooks
-        .find((item: any) => item.id === this.selectedId));
+      const selected: any = response.data.notebooks
+        .find((item: any) => item.id === this.selectedId);
       const { users } = response.data;
       const readAccess = selected.userWithReadAccess
         .filter((item: any) => !selected.userWithWriteAccess.includes(item));

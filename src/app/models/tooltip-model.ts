@@ -67,7 +67,7 @@ class TooltipModel {
    */
   private load() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    this.tooltipWrapper = shadowRoot.getElementById('pnd-tooltip');
+    this.tooltipWrapper = shadowRoot!.getElementById('pnd-tooltip')!;
 
     this.instance = createPopper(this.virtualTarget as VirtualElement, this.tooltipWrapper, {
       placement: 'top',
@@ -101,7 +101,7 @@ class TooltipModel {
     const isBackwards = isSelectionBackwards(selection);
     const {
       x, y, width, height
-    } = selectionFocusRect(selection);
+    } = selectionFocusRect(selection)!;
     this.x = x + width / 2; this.y = y;
     this.x = isBackwards ? x : x + width;
     this.y = isBackwards ? y - this.padding : y + height + this.padding;

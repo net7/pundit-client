@@ -57,11 +57,11 @@ export class DocumentInfoWebpageService {
       return `${protocol}${faviconPath}`;
     }
     try {
-      const faviconURL = new URL(faviconPath, origin);
+      const faviconURL = new URL(faviconPath as string, origin);
       return faviconURL.toJSON();
     } catch (error) {
       console.warn(error);
     }
-    return faviconPath;
+    return faviconPath as string;
   }
 }

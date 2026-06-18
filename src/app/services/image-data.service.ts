@@ -12,7 +12,7 @@ export enum ImageDataStatus {
 }
 
 export type ImageData = {
-  data: ReplaySubject<SafeUrl>;
+  data: ReplaySubject<SafeUrl | null>;
   status: ImageDataStatus;
 };
 

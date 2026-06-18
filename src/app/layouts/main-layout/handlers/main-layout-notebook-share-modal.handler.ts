@@ -98,7 +98,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private onDelete(payload: any) {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     const body = {
       email: payload.email
     };
@@ -116,7 +116,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private onResend(payload: any) {
     const { notebookService } = this.layoutDS;
-    const currentNotebookId = notebookService.getSelected()?.id;
+    const currentNotebookId = notebookService.getSelected()!.id;
     const body = {
       email: payload.email
     };
@@ -129,14 +129,14 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private onConfirm(payload: any) {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     const body: NotebookPermissions = {
       userWithReadAccess: [],
       userWithWriteAccess: []
     };
-    body.userWithReadAccess.push(payload.email);
+    body.userWithReadAccess!.push(payload.email);
     if (payload.action === 'write') {
-      body.userWithWriteAccess.push(payload.email);
+      body.userWithWriteAccess!.push(payload.email);
     }
     return notebookService.userInviteWithEmail(notebook.id, body).subscribe((response) => {
       if (response.status === 200) {
@@ -149,7 +149,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
 
   private openShareModal() {
     const { notebookService } = this.layoutDS;
-    const notebook = notebookService.getSelected();
+    const notebook = notebookService.getSelected()!;
     notebook.users = this.layoutDS.usersList;
     this.layoutDS.one('notebook-share-modal').update(notebook);
   }

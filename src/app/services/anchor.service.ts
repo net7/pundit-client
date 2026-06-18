@@ -86,7 +86,7 @@ export class AnchorService {
 
   remove(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       removeHighlights(highlights);
       this.detachEvents(highlights);
       const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
@@ -114,7 +114,7 @@ export class AnchorService {
 
   addHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       highlights.forEach((el) => {
         el.classList.add(HOVER_CLASS);
       });
@@ -123,7 +123,7 @@ export class AnchorService {
 
   removeHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
-      const { highlights } = this.getHighlightById(annotationId);
+      const { highlights } = this.getHighlightById(annotationId)!;
       highlights.forEach((el) => {
         el.classList.remove(HOVER_CLASS);
       });

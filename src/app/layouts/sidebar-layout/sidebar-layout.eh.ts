@@ -147,7 +147,7 @@ export class SidebarLayoutEH extends EventHandler {
     };
   }
 
-  private handleRequestLogin(type: string) {
+  private handleRequestLogin(type: string | undefined) {
     const isRegister = type === SidebarLayoutEvent.RequestRegister;
     this.punditLoginService.start(isRegister);
     // clear anonymous (before login) selection range

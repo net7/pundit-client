@@ -18,9 +18,9 @@
 
 ## 3. strictNullChecks
 
-- [ ] 3.1 Enable `strictNullChecks` in both tsconfigs
-- [ ] 3.2 Fix possibly-null/undefined errors with guards, narrowing, or `?`/`!` as appropriate, preserving runtime behavior (split across commits/sessions if volume is large)
-- [ ] 3.3 Verify both builds compile cleanly; commit this increment
+- [x] 3.1 Enable `strictNullChecks` in `tsconfig.json` and `tsconfig.chrome-ext.json`
+- [x] 3.2 Fix all `strictNullChecks` errors (257). Patterns: widened genuinely-nullable class fields / state-shape types / interfaces (`MainLayoutState`, `SemanticProvider`, `NotebookSelectorData`, `ChromeExtStateData`, etc.) to `| null`/`| undefined`; non-null assertions (`!`) on lookups guaranteed by surrounding logic (`getSelected()`, `getUserById()`, `getNotebookById()`, `shadowRoot`, `chrome` tab ids); optional chaining where a missing value is a valid no-op; `null`→`undefined` for optional object-literal fields; defaults (`|| []`/`|| ''`) where a downstream API needs a non-null value. Behavior preserved throughout.
+- [x] 3.3 Verified all 4 tsconfig projects report 0 errors; `npm run build`, `npm run build:chrome-ext-prod`, `npm test` (8/8), and `npm run lint` all pass. Fixed `selection-handler.spec.ts` (inherits the flag).
 
 ## 4. strictPropertyInitialization
 

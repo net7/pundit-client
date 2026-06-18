@@ -21,19 +21,19 @@ import { environment as env } from '../../../../../environments/environment';
 export class SignInComponent {
   email: EmailAuthProvider;
 
-  google: OAuthProvider;
+  google: OAuthProvider | undefined;
 
-  egi: OAuthProvider;
+  egi: OAuthProvider | undefined;
 
-  facebook: OAuthProvider;
+  facebook: OAuthProvider | undefined;
 
   loginForm: UntypedFormGroup;
 
   isLoading = false;
 
-  serviceErrorMessage: string;
+  serviceErrorMessage: string | null;
 
-  terms: TermsParameters;
+  terms: TermsParameters | undefined;
 
   lostPasswordLink = `${env.userLink}password/reset`;
 
@@ -122,9 +122,9 @@ export class SignInComponent {
   }
 
   getErrorMessage = (input: string) => {
-    if (!this.loginForm.get(input).touched) {
+    if (!this.loginForm.get(input)!.touched) {
       return null;
     }
-    return validationHelper.getErrorMessage(input, this.loginForm.get(input).errors);
+    return validationHelper.getErrorMessage(input, this.loginForm.get(input)!.errors);
   };
 }

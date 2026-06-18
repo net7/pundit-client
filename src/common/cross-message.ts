@@ -10,7 +10,7 @@ const handlers: {
   [x: string]: {
     resolve: (value: unknown) => void;
     reject: (reason?: any) => void;
-  };
+  } | null;
 } = {};
 
 if (addEventListener) {

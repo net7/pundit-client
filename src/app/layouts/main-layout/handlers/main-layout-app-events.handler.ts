@@ -2,7 +2,7 @@ import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
+import { EditModalParams, LayoutHandler } from 'src/app/types';
 import { _t } from '@net7/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { MainLayoutDS } from '../main-layout.ds';
@@ -109,7 +109,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
 
   // eslint-disable-next-line complexity -- Existing edit-modal assembly branches predate the flat-config migration.
   private onAnnotationEdit(payload: any, mode: 'comment'| 'tags' | 'semantic') {
-    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
+    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload)!;
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
     this.layoutDS.state.annotation.updatePayload = annotation;
@@ -154,10 +154,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.openEditModal(params);
   }
 
-  private getSemanticData(rawSemantic: SemanticTripleType[]): {
-    predicate: SemanticItem;
-    object: SemanticItem;
-  }[] {
+  private getSemanticData(rawSemantic: SemanticTripleType[]): Array<{
+    predicate: any;
+    object: any;
+    objectType: any;
+    _raw: SemanticTripleType;
+  }> | undefined {
     return rawSemantic.length ? rawSemantic.map((triple) => {
       const { predicate } = triple;
       let object = null;

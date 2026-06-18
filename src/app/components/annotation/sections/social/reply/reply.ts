@@ -72,7 +72,7 @@ export class ReplyComponent implements OnInit {
   }
 
   private resetFormState = (newReply: string) => {
-    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
+    const isValidReply = (reply: string): boolean => !!reply && reply.length > 3;
     return {
       value: newReply,
       placeholder: _t('social#reply_placeholder'),
@@ -195,7 +195,7 @@ export class ReplyComponent implements OnInit {
       this.replyService.update(
         this.data.id,
         {
-          userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value
+          userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value as string
         }
       ).pipe(
         catchError(() => {
@@ -237,11 +237,11 @@ export class ReplyComponent implements OnInit {
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
+    return shadowRoot!.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 
   private getUserData(userId: string) {
-    const user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId)!;
     let separator = ' ';
     // is email check
     if (user.username.includes('@')) {

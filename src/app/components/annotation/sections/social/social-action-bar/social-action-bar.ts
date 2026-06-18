@@ -159,8 +159,8 @@ export class SocialActionBarComponent implements OnInit {
         hasUserDislike: false,
         hasUserLike: true,
         totalDislikes:
-          this.state.dislike.madeByUser ? this.state.dislike.total - 1 : this.state.dislike.total,
-        totalLikes: this.state.like.total + 1
+          this.state.dislike!.madeByUser ? this.state.dislike!.total - 1 : this.state.dislike!.total,
+        totalLikes: this.state.like!.total + 1
       } as SocialStats;
       this.updateSocialState(newStats);
       this.createSocial('Like');
@@ -198,8 +198,8 @@ export class SocialActionBarComponent implements OnInit {
       const newStats = {
         hasUserDislike: true,
         hasUserLike: false,
-        totalLikes: this.state?.like.madeByUser ? this.state.like.total - 1 : this.state.like.total,
-        totalDislikes: this.state.dislike.total + 1
+        totalLikes: this.state.like!.madeByUser ? this.state.like!.total - 1 : this.state.like!.total,
+        totalDislikes: this.state.dislike!.total + 1
       } as SocialStats;
       this.updateSocialState(newStats);
       this.createSocial('Dislike');
@@ -217,7 +217,7 @@ export class SocialActionBarComponent implements OnInit {
       this.removeSocial('Endorse');
     } else {
       const newStats = {
-        totalEndorses: this.state.endorse.total + 1,
+        totalEndorses: this.state.endorse!.total + 1,
         hasUserEndorse: true
       } as SocialStats;
       this.updateSocialState(newStats);
@@ -235,7 +235,7 @@ export class SocialActionBarComponent implements OnInit {
       this.removeSocial('Report');
     } else {
       const newStats = {
-        totalReports: this.state.report.total + 1,
+        totalReports: this.state.report!.total + 1,
         hasUserReport: true
       } as SocialStats;
       this.updateSocialState(newStats);
@@ -274,20 +274,21 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private onReplySave() {
-    if (this.state.reply.form.isLoading) {
+    const reply = this.state.reply!;
+    if (reply.form.isLoading) {
       return;
     }
     const payload: ReplyAttributes = {
       type: 'Comment',
       userId: this.userService.whoami().id,
       annotationId: this.annotationId,
-      comment: this.state.reply.form.value
+      comment: reply.form.value as string
     };
-    this.state.reply.form.isLoading = true;
+    reply.form.isLoading = true;
     this.replyService.create(payload).pipe(
       catchError(() => {
-        this.state.reply.toggleForm = false;
-        this.state.reply.form = this.resetFormState();
+        reply.toggleForm = false;
+        reply.form = this.resetFormState();
         this.toastService.error({
           title: _t('toast#annotation_reply_save_error_title'),
           text: _t('toast#annotation_reply_save_error_text'),
@@ -300,8 +301,8 @@ export class SocialActionBarComponent implements OnInit {
       })
     ).subscribe(
       () => {
-        this.state.reply.toggleForm = false;
-        this.state.reply.form = this.resetFormState();
+        reply.toggleForm = false;
+        reply.form = this.resetFormState();
         this.toastService.success({
           title: _t('toast#annotation_reply_save_success_title'),
           text: _t('toast#annotation_reply_save_success_text'),
@@ -311,16 +312,16 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private onReplyCancel() {
-    this.state.reply.toggleForm = false;
-    this.state.reply.form = this.resetFormState();
+    this.state.reply!.toggleForm = false;
+    this.state.reply!.form = this.resetFormState();
   }
 
   onReplyChange(e: string) {
-    this.state.reply.form = this.resetFormState(e);
+    this.state.reply!.form = this.resetFormState(e);
   }
 
   private checkFocus = () => {
-    if (this.state.reply.toggleForm) {
+    if (this.state.reply!.toggleForm) {
       setTimeout(() => {
         const el = this.getTextAreaEl();
         el.focus();
@@ -330,6 +331,6 @@ export class SocialActionBarComponent implements OnInit {
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
+    return shadowRoot!.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 }

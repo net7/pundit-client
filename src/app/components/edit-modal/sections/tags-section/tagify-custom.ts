@@ -7,7 +7,7 @@ export function customDropdownHide(force = false): any {
   const isManual = this.settings.dropdown.position === 'manual' && !force;
 
   // if there's no dropdown, this means the dropdown events aren't binded
-  if (!dropdown || !shadowRoot.contains(dropdown) || isManual) {
+  if (!dropdown || !shadowRoot!.contains(dropdown) || isManual) {
     return null;
   }
 
@@ -58,7 +58,7 @@ export function customShadowRootRender() {
 
   // if the dropdown has yet to be appended to the DOM,
   // append the dropdown to the body element & handle events
-  if (!shadowRoot.contains(this.DOM.dropdown)) {
+  if (!shadowRoot!.contains(this.DOM.dropdown)) {
     this.DOM.dropdown.classList.add(_s.classNames.dropdownInital);
     this.dropdown.position(ddHeight);
     _s.dropdown.appendTarget.appendChild(this.DOM.dropdown);

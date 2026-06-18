@@ -47,7 +47,7 @@ export class AnnotationPositionService {
       })
     );
     // get all <n7-annotation> nodes present in the sidebar
-    const rawElements = shadowRoot.querySelectorAll<HTMLElement>('annotation');
+    const rawElements = shadowRoot!.querySelectorAll<HTMLElement>('annotation');
     const positionMap: Array<{ el: HTMLElement; anchorPosition: number; created: any }> = [];
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>

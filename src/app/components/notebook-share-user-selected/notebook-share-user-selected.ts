@@ -29,7 +29,7 @@ export class NotebookShareUserSelectedComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.item = this.data.body.confirmSection.selected;
+    this.item = this.data.body.confirmSection!.selected;
     this.item.action = 'read';
   }
 

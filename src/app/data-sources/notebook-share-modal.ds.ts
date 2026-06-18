@@ -144,7 +144,7 @@ export class NotebookShareModalDS extends DataSource {
     email: string,
     permission: string
   ) {
-    if (role === NotebookUserRole.Owner) return null;
+    if (role === NotebookUserRole.Owner) return undefined;
     const dropdown = {
       actions: [] as any[],
       isExpanded: false

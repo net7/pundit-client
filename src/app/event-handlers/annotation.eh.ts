@@ -156,13 +156,13 @@ export class AnnotationEH extends EventHandler {
   listenDocumentClicks(annotationID: string) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     // listen for clicks on the document
-    race(fromEvent(shadowRoot, 'click'), fromEvent(document, 'click'))
+    race(fromEvent(shadowRoot!, 'click'), fromEvent(document, 'click'))
       .pipe(
         first(),
         takeUntil(this.onMenuFocusLost),
       ) // keep listening until the menu is closed
       .subscribe((e: MouseEvent) => {
-        let clickedElement: HTMLElement;
+        let clickedElement: HTMLElement | undefined;
         const { path, target } = e as any || {};
         if (Array.isArray(path) && path.length) {
           [clickedElement] = path;

@@ -154,7 +154,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     _raw?: any,
   ) {
     const predicateProviderId = predicate.providerId || this.config.predicate.default;
-    const predicateProvider = this.getProviderById(predicateProviderId, 'predicate');
+    const predicateProvider = this.getProviderById(predicateProviderId, 'predicate')!;
     const defaultPredicate = predicateProvider.selected || predicateProvider.items[0];
     const objectProviderId = object.providerId || this.config.object.default;
     const objectValue = object.label || null;
@@ -184,7 +184,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
     // object type check
     if (objectProviderId === DEFAULT_PROVIDER_ID) {
-      rowData.object.type = getObjectType(objectValue);
+      rowData.object.type = getObjectType(objectValue as string);
     }
 
     if (rowIndex || rowIndex === 0) {
@@ -301,14 +301,14 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
         if (rawValues.predicate && rawValues.object) {
           const rowValue = {
-            predicate: null as SemanticItem,
-            object: null as SemanticItem,
+            predicate: undefined as SemanticItem | undefined,
+            object: undefined as SemanticItem | undefined,
             objectType: rawValues.objectType
           };
           ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
             const { providerId } = row[key];
-            const provider = this.getProviderById(providerId, key);
-            rowValue[key] = provider.get(rawValues[key]);
+            const provider = this.getProviderById(providerId, key)!;
+            rowValue[key] = provider.get(rawValues[key] as string);
           });
           if (rowValue.predicate && rowValue.object?.label) {
             formValue.push(rowValue);
@@ -349,7 +349,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   private getObjectInputEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const inputs = shadowRoot.querySelectorAll('input.pnd-edit-modal__semantic-object-input');
+    const inputs = shadowRoot!.querySelectorAll('input.pnd-edit-modal__semantic-object-input');
     return inputs.length ? inputs[inputs.length - 1] as HTMLInputElement : null;
   }
 }

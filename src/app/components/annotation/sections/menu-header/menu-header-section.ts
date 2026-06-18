@@ -85,7 +85,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   newNotebookSelector(annotation: Annotation, state: any) {
     const notebook = this.notebookService.getNotebookById(
       annotation.notebookId
-    );
+    )!;
     const notebooks = this.notebookService.getByUserIdShared(annotation.userId);
     const notebookSelectorData: NotebookSelectorData = {
       isLoading: state?.isNotebookSelectorLoading,
@@ -114,7 +114,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     const notebooks = this.notebookService.getByUserIdShared(annotation.userId);
     const notebook = this.notebookService.getNotebookById(
       annotation.notebookId
-    );
+    )!;
     this.notebookSelectorData.selectedNotebook = notebook;
     this.notebookSelectorData.notebookList = notebooks;
 
@@ -128,7 +128,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getMenuData(annotation: Annotation) {
     const { id } = annotation;
-    const user = this.userService.getUserById(annotation.userId);
+    const user = this.userService.getUserById(annotation.userId)!;
     const buttonConfig: ActionButtonConfig = {
       id,
       type: annotation.type,

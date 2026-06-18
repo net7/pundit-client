@@ -73,9 +73,9 @@ export class PdfService {
 
   isActive = () => !!this.pdfApp;
 
-  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID);
+  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID)!;
 
-  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID);
+  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID)!;
 
   getViewerToolbarHeight = () => PDF_VIEWER_TOOLBAR_HEIGHT;
 
@@ -84,7 +84,7 @@ export class PdfService {
   getFingerprint(): string {
     const { pdfDocument } = this.pdfApp;
     if (Array.isArray(pdfDocument.fingerprints)) {
-      return pdfDocument.fingerprints[0];
+      return pdfDocument.fingerprints[0]!;
     }
     return pdfDocument.fingerprint;
   }
@@ -145,7 +145,7 @@ export class PdfService {
 
   onScroll({ target }: { target: any }) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const sidebarAnnotationsContainer = shadowRoot.querySelector('.pnd-sidebar__content') as HTMLElement;
+    const sidebarAnnotationsContainer = shadowRoot!.querySelector('.pnd-sidebar__content') as HTMLElement;
     const { scrollTop } = target;
     sidebarAnnotationsContainer.style.marginTop = `${-scrollTop}px`;
   }

@@ -64,7 +64,7 @@ export class EditModalComponent implements AfterContentChecked {
 
   @Input() public emit: (type: string, payload?: any) => void;
 
-  private lastInternalId: string = null;
+  private lastInternalId: string | null = null;
 
   private loaded = false;
 
@@ -121,8 +121,8 @@ export class EditModalComponent implements AfterContentChecked {
     // fix element dom loaded
     setTimeout(() => {
       const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-      const target = shadowRoot.getElementById(this.draggableTarget);
-      const handle = shadowRoot.getElementById(this.draggableHandle);
+      const target = shadowRoot!.getElementById(this.draggableTarget);
+      const handle = shadowRoot!.getElementById(this.draggableHandle);
       const limit = this.getDragLimit(target);
       this.draggableInstance = new Draggable(target, { handle, limit });
       this.data._setDraggableInstance(this.draggableInstance);
@@ -180,7 +180,7 @@ export class EditModalComponent implements AfterContentChecked {
       disabled = true;
     } else if (hasRequiredErrors) {
       const numOfErrors = requiredErrors.filter((value) => !!value).length;
-      const isOrCondition = validation?.required.condition === 'OR';
+      const isOrCondition = validation?.required?.condition === 'OR';
       disabled = !!(isOrCondition ? numOfErrors === (requiredErrors.length - 1) : numOfErrors);
     }
     // update save button

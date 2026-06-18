@@ -28,12 +28,12 @@ import { AnnotationModel, SemanticPredicateModel } from '../../../common/models'
 type MainLayoutState = {
   isLogged: boolean;
   annotation: {
-    pendingPayload: HighlightAnnotation | CommentAnnotation;
-    updatePayload: Annotation;
-    deleteId: string;
+    pendingPayload: HighlightAnnotation | CommentAnnotation | null;
+    updatePayload: Annotation | null;
+    deleteId: string | null;
   };
-  anonymousSelectionRange: Range;
-  emailVerifiedToast: ToastInstance;
+  anonymousSelectionRange: Range | null;
+  emailVerifiedToast: ToastInstance | null;
   identitySyncLoading: boolean;
 }
 
@@ -102,7 +102,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata, true)).pipe(
+        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[], true)).pipe(
           tap((response) => {
             const { data: searchData } = response;
             // remove private annotations
@@ -121,7 +121,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata)).pipe(
+        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[])).pipe(
           tap(({ data: searchData }) => {
             this.handleSearchResponse(searchData);
             this.hasLoaded$.next(true);
@@ -243,7 +243,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private doEmailVerifyRequest() {
-    this.state.emailVerifiedToast.close();
+    this.state.emailVerifiedToast?.close();
     // working toast
     const workingToast = this.toastService.working();
     // TODO Vedere verify
@@ -314,7 +314,7 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   updateShareModal(openModal = false) {
-    const notebook = this.notebookService.getSelected();
+    const notebook = this.notebookService.getSelected()!;
     notebook.users = this.usersList;
     if (openModal) {
       this.one('notebook-share-modal').update(notebook);

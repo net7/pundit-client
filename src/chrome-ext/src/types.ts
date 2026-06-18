@@ -31,7 +31,7 @@ export type ChromeExtStateKey = 'appRoot'
 export type IntervalFunc = (func: (...args: any[]) => void, ms: number) => void;
 
 export type ChromeExtStateData = {
-  appRoot: HTMLElement;
+  appRoot: HTMLElement | null;
   badgeInterval: any;
   badgeIntervalCount: number;
   rootExistMessageSended: boolean;

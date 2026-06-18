@@ -178,7 +178,7 @@ class Editor {
       }
     } else {
       const { state, dispatch } = this.editorView;
-      button.command(state, dispatch);
+      button.command!(state, dispatch);
     }
   }
 
@@ -208,7 +208,7 @@ class Editor {
     const { linkForm } = this.menu;
     // reset
     linkForm.visible = false;
-    linkForm.inputValue = null;
+    linkForm.inputValue = undefined;
   }
 
   private updateMenuState() {
@@ -268,7 +268,7 @@ class Editor {
 
     return Object.keys(markTypes).filter((key) => {
       const mark = markTypes[key];
-      return toggleMark(mark)(this.editorView.state, null, this.editorView);
+      return toggleMark(mark)(this.editorView.state, undefined, this.editorView);
     });
   }
 

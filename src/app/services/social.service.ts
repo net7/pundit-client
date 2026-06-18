@@ -95,7 +95,7 @@ export class SocialService {
     });
   }
 
-  private calculateStats(annotaitonId: string, parentId: string): SocialStats {
+  private calculateStats(annotaitonId: string, parentId?: string): SocialStats {
     const socials = this.socialCache.filter(
       (s) => s.annotationId === annotaitonId && s.parentId === parentId
     );

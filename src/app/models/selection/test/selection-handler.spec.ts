@@ -3,8 +3,8 @@ import { selectionModel as model } from '../selection-model';
 
 describe('Selection', () => {
   describe('changed$ payload', () => {
-    let fakeEvent: Event;
-    let fakeGetRangeAtCollapsedFalse: jest.Mock;
+    let fakeEvent: Event | null;
+    let fakeGetRangeAtCollapsedFalse: jest.Mock | null;
     beforeEach(() => {
       fakeEvent = new Event('selectionchange');
       fakeGetRangeAtCollapsedFalse = jest.fn().mockReturnValue((() => {
@@ -33,7 +33,7 @@ describe('Selection', () => {
         expect(model.getCurrentRange() instanceof Range).toBeTruthy();
         done();
       });
-      document.dispatchEvent(fakeEvent);
+      document.dispatchEvent(fakeEvent!);
     });
   });
 });

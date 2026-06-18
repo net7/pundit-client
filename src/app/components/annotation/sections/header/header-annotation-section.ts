@@ -52,7 +52,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
   });
 
   private getUserData(userId: string) {
-    const user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId)!;
     let separator = ' ';
     // is email check
     if (user.username.includes('@')) {
@@ -107,8 +107,8 @@ export class HeaderAnnotationSectionComponent implements OnInit {
         anchor: '',
       };
     } else {
-      const notebook = this.notebookService.getNotebookById(annotation.notebookId);
-      const user = this.userService.getUserById(annotation.userId);
+      const notebook = this.notebookService.getNotebookById(annotation.notebookId)!;
+      const user = this.userService.getUserById(annotation.userId)!;
       notebookData = {
         name: notebook.label,
         anchor: this.isCurrentUser(user)

@@ -74,7 +74,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
               anonymousSelectionRange: lastSelectionRange,
             } = this.layoutDS.state;
             selectionModel.setSelectionFromRange(lastSelectionRange);
-            tooltipModel.show(selectionModel.getCurrentSelection());
+            tooltipModel.show(selectionModel.getCurrentSelection()!);
           }
           // login toast
           this.layoutDS.toastService.success({

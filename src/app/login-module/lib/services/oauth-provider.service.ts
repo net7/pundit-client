@@ -15,7 +15,7 @@ import { PopupService } from './popup.service';
 export class OauthProviderService {
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
-  private selectedProvider: OAuthProvider = null;
+  private selectedProvider: OAuthProvider | null = null;
 
   constructor(
         private authEventService: AuthEventService,
@@ -42,15 +42,15 @@ export class OauthProviderService {
 
         // analytics
         let action;
-        if (this.selectedProvider.id === 'google') {
+        if (this.selectedProvider!.id === 'google') {
           action = AnalyticsAction.AccessGoogleCompleted;
-        } else if (this.selectedProvider.id === 'facebook') {
+        } else if (this.selectedProvider!.id === 'facebook') {
           action = AnalyticsAction.AccessFacebookCompleted;
-        } else if (this.selectedProvider.id === 'egi') {
+        } else if (this.selectedProvider!.id === 'egi') {
           action = AnalyticsAction.AccessEgiCompleted;
         }
         AnalyticsModel.userId = authResp.user.id;
-        AnalyticsModel.track({ action });
+        AnalyticsModel.track({ action: action! });
       }
     });
   }

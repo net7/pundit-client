@@ -55,7 +55,7 @@ export class ToastService {
   private toasts: {
     id: string;
     data: ToastBox;
-    onAction: EmitFunction;
+    onAction?: EmitFunction;
     instance: ToastInstance;
   }[] = [];
 
@@ -96,7 +96,7 @@ export class ToastService {
           this.close(payload.id);
         } else {
           const toast = this.toasts.find(({ id }) => id === payload.id);
-          if (toast.onAction) {
+          if (toast?.onAction) {
             toast.onAction(payload.action, toast.instance);
 
             // trigger change detector
@@ -147,10 +147,10 @@ export class ToastService {
         text: this.getDataText(toastParams.text),
         closeIcon: toastParams.hasDismiss
           ? this.getDataCloseIcon(toastId)
-          : null,
+          : undefined,
         actions: toastParams.actions
           ? this.getDataActions(toastId, toastParams.actions)
-          : null,
+          : undefined,
         _meta: {
           id: toastId
         },
@@ -158,7 +158,7 @@ export class ToastService {
       },
       onAction: toastParams.onAction
         ? this.getOnAction(toastParams.onAction)
-        : null
+        : undefined
     });
 
     // update stream
@@ -199,7 +199,7 @@ export class ToastService {
   }
 
   private update(toastId: string, params: ToastUpdateParams) {
-    const toast = this.toasts.find(({ id }) => id === toastId);
+    const toast = this.toasts.find(({ id }) => id === toastId)!;
     if (params.text) {
       toast.data.text = this.getDataText(params.text);
     }
@@ -222,9 +222,9 @@ export class ToastService {
 
   private getDataClasses = (type: ToastType) => `is-${type}`;
 
-  private getDataText = (text: string): string => text;
+  private getDataText = (text: string | undefined): string | undefined => text;
 
-  private getDataTitle = (title: string): string => title;
+  private getDataTitle = (title: string | undefined): string | undefined => title;
 
   private getDataActions(toastId: string, actions: ToastAction[]): ToastAction[] {
     return actions.map((action) => ({
@@ -254,10 +254,10 @@ export class ToastService {
   private onAutoClose(toastId: string, params: ToastParams) {
     const { autoClose, autoCloseDelay } = params;
     if (autoClose) {
-      const toast = this.toasts.find(({ id }) => id === toastId);
+      const toast = this.toasts.find(({ id }) => id === toastId)!;
       const timerDelay = 200; // ms
       const timer$ = interval(timerDelay);
-      const tickCounterLimit = (autoCloseDelay / timerDelay);
+      const tickCounterLimit = (autoCloseDelay! / timerDelay);
       let tickCounter = 0;
       timer$.pipe(
         filter(() => !this.mouseoverState[toastId]),
@@ -269,7 +269,7 @@ export class ToastService {
       ).subscribe((tick: number) => {
         const progress = (tick * 100) / tickCounterLimit;
         // update progress
-        toast.data.progress$.next(progress);
+        toast.data.progress$!.next(progress);
         // close check
         if (tick === tickCounterLimit) {
           // timeout to complete animation before close

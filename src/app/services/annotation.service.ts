@@ -98,7 +98,7 @@ export class AnnotationService {
     const currentAnnotation = this.getAnnotationById(rawAnnotation.id);
     // if annotation exists update auth related info
     if (currentAnnotation) {
-      const { data$ } = this.getAnnotationById(rawAnnotation.id);
+      const { data$ } = currentAnnotation;
       // reset state classes
       this.updateAnnotationState(rawAnnotation.id, {
         classes: AnnotationCssClass.Empty
@@ -206,7 +206,7 @@ export class AnnotationService {
         if (aStartPosition === bStartPosition) {
           return new Date(aCreated).getTime() - new Date(bCreated).getTime();
         }
-        return aStartPosition - bStartPosition;
+        return aStartPosition! - bStartPosition!;
       });
   }
 
@@ -245,7 +245,7 @@ export class AnnotationService {
   ): Observable<HighlightAnnotation | CommentAnnotation> {
     const range = selectionModel.getCurrentRange();
     const userId = this.userService.whoami().id;
-    const selectedNotebookId = this.notebookService.getSelected().id;
+    const selectedNotebookId = this.notebookService.getSelected()!.id;
     const options = {};
     return this.documentInfoService.get().pipe(
       switchMap((documentInfo) => of(createRequestPayload({
@@ -254,7 +254,7 @@ export class AnnotationService {
         options,
         documentInfo,
         notebookId: selectedNotebookId,
-        selection: range,
+        selection: range as Range,
       })))
     );
   }

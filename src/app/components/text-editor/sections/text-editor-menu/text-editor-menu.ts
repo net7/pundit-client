@@ -34,7 +34,7 @@ export interface TextEditorMenuGroup {
 
 export interface TextEditorMenuButton {
   id: string;
-  command: (state: any, dispatch: any) => any;
+  command: ((state: any, dispatch: any) => any) | null;
   title?: string;
   active?: boolean;
   disabled?: boolean;

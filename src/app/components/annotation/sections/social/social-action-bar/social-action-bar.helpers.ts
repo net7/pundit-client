@@ -29,7 +29,7 @@ export type SocialBarState = {
 }
 
 export const resetFormState = (newReply?: string): ReplyFormState => {
-  const isValidReply = (reply: string): boolean => reply && reply.length > 3;
+  const isValidReply = (reply?: string): boolean => !!reply && reply.length > 3;
   return {
     value: newReply,
     placeholder: _t('social#reply_placeholder'),
