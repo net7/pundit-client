@@ -1,4 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
 
 /**
  * Interface for PdfErrorModal's "data"
@@ -19,10 +20,10 @@ export interface PdfErrorModalData {
 }
 
 @Component({
-  selector: 'pnd-pdf-error-modal',
-  templateUrl: './pdf-error-modal.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-pdf-error-modal',
+    templateUrl: './pdf-error-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent]
 })
 export class PdfErrorModalComponent {
   @Input() public data!: PdfErrorModalData;

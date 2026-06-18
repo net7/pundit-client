@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-empty-object-type */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import { PdfService } from '../pdf.service';
@@ -7,13 +7,13 @@ import { DocumentInfo } from './document-info.service';
 
 export interface DocumentInfoPdf extends DocumentInfo {}
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DocumentInfoPdfService {
-  private cache!: DocumentInfoPdf;
+  private pdfService = inject(PdfService);
 
-  constructor(
-    private pdfService: PdfService
-  ) {}
+  private cache!: DocumentInfoPdf;
 
   get(): Observable<DocumentInfoPdf> {
     if (!this.cache) {

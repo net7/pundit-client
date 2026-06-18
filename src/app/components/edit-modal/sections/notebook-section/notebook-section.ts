@@ -1,9 +1,4 @@
-import {
-  OnInit,
-  Component,
-  Input,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { OnInit, Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
@@ -12,20 +7,24 @@ import { EditModalEvent, getEventType } from 'src/app/event-types';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { FormSection, FormSectionData } from 'src/app/types';
+import { NotebookSelectorComponent } from '../../../notebook-selector/notebook-selector';
 
 export type NotebookSectionValue = string;
 
 export type NotebookSectionOptions = Record<string, never>;
 
 @Component({
-  selector: 'pnd-notebook-section',
-  templateUrl: './notebook-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-notebook-section',
+    templateUrl: './notebook-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NotebookSelectorComponent]
 })
 export class NotebookSectionComponent implements OnInit, FormSection<
   NotebookSectionValue, NotebookSectionOptions
 > {
+  private notebookService = inject(NotebookService);
+  private userService = inject(UserService);
+
   id = 'notebook';
 
   @Input() public data!: FormSectionData<NotebookSectionValue, NotebookSectionOptions>;
@@ -37,11 +36,6 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   public notebookSelectorData!: NotebookSelectorData;
 
   public currentNotebook: NotebookData | null = null;
-
-  constructor(
-    private notebookService: NotebookService,
-    private userService: UserService,
-  ) {}
 
   ngOnInit() {
     this.init();

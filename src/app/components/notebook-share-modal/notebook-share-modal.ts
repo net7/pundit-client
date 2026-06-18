@@ -1,6 +1,10 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookUserRole, NotebookUserStatus } from 'src/app/services/notebook.service';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { NotebookShareUserItemComponent } from '../notebook-share-user-item/notebook-share-user-item';
+import { NotebookShareUserSelectedComponent } from '../notebook-share-user-selected/notebook-share-user-selected';
+import { AsyncPipe } from '@angular/common';
 
 export type NotebookShareModalResult = {
   username: string;
@@ -63,19 +67,17 @@ export type NotebookShareModalData = {
 }
 
 @Component({
-  selector: 'pnd-notebook-share-modal',
-  templateUrl: './notebook-share-modal.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-notebook-share-modal',
+    templateUrl: './notebook-share-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent, NotebookShareUserItemComponent, NotebookShareUserSelectedComponent, AsyncPipe]
 })
 export class NotebookShareModalComponent {
+  imageDataService = inject(ImageDataService);
+
   @Input() data!: NotebookShareModalData;
 
   @Input() emit!: (type: string, payload?: unknown) => void;
-
-  constructor(
-    public imageDataService: ImageDataService
-  ) {}
 
   onClick(ev: Event, payload: any) {
     if (!this.emit) return;

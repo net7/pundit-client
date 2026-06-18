@@ -16,7 +16,9 @@ const PDF_BODY_CLASS = 'pnd-document-is-pdf';
 
 const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PdfService {
   private pdfApp: PDFViewerApp;
 

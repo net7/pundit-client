@@ -1,7 +1,4 @@
-import {
-  ChangeDetectorRef, Component, Input, OnDestroy, OnInit,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import {
   BehaviorSubject, Observable, Subject
@@ -22,14 +19,22 @@ import {
   menuNotebookSection
 } from './menu-data.helper';
 import { shareActionButtons, shareButton } from './menu-share.helper';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../../../svg-icon/svg-icon';
+import { NotebookSelectorComponent } from '../../../notebook-selector/notebook-selector';
 
 @Component({
-  selector: 'pnd-menu-header-section',
-  templateUrl: './menu-header-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-menu-header-section',
+    templateUrl: './menu-header-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent, NotebookSelectorComponent, AsyncPipe]
 })
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
+  private ref = inject(ChangeDetectorRef);
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  imageDataService = inject(ImageDataService);
+
   id = 'header';
 
   @Input() public data$!: BehaviorSubject<Annotation>;
@@ -47,13 +52,6 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   public notebookSelectorData: any;
 
   private destroy$: Subject<any> = new Subject();
-
-  constructor(
-    private ref: ChangeDetectorRef,
-    private userService: UserService,
-    private notebookService: NotebookService,
-    public imageDataService: ImageDataService
-  ) {}
 
   ngOnInit(): void {
     this.menu$ = this.data$.pipe(map(this.transformData));

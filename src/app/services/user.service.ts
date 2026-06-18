@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { User } from '@pundit/communication';
 import { BehaviorSubject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
@@ -11,8 +11,12 @@ export type UserData = {
   thumb: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
+  private imageDataService = inject(ImageDataService);
+
   private me!: UserData;
 
   private users: UserData[] = [];
@@ -20,10 +24,6 @@ export class UserService {
   public logged$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   public dashboardNotifications$: BehaviorSubject<number> = new BehaviorSubject(0);
-
-  constructor(
-    private imageDataService: ImageDataService,
-  ) {}
 
   public iam({ id, username, thumb }: UserData) {
     this.add({ id, username, thumb });

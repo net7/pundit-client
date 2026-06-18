@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -12,14 +12,12 @@ import { PopupService } from './popup.service';
   providedIn: 'root'
 })
 export class OauthProviderService {
+  private authEventService = inject(AuthEventService);
+  private popupService = inject(PopupService);
+
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
   private selectedProvider: OAuthProvider | null = null;
-
-  constructor(
-        private authEventService: AuthEventService,
-        private popupService: PopupService
-  ) { }
 
   login(provider: OAuthProvider) {
     const url = this.createOAuthURL(provider);

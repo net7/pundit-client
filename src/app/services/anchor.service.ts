@@ -3,7 +3,7 @@
  * Handles the creation, updating, and removal of annotation highlights.
  * Provides functionality for attaching event listeners to highlights and managing their state.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { Subject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
@@ -21,8 +21,12 @@ import { AnnotationService } from './annotation.service';
 
 const HOVER_CLASS = 'is-hovered';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnchorService {
+  private annotationService = inject(AnnotationService);
+
   private annotationHighlights: AnnotationHighlight[] = [];
 
   private orphans: Annotation[] = [];
@@ -34,10 +38,6 @@ export class AnchorService {
 
   // fix analytics duplicates
   private analyticsOrphansIds: string[] = [];
-
-  constructor(
-    private annotationService: AnnotationService
-  ) {}
 
   async load(rawAnnotations: Annotation[]): Promise<void> {
     rawAnnotations.forEach((annotation) => {

@@ -1,7 +1,4 @@
-import {
-  ChangeDetectorRef, Component, Input, OnInit,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -10,14 +7,21 @@ import { AnnotationState } from 'src/app/services/annotation.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
+import { MenuHeaderSectionComponent } from '../menu-header/menu-header-section';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-header-annotation-section',
-  templateUrl: './header-annotation-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-header-annotation-section',
+    templateUrl: './header-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MenuHeaderSectionComponent, AsyncPipe]
 })
 export class HeaderAnnotationSectionComponent implements OnInit {
+  private ref = inject(ChangeDetectorRef);
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  imageDataService = inject(ImageDataService);
+
   id = 'header';
 
   @Input() public data$!: BehaviorSubject<Annotation>;
@@ -29,13 +33,6 @@ export class HeaderAnnotationSectionComponent implements OnInit {
   @Input() public annotationId!: string;
 
   @Input() public serializedBy!: string;
-
-  constructor(
-    private ref: ChangeDetectorRef,
-    private userService: UserService,
-    private notebookService: NotebookService,
-    public imageDataService: ImageDataService,
-  ) { }
 
   public header$!: Observable<any>;
 

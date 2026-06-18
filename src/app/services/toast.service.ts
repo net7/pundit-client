@@ -46,7 +46,9 @@ const DEFAULTS: ToastParams = {
   autoCloseDelay: 3000 // 3secs
 };
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ToastService {
   static counter = 0;
 

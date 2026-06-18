@@ -4,12 +4,13 @@ import {
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-comment-annotation-section',
-  templateUrl: './comment-annotation-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-comment-annotation-section',
+    templateUrl: './comment-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [AsyncPipe]
 })
 export class CommentAnnotationSectionComponent implements OnInit {
   id = 'comment';

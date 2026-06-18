@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
 import {
   EMPTY, from, Observable, of, Subject
@@ -18,16 +18,14 @@ import { PopupService } from './popup.service';
   providedIn: 'root'
 })
 export class EmailProviderService implements OnDestroy {
+  private authEventService = inject(AuthEventService);
+  private popupService = inject(PopupService);
+
   error$: Subject<object> = new Subject();
 
   isLoading$: Subject<boolean> = new Subject<boolean>();
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
-
-  constructor(
-    private authEventService: AuthEventService,
-    private popupService: PopupService
-  ) { }
 
   ngOnDestroy(): void {
     this.destroy$.next(true);

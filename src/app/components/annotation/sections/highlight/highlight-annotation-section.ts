@@ -5,12 +5,13 @@ import { _t } from '@net7/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-highlight-annotation-section',
-  templateUrl: './highlight-annotation-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-highlight-annotation-section',
+    templateUrl: './highlight-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [AsyncPipe, DatePipe]
 })
 export class HighlightAnnotationSectionComponent implements OnInit {
   id = 'highlight';

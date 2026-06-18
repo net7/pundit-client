@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
 import { initCommunicationSettings } from '../../common/helpers';
@@ -8,12 +8,13 @@ import { config } from '../models/config';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ChromeExtService {
-  constructor(
-    private anchorService: AnchorService,
-    private annotationService: AnnotationService
-  ) {}
+  private anchorService = inject(AnchorService);
+  private annotationService = inject(AnnotationService);
+
 
   load(): Promise<void> {
     return new Promise((res) => {

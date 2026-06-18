@@ -1,5 +1,7 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../../../svg-icon/svg-icon';
 
 /**
  * Interface for TextEditorMenu's "data"
@@ -42,10 +44,10 @@ export interface TextEditorMenuButton {
 }
 
 @Component({
-  selector: 'pnd-text-editor-menu',
-  templateUrl: './text-editor-menu.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-text-editor-menu',
+    templateUrl: './text-editor-menu.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent]
 })
 export class TextEditorMenuComponent {
   @Input() public data!: TextEditorMenuData;

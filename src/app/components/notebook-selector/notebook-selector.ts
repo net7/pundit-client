@@ -1,8 +1,9 @@
-import {
-  ChangeDetectorRef, Component, Input, ChangeDetectionStrategy
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
+import { NgTemplateOutlet, NgClass } from '@angular/common';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { SortByPipe } from '../../pipes/sortby.pipe';
 
 /**
  * Data for NotebookSelector Component.
@@ -26,12 +27,15 @@ export interface NotebookSelectorData {
 }
 
 @Component({
-  selector: 'notebook-selector',
-  templateUrl: './notebook-selector.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'notebook-selector',
+    templateUrl: './notebook-selector.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgTemplateOutlet, SvgIconComponent, NgClass, SortByPipe]
 })
 export class NotebookSelectorComponent {
+  private ref = inject(ChangeDetectorRef);
+  private notebookService = inject(NotebookService);
+
   @Input() public data!: NotebookSelectorData;
 
   @Input() public emit: any;
@@ -40,11 +44,6 @@ export class NotebookSelectorComponent {
     cancel: _t('notebookselector#cancel'),
     create: _t('notebookselector#create')
   };
-
-  constructor(
-    private ref: ChangeDetectorRef,
-    private notebookService: NotebookService
-  ) {}
 
   onClick(type: string, payload: any) {
     if (!this.emit) return;

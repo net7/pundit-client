@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs';
 import { CommonEventType } from 'src/common/types';
@@ -16,15 +16,17 @@ export type ImageData = {
   status: ImageDataStatus;
 };
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ImageDataService {
+  private domSanitizer = inject(DomSanitizer);
+
   public images: {
     [url: string]: ImageData;
   } = {};
 
-  constructor(
-    private domSanitizer: DomSanitizer,
-  ) {
+  constructor() {
     // listen to content security violation
     document.addEventListener('securitypolicyviolation', (e) => {
       if (this.isBlockedImage(e.blockedURI)) {

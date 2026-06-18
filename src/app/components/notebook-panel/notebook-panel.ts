@@ -1,8 +1,10 @@
-import {
-  Component, Input, OnInit, ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { UserService } from 'src/app/services/user.service';
 import { NotebookData, NotebookService } from '../../services/notebook.service';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { NgClass } from '@angular/common';
+import { NotebookSelectorComponent } from '../notebook-selector/notebook-selector';
+import { NotebookShareUserItemComponent } from '../notebook-share-user-item/notebook-share-user-item';
 
 export interface NotebookPanelData {
   selected: NotebookData;
@@ -17,22 +19,20 @@ export interface NotebookPanelData {
 }
 
 @Component({
-  selector: 'notebook-panel',
-  templateUrl: './notebook-panel.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'notebook-panel',
+    templateUrl: './notebook-panel.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent, NgClass, NotebookSelectorComponent, NotebookShareUserItemComponent]
 })
 export class NotebookPanelComponent implements OnInit {
+  userService = inject(UserService);
+  notebookService = inject(NotebookService);
+
   @Input() public data!: NotebookPanelData;
 
   @Input() public emit: any;
 
   userId = this.userService.whoami().id;
-
-  constructor(
-    public userService: UserService,
-    public notebookService: NotebookService
-  ) {}
 
   ngOnInit() {
     this.notebookService.getListOfUsers();

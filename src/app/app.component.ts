@@ -1,13 +1,14 @@
 import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { NotebookModel } from '../common/models';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout';
 
 @Component({
-  selector: 'pnd-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
-  encapsulation: ViewEncapsulation.ShadowDom,
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-root',
+    templateUrl: './app.component.html',
+    styleUrls: ['./app.component.scss'],
+    encapsulation: ViewEncapsulation.ShadowDom,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [MainLayoutComponent]
 })
 export class AppComponent {
   constructor() {

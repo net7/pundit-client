@@ -2,7 +2,9 @@ import { Injectable } from '@angular/core';
 import { Tag } from '@pundit/communication';
 import { BehaviorSubject, Subject } from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class TagService {
   private tags$: Subject<Tag[]> = new BehaviorSubject<Tag[]>([]);
 

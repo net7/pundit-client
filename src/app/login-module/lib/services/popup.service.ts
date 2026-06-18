@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, inject } from '@angular/core';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
 import { PopupParameters } from '../interfaces/popup.interface';
@@ -8,9 +8,9 @@ import { ModalService } from './modal.service';
   providedIn: 'root'
 })
 export class PopupService implements OnDestroy {
-  private destroy$: Subject<boolean> = new Subject<boolean>();
+  private modalService = inject(ModalService);
 
-  constructor(private modalService: ModalService) {}
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   ngOnDestroy(): void {
     this.destroy$.next(true);

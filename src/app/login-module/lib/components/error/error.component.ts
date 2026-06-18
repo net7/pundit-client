@@ -1,10 +1,9 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  selector: 'lib-pundit-login-error',
-  templateUrl: './error.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'lib-pundit-login-error',
+    templateUrl: './error.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class ErrorComponent {
   errorTitle!: string;

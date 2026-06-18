@@ -10,6 +10,7 @@ import { takeUntil } from 'rxjs/operators';
 import { TextEditorData } from 'src/app/components/text-editor/text-editor';
 import { FormSection, FormSectionData } from 'src/app/types';
 import { editor } from '../../../text-editor/editor/editor';
+import { TextEditorComponent } from '../../../text-editor/text-editor';
 
 const TEXT_MIN_LIMIT = 3;
 
@@ -20,10 +21,10 @@ export type CommentSectionOptions = {
 };
 
 @Component({
-  selector: 'pnd-comment-section',
-  templateUrl: './comment-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-comment-section',
+    templateUrl: './comment-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [TextEditorComponent]
 })
 export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   CommentSectionValue, CommentSectionOptions

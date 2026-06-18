@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { SemanticItem } from '../types';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SemanticPredicateService {
   private items!: SemanticItem[];
 

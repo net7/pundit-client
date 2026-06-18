@@ -11,6 +11,11 @@ import Draggable from 'draggable';
 import { merge, Subject } from 'rxjs';
 import { isEmpty } from 'lodash';
 import { EditModalEvent, getEventType } from 'src/app/event-types';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { CommentSectionComponent } from './sections/comment-section/comment-section';
+import { SemanticSectionComponent } from './sections/semantic-section/semantic-section';
+import { TagsSectionComponent } from './sections/tags-section/tags-section';
+import { NotebookSectionComponent } from './sections/notebook-section/notebook-section';
 
 /**
  * Interface for EditModal's "data"
@@ -52,10 +57,10 @@ export type EditModalFormState = {
 }
 
 @Component({
-  selector: 'pnd-edit-modal',
-  templateUrl: './edit-modal.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-edit-modal',
+    templateUrl: './edit-modal.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent, CommentSectionComponent, SemanticSectionComponent, TagsSectionComponent, NotebookSectionComponent]
 })
 export class EditModalComponent implements AfterContentChecked {
   @ViewChild('saveButton') saveButton!: ElementRef;

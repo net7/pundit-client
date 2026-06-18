@@ -1,10 +1,4 @@
-import {
-  AfterViewInit,
-  Component,
-  Input,
-  OnDestroy,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { AfterViewInit, Component, Input, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -13,6 +7,7 @@ import { SemanticPredicateService } from 'src/app/services/semantic-predicate.se
 import {
   FormSection, FormSectionData, SemanticConfig, SemanticItem
 } from 'src/app/types';
+import { SvgIconComponent } from '../../../svg-icon/svg-icon';
 
 export const DEFAULT_PROVIDER_ID = 'pundit-basic';
 
@@ -62,14 +57,16 @@ export const getObjectType = (value: string) => {
 };
 
 @Component({
-  selector: 'pnd-semantic-section',
-  templateUrl: './semantic-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-semantic-section',
+    templateUrl: './semantic-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent]
 })
 export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   SemanticSectionValue, SemanticSectionOptions
 > {
+  private semanticPredicateService = inject(SemanticPredicateService);
+
   id = 'semantic';
 
   labels = {
@@ -101,9 +98,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   public rows: SemanticFormRow[] = [];
 
-  constructor(
-    private semanticPredicateService: SemanticPredicateService
-  ) {
+  constructor() {
     // set default predicate config
     this.config.predicate.providers.push(new SemanticGenericProvider({
       id: DEFAULT_PROVIDER_ID,

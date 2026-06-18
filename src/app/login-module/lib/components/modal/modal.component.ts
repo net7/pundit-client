@@ -1,23 +1,30 @@
-import { Component, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ModalService } from '../../services/modal.service';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { ErrorComponent } from '../error/error.component';
+import { SignInComponent } from '../signin/signin.component';
+import { SignUpComponent } from '../signup/signup.component';
 
 @Component({
-  selector: 'lib-pundit-login-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: [],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'lib-pundit-login-modal',
+    templateUrl: './modal.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent, ErrorComponent, SignInComponent, SignUpComponent]
 })
 export class ModalComponent implements OnDestroy {
+  private modalService = inject(ModalService);
+
   show!: boolean;
 
   status: modalStateType = 'SIGNIN';
 
   private destroyed$ = new Subject<void>();
 
-  constructor(private modalService: ModalService) {
+  constructor() {
     this.status = 'SIGNIN';
     this.modalService
       .isOpen()

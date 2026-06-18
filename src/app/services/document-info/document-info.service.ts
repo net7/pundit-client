@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { PdfService } from '../pdf.service';
 import { DocumentInfoPdf, DocumentInfoPdfService } from './document-info-pdf.service';
@@ -13,13 +13,14 @@ export interface DocumentInfo {
   }[];
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DocumentInfoService {
-  constructor(
-    protected pdfService: PdfService,
-    private infoPdfService: DocumentInfoPdfService,
-    private infoWebpageService: DocumentInfoWebpageService,
-  ) {}
+  protected pdfService = inject(PdfService);
+  private infoPdfService = inject(DocumentInfoPdfService);
+  private infoWebpageService = inject(DocumentInfoWebpageService);
+
 
   get(): Observable<DocumentInfoPdf | DocumentInfoWebpage> {
     if (this.pdfService.isActive()) {

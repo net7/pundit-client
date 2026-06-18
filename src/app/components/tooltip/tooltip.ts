@@ -1,9 +1,8 @@
-import {
-  ChangeDetectorRef, Component, Input, ChangeDetectionStrategy
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { NavData } from '../../types';
+import { NgTemplateOutlet } from '@angular/common';
 
 /**
  * Interface for TooltipComponent's "data"
@@ -14,19 +13,19 @@ export interface TooltipData {
 }
 
 @Component({
-  selector: 'pnd-tooltip',
-  templateUrl: './tooltip.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-tooltip',
+    templateUrl: './tooltip.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgTemplateOutlet]
 })
 export class TooltipComponent {
+    private ref = inject(ChangeDetectorRef);
+
     @Input() public data!: TooltipData;
 
     @Input() public emit: any;
 
-    constructor(
-      private ref: ChangeDetectorRef
-    ) {
+    constructor() {
       // fix update out of pnd-root context
       tooltipModel.changed$.pipe(
         delay(1)

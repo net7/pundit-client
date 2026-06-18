@@ -1,26 +1,24 @@
-import {
-  Component, Input, OnInit, ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ImageDataService } from 'src/app/services/image-data.service';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-semantic-annotation-section',
-  templateUrl: './semantic-annotation-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-semantic-annotation-section',
+    templateUrl: './semantic-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [AsyncPipe, DatePipe]
 })
 export class SemanticAnnotationSectionComponent implements OnInit {
+  imageDataService = inject(ImageDataService);
+
   id = 'semantic';
 
   @Input() public data$!: Subject<Annotation>;
 
   public semantic$!: Observable<any>;
-
-  constructor(public imageDataService: ImageDataService) {
-  }
 
   ngOnInit(): void {
     this.semantic$ = this.data$.pipe(map(this.transformData));

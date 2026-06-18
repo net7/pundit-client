@@ -2,10 +2,7 @@
 // ANNOTATION.ts
 //---------------------------
 
-import {
-  ChangeDetectorRef, Component, Input, OnInit,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import {
   Annotation, Reply, Tag
 } from '@pundit/communication';
@@ -16,6 +13,13 @@ import { ReplyService } from 'src/app/services/reply.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SocialService } from 'src/app/services/social.service';
 import { Icon, SemanticItem } from '../../types';
+import { NgClass, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { HeaderAnnotationSectionComponent } from './sections/header/header-annotation-section';
+import { HighlightAnnotationSectionComponent } from './sections/highlight/highlight-annotation-section';
+import { CommentAnnotationSectionComponent } from './sections/comment/comment-annotation-section';
+import { SemanticAnnotationSectionComponent } from './sections/semantic/semantic-annotation-section';
+import { TagAnnotationSectionComponent } from './sections/tag/tag-annotation-section';
+import { SocialAnnotationSectionComponent } from './sections/social/social-annotation-section';
 
 /**
  * Interface for AnnotationComponent's "data"
@@ -101,12 +105,17 @@ export interface AnnotationData {
 }
 
 @Component({
-  selector: 'annotation',
-  templateUrl: './annotation.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'annotation',
+    templateUrl: './annotation.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, NgTemplateOutlet, HeaderAnnotationSectionComponent, HighlightAnnotationSectionComponent, CommentAnnotationSectionComponent, SemanticAnnotationSectionComponent, TagAnnotationSectionComponent, SocialAnnotationSectionComponent, AsyncPipe]
 })
 export class AnnotationComponent implements OnInit {
+  private ref = inject(ChangeDetectorRef);
+  imageDataService = inject(ImageDataService);
+  socialService = inject(SocialService);
+  replyService = inject(ReplyService);
+
   @Input() data!: AnnotationData;
 
   @Input() emit: any;
@@ -122,13 +131,6 @@ export class AnnotationComponent implements OnInit {
   public socials$!: Observable<any>;
 
   public replies$!: Observable<Reply[]>;
-
-  constructor(
-    private ref: ChangeDetectorRef,
-    public imageDataService: ImageDataService,
-    public socialService: SocialService,
-    public replyService: ReplyService
-  ) { }
 
   ngOnInit() {
     this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId);

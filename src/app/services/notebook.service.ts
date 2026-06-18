@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { from, Subject, EMPTY } from 'rxjs';
 import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
 import { catchError, tap } from 'rxjs/operators';
@@ -48,8 +48,12 @@ export type SharedWithChanged = {
   openModal: boolean;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class NotebookService {
+  private userService = inject(UserService);
+
   private notebooks: NotebookData[] = [];
 
   private selectedId!: string | null;
@@ -57,10 +61,6 @@ export class NotebookService {
   public selectedChanged$: Subject<void> = new Subject();
 
   public sharedWithChanged$: Subject<SharedWithChanged> = new Subject();
-
-  constructor(
-    private userService: UserService
-  ) {}
 
   public getSelected = () => this.getNotebookById(this.selectedId);
 

@@ -15,7 +15,7 @@ was deferred, and concrete steps.
 | `@net7/core` | 4.1.0 |
 | Build | `@angular-devkit/build-angular:application` (esbuild) — ngx-build-plus removed |
 | Tests | jest 30 + jest-preset-angular 17 |
-| Lint | **eslint 8.57** + `@angular-eslint` 20 + `@typescript-eslint` 8 (pinned back — see item 1) |
+| Lint | eslint 10 + `@angular-eslint`/`@typescript-eslint` (flat config — item 1 done) |
 
 How to run the toolchain (Node is managed by fnm, not active by default in a new shell):
 
@@ -36,9 +36,14 @@ The single-bundle pipeline now relies on the esbuild builder emitting
 
 ---
 
-## 1. Migrate ESLint to v9/10 + flat config
+## 1. Migrate ESLint to v9/10 + flat config — ✅ DONE
 
-**Priority: high (eslint 8 is end-of-life).**
+**Outcome.** Done (archived in commit `963d651`). The lint stack is now
+`eslint@^10.5.0` + `@angular-eslint`/`@typescript-eslint` flat config in
+`eslint.config.js`; `.eslintrc.json` is deleted. `@angular-eslint/prefer-standalone`
+and `prefer-inject` are kept **off** (`eslint.config.js:67-68`) — see item 7.
+
+<details><summary>Original context (for history)</summary>
 
 **Context.** `@angular-eslint@22` requires eslint `^9 || ^10`, and eslint 10
 drops `.eslintrc` support entirely (flat config only). During the upgrade the
@@ -73,11 +78,19 @@ overrides) all has to be ported and re-verified.
 5. Verify `npm run lint` produces the **same** findings as today, then unpin eslint in `package.json`.
 6. Confirm the husky/lint-staged pre-commit hook still runs `eslint --fix`.
 
+</details>
+
 ---
 
-## 2. Sass deprecations (`@import`, `lighten()`) — currently SILENCED
+## 2. Sass deprecations (`@import`, `lighten()`) — ✅ DONE
 
-**Priority: medium (silenced now; will be fatal in Dart Sass 3.0).**
+**Outcome.** Done (archived in commit `34dd2fc`). The `silenceDeprecations`
+entries were removed from `angular.json`; SCSS migrated off deprecated `@import`
+/ global color functions. The only `@import`s left in `src/**/*.scss` are plain
+CSS `@import url(...)` Google-Fonts lines (legal at the stylesheet top level), not
+Sass `@import` rules.
+
+<details><summary>Original context (for history)</summary>
 
 **Context.** The newer Dart Sass emits deprecation warnings:
 - `@import` rules are deprecated (use `@use` / `@forward`),
@@ -107,6 +120,8 @@ global access to variables/mixins), so it touches every partial and needs care.
 
 (Note: the earlier slash-division deprecation was already handled — commit `1b2c0af`.)
 
+</details>
+
 ---
 
 ## 3. Runtime smoke test of the bundles
@@ -130,18 +145,26 @@ extension were validated for syntax/structure, not runtime.
 
 ---
 
-## 4. Review `ChangeDetectionStrategy.Eager` on `social-action-bar`
+## 4. `ChangeDetectionStrategy.Eager` stamped on every component
 
-**Priority: low.**
+**Priority: low (works as-is; this is a perf opportunity, not a bug).**
 
-**Context.** The Angular 22 `ng update` added
-`changeDetection: ChangeDetectionStrategy.Eager` to **only**
-`src/app/components/annotation/sections/social/social-action-bar/social-action-bar.ts`
-(a behavior-preservation migration). It was kept as-is.
+**Context (corrected).** The Angular 22 `ng update` renamed the old default
+change-detection strategy and added an explicit
+`changeDetection: ChangeDetectionStrategy.Eager` to **all 36 components**
+(not just `social-action-bar` as originally noted), to preserve the legacy
+"check always" behavior. **No component uses `OnPush`.**
 
-**Steps.** Confirm this is intended (i.e. the component relies on eager change
-detection) and decide whether other components want the same, or whether the
-v22 default is fine here and the explicit setting can be dropped.
+**Opportunity.** `Eager` (= old `Default`, CheckAlways) re-checks every component
+on every tick. Migrating hot components to `ChangeDetectionStrategy.OnPush` is the
+main perf win left on the table, but it requires auditing each component for
+mutation-in-place patterns (OnPush only re-renders on input identity change,
+events, or async-pipe emissions). Do it component-by-component, highest-traffic
+first; not a blanket find/replace.
+
+**Steps.** Pick a leaf/presentational component, switch to `OnPush`, verify it
+still updates correctly, repeat. The explicit `Eager` on the rest can stay until
+each is converted.
 
 ---
 
@@ -164,7 +187,41 @@ jest (8/8) and lint all pass. See OpenSpec change `enable-typescript-strict`.
 
 ---
 
-## 6. Other deferred / latent items
+## 7. Adopt standalone components + `inject()` (modern Angular architecture)
+
+**Priority: medium (large, optional; this is the biggest "not benefiting from
+modern Angular" item).**
+
+**Context.** The app is intentionally still **NgModule-based**: 37 components
+declare `standalone: false`, wired through `@NgModule` declarations, and DI is
+done via constructors. The two lint rules that would push toward the modern style
+— `@angular-eslint/prefer-standalone` and `@angular-eslint/prefer-inject` — are
+deliberately **off** (`eslint.config.js:67-68`). Standalone is the Angular default
+since v19; NgModules are now legacy. Nothing is broken, but the app gets none of
+the benefits (simpler wiring, lazy loading without modules, smaller graph,
+`inject()` ergonomics).
+
+**Why deferred.** It's a broad refactor with real risk: every component must drop
+`standalone: false` and declare its own `imports`, the `@NgModule` declarations
+must be dismantled/relocated, and the custom-element bootstrap + login-module
+sub-app need to keep working. Best done as its own dedicated effort, not folded
+into the version bump.
+
+**Steps (when tackled).**
+1. Run `ng generate @angular/core:standalone` migrations in order:
+   `convert-to-standalone` → `prune-ng-modules` → `standalone-bootstrap`.
+   Note: this app bootstraps as a custom element / embed bundle, so the
+   `standalone-bootstrap` step needs manual review against `scripts/postbuild.js`
+   and the custom-element entry, not a blind apply.
+2. Migrate constructor DI to `inject()` with `ng generate @angular/core:inject`.
+3. Re-enable `@angular-eslint/prefer-standalone` and `prefer-inject` in
+   `eslint.config.js` and fix the stragglers.
+4. Consider doing this **before** item 4 — OnPush + standalone + `inject()` are
+   naturally migrated together per component.
+
+---
+
+## 8. Other deferred / latent items
 
 - **`@angular-devkit/build-angular` is still a devDep** only for the `extract-i18n`
   and `e2e` (protractor) targets. `build` and `serve` now use `@angular/build`

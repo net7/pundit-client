@@ -13,7 +13,9 @@ export interface DocumentInfoWebpage extends DocumentInfo {
   pageFavicon: string;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class DocumentInfoWebpageService {
   private cache!: DocumentInfoWebpage;
 

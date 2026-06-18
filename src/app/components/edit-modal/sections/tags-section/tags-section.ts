@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  Input,
-  AfterViewInit,
-  ViewChild,
-  OnDestroy,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
@@ -24,14 +16,15 @@ export type TagsSectionOptions = {
 };
 
 @Component({
-  selector: 'pnd-tags-section',
-  templateUrl: './tags-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-tags-section',
+    templateUrl: './tags-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
+  private tagService = inject(TagService);
+
   id = 'tags';
 
   @Input() public data!: FormSectionData<TagsSectionValue, TagsSectionOptions>;
@@ -45,8 +38,6 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
   private formInstance: any;
 
   public tagsHint = _c('tagsHint');
-
-  constructor(private tagService: TagService) {}
 
   ngAfterViewInit() {
     this.init();

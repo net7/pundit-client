@@ -5,14 +5,15 @@ import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { NgStyle, AsyncPipe } from '@angular/common';
 
 type TagType = { label: string; color: string };
 
 @Component({
-  selector: 'pnd-tag-annotation-section',
-  templateUrl: './tag-annotation-section.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-tag-annotation-section',
+    templateUrl: './tag-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgStyle, AsyncPipe]
 })
 export class TagAnnotationSectionComponent implements OnInit {
   id = 'tags';

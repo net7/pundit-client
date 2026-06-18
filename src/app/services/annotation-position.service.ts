@@ -3,7 +3,7 @@
  * Handles the calculation and updating of annotation positions based on their highlights.
  * Provides functionality for positioning annotations correctly in the sidebar.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 import { PdfService } from './pdf.service';
@@ -11,13 +11,14 @@ import { PdfService } from './pdf.service';
 const TOP_MARGIN = 60;
 const TOP_MARGIN_FULLPAGE = 110;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnnotationPositionService {
-  constructor(
-    private annotationService: AnnotationService,
-    private anchorService: AnchorService,
-    private pdfService: PdfService
-  ) {}
+  private annotationService = inject(AnnotationService);
+  private anchorService = inject(AnchorService);
+  private pdfService = inject(PdfService);
+
 
   /** Recalculate the position and order of each annotation present in the sidebar */
   update() {

@@ -1,6 +1,4 @@
-import {
-  Component, Input, OnInit, ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { Reply, ReplyAttributes, SocialType } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
@@ -13,14 +11,22 @@ import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
 import { ReplyType } from '../reply/reply';
 import { SocialBarState, createInitialState, resetFormState } from './social-action-bar.helpers';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
 
 @Component({
-  selector: 'pnd-social-action-bar',
-  templateUrl: './social-action-bar.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-social-action-bar',
+    templateUrl: './social-action-bar.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent]
 })
 export class SocialActionBarComponent implements OnInit {
+  private userService = inject(UserService);
+  private punditLoginService = inject(PunditLoginService);
+  private socialService = inject(SocialService);
+  private replyService = inject(ReplyService);
+  private toastService = inject(ToastService);
+
   @Input() socials$!: Observable<SocialStats>;
 
   @Input() replies$!: Observable<Reply[]>;
@@ -45,14 +51,6 @@ export class SocialActionBarComponent implements OnInit {
       action: action.toLowerCase()
     })
   };
-
-  constructor(
-    private userService: UserService,
-    private punditLoginService: PunditLoginService,
-    private socialService: SocialService,
-    private replyService: ReplyService,
-    private toastService: ToastService
-  ) { }
 
   ngOnInit(): void {
     this.initState();

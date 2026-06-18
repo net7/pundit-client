@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
 import { initCommunicationSettings } from '../../common/helpers';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class EmbedService {
   load(): Promise<void> {
     return new Promise((resolve) => {

@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -10,15 +10,22 @@ import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
 import { environment as env } from '../../../../../environments/environment';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'lib-pundit-login-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: [],
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'lib-pundit-login-signin',
+    templateUrl: './signin.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [SvgIconComponent, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class SignInComponent {
+  private configService = inject(LoginConfigurationService);
+  private emailProviderService = inject(EmailProviderService);
+  private oauthProviderService = inject(OauthProviderService);
+  private formBuilder = inject(UntypedFormBuilder);
+
   email!: EmailAuthProvider;
 
   google: OAuthProvider | undefined;
@@ -37,12 +44,7 @@ export class SignInComponent {
 
   lostPasswordLink = `${env.userLink}password/reset`;
 
-  constructor(
-    private configService: LoginConfigurationService,
-    private emailProviderService: EmailProviderService,
-    private oauthProviderService: OauthProviderService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();
     this.terms = this.configService.getTermsParams();

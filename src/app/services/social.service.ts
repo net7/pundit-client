@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Social, SocialAttributes } from '@pundit/communication';
 import {
   BehaviorSubject, EMPTY, from, Observable
@@ -25,15 +25,17 @@ type SocialConfig = {
   stats$: BehaviorSubject<SocialStats>;
 }
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class SocialService {
+  private userService = inject(UserService);
+
   private socialCache: Social[] = [];
 
   private socialStatsByAnnotationId: SocialConfig[] = [];
 
-  constructor(
-    private userService: UserService
-  ) {
+  constructor() {
     this.userService.logged$.subscribe(() => {
       this.refreshStats();
     });

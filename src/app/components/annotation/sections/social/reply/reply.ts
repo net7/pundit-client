@@ -1,6 +1,4 @@
-import {
-  Component, Input, OnInit, ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import {
   SocialType, Reply
@@ -14,6 +12,9 @@ import { SocialService } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserData, UserService } from 'src/app/services/user.service';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
+import { SocialActionBarComponent } from '../social-action-bar/social-action-bar';
 
 export type ReplyFormState = {
   value?: string;
@@ -30,12 +31,18 @@ export type ReplyFormState = {
 export type ReplyType = 'Reply';
 
 @Component({
-  selector: 'pnd-annotation-reply',
-  templateUrl: './reply.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'pnd-annotation-reply',
+    templateUrl: './reply.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent, SocialActionBarComponent, AsyncPipe]
 })
 export class ReplyComponent implements OnInit {
+  private userService = inject(UserService);
+  private replyService = inject(ReplyService);
+  private socialService = inject(SocialService);
+  private toastService = inject(ToastService);
+  imageDataService = inject(ImageDataService);
+
   @Input() public data!: Reply;
 
   @Input() public annotationId!: string;
@@ -53,14 +60,6 @@ export class ReplyComponent implements OnInit {
   public formState!: ReplyFormState;
 
   public userData: any;
-
-  constructor(
-    private userService: UserService,
-    private replyService: ReplyService,
-    private socialService: SocialService,
-    private toastService: ToastService,
-    public imageDataService: ImageDataService
-  ) {}
 
   ngOnInit(): void {
     this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId, this.data.id);

@@ -4,7 +4,7 @@
  * Provides functionality for working with different annotation types
  * (highlights, comments, links) and manages their state.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Annotation,
   AnnotationAttributes,
@@ -47,8 +47,16 @@ export type AnnotationConfig = {
   state$: BehaviorSubject<AnnotationState>;
   data$: BehaviorSubject<Annotation>;
 }
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnnotationService {
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  private pdfService = inject(PdfService);
+  private documentInfoService = inject(DocumentInfoService);
+  private http = inject(HttpClient);
+
   private annotations: AnnotationConfig[] = [];
 
   private rawAnnotations: Annotation[] = [];
@@ -60,14 +68,6 @@ export class AnnotationService {
   public hypothesisAnnotation$: Subject<any> = new Subject();
 
   private hypothesisBaseUrl = 'https://api.hypothes.is/api/search';
-
-  constructor(
-    private userService: UserService,
-    private notebookService: NotebookService,
-    private pdfService: PdfService,
-    private documentInfoService: DocumentInfoService,
-    private http: HttpClient
-  ) { }
 
   load(rawAnnotations: Annotation[]) {
     rawAnnotations.forEach((rawAnnotation) => {

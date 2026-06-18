@@ -1,7 +1,4 @@
-import {
-  Component, OnInit, OnDestroy, Input, ChangeDetectorRef,
-  ChangeDetectionStrategy
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ChangeDetectorRef, ChangeDetectionStrategy, inject } from '@angular/core';
 import { AbstractLayout } from 'src/app/models/abstract-layout';
 import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
@@ -16,30 +13,34 @@ import { PunditLoginService } from 'src/app/login-module/public-api';
 import { TagService } from 'src/app/services/tag.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
+import { NgClass, NgTemplateOutlet, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../../components/svg-icon/svg-icon';
+import { AnnotationComponent } from '../../components/annotation/annotation';
+import { NotebookPanelComponent } from '../../components/notebook-panel/notebook-panel';
 
 @Component({
-  selector: 'sidebar-layout',
-  templateUrl: './sidebar-layout.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'sidebar-layout',
+    templateUrl: './sidebar-layout.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
+    imports: [NgClass, SvgIconComponent, NgTemplateOutlet, AnnotationComponent, NotebookPanelComponent, AsyncPipe]
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
+  private annotationPositionService = inject(AnnotationPositionService);
+  private annotationService = inject(AnnotationService);
+  private notebookService = inject(NotebookService);
+  private anchorService = inject(AnchorService);
+  private userService = inject(UserService);
+  private punditLoginService = inject(PunditLoginService);
+  private toastService = inject(ToastService);
+  private tagService = inject(TagService);
+  private pdfService = inject(PdfService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
   @Input() appEvent$!: ReplaySubject<AppEventData>;
 
   public logo: SafeResourceUrl;
 
-  constructor(
-    private annotationPositionService: AnnotationPositionService,
-    private annotationService: AnnotationService,
-    private notebookService: NotebookService,
-    private anchorService: AnchorService,
-    private userService: UserService,
-    private punditLoginService: PunditLoginService,
-    private toastService: ToastService,
-    private tagService: TagService,
-    private pdfService: PdfService,
-    private changeDetectorRef: ChangeDetectorRef,
-  ) {
+  constructor() {
     super(config);
 
     this.logo = 'https://static.thepund.it/assets/mocks/pundit-icon-48-light.png';

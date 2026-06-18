@@ -9,10 +9,9 @@ export interface SvgIconData {
 }
 
 @Component({
-  selector: 'lib-svg-icon',
-  templateUrl: './svg-icon.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
-  standalone: false
+    selector: 'lib-svg-icon',
+    templateUrl: './svg-icon.html',
+    changeDetection: ChangeDetectionStrategy.Eager
 })
 export class SvgIconComponent {
     @Input() public data!: SvgIconData;
