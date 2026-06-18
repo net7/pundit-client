@@ -13,7 +13,7 @@ export interface TextEditorData {
 @Component({
     selector: 'pnd-text-editor',
     templateUrl: './text-editor.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [TextEditorMenuComponent]
 })
 export class TextEditorComponent {

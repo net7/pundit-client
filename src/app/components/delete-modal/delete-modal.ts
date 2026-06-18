@@ -22,7 +22,7 @@ export interface DeleteModalData {
 @Component({
     selector: 'pnd-delete-modal',
     templateUrl: './delete-modal.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent]
 })
 export class DeleteModalComponent {

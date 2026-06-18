@@ -3,7 +3,9 @@ import {
   Component,
   Input,
   OnDestroy,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -23,12 +25,14 @@ export type CommentSectionOptions = {
 @Component({
     selector: 'pnd-comment-section',
     templateUrl: './comment-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [TextEditorComponent]
 })
 export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   CommentSectionValue, CommentSectionOptions
 > {
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
   id = 'comment';
 
   editor: any;
@@ -62,7 +66,8 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
       editor.init({
         target,
         appendTo,
-        onChange: this.onChange.bind(this)
+        onChange: this.onChange.bind(this),
+        onRefresh: () => this.changeDetectorRef.markForCheck()
       });
 
       // editor data
@@ -70,6 +75,7 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
         content: this.data.initialValue || '',
         menu: editor.getMenu()
       };
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -93,6 +99,7 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
     setTimeout(() => {
       editor.setContent(initialValue || '');
       this.checkFocus();
+      this.changeDetectorRef.markForCheck();
     });
   };
 

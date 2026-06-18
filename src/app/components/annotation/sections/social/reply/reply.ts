@@ -33,7 +33,7 @@ export type ReplyType = 'Reply';
 @Component({
     selector: 'pnd-annotation-reply',
     templateUrl: './reply.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent, SocialActionBarComponent, AsyncPipe]
 })
 export class ReplyComponent implements OnInit {

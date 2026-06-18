@@ -29,7 +29,7 @@ export interface NotebookSelectorData {
 @Component({
     selector: 'notebook-selector',
     templateUrl: './notebook-selector.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgTemplateOutlet, SvgIconComponent, NgClass, SortByPipe]
 })
 export class NotebookSelectorComponent {
@@ -54,26 +54,23 @@ export class NotebookSelectorComponent {
       this.setMode('select');
     } else {
       // if a notebook option is clicked
-      this.data.selectedNotebook = this.data.notebookList.find((nb) => nb.id === payload) || null;
+      this.updateData({
+        selectedNotebook: this.data.notebookList.find((nb) => nb.id === payload) || null
+      });
       this.notebookService.getListOfUsers();
     }
     // collapse the list of notebooks
-    this.data._meta.isExpanded = false;
+    this.updateMeta({ isExpanded: false });
     this.emit(type, payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   onToggleExpand() {
-    if (!this.data._meta) {
-      this.data._meta = { isExpanded: false };
-    } else if (!this.data._meta.isExpanded) {
-      this.data._meta.isExpanded = false;
-    }
-    this.data._meta.isExpanded = !this.data._meta.isExpanded;
+    this.updateMeta({ isExpanded: !this.data._meta?.isExpanded });
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
@@ -83,7 +80,7 @@ export class NotebookSelectorComponent {
     this.setMode('input');
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
@@ -100,7 +97,7 @@ export class NotebookSelectorComponent {
     }
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
@@ -108,13 +105,10 @@ export class NotebookSelectorComponent {
    * @param payload Name of the new notebook
    */
   onInput(payload: any) {
-    if (!this.data._meta) {
-      this.data._meta = {};
-    }
-    this.data._meta.inputValue = payload;
+    this.updateMeta({ inputValue: payload });
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /** Listen for enter key press */
@@ -129,14 +123,30 @@ export class NotebookSelectorComponent {
       }
 
       // trigger change detector
-      this.ref.detectChanges();
+      this.ref.markForCheck();
     }
   }
 
   private setMode(mode: 'input' | 'select') {
-    this.data.mode = mode;
+    this.updateData({ mode });
 
     // signal
     this.emit('modechanged', mode);
+  }
+
+  private updateData(data: Partial<NotebookSelectorData>) {
+    this.data = {
+      ...this.data,
+      ...data
+    };
+  }
+
+  private updateMeta(meta: Record<string, unknown>) {
+    this.updateData({
+      _meta: {
+        ...this.data._meta,
+        ...meta
+      }
+    });
   }
 }

@@ -249,7 +249,7 @@ export class SidebarLayoutEH extends EventHandler {
   public detectChanges() {
     // force-reload change detection
     if (this.changeDetectorRef) {
-      this.changeDetectorRef.detectChanges();
+      this.changeDetectorRef.markForCheck();
     }
   }
 

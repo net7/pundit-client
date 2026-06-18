@@ -69,7 +69,7 @@ export type NotebookShareModalData = {
 @Component({
     selector: 'pnd-notebook-share-modal',
     templateUrl: './notebook-share-modal.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent, NotebookShareUserItemComponent, NotebookShareUserSelectedComponent, AsyncPipe]
 })
 export class NotebookShareModalComponent {
@@ -112,6 +112,28 @@ export class NotebookShareModalComponent {
   }
 
   dropdownToggle(item: any) {
-    item.dropdown.isExpanded = !item.dropdown.isExpanded;
+    const items: NotebookShareListItem[] = this.data.body.listSection.items.map((listItem) => {
+      if (listItem !== item) {
+        return listItem;
+      }
+      const dropdown = listItem.dropdown!;
+      return {
+        ...listItem,
+        dropdown: {
+          actions: dropdown.actions,
+          isExpanded: !dropdown.isExpanded
+        }
+      };
+    });
+    this.data = {
+      ...this.data,
+      body: {
+        ...this.data.body,
+        listSection: {
+          ...this.data.body.listSection,
+          items
+        }
+      }
+    };
   }
 }

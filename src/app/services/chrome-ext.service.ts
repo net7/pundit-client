@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { delay } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
 import { initCommunicationSettings } from '../../common/helpers';
@@ -14,28 +14,31 @@ import { AnnotationService } from './annotation.service';
 export class ChromeExtService {
   private anchorService = inject(AnchorService);
   private annotationService = inject(AnnotationService);
+  private ngZone = inject(NgZone);
 
 
   load(): Promise<void> {
     return new Promise((res) => {
       window.addEventListener(CommonEventType.PunditLoaded, ((ev: CustomEvent) => {
-        const { id } = ev.detail;
-        config.set('chromeExtId', id);
-        config.set('chromeExtUrl', `chrome-extension://${id}`);
-        this.listenExtensionEvents();
-        this.listenAnnotationUpdates();
-        // init communication settings
-        initCommunicationSettings();
-        // analytics
-        // timeout waiting for mixpanel setup
-        setTimeout(() => {
-          AnalyticsModel.track({
-            action: AnalyticsAction.Bootstrap
-          });
-        }, 1000);
-        // api onload hook
-        (window as any).Pundit_API.onLoad();
-        res();
+        this.ngZone.run(() => {
+          const { id } = ev.detail;
+          config.set('chromeExtId', id);
+          config.set('chromeExtUrl', `chrome-extension://${id}`);
+          this.listenExtensionEvents();
+          this.listenAnnotationUpdates();
+          // init communication settings
+          initCommunicationSettings();
+          // analytics
+          // timeout waiting for mixpanel setup
+          setTimeout(() => {
+            AnalyticsModel.track({
+              action: AnalyticsAction.Bootstrap
+            });
+          }, 1000);
+          // api onload hook
+          (window as any).Pundit_API.onLoad();
+          res();
+        });
       }) as EventListener, false);
     });
   }
@@ -43,10 +46,12 @@ export class ChromeExtService {
   private listenExtensionEvents() {
     // destroy
     window.addEventListener(CommonEventType.PunditDestroy, async () => {
-      // remove all anchors
-      this.anchorService.removeAll();
-      // remove sidebar expanded class
-      document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
+      this.ngZone.run(() => {
+        // remove all anchors
+        this.anchorService.removeAll();
+        // remove sidebar expanded class
+        document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
+      });
     }, false);
   }
 

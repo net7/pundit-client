@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, NgZone } from '@angular/core';
 import { EventHandler } from '@net7/core';
 import {
   Subject, ReplaySubject, EMPTY, of
@@ -20,12 +20,14 @@ export class MainLayoutEH extends EventHandler {
   public dataSource!: MainLayoutDS;
 
   public changeDetectorRef!: ChangeDetectorRef;
+  public ngZone!: NgZone;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
       switch (type) {
         case MainLayoutEvent.Init:
           this.changeDetectorRef = payload.changeDetectorRef;
+          this.ngZone = payload.ngZone;
           this.appEvent$ = payload.appEvent$;
           this.dataSource.onInit(payload);
           this.listenSharedUsersChanges();
@@ -160,8 +162,16 @@ export class MainLayoutEH extends EventHandler {
   public detectChanges() {
     // force-reload change detection
     if (this.changeDetectorRef) {
-      this.changeDetectorRef.detectChanges();
+      this.changeDetectorRef.markForCheck();
     }
+  }
+
+  public runInZone(fn: () => void) {
+    if (this.ngZone) {
+      this.ngZone.run(fn);
+      return;
+    }
+    fn();
   }
 
   private listenSharedUsersChanges() {

@@ -30,10 +30,12 @@ export class MainLayoutPdfErrorModalHandler implements LayoutHandler {
           } else {
             chrome.extension.isAllowedFileSchemeAccess(
               (isAllowedAccess) => {
-                if (!isAllowedAccess) {
-                  const settingsUrl = `chrome://extensions/?id=${extensionId}`;
-                  chrome.tabs.update({ url: settingsUrl });
-                }
+                this.layoutEH.runInZone(() => {
+                  if (!isAllowedAccess) {
+                    const settingsUrl = `chrome://extensions/?id=${extensionId}`;
+                    chrome.tabs.update({ url: settingsUrl });
+                  }
+                });
               }
             );
           }

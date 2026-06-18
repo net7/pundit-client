@@ -13,7 +13,7 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'pnd-header-annotation-section',
     templateUrl: './header-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [MenuHeaderSectionComponent, AsyncPipe]
 })
 export class HeaderAnnotationSectionComponent implements OnInit {
@@ -124,6 +124,6 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     this.emit('click', payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 }

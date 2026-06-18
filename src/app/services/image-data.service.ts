@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, NgZone, inject } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ReplaySubject } from 'rxjs';
 import { CommonEventType } from 'src/common/types';
@@ -21,6 +21,7 @@ export type ImageData = {
 })
 export class ImageDataService {
   private domSanitizer = inject(DomSanitizer);
+  private ngZone = inject(NgZone);
 
   public images: {
     [url: string]: ImageData;
@@ -29,26 +30,30 @@ export class ImageDataService {
   constructor() {
     // listen to content security violation
     document.addEventListener('securitypolicyviolation', (e) => {
-      if (this.isBlockedImage(e.blockedURI)) {
-        this.request(e.blockedURI);
-      }
+      this.ngZone.run(() => {
+        if (this.isBlockedImage(e.blockedURI)) {
+          this.request(e.blockedURI);
+        }
+      });
     });
 
     // listen to image data (base64) response
     window.addEventListener(CommonEventType.ImageDataResponse, ((ev: CustomEvent) => {
-      const { url, data, error }: {
-        url: string;
-        data: string;
-        error?: boolean;
-      } = ev.detail;
-      // update image status & data (base64 string)
-      if (error) {
-        this.images[url].status = ImageDataStatus.Error;
-        this.images[url].data.next(null);
-      } else {
-        this.images[url].status = ImageDataStatus.Loaded;
-        this.images[url].data.next(this.domSanitizer.bypassSecurityTrustUrl(data));
-      }
+      this.ngZone.run(() => {
+        const { url, data, error }: {
+          url: string;
+          data: string;
+          error?: boolean;
+        } = ev.detail;
+        // update image status & data (base64 string)
+        if (error) {
+          this.images[url].status = ImageDataStatus.Error;
+          this.images[url].data.next(null);
+        } else {
+          this.images[url].status = ImageDataStatus.Loaded;
+          this.images[url].data.next(this.domSanitizer.bypassSecurityTrustUrl(data));
+        }
+      });
     }) as EventListener, false);
   }
 

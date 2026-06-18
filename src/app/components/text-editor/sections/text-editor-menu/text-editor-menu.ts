@@ -46,7 +46,7 @@ export interface TextEditorMenuButton {
 @Component({
     selector: 'pnd-text-editor-menu',
     templateUrl: './text-editor-menu.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent]
 })
 export class TextEditorMenuComponent {

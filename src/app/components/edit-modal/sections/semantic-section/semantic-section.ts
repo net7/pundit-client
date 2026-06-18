@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, Input, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+/* eslint-disable max-lines -- Semantic section is an existing hotspot; OnPush migration keeps behavior localized. */
+import { AfterViewInit, Component, Input, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -59,13 +60,14 @@ export const getObjectType = (value: string) => {
 @Component({
     selector: 'pnd-semantic-section',
     templateUrl: './semantic-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent]
 })
 export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   SemanticSectionValue, SemanticSectionOptions
 > {
   private semanticPredicateService = inject(SemanticPredicateService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   id = 'semantic';
 
@@ -183,18 +185,25 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     }
 
     if (rowIndex || rowIndex === 0) {
-      this.rows.splice(rowIndex + 1, 0, rowData);
+      this.rows = [
+        ...this.rows.slice(0, rowIndex + 1),
+        rowData,
+        ...this.rows.slice(rowIndex + 1)
+      ];
     } else {
-      this.rows.push(rowData);
+      this.rows = [...this.rows, rowData];
     }
   }
 
   removeRow(index: number) {
-    this.rows.splice(index, 1);
+    const rows = this.rows.filter((_, rowIndex) => rowIndex !== index);
 
     // if empty add first row
-    if (!this.rows.length) {
+    if (!rows.length) {
+      this.rows = [];
       this.addRow();
+    } else {
+      this.rows = rows;
     }
 
     // trigger form change
@@ -203,16 +212,21 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   onPredicateChange(rowIndex: number, value: string) {
     const currentRow = this.rows[rowIndex];
-    currentRow.predicate.options
-      .forEach((option) => {
-        option.selected = option.value === value;
-        if (option.selected) {
-          currentRow.predicate.label = option.label;
-        }
-      });
+    const options = currentRow.predicate.options.map((option) => ({
+      ...option,
+      selected: option.value === value
+    }));
+    const selected = options.find((option) => option.selected);
 
-    // closes dropdown
-    currentRow.predicate.isExpanded = false;
+    this.replaceRow(rowIndex, {
+      ...currentRow,
+      predicate: {
+        ...currentRow.predicate,
+        label: selected?.label || currentRow.predicate.label,
+        options,
+        isExpanded: false
+      }
+    });
 
     // trigger form change
     this.triggerChange();
@@ -221,42 +235,54 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   onObjectChange(rowIndex: number, inputValue: any) {
     const currentRow = this.rows[rowIndex];
     const value = typeof inputValue === 'string' ? inputValue.trim() : inputValue;
-    currentRow.object.value = value;
-    if (currentRow.object.providerId === DEFAULT_PROVIDER_ID) {
-      currentRow.object.type = getObjectType(value);
-    }
+    const object = {
+      ...currentRow.object,
+      value,
+      type: currentRow.object.providerId === DEFAULT_PROVIDER_ID
+        ? getObjectType(value)
+        : currentRow.object.type
+    };
+    this.replaceRow(rowIndex, { ...currentRow, object });
     // trigger form change
     this.triggerChange();
   }
 
   onPredicateToggleExpand(rowIndex: number) {
     // update dropdowns
-    this.rows.forEach((row, index) => {
-      row.predicate.isExpanded = index === rowIndex
-        ? !row.predicate.isExpanded
-        : false;
-    });
+    this.rows = this.rows.map((row, index) => ({
+      ...row,
+      predicate: {
+        ...row.predicate,
+        isExpanded: index === rowIndex ? !row.predicate.isExpanded : false
+      }
+    }));
   }
 
   onActionsToggleExpand(rowIndex: number) {
     // update dropdowns
-    this.rows.forEach((row, index) => {
-      row.actions.isExpanded = index === rowIndex
-        ? !row.actions.isExpanded
-        : false;
-    });
+    this.rows = this.rows.map((row, index) => ({
+      ...row,
+      actions: {
+        ...row.actions,
+        isExpanded: index === rowIndex ? !row.actions.isExpanded : false
+      }
+    }));
   }
 
   onAddClick(rowIndex: number) {
     this.addRow({} as SemanticItem, {} as SemanticItem, rowIndex);
     // closes dropdown
-    this.rows[rowIndex].actions.isExpanded = false;
+    this.replaceRow(rowIndex, {
+      ...this.rows[rowIndex],
+      actions: {
+        ...this.rows[rowIndex].actions,
+        isExpanded: false
+      }
+    });
   }
 
   onRemoveClick(rowIndex: number) {
     this.removeRow(rowIndex);
-    // closes dropdown
-    this.rows[rowIndex].actions.isExpanded = false;
   }
 
   getRemoveLabel() {
@@ -328,7 +354,12 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.rows = [];
     this.init();
     this.checkFocus();
+    this.changeDetectorRef.markForCheck();
   };
+
+  private replaceRow(rowIndex: number, row: SemanticFormRow) {
+    this.rows = this.rows.map((currentRow, index) => (index === rowIndex ? row : currentRow));
+  }
 
   private checkFocus = () => {
     const { focus } = this.data;

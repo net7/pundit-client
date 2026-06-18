@@ -107,7 +107,7 @@ export interface AnnotationData {
 @Component({
     selector: 'annotation',
     templateUrl: './annotation.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, NgTemplateOutlet, HeaderAnnotationSectionComponent, HighlightAnnotationSectionComponent, CommentAnnotationSectionComponent, SemanticAnnotationSectionComponent, TagAnnotationSectionComponent, SocialAnnotationSectionComponent, AsyncPipe]
 })
 export class AnnotationComponent implements OnInit {
@@ -142,7 +142,7 @@ export class AnnotationComponent implements OnInit {
     this.emit('click', payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   onEnter(payload: any) {
@@ -150,7 +150,7 @@ export class AnnotationComponent implements OnInit {
     this.emit('mouseenter', payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   onLeave(payload: any) {
@@ -158,7 +158,7 @@ export class AnnotationComponent implements OnInit {
     this.emit('mouseleave', payload);
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   getTagColor(tag: string) {

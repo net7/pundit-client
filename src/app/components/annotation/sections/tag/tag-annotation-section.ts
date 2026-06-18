@@ -12,7 +12,7 @@ type TagType = { label: string; color: string };
 @Component({
     selector: 'pnd-tag-annotation-section',
     templateUrl: './tag-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgStyle, AsyncPipe]
 })
 export class TagAnnotationSectionComponent implements OnInit {

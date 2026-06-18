@@ -21,7 +21,7 @@ export interface NotebookPanelData {
 @Component({
     selector: 'notebook-panel',
     templateUrl: './notebook-panel.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent, NgClass, NotebookSelectorComponent, NotebookShareUserItemComponent]
 })
 export class NotebookPanelComponent implements OnInit {

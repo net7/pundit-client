@@ -21,7 +21,7 @@ import { NotebookPanelComponent } from '../../components/notebook-panel/notebook
 @Component({
     selector: 'sidebar-layout',
     templateUrl: './sidebar-layout.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent, NgTemplateOutlet, AnnotationComponent, NotebookPanelComponent, AsyncPipe]
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {

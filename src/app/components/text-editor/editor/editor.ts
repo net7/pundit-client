@@ -25,11 +25,12 @@ class Editor {
   }> = new Subject();
 
   public init(
-    { target, appendTo, onChange }:
+    { target, appendTo, onChange, onRefresh }:
     {
       target: HTMLElement;
       appendTo: HTMLElement;
       onChange: (content: any) => void;
+      onRefresh?: () => void;
     }
   ) {
     // menu
@@ -54,6 +55,7 @@ class Editor {
 
         // send changes
         onChange(this.getContent());
+        onRefresh?.();
       }
     });
 
@@ -61,7 +63,7 @@ class Editor {
     this.updateMenuState();
 
     // listen
-    this.listen();
+    this.listen(onRefresh);
   }
 
   public focus() {
@@ -141,20 +143,24 @@ class Editor {
     this.schema = editorConfig.schema;
   }
 
-  private listen() {
+  private listen(onRefresh?: () => void) {
     this.menuEvent$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'click':
           this.handleClick(payload);
+          onRefresh?.();
           break;
         case 'linkinput':
           this.handleLinkInput(payload);
+          onRefresh?.();
           break;
         case 'linkcancel':
           this.handleLinkCancel();
+          onRefresh?.();
           break;
         case 'linksave':
           this.handleLinkSave();
+          onRefresh?.();
           break;
         default:
           break;

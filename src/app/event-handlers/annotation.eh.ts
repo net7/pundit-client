@@ -170,7 +170,7 @@ export class AnnotationEH extends EventHandler {
           clickedElement = target;
         }
         // only act if the clicked item is NOT the notebook-selector component
-        const className = clickedElement?.className || '';
+        const className = this.getElementClassName(clickedElement);
         const isNotebookSelector = className.match(
           /(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi
         );
@@ -179,6 +179,17 @@ export class AnnotationEH extends EventHandler {
           this.onMenuFocusLost.next(true);
         }
       });
+  }
+
+  private getElementClassName(element?: HTMLElement): string {
+    const className = element?.className;
+    if (typeof className === 'string') {
+      return className;
+    }
+    if (className && typeof (className as unknown as SVGAnimatedString).baseVal === 'string') {
+      return (className as unknown as SVGAnimatedString).baseVal;
+    }
+    return '';
   }
 
   private closeAnnotationMenu(id: string) {

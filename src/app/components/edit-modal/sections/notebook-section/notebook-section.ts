@@ -1,4 +1,4 @@
-import { OnInit, Component, Input, ChangeDetectionStrategy, inject } from '@angular/core';
+import { OnInit, Component, Input, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import { EMPTY, Subject } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
@@ -16,7 +16,7 @@ export type NotebookSectionOptions = Record<string, never>;
 @Component({
     selector: 'pnd-notebook-section',
     templateUrl: './notebook-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NotebookSelectorComponent]
 })
 export class NotebookSectionComponent implements OnInit, FormSection<
@@ -24,6 +24,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 > {
   private notebookService = inject(NotebookService);
   private userService = inject(UserService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   id = 'notebook';
 
@@ -87,7 +88,10 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 
   private createNotebook(label: string) {
     // update state
-    this.notebookSelectorData.isLoading = true;
+    this.notebookSelectorData = {
+      ...this.notebookSelectorData,
+      isLoading: true
+    };
     this.notebookService.create(label).pipe(
       catchError((e) => {
         // emit signal
@@ -117,10 +121,14 @@ export class NotebookSectionComponent implements OnInit, FormSection<
 
   private resetDropdownState() {
     const mode = 'select';
-    this.notebookSelectorData.isLoading = false;
-    this.notebookSelectorData.mode = mode;
+    this.notebookSelectorData = {
+      ...this.notebookSelectorData,
+      isLoading: false,
+      mode
+    };
     // emit signal
     this.emit(getEventType(EditModalEvent.NotebookSelectorModeChanged), mode);
+    this.changeDetectorRef.markForCheck();
   }
 
   private onReset = () => {

@@ -17,7 +17,7 @@ import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
 @Component({
     selector: 'pnd-social-action-bar',
     templateUrl: './social-action-bar.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent]
 })
 export class SocialActionBarComponent implements OnInit {

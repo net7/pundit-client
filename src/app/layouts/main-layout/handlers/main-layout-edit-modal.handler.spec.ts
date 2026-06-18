@@ -57,4 +57,12 @@ describe('MainLayoutEditModalHandler > save', () => {
       .some(([type]) => type === getEventType(MainLayoutEvent.AnnotationCreated));
     expect(emittedCloseSignal).toBe(true);
   });
+
+  it('does not throw when save is clicked without an annotation payload', () => {
+    layoutDS.state.annotation.updatePayload = null;
+    layoutDS.state.annotation.pendingPayload = null;
+
+    expect(() => clickSave({ comment: { value: 'a new comment' } })).not.toThrow();
+    expect(layoutEH.handleError).toHaveBeenCalledWith(expect.any(Error));
+  });
 });

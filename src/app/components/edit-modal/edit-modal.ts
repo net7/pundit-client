@@ -4,7 +4,9 @@ import {
   Input,
   ElementRef,
   ViewChild,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 import { FormSectionData } from 'src/app/types';
 import Draggable from 'draggable';
@@ -59,10 +61,12 @@ export type EditModalFormState = {
 @Component({
     selector: 'pnd-edit-modal',
     templateUrl: './edit-modal.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent, CommentSectionComponent, SemanticSectionComponent, TagsSectionComponent, NotebookSectionComponent]
 })
 export class EditModalComponent implements AfterContentChecked {
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
   @ViewChild('saveButton') saveButton!: ElementRef;
 
   @Input() public data!: EditModalData;
@@ -108,6 +112,7 @@ export class EditModalComponent implements AfterContentChecked {
       // for data refresh
       setTimeout(() => {
         this.reset$.next();
+        this.changeDetectorRef.markForCheck();
       });
     }
     if (!this.loaded && this.data?.visible) {
@@ -131,6 +136,7 @@ export class EditModalComponent implements AfterContentChecked {
       const limit = this.getDragLimit(target);
       this.draggableInstance = new Draggable(target, { handle, limit });
       this.data._setDraggableInstance(this.draggableInstance);
+      this.changeDetectorRef.markForCheck();
     });
   };
 
@@ -138,12 +144,15 @@ export class EditModalComponent implements AfterContentChecked {
     // reset form state
     this.formState = {};
     const { sections } = this.data;
-    Object.keys(sections).forEach((key) => {
+    this.formState = Object.keys(sections).reduce<EditModalFormState>((state, key) => {
       const { initialValue } = sections[key];
-      this.formState[key] = {
-        value: initialValue || null
+      return {
+        ...state,
+        [key]: {
+          value: initialValue || null
+        }
       };
-    });
+    }, {});
 
     // update save button state
     // with initial form state values
@@ -157,7 +166,10 @@ export class EditModalComponent implements AfterContentChecked {
 
     // listen to sections changed$
     merge(...sources$).subscribe(({ id, value, errors }) => {
-      this.formState[id] = { value, errors };
+      this.formState = {
+        ...this.formState,
+        [id]: { value, errors }
+      };
 
       // update save button state
       this.updateSaveButtonState();
@@ -166,16 +178,16 @@ export class EditModalComponent implements AfterContentChecked {
 
   private updateSaveButtonState() {
     const { sections, validation } = this.data;
-    const sectionErrors: boolean[] = [];
-    const requiredErrors: boolean[] = [];
-    Object.keys(sections).forEach((key, index) => {
+    const sectionErrors = Object.keys(sections).map((key) => {
       // check for errors
       const currentSectionErrors = this.formState[key]?.errors;
-      sectionErrors[index] = !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
+      return !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
+    });
 
+    const requiredErrors = Object.keys(sections).map((key) => {
       // check required
       const sectionValue = this.formState[key]?.value;
-      requiredErrors[index] = !!(sections[key].required && isEmpty(sectionValue));
+      return !!(sections[key].required && isEmpty(sectionValue));
     });
 
     const hasSectionErrors = !!sectionErrors.find((value) => !!value);
@@ -189,8 +201,17 @@ export class EditModalComponent implements AfterContentChecked {
       disabled = !!(isOrCondition ? numOfErrors === (requiredErrors.length - 1) : numOfErrors);
     }
     // update save button
-    const saveAction = this.data.actions.save;
-    saveAction.disabled = disabled;
+    this.data = {
+      ...this.data,
+      actions: {
+        ...this.data.actions,
+        save: {
+          ...this.data.actions.save,
+          disabled
+        }
+      }
+    };
+    this.changeDetectorRef.markForCheck();
   }
 
   private getDragLimit = (target: any) => {

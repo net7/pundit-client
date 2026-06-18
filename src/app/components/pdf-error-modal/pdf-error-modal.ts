@@ -22,7 +22,7 @@ export interface PdfErrorModalData {
 @Component({
     selector: 'pnd-pdf-error-modal',
     templateUrl: './pdf-error-modal.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent]
 })
 export class PdfErrorModalComponent {

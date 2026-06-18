@@ -10,7 +10,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 @Component({
     selector: 'pnd-highlight-annotation-section',
     templateUrl: './highlight-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [AsyncPipe, DatePipe]
 })
 export class HighlightAnnotationSectionComponent implements OnInit {

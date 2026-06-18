@@ -1,5 +1,6 @@
 import { _t } from '@net7/core';
 import { SemanticTripleType } from '@pundit/communication';
+import { cloneDeep } from 'lodash';
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';
 import { EditModalFormState } from 'src/app/components/edit-modal/edit-modal';
@@ -201,17 +202,31 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   private onEditModalSave(payload: any): Observable<any> {
     const isUpdate = this.isUpdate();
     if (isUpdate) {
+      const updatePayload = this.layoutDS.state.annotation.updatePayload;
+      if (!updatePayload) {
+        return this.missingAnnotationPayloadError('update');
+      }
       const updateRequestPayload = this.getEditRequestPayload(
-        this.layoutDS.state.annotation.updatePayload,
+        cloneDeep(updatePayload),
         payload
       );
       return of({ requestPayload: updateRequestPayload, isUpdate });
     }
+    const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
+    if (!pendingPayload) {
+      return this.missingAnnotationPayloadError('create');
+    }
     const pendingRequestPayload = this.getEditRequestPayload(
-      this.layoutDS.state.annotation.pendingPayload,
+      cloneDeep(pendingPayload),
       payload
     );
     return this.layoutDS.saveAnnotation(pendingRequestPayload);
+  }
+
+  private missingAnnotationPayloadError(mode: 'create' | 'update') {
+    return new Observable<never>((subscriber) => {
+      subscriber.error(new Error(`Cannot save annotation ${mode}: missing annotation payload`));
+    });
   }
 
   // eslint-disable-next-line complexity -- Existing payload assembly branches predate the flat-config migration.

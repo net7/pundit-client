@@ -15,7 +15,7 @@ export interface TooltipData {
 @Component({
     selector: 'pnd-tooltip',
     templateUrl: './tooltip.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgTemplateOutlet]
 })
 export class TooltipComponent {
@@ -30,7 +30,7 @@ export class TooltipComponent {
       tooltipModel.changed$.pipe(
         delay(1)
       ).subscribe(() => {
-        this.ref.detectChanges();
+        this.ref.markForCheck();
       });
     }
 

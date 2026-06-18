@@ -6,7 +6,7 @@ import { ModalComponent } from '../components/modal/modal.component';
     templateUrl: './pundit-login.component.html',
     styleUrls: ['./pundit-login.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom,
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [ModalComponent]
 })
 export class PunditLoginComponent {}

@@ -9,7 +9,7 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'pnd-comment-annotation-section',
     templateUrl: './comment-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [AsyncPipe]
 })
 export class CommentAnnotationSectionComponent implements OnInit {

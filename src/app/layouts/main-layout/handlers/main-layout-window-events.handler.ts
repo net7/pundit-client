@@ -25,11 +25,13 @@ export class MainLayoutWindowEventsHandler implements LayoutHandler {
   }
 
   private rootElExistsHandler = () => {
-    // toast
-    this.layoutDS.toastService.info({
-      title: _t('toast#rootelementexists_title'),
-      text: _t('toast#rootelementexists_text'),
-      autoClose: false
+    this.layoutEH.runInZone(() => {
+      // toast
+      this.layoutDS.toastService.info({
+        title: _t('toast#rootelementexists_title'),
+        text: _t('toast#rootelementexists_text'),
+        autoClose: false
+      });
     });
   };
 }

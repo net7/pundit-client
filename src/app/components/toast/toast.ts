@@ -96,7 +96,7 @@ export interface ToastAction {
 @Component({
     selector: 'pnd-toast',
     templateUrl: './toast.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, NgStyle, SvgIconComponent, AsyncPipe]
 })
 export class ToastComponent {

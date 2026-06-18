@@ -26,7 +26,7 @@ import { NotebookSelectorComponent } from '../../../notebook-selector/notebook-s
 @Component({
     selector: 'pnd-menu-header-section',
     templateUrl: './menu-header-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent, NotebookSelectorComponent, AsyncPipe]
 })
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
@@ -63,6 +63,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
         } else {
           this.notebookSelectorData = this.updateNotebookSelector(data, state);
         }
+        this.ref.markForCheck();
       });
   }
 
@@ -108,15 +109,17 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     if (!this.notebookSelectorData) {
       return this.newNotebookSelector(annotation, state);
     }
-    this.notebookSelectorData.isLoading = state?.isNotebookSelectorLoading;
     const notebooks = this.notebookService.getByUserIdShared(annotation.userId);
     const notebook = this.notebookService.getNotebookById(
       annotation.notebookId
     )!;
-    this.notebookSelectorData.selectedNotebook = notebook;
-    this.notebookSelectorData.notebookList = notebooks;
 
-    return this.notebookSelectorData;
+    return {
+      ...this.notebookSelectorData,
+      isLoading: state?.isNotebookSelectorLoading,
+      selectedNotebook: notebook,
+      notebookList: notebooks
+    };
   }
 
   private isCurrentUser(user: UserData) {
@@ -181,7 +184,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     }
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
@@ -196,6 +199,6 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     this.emit(type, { annotation: annotationID, notebook: notebookID });
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   };
 }

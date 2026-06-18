@@ -8,7 +8,7 @@ import { AsyncPipe, DatePipe } from '@angular/common';
 @Component({
     selector: 'pnd-semantic-annotation-section',
     templateUrl: './semantic-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [AsyncPipe, DatePipe]
 })
 export class SemanticAnnotationSectionComponent implements OnInit {

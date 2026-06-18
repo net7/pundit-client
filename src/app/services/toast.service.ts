@@ -102,7 +102,7 @@ export class ToastService {
             toast.onAction(payload.action, toast.instance);
 
             // trigger change detector
-            ToastService.changeDetectorRef.detectChanges();
+            ToastService.changeDetectorRef.markForCheck();
           }
         }
         break;
@@ -140,7 +140,9 @@ export class ToastService {
         this.update(toastId, newParams);
       }
     };
-    this.toasts.push({
+    this.toasts = [
+      ...this.toasts,
+      {
       instance,
       id: toastId,
       data: {
@@ -161,7 +163,8 @@ export class ToastService {
       onAction: toastParams.onAction
         ? this.getOnAction(toastParams.onAction)
         : undefined
-    });
+      }
+    ];
 
     // update stream
     setTimeout(() => {
@@ -183,7 +186,7 @@ export class ToastService {
     const index = this.toasts.map(({ id }) => id).indexOf(toastId);
     if (index >= 0) {
       // remove toast
-      this.toasts.splice(index, 1);
+      this.toasts = this.toasts.filter(({ id }) => id !== toastId);
       // remove mouseover state
       delete this.mouseoverState[toastId];
       // update stream
@@ -197,29 +200,34 @@ export class ToastService {
     });
 
     // trigger change detector
-    ToastService.changeDetectorRef.detectChanges();
+    ToastService.changeDetectorRef.markForCheck();
   }
 
   private update(toastId: string, params: ToastUpdateParams) {
     const toast = this.toasts.find(({ id }) => id === toastId)!;
+    const data = { ...toast.data };
     if (params.text) {
-      toast.data.text = this.getDataText(params.text);
+      data.text = this.getDataText(params.text);
     }
     if (params.title) {
-      toast.data.title = this.getDataTitle(params.title);
+      data.title = this.getDataTitle(params.title);
     }
     if (params.type) {
-      toast.data.classes = this.getDataClasses(params.type);
+      data.classes = this.getDataClasses(params.type);
     }
     if (params.actions) {
-      toast.data.actions = this.getDataActions(toast.id, params.actions);
+      data.actions = this.getDataActions(toast.id, params.actions);
     }
     if (params.hasDismiss) {
-      toast.data.closeIcon = this.getDataCloseIcon(toast.id);
+      data.closeIcon = this.getDataCloseIcon(toast.id);
     }
-    if (params.onAction) {
-      toast.onAction = this.getOnAction(params.onAction);
-    }
+    const updatedToast = {
+      ...toast,
+      data,
+      onAction: params.onAction ? this.getOnAction(params.onAction) : toast.onAction
+    };
+    this.toasts = this.toasts.map((item) => (item.id === toastId ? updatedToast : item));
+    this.updateDataStream();
   }
 
   private getDataClasses = (type: ToastType) => `is-${type}`;
@@ -279,12 +287,12 @@ export class ToastService {
             this.close(toastId);
 
             // trigger change detector
-            ToastService.changeDetectorRef.detectChanges();
+            ToastService.changeDetectorRef.markForCheck();
           }, timerDelay * 2);
         }
 
         // trigger change detector
-        ToastService.changeDetectorRef.detectChanges();
+        ToastService.changeDetectorRef.markForCheck();
       });
     }
   }

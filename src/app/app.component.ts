@@ -7,7 +7,7 @@ import { MainLayoutComponent } from './layouts/main-layout/main-layout';
     templateUrl: './app.component.html',
     styleUrls: ['./app.component.scss'],
     encapsulation: ViewEncapsulation.ShadowDom,
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [MainLayoutComponent]
 })
 export class AppComponent {

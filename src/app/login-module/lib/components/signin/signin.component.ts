@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
@@ -17,7 +17,7 @@ import { NgClass } from '@angular/common';
     selector: 'lib-pundit-login-signin',
     templateUrl: './signin.component.html',
     styleUrls: [],
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class SignInComponent {
@@ -25,6 +25,7 @@ export class SignInComponent {
   private emailProviderService = inject(EmailProviderService);
   private oauthProviderService = inject(OauthProviderService);
   private formBuilder = inject(UntypedFormBuilder);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   email!: EmailAuthProvider;
 
@@ -51,6 +52,7 @@ export class SignInComponent {
     this.initProviders(oauth, email);
     this.emailProviderService.isLoading$.subscribe((val) => {
       this.isLoading = !!val;
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -72,6 +74,7 @@ export class SignInComponent {
       // on form change clear service error
       this.loginForm.valueChanges.subscribe(() => {
         this.serviceErrorMessage = null;
+        this.changeDetectorRef.markForCheck();
       });
     }
   }
@@ -114,6 +117,7 @@ export class SignInComponent {
       switchMap(({ status }: any) => of(validationHelper.getServiceErrorMessage(status)))
     ).subscribe((errorMessage) => {
       this.serviceErrorMessage = errorMessage;
+      this.changeDetectorRef.markForCheck();
     });
     this.emailProviderService.login(this.loginForm.value, this.terms);
 

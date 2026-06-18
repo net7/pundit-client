@@ -5,6 +5,7 @@ import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler } from 'src/app/types';
 import { _t } from '@net7/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
+import { cloneDeep } from 'lodash';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -112,7 +113,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload)!;
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.annotation.updatePayload = annotation;
+    this.layoutDS.state.annotation.updatePayload = cloneDeep(annotation);
     const isFullPage = !annotation.subject?.selected;
     const params = {
       sections: [{

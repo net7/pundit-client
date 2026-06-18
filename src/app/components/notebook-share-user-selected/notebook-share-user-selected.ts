@@ -7,7 +7,7 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'pnd-notebook-share-user-selected',
     templateUrl: './notebook-share-user-selected.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SvgIconComponent, AsyncPipe]
 })
 export class NotebookShareUserSelectedComponent implements OnInit {

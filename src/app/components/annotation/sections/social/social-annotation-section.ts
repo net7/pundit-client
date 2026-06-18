@@ -8,7 +8,7 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'pnd-social-annotation-section',
     templateUrl: './social-annotation-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SocialActionBarComponent, ReplyComponent, AsyncPipe]
 })
 export class SocialAnnotationSectionComponent {

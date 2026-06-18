@@ -1,4 +1,4 @@
-import { Component, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ModalService } from '../../services/modal.service';
@@ -12,11 +12,12 @@ import { SignUpComponent } from '../signup/signup.component';
     selector: 'lib-pundit-login-modal',
     templateUrl: './modal.component.html',
     styleUrls: [],
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [NgClass, SvgIconComponent, ErrorComponent, SignInComponent, SignUpComponent]
 })
 export class ModalComponent implements OnDestroy {
   private modalService = inject(ModalService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   show!: boolean;
 
@@ -32,6 +33,7 @@ export class ModalComponent implements OnDestroy {
       .subscribe((value) => {
         this.status = this.modalService.isRegister ? 'SIGNUP' : 'SIGNIN';
         this.show = value;
+        this.changeDetectorRef.markForCheck();
       });
   }
 

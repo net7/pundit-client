@@ -63,12 +63,22 @@ export class EditModalDS extends DataSource {
   public isVisible = () => this.output?.visible;
 
   public close() {
-    this.output.visible = false;
-    const { x, y } = this.defaultPosition;
-    this.draggableInstance.set(x, y);
+    this.setOutput({ visible: false });
+    if (this.draggableInstance && this.defaultPosition) {
+      const { x, y } = this.defaultPosition;
+      this.draggableInstance.set(x, y);
+    }
   }
 
   public changeActionsVisibility(hide: boolean) {
-    this.output.hideActions = hide;
+    this.setOutput({ hideActions: hide });
+  }
+
+  private setOutput(update: Partial<EditModalData>) {
+    this.output = {
+      ...this.output,
+      ...update
+    };
+    this.out$.next(this.output);
   }
 }

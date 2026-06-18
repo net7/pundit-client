@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ChangeDetectionStrategy, NgZone, inject } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
@@ -29,7 +29,7 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'main-layout',
     templateUrl: './main-layout.html',
-    changeDetection: ChangeDetectionStrategy.Eager,
+    changeDetection: ChangeDetectionStrategy.OnPush,
     imports: [SidebarLayoutComponent, TooltipComponent, EditModalComponent, DeleteModalComponent, PdfErrorModalComponent, NotebookShareModalComponent, ToastComponent, PunditLoginComponent, AsyncPipe]
 })
 export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
@@ -47,6 +47,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   private userService = inject(UserService);
   private pdfService = inject(PdfService);
   private documentInfoService = inject(DocumentInfoService);
+  private ngZone = inject(NgZone);
 
   @HostListener('document:keyup', ['$event'])
   onKeyUp({ key }: KeyboardEvent) {
@@ -80,6 +81,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       semanticPredicateService: this.semanticPredicateService,
       pdfService: this.pdfService,
       documentInfoService: this.documentInfoService,
+      ngZone: this.ngZone,
     };
   }
 

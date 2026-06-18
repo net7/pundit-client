@@ -11,7 +11,7 @@ export interface SvgIconData {
 @Component({
     selector: 'pnd-svg-icon',
     templateUrl: './svg-icon.html',
-    changeDetection: ChangeDetectionStrategy.Eager
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SvgIconComponent {
     @Input() public data!: SvgIconData;

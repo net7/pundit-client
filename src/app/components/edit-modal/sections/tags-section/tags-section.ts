@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy, ChangeDetectionStrategy, inject } from '@angular/core';
+import { Component, ElementRef, Input, AfterViewInit, ViewChild, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import Tagify from '@yaireo/tagify';
 import { Subject } from 'rxjs';
@@ -18,12 +18,13 @@ export type TagsSectionOptions = {
 @Component({
     selector: 'pnd-tags-section',
     templateUrl: './tags-section.html',
-    changeDetection: ChangeDetectionStrategy.Eager
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   TagsSectionValue, TagsSectionOptions
 > {
   private tagService = inject(TagService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
   id = 'tags';
 
@@ -88,6 +89,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
             id: this.id,
             value: elements.map((el: any) => el.innerText)
           });
+          this.changeDetectorRef.markForCheck();
         });
       }
     );
@@ -109,6 +111,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
       this.formInstance.addTags(initialValue);
     }
     this.checkFocus();
+    this.changeDetectorRef.markForCheck();
   };
 
   private checkFocus = () => {
