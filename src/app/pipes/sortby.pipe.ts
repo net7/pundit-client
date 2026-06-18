@@ -17,7 +17,7 @@ export class SortByPipe implements PipeTransform {
       if (order === 'asc') { return value.sort(); }
       return value.sort().reverse();
     } // sort 1d array
-    const iterFun = (val) => (val[column] && typeof val[column] === 'string' ? val[column].toLowerCase() : column);
+    const iterFun = (val: any) => (val[column] && typeof val[column] === 'string' ? val[column].toLowerCase() : column);
     return orderBy(value, [iterFun], [order as boolean | 'asc' | 'desc']);
   }
 }

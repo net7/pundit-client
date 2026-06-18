@@ -5,7 +5,7 @@ import { selectionFocusRect, isSelectionBackwards } from '@net7/annotator';
 class TooltipModel {
   public changed$: Subject<void> = new Subject<void>();
 
-  private instance;
+  private instance: ReturnType<typeof createPopper>;
 
   private tooltipWrapper: HTMLElement;
 

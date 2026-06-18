@@ -76,13 +76,13 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private doAutocompleteRequest$ = (value): Observable<any> => {
+  private doAutocompleteRequest$ = (value: any): Observable<any> => {
     const query = value?.length ? value.trim() : value;
     if (query?.length < 3) return of(null);
     return this.layoutDS.notebookService.userSearch(query);
   };
 
-  private onActionClick = (payload) => {
+  private onActionClick = (payload: any) => {
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
@@ -96,7 +96,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     }
   };
 
-  private onDelete(payload) {
+  private onDelete(payload: any) {
     const { notebookService } = this.layoutDS;
     const notebook = notebookService.getSelected();
     const body = {
@@ -114,7 +114,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onResend(payload) {
+  private onResend(payload: any) {
     const { notebookService } = this.layoutDS;
     const currentNotebookId = notebookService.getSelected()?.id;
     const body = {
@@ -127,7 +127,7 @@ export class MainLayoutNotebookShareModalHandler implements LayoutHandler {
     });
   }
 
-  private onConfirm(payload) {
+  private onConfirm(payload: any) {
     const { notebookService } = this.layoutDS;
     const notebook = notebookService.getSelected();
     const body: NotebookPermissions = {

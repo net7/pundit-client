@@ -24,6 +24,6 @@ export const init = () => {
 
   // hooks
   HOOKS.forEach((hook) => {
-    (window as any).Pundit_API[hook] = (window as any).Pundit_API[hook] || (() => null);
+    (window as any).Pundit_API[hook] = (window as any).Pundit_API[hook] || ((): null => null);
   });
 };

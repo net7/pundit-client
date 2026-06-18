@@ -46,7 +46,7 @@ export class NotebookSelectorComponent {
     private notebookService: NotebookService
   ) {}
 
-  onClick(type, payload) {
+  onClick(type: string, payload: any) {
     if (!this.emit) return;
     if (payload === 'createmode') {
       this.setMode('input');
@@ -91,7 +91,7 @@ export class NotebookSelectorComponent {
    * When pressing the "save new notebook" button.
    * @param payload Label of the newly created notebook.
    */
-  onCreation(payload) {
+  onCreation(payload: any) {
     if (!this.emit) return;
     if (typeof payload === 'string' && payload.trim().length > 0) {
       this.emit('createnotebook', payload.trim());
@@ -108,7 +108,7 @@ export class NotebookSelectorComponent {
    * When typing the new name of the notebook
    * @param payload Name of the new notebook
    */
-  onInput(payload) {
+  onInput(payload: any) {
     if (!this.data._meta) {
       this.data._meta = {};
     }

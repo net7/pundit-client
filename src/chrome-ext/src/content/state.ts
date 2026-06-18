@@ -10,7 +10,7 @@ class ChromeExtState {
 
   set(newData: Partial<ChromeExtStateData>) {
     Object.keys(newData).forEach((key) => {
-      this.data[key] = newData[key];
+      (this.data as any)[key] = (newData as any)[key];
     });
   }
 

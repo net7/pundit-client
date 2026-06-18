@@ -34,7 +34,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   public annotations: AnnotationConfig[] = null;
 
-  public hypothesisAnnotations = [];
+  public hypothesisAnnotations: any[] = [];
 
   public userLink = _c('userLink');
 
@@ -87,9 +87,9 @@ export class SidebarLayoutDS extends LayoutDataSource {
     collapse: _t('sidebaractions#collapse')
   };
 
-  public usersList = [];
+  public usersList: any[] = [];
 
-  onInit(payload) {
+  onInit(payload: any) {
     this.annotationService = payload.annotationService;
     this.annotationPositionService = payload.annotationPositionService;
     this.notebookService = payload.notebookService;

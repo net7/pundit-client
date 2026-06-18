@@ -17,7 +17,7 @@ export class PopupService implements OnDestroy {
     this.destroy$.complete();
   }
 
-  open(url, params: PopupParameters, name = 'pundit-popup'): Observable<MessageEvent> {
+  open(url: string, params: PopupParameters, name = 'pundit-popup'): Observable<MessageEvent> {
     const size = params.size || { height: '400', width: '400' };
     const sizeStr = `height=${size.height},width=${size.width}`;
     window.open(url, name, sizeStr);

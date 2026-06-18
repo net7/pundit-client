@@ -1,6 +1,7 @@
 import { EventHandler } from '@net7/core';
 import { fromEvent, Subject, race } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
+import { AppEventData } from 'src/app/types';
 import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../event-types';
 import { AnnotationService } from '../services/annotation.service';
 import { NotebookService } from '../services/notebook.service';
@@ -17,7 +18,7 @@ export class AnnotationEH extends EventHandler {
     this.outerEvents$.subscribe((ev) => this.handleOuterEvent(ev));
   }
 
-  private handleInnerEvent({ type, payload }) {
+  private handleInnerEvent({ type, payload }: AppEventData) {
     switch (type) {
       /**
        * Handle all click events on an annotation with different "source" values
@@ -48,7 +49,7 @@ export class AnnotationEH extends EventHandler {
     }
   }
 
-  private handleClickEvent(payload) {
+  private handleClickEvent(payload: any) {
     const { source, id } = payload;
     const annotation = this.annotationService.getAnnotationById(id);
     if (!annotation) {
@@ -110,13 +111,13 @@ export class AnnotationEH extends EventHandler {
     handlers[source]?.();
   }
 
-  private handleOuterEvent({ type, payload }) {
+  private handleOuterEvent({ type, payload }: AppEventData) {
     switch (type) {
       case SidebarLayoutEvent.AnnotationUpdateNotebook: {
         const { annotationID } = payload;
         const annotation = this.annotationService.getAnnotationById(annotationID);
         if (!annotation) { return; }
-        const newState = { activeMenu: undefined, isNotebookSelectorLoading: false };
+        const newState = { activeMenu: undefined as string | undefined, isNotebookSelectorLoading: false };
         this.annotationService.updateAnnotationState(annotationID, newState);
         break;
       }
@@ -184,7 +185,7 @@ export class AnnotationEH extends EventHandler {
     this.annotationService.updateAnnotationState(id, { activeMenu: undefined });
   }
 
-  private updateAnnotationState = (annotation) => {
+  private updateAnnotationState = (annotation: any) => {
     const { state$ } = annotation;
     const currentState = state$.getValue();
     const newState = { isCollapsed: !currentState.isCollapsed };

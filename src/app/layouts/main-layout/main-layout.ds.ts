@@ -79,9 +79,9 @@ export class MainLayoutDS extends LayoutDataSource {
     identitySyncLoading: false
   };
 
-  public usersList = [];
+  public usersList: any[] = [];
 
-  onInit(payload) {
+  onInit(payload: any) {
     this.userService = payload.userService;
     this.notebookService = payload.notebookService;
     this.annotationService = payload.annotationService;
@@ -151,7 +151,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.notebookService.search();
   }
 
-  public saveAnnotation(payload) {
+  public saveAnnotation(payload: any) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
@@ -207,7 +207,7 @@ export class MainLayoutDS extends LayoutDataSource {
     }
   }
 
-  public checkUserVerified(user) {
+  public checkUserVerified(user: any) {
     if (!user.is_verified) {
       this.openEmailVerifiedToast();
     } else {
@@ -268,7 +268,7 @@ export class MainLayoutDS extends LayoutDataSource {
     });
   }
 
-  private handleSearchResponse(searchData) {
+  private handleSearchResponse(searchData: any) {
     const {
       users, annotations, notebooks, socials, replies
     } = searchData;
@@ -286,7 +286,7 @@ export class MainLayoutDS extends LayoutDataSource {
     }
   }
 
-  private removePrivateAnnotations(searchData) {
+  private removePrivateAnnotations(searchData: any) {
     const { annotations }: { annotations: Annotation[] } = searchData;
     const annotationIds = annotations.map(({ id }) => id);
     const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);

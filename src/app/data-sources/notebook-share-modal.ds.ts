@@ -79,10 +79,10 @@ export class NotebookShareModalDS extends DataSource {
   // }
 
   // FIXME: temporary autocomplete
-  public updateAutocompleteResults({ query, response }) {
+  public updateAutocompleteResults({ query, response }: { query: string; response: any }) {
     void response;
     const { autocomplete } = this.output.body.formSection;
-    let results = [];
+    let results: any[] = [];
     // check email format in query
     if (this.validateEmail(query)) {
       const email = query.trim();
@@ -96,7 +96,7 @@ export class NotebookShareModalDS extends DataSource {
     autocomplete.results = results || [];
   }
 
-  public onAutocompleteClick(selected) {
+  public onAutocompleteClick(selected: any) {
     // clear results
     this.updateAutocompleteResults({ response: null, query: '' });
 
@@ -146,11 +146,11 @@ export class NotebookShareModalDS extends DataSource {
   ) {
     if (role === NotebookUserRole.Owner) return null;
     const dropdown = {
-      actions: [],
+      actions: [] as any[],
       isExpanded: false
     };
 
-    let actionKeys = [];
+    let actionKeys: string[] = [];
     if (status === NotebookUserStatus.Pending) {
       actionKeys = ['delete_invite', 'resend_invite'];
     } else if (status === NotebookUserStatus.Joined) {

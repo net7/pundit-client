@@ -37,7 +37,7 @@ export class NotebookShareUserSelectedComponent implements OnInit {
     this.dropdownExpanded = !this.dropdownExpanded;
   }
 
-  onActionClick(payload) {
+  onActionClick(payload: any) {
     this.statusLabel = payload.label;
     this.item.action = payload.value;
     this.dropdownExpanded = !this.dropdownExpanded;

@@ -1,6 +1,6 @@
 import { CommonEventType } from '../../../../common/types';
 
-const toDataURL = (url) => fetch(url)
+const toDataURL = (url: string) => fetch(url)
   .then((response) => response.blob())
   .then((blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -9,7 +9,7 @@ const toDataURL = (url) => fetch(url)
     reader.readAsDataURL(blob);
   }));
 
-export const doImageDataRequest = (tab: chrome.tabs.Tab, payload) => {
+export const doImageDataRequest = (tab: chrome.tabs.Tab, payload: any) => {
   const { id: tabId } = tab;
   const { url } = payload;
 

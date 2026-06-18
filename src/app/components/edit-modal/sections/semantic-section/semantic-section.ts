@@ -206,7 +206,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.triggerChange();
   }
 
-  onPredicateChange(rowIndex, value) {
+  onPredicateChange(rowIndex: number, value: string) {
     const currentRow = this.rows[rowIndex];
     currentRow.predicate.options
       .forEach((option) => {
@@ -223,7 +223,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.triggerChange();
   }
 
-  onObjectChange(rowIndex, inputValue) {
+  onObjectChange(rowIndex: number, inputValue: any) {
     const currentRow = this.rows[rowIndex];
     const value = typeof inputValue === 'string' ? inputValue.trim() : inputValue;
     currentRow.object.value = value;
@@ -234,7 +234,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.triggerChange();
   }
 
-  onPredicateToggleExpand(rowIndex) {
+  onPredicateToggleExpand(rowIndex: number) {
     // update dropdowns
     this.rows.forEach((row, index) => {
       row.predicate.isExpanded = index === rowIndex
@@ -243,7 +243,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     });
   }
 
-  onActionsToggleExpand(rowIndex) {
+  onActionsToggleExpand(rowIndex: number) {
     // update dropdowns
     this.rows.forEach((row, index) => {
       row.actions.isExpanded = index === rowIndex
@@ -252,13 +252,13 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     });
   }
 
-  onAddClick(rowIndex) {
+  onAddClick(rowIndex: number) {
     this.addRow({} as SemanticItem, {} as SemanticItem, rowIndex);
     // closes dropdown
     this.rows[rowIndex].actions.isExpanded = false;
   }
 
-  onRemoveClick(rowIndex) {
+  onRemoveClick(rowIndex: number) {
     this.removeRow(rowIndex);
     // closes dropdown
     this.rows[rowIndex].actions.isExpanded = false;
@@ -268,14 +268,14 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     return this.rows.length === 1 ? this.labels.clear : this.labels.remove;
   }
 
-  private isDisabled(rawData) {
+  private isDisabled(rawData: any) {
     const { objectType, object } = rawData || {};
     const hasObjectUri = objectType === 'uri' && object?.source === 'search';
     const hasDate = objectType === 'date';
     return !!hasObjectUri || !!hasDate;
   }
 
-  private getObjectAltValue(rawData) {
+  private getObjectAltValue(rawData: any) {
     const { object } = rawData || {};
     const { rdfTypes } = object || {};
     if (rdfTypes?.length) {
@@ -285,8 +285,8 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   }
 
   private triggerChange() {
-    const formValue = [];
-    const errors = [];
+    const formValue: any[] = [];
+    const errors: any[] = [];
     this.rows.forEach((row) => {
       // old semantic annotation check
       if (row.disabled) {

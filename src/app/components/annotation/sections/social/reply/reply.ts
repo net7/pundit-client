@@ -46,13 +46,13 @@ export class ReplyComponent implements OnInit {
 
   public socials$: Observable<any>;
 
-  public menuData;
+  public menuData: any;
 
-  public activeMenu;
+  public activeMenu: any;
 
   public formState: ReplyFormState;
 
-  public userData;
+  public userData: any;
 
   constructor(
     private userService: UserService,
@@ -106,7 +106,7 @@ export class ReplyComponent implements OnInit {
       : null;
   }
 
-  private createActionButtons = (id) => [{
+  private createActionButtons = (id: string) => [{
     label: _t('social#reply_edit'),
     payload: {
       id,
@@ -121,7 +121,7 @@ export class ReplyComponent implements OnInit {
     },
   }];
 
-  onClick($event, payload) {
+  onClick($event: any, payload: any) {
     if (!payload || this.formState?.isLoading) {
       return;
     }
@@ -176,7 +176,7 @@ export class ReplyComponent implements OnInit {
       });
   }
 
-  onReplyChange(payload) {
+  onReplyChange(payload: any) {
     this.formState = this.resetFormState(payload);
   }
 

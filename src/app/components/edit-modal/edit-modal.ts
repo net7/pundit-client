@@ -74,7 +74,7 @@ export class EditModalComponent implements AfterContentChecked {
 
   public draggableHandle = 'pnd-modal-draggable-handle';
 
-  public draggableInstance;
+  public draggableInstance: any;
 
   public reset$: Subject<void> = new Subject();
 
@@ -188,7 +188,7 @@ export class EditModalComponent implements AfterContentChecked {
     saveAction.disabled = disabled;
   }
 
-  private getDragLimit = (target) => {
+  private getDragLimit = (target: any) => {
     if (!target) {
       return null;
     }

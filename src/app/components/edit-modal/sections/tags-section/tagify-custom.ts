@@ -35,7 +35,7 @@ export function customDropdownHide(force = false): any {
   return this;
 }
 
-export function getNodeHeight(node) {
+export function getNodeHeight(node: any) {
   const clone = node.cloneNode(true);
   clone.style.cssText = 'position:fixed; top:-9999px; opacity:0';
   document.body.appendChild(clone);

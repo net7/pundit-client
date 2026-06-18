@@ -17,11 +17,11 @@ export class NotebookShareUserItemComponent {
     public imageDataService: ImageDataService
   ) {}
 
-  dropdownToggle(item) {
+  dropdownToggle(item: any) {
     item.dropdown.isExpanded = !item.dropdown.isExpanded;
   }
 
-  onActionClick(payload, item) {
+  onActionClick(payload: any, item: any) {
     if (!this.emit) return;
 
     item.dropdown.isExpanded = !item.dropdown.isExpanded;

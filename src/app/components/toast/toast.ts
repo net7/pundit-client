@@ -102,17 +102,17 @@ export class ToastComponent {
 
   @Input() emit: any;
 
-  onClick(payload) {
+  onClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('click', payload);
   }
 
-  onMouseover(payload) {
+  onMouseover(payload: any) {
     this.emit('mouseover', payload);
   }
 
-  onMouseout(payload) {
+  onMouseout(payload: any) {
     this.emit('mouseout', payload);
   }
 }

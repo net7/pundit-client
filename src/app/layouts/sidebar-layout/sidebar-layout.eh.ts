@@ -58,7 +58,7 @@ export class SidebarLayoutEH extends EventHandler {
       });
   }
 
-  private handleInnerEvent({ type, payload }) {
+  private handleInnerEvent({ type, payload }: AppEventData) {
     const handler = this.innerEventHandlers[type];
     if (handler) {
       const result = handler(payload, type);
@@ -73,7 +73,7 @@ export class SidebarLayoutEH extends EventHandler {
     this.detectChanges();
   }
 
-  private get innerEventHandlers(): { [key: string]: (payload?, type?) => boolean | void } {
+  private get innerEventHandlers(): { [key: string]: (payload?: any, type?: string) => boolean | void } {
     return {
       [SidebarLayoutEvent.Init]: (payload) => {
         this.annotationService = payload.annotationService;
@@ -147,7 +147,7 @@ export class SidebarLayoutEH extends EventHandler {
     };
   }
 
-  private handleRequestLogin(type) {
+  private handleRequestLogin(type: string) {
     const isRegister = type === SidebarLayoutEvent.RequestRegister;
     this.punditLoginService.start(isRegister);
     // clear anonymous (before login) selection range
@@ -253,10 +253,10 @@ export class SidebarLayoutEH extends EventHandler {
     }
   }
 
-  private transformUsers(users) {
+  private transformUsers(users: any[]) {
     return (users || []).map(({
       id, username, email, thumb, role, status, action
-    }) => ({
+    }: any) => ({
       id,
       username,
       email,
@@ -280,10 +280,10 @@ export class SidebarLayoutEH extends EventHandler {
   ) {
     if (role === NotebookUserRole.Owner) return null;
     const dropdown = {
-      actions: [],
+      actions: [] as any[],
       isExpanded: false
     };
-    let actionKeys = [];
+    let actionKeys: string[] = [];
     if (status === NotebookUserStatus.Pending) {
       actionKeys = ['delete_invite', 'resend_invite'];
     } else if (status === NotebookUserStatus.Joined) {

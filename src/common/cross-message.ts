@@ -32,7 +32,7 @@ if (addEventListener) {
 export function CrossMessage(requestId: string) {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
-    descriptor.value = function (...args) {
+    descriptor.value = function (...args: any[]) {
       let result;
       if (crossMessageEnabled()) {
         const idPrefix = new Date().valueOf();

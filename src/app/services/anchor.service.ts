@@ -112,7 +112,7 @@ export class AnchorService {
     });
   }
 
-  addHoverClass(annotationId) {
+  addHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
       const { highlights } = this.getHighlightById(annotationId);
       highlights.forEach((el) => {
@@ -121,7 +121,7 @@ export class AnchorService {
     }
   }
 
-  removeHoverClass(annotationId) {
+  removeHoverClass(annotationId: string) {
     if (this.getHighlightById(annotationId)) {
       const { highlights } = this.getHighlightById(annotationId);
       highlights.forEach((el) => {
@@ -176,7 +176,7 @@ export class AnchorService {
     });
   }
 
-  private onMouseOver(payload) {
+  private onMouseOver(payload: any) {
     this.addHoverClass(payload);
 
     // signal
@@ -186,7 +186,7 @@ export class AnchorService {
     });
   }
 
-  private onMouseLeave(payload) {
+  private onMouseLeave(payload: any) {
     this.removeHoverClass(payload);
 
     // signal
@@ -196,7 +196,7 @@ export class AnchorService {
     });
   }
 
-  private onClick(payload) {
+  private onClick(payload: any) {
     this.events$.next({
       payload,
       type: AnchorEvent.Click,

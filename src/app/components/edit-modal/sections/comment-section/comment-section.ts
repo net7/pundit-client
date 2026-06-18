@@ -72,7 +72,7 @@ export class CommentSectionComponent implements AfterViewInit, OnDestroy, FormSe
     });
   }
 
-  onChange({ text, html }) {
+  onChange({ text, html }: { text: string; html: string }) {
     // check for errors
     const textValue = (typeof text === 'string' && text.trim());
     const errors = [];

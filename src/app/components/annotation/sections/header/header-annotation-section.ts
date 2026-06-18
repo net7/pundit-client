@@ -75,7 +75,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
     };
   }
 
-  private createHypothesisUser(annotation) {
+  private createHypothesisUser(annotation: any) {
     return {
       initials: '',
       image: _c('userDefaultThumb'),
@@ -121,7 +121,7 @@ export class HeaderAnnotationSectionComponent implements OnInit {
 
   private getNotebookLink = (id: string) => `${_c('notebookLink')}/${id}`;
 
-  onClick(ev: Event, payload) {
+  onClick(ev: Event, payload: any) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
     this.emit('click', payload);

@@ -75,7 +75,7 @@ export class NotebookSectionComponent implements OnInit, FormSection<
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onEmit = (type, payload) => {
+  onEmit = (type: string, payload: any) => {
     if (type === 'option') {
       if (this.currentNotebook.id !== payload) {
         this.triggerChanged(payload);

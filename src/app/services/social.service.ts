@@ -100,7 +100,7 @@ export class SocialService {
       (s) => s.annotationId === annotaitonId && s.parentId === parentId
     );
     const currentUserId = this.userService.whoami()?.id;
-    const isSocialFromCurrentUser = (s) => s.userId === currentUserId;
+    const isSocialFromCurrentUser = (s: Social) => s.userId === currentUserId;
 
     const likes = socials.filter((s) => s.type === 'Like');
     const totalLikes = likes.length;
@@ -168,9 +168,9 @@ export class SocialService {
             Dislike: AnalyticsAction.SocialDislike,
             Report: AnalyticsAction.SocialReport,
           };
-          if (actionMap[attributes.type]) {
+          if (actionMap[attributes.type as keyof typeof actionMap]) {
             AnalyticsModel.track({
-              action: actionMap[attributes.type]
+              action: actionMap[attributes.type as keyof typeof actionMap]
             });
           }
         }

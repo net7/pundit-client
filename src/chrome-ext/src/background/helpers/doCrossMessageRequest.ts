@@ -17,7 +17,7 @@ import { ChromeExtStorageKey } from '../../types';
 // original switch. Each handler receives the request `args` and returns the
 // resulting request, mirroring the previous `Model.method.apply(null, args)`.
 const requestHandlers: {
-  [key in CrossMsgRequestId]?: (args) => unknown
+  [key in CrossMsgRequestId]?: (args: any) => unknown
 } = {
   // NOTEBOOK REQUEST
   // --------------------------------------------------->
@@ -69,9 +69,9 @@ const requestHandlers: {
   [CrossMsgRequestId.SemanticPredicateGet]: (args) => SemanticPredicateModel.get.apply(null, args),
 };
 
-export const doCrossMessageRequest = (tab, payload) => {
+export const doCrossMessageRequest = (tab: any, payload: any) => {
   const { messageId, requestId, args } = payload;
-  const handler = requestHandlers[requestId];
+  const handler = requestHandlers[requestId as CrossMsgRequestId];
   const request$ = handler ? handler(args) : undefined;
   if (request$) {
     ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)

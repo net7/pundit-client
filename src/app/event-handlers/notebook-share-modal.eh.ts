@@ -46,7 +46,7 @@ export class NotebookShareModalEH extends EventHandler {
     });
   }
 
-  private onClick(payload) {
+  private onClick(payload: any) {
     const { source } = payload;
     switch (source) {
       case 'close-icon':

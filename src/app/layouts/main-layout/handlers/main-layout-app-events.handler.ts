@@ -95,20 +95,20 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onAnnotationDeleteClick(payload) {
+  private onAnnotationDeleteClick(payload: any) {
     this.layoutDS.state.annotation.deleteId = payload;
   }
 
-  private onAnnotationMouseEnter({ id }) {
+  private onAnnotationMouseEnter({ id }: { id: string }) {
     this.layoutDS.anchorService.addHoverClass(id);
   }
 
-  private onAnnotationMouseLeave({ id }) {
+  private onAnnotationMouseLeave({ id }: { id: string }) {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
   // eslint-disable-next-line complexity -- Existing edit-modal assembly branches predate the flat-config migration.
-  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
+  private onAnnotationEdit(payload: any, mode: 'comment'| 'tags' | 'semantic') {
     const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
@@ -200,7 +200,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }) : undefined;
   }
 
-  private onSidebarCollapse({ isCollapsed }) {
+  private onSidebarCollapse({ isCollapsed }: { isCollapsed: boolean }) {
     if (isCollapsed) {
       document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
     } else {
@@ -208,7 +208,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onLogout(payload) {
+  private onLogout(payload: any) {
     this.resetAppData(payload);
     if (!payload?.skipRequest) {
       this.layoutDS.punditLoginService.logout().catch((error) => {
@@ -217,7 +217,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private resetAppData = (payload) => {
+  private resetAppData = (payload: any) => {
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
     this.layoutDS.tagService.clear();

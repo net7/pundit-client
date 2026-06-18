@@ -163,7 +163,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       };
   }
 
-  onClick(ev: Event, payload) {
+  onClick(ev: Event, payload: any) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
 
@@ -189,7 +189,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onNotebookSelection = (type, payload) => {
+  onNotebookSelection = (type: string, payload: any) => {
     if (!this.emit) return;
     // const annotationID = this.data.payload.id;
     const annotationID = this.annotationId;

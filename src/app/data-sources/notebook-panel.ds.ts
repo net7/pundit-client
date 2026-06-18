@@ -36,7 +36,7 @@ export class NotebookPanelDS extends DataSource {
     shared: 'users'
   };
 
-  transform(data) {
+  transform(data: any) {
     // Data for the internal notebook-selector component
     const notebookSelectorData: NotebookSelectorData = {
       createOption: {

@@ -143,7 +143,7 @@ export class PdfService {
     return pathSegments[pathSegments.length - 1];
   }
 
-  onScroll({ target }) {
+  onScroll({ target }: { target: any }) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     const sidebarAnnotationsContainer = shadowRoot.querySelector('.pnd-sidebar__content') as HTMLElement;
     const { scrollTop } = target;

@@ -97,7 +97,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     });
   }
 
-  private onActionClick = (payload) => {
+  private onActionClick = (payload: any) => {
     switch (payload.action) {
       case 'remove':
       case 'delete_invite':
@@ -111,7 +111,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     }
   };
 
-  private onDelete(payload) {
+  private onDelete(payload: any) {
     const { notebookService } = this.layoutEH;
     const notebook = notebookService.getSelected();
     const body = {
@@ -128,7 +128,7 @@ export class SidebarLayoutNotebookPanelHandler implements LayoutHandler {
     });
   }
 
-  private onResend(payload) {
+  private onResend(payload: any) {
     const { notebookService } = this.layoutEH;
     const currentNotebookId = notebookService.getSelected()?.id;
     const body: NotebookPermissions = {

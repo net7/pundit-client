@@ -1,6 +1,8 @@
 import { EditorView } from 'prosemirror-view';
 import { EditorState } from 'prosemirror-state';
-import { DOMParser, DOMSerializer } from 'prosemirror-model';
+import {
+  DOMParser, DOMSerializer, Schema, NodeType
+} from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { Subject } from 'rxjs';
@@ -11,9 +13,9 @@ import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-edito
 import { isMarkActive, isNodeActive } from './helpers';
 
 class Editor {
-  private editorView;
+  private editorView: EditorView;
 
-  private schema;
+  private schema: Schema;
 
   private menu: TextEditorMenuData;
 
@@ -126,8 +128,8 @@ class Editor {
         buttons: group.map((button) => ({
           id: button,
           type: '',
-          title: _t(labels[button]),
-          command: commands[button],
+          title: _t(labels[button as keyof typeof labels]),
+          command: commands[button as keyof typeof commands],
           disabled: true
         }))
       })),
@@ -270,12 +272,12 @@ class Editor {
     });
   }
 
-  private isListAvailable(type) {
+  private isListAvailable(type: NodeType) {
     const { state } = this.editorView;
     return wrapInList(type)(state);
   }
 
-  private isListActive(type) {
+  private isListActive(type: NodeType) {
     const { state } = this.editorView;
     return isNodeActive(state, type);
   }

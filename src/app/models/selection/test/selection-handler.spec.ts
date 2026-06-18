@@ -3,8 +3,8 @@ import { selectionModel as model } from '../selection-model';
 
 describe('Selection', () => {
   describe('changed$ payload', () => {
-    let fakeEvent;
-    let fakeGetRangeAtCollapsedFalse;
+    let fakeEvent: Event;
+    let fakeGetRangeAtCollapsedFalse: jest.Mock;
     beforeEach(() => {
       fakeEvent = new Event('selectionchange');
       fakeGetRangeAtCollapsedFalse = jest.fn().mockReturnValue((() => {

@@ -135,7 +135,7 @@ export class AnnotationComponent implements OnInit {
     this.replies$ = this.replyService.getRepliesByAnnotationId$(this.annotationId);
   }
 
-  onContainerClick(payload) {
+  onContainerClick(payload: any) {
     if (!this.emit) return;
     this.emit('click', payload);
 
@@ -143,7 +143,7 @@ export class AnnotationComponent implements OnInit {
     this.ref.detectChanges();
   }
 
-  onEnter(payload) {
+  onEnter(payload: any) {
     if (!this.emit) return;
     this.emit('mouseenter', payload);
 
@@ -151,7 +151,7 @@ export class AnnotationComponent implements OnInit {
     this.ref.detectChanges();
   }
 
-  onLeave(payload) {
+  onLeave(payload: any) {
     if (!this.emit) return;
     this.emit('mouseleave', payload);
 

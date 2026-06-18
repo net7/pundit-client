@@ -163,7 +163,7 @@ export class SignUpComponent {
     });
   }
 
-  getErrorMessage = (input) => {
+  getErrorMessage = (input: string) => {
     if (!this.registerForm.get(input).touched) {
       return null;
     }

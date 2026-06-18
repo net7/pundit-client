@@ -48,7 +48,7 @@ export class AnnotationPositionService {
     );
     // get all <n7-annotation> nodes present in the sidebar
     const rawElements = shadowRoot.querySelectorAll<HTMLElement>('annotation');
-    const positionMap = [];
+    const positionMap: Array<{ el: HTMLElement; anchorPosition: number; created: any }> = [];
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>
       const { anchor, created } = annotations[index];
@@ -72,7 +72,7 @@ export class AnnotationPositionService {
       });
     });
 
-    const positions = [];
+    const positions: Array<{ start: number; end: number }> = [];
     positionMap.sort((a, b) => {
       // sort the mapped hightlights/annotations by position & creation-date
       const { created: aCreated, anchorPosition: aAnchorPosition } = a;

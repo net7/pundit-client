@@ -5,7 +5,7 @@ import { EditModalData } from '../components/edit-modal/edit-modal';
 import { EditModalParams, FormSectionData } from '../types';
 
 export class EditModalDS extends DataSource {
-  private draggableInstance;
+  private draggableInstance: any;
 
   private defaultPosition: { x: number; y: number };
 

@@ -83,7 +83,7 @@ export class NotebookService {
   /**
    * Updates notebook & notebook data.
    */
-  update(notebookID, data: NotebookUpdate) {
+  update(notebookID: string, data: NotebookUpdate) {
     const userId = this.userService.whoami().id;
     const nb = this.getNotebookById(notebookID);
     return from(NotebookModel.update(notebookID, {
@@ -200,12 +200,12 @@ export class NotebookService {
     const userId = this.userService.whoami().id;
     this.search().subscribe((response) => {
       const selected = Object.assign(response.data.notebooks
-        .find((item) => item.id === this.selectedId));
+        .find((item: any) => item.id === this.selectedId));
       const { users } = response.data;
       const readAccess = selected.userWithReadAccess
-        .filter((item) => !selected.userWithWriteAccess.includes(item));
+        .filter((item: any) => !selected.userWithWriteAccess.includes(item));
       const readPending = selected.userWithPendingReadingRequest
-        .filter((item) => !selected.userWithPendingWritingRequest.includes(item));
+        .filter((item: any) => !selected.userWithPendingWritingRequest.includes(item));
       const userList = {
         owner: this.createOwner(users, userId),
         read: this.createUsers(readAccess, users, false, false),
@@ -226,11 +226,11 @@ export class NotebookService {
     });
   }
 
-  private createOwner(users, ownerId) {
-    const owner = users.filter((item) => item.id === ownerId);
+  private createOwner(users: any[], ownerId: string) {
+    const owner = users.filter((item: any) => item.id === ownerId);
     const ownerItem = owner.map(({
       id, username, thumb, emailAddress
-    }) => ({
+    }: any) => ({
       id,
       username,
       email: emailAddress,
@@ -242,10 +242,10 @@ export class NotebookService {
     return ownerItem;
   }
 
-  private createUsers(array, users, isPending, canWrite) {
+  private createUsers(array: any[], users: any[], isPending: boolean, canWrite: boolean) {
     const list = (isPending) ? array
-      : users.filter((item) => array.find((element) => element === item.id));
-    const userList = list.map((item) => ({
+      : users.filter((item: any) => array.find((element: any) => element === item.id));
+    const userList = list.map((item: any) => ({
       id: (isPending) ? '' : item.id,
       username: (isPending) ? item : item.username,
       email: (isPending) ? item : item.emailAddress,

@@ -91,25 +91,25 @@ export class NotebookShareModalComponent {
     this.emit('close');
   }
 
-  onInput(payload) {
+  onInput(payload: any) {
     if (!this.emit) return;
 
     this.emit('input', payload);
   }
 
-  onAutocompleteClick(payload) {
+  onAutocompleteClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('autocompleteclick', payload);
   }
 
-  onActionClick(payload) {
+  onActionClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('actionclick', payload);
   }
 
-  dropdownToggle(item) {
+  dropdownToggle(item: any) {
     item.dropdown.isExpanded = !item.dropdown.isExpanded;
   }
 }

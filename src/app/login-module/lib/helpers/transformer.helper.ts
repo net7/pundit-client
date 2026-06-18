@@ -19,7 +19,7 @@ export const fromEvent = (message: MessageEvent): LoginResponse => {
   };
 };
 
-export const transformFromHttpSuccess = (response, source: SourceType) => {
+export const transformFromHttpSuccess = (response: any, source: SourceType) => {
   if (response?.error) {
     return { error: response.error as string, source };
   }

@@ -121,7 +121,7 @@ export class SignInComponent {
     });
   }
 
-  getErrorMessage = (input) => {
+  getErrorMessage = (input: string) => {
     if (!this.loginForm.get(input).touched) {
       return null;
     }

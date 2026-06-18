@@ -142,7 +142,7 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       });
       // fix typescript explicit
       // annotation types
-      let content;
+      let content: any;
       if (rawAnnotation.type === 'Commenting') {
         content = rawAnnotation.content;
       } else if (rawAnnotation.type === 'Linking') {

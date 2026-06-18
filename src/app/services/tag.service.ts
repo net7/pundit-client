@@ -6,7 +6,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 export class TagService {
   private tags$: Subject<Tag[]> = new BehaviorSubject([]);
 
-  private tags;
+  private tags: Tag[];
 
   load(tags: Tag[]) {
     if (Array.isArray(tags)) {

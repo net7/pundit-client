@@ -281,8 +281,8 @@ export class AnnotationService {
       const url = `${this.hypothesisBaseUrl}?uri=${response.pageContext}`;
       this.http.get(url).subscribe((res) => {
         const hypothesisAnnotations = Object.assign(res);
-        const annotations = [];
-        hypothesisAnnotations.rows.forEach((hypoAnnotation) => {
+        const annotations: any[] = [];
+        hypothesisAnnotations.rows.forEach((hypoAnnotation: any) => {
           if (hypoAnnotation.target[0].selector) {
             annotations.push(this.convertIntoAnnotation(hypoAnnotation, false));
           } else {
@@ -294,7 +294,12 @@ export class AnnotationService {
     });
   }
 
-  private emptySelected() {
+  private emptySelected(): {
+    text: string | null;
+    textPositionSelector: { start: number | null; end: number | null };
+    textQuoteSelector: { exact: string | null; prefix: string | null; suffix: string | null };
+    rangeSelector: { startOffset: number | null; endOffset: number | null; startContainer: string | null; endContainer: string | null };
+  } {
     return {
       text: null,
       textPositionSelector: { start: null, end: null },
@@ -308,14 +313,14 @@ export class AnnotationService {
     };
   }
 
-  private buildSelected(target) {
+  private buildSelected(target: any) {
     const { selector } = target;
     if (!selector) {
       return this.emptySelected();
     }
-    const textPosition = selector.find((item) => item.type === 'TextPositionSelector');
-    const textQuote = selector.find((item) => item.type === 'TextQuoteSelector');
-    const range = selector.find((item) => item.type === 'RangeSelector');
+    const textPosition = selector.find((item: any) => item.type === 'TextPositionSelector');
+    const textQuote = selector.find((item: any) => item.type === 'TextQuoteSelector');
+    const range = selector.find((item: any) => item.type === 'RangeSelector');
     return {
       text: textQuote.exact,
       textPositionSelector: {
@@ -336,7 +341,7 @@ export class AnnotationService {
     };
   }
 
-  private convertIntoAnnotation(hypoAnnotation, isPageAnnotation) {
+  private convertIntoAnnotation(hypoAnnotation: any, isPageAnnotation: boolean) {
     const { source } = hypoAnnotation.target[0];
     const selected = isPageAnnotation ? null : this.buildSelected(hypoAnnotation.target[0]);
     const annotation = {
@@ -344,9 +349,9 @@ export class AnnotationService {
       created: hypoAnnotation.created,
       id: hypoAnnotation.id,
       serializedBy: 'hypothesis',
-      userId: null,
+      userId: null as string | null,
       userName: hypoAnnotation.user.replace('acct:', ''),
-      notebookId: null,
+      notebookId: null as string | null,
       uri: hypoAnnotation.uri,
       type: 'Commenting',
       tags: hypoAnnotation.tags,

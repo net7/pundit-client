@@ -44,7 +44,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-  private onEditModalSaveEvent(payload) {
+  private onEditModalSaveEvent(payload: any) {
     const isUpdate = this.isUpdate();
     let workingToast: ToastInstance;
     if (!isUpdate) {
@@ -87,7 +87,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-  private onAnnotationCreated(data, workingToast: ToastInstance) {
+  private onAnnotationCreated(data: any, workingToast: ToastInstance) {
     // signal
     this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
       payload: data
@@ -114,7 +114,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     AnalyticsModel.track(this.getAnnotationCreatedAnalytics(data));
   }
 
-  private getAnnotationCreatedAnalytics(data): AnalyticsData {
+  private getAnnotationCreatedAnalytics(data: any): AnalyticsData {
     let analyticsData: AnalyticsData;
     // comment
     if (data.type === 'Commenting') {
@@ -154,7 +154,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     return analyticsData;
   }
 
-  private onCreateNotebookError(payload) {
+  private onCreateNotebookError(payload: any) {
     this.layoutEH.handleError(payload);
 
     // toast
@@ -198,7 +198,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
   }
 
-  private onEditModalSave(payload): Observable<any> {
+  private onEditModalSave(payload: any): Observable<any> {
     const isUpdate = this.isUpdate();
     if (isUpdate) {
       const updateRequestPayload = this.getEditRequestPayload(
@@ -215,7 +215,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   }
 
   // eslint-disable-next-line complexity -- Existing payload assembly branches predate the flat-config migration.
-  private getEditRequestPayload(annotationPayload, formState: EditModalFormState) {
+  private getEditRequestPayload(annotationPayload: any, formState: EditModalFormState) {
     const notebook = formState?.notebook?.value || null;
     const comment = typeof formState?.comment?.value === 'string'
       ? formState?.comment?.value.trim()
@@ -237,7 +237,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     return annotationPayload;
   }
 
-  private applyCommentPayload(annotationPayload, comment) {
+  private applyCommentPayload(annotationPayload: any, comment: string | null) {
     if (comment) {
       annotationPayload.type = 'Commenting';
       annotationPayload.content = { comment };
@@ -247,7 +247,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     }
   }
 
-  private applySemanticPayload(annotationPayload, semantic) {
+  private applySemanticPayload(annotationPayload: any, semantic: any) {
     if (!Array.isArray(semantic)) {
       return;
     }
@@ -256,7 +256,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       ? semantic.map((row) => this.getSemanticContentRow(row)) : undefined;
   }
 
-  private getSemanticContentRow(row) {
+  private getSemanticContentRow(row: any) {
     const {
       predicate, object, objectType
     } = row;
@@ -274,7 +274,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     };
   }
 
-  private getObjectPayload = (object, objectType: string) => {
+  private getObjectPayload = (object: any, objectType: string) => {
     if (objectType === 'literal') {
       return { objectType, object: { text: object.label } };
     } if (objectType === 'uri') {

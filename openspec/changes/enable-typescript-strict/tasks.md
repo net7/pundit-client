@@ -12,9 +12,9 @@
 
 ## 2. noImplicitAny
 
-- [ ] 2.1 Enable `noImplicitAny` in `tsconfig.json` and `tsconfig.chrome-ext.json`
-- [ ] 2.2 Fix all `noImplicitAny` errors with explicit type annotations (no `any` escape hatches except where unavoidable; note any exceptions)
-- [ ] 2.3 Verify `npm run build` and the chrome-extension build both compile cleanly; commit this increment
+- [x] 2.1 Enable `noImplicitAny` in `tsconfig.json` and `tsconfig.chrome-ext.json`
+- [x] 2.2 Fix all `noImplicitAny` errors (246) with explicit type annotations. Proper types used where obvious (ids, booleans, event `{type,payload}` → `AppEventData`, ProseMirror `Schema`/`NodeType`/`Command`, `Reply`/`Social`/`Tag` models, `keyof typeof`/index casts). Explicit `any` retained where data is genuinely external/dynamic (Hypothesis API conversions, event-bus payloads, third-party untyped libs). Added `src/typings.d.ts` ambient stubs for `draggable`/`seedrandom`/`@yaireo/tagify`. Fixed one spec file (`selection-handler.spec.ts`) that inherits the flag.
+- [x] 2.3 Verified all 4 tsconfig projects (`json`/`app`/`chrome-ext`/`spec`) report 0 tsc errors; `npm run build`, `npm run build:chrome-ext-prod`, `npm test` (8/8), and `npm run lint` all pass.
 
 ## 3. strictNullChecks
 

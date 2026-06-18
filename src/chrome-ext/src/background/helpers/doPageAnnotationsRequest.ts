@@ -6,7 +6,7 @@ const StorageCacheKey = 'page-annotations-cache';
 const SIZE_LIMIT = 1000;
 const TIME_LIMIT = 60 * 60 * 24 * 7; // one week in seconds
 
-const cacheCheck = (cacheKey, active) => ChromeExtStorage.get(StorageCacheKey)
+const cacheCheck = (cacheKey: string, active: boolean) => ChromeExtStorage.get(StorageCacheKey)
   .then((cache: ChromePageAnnotationCacheItem[]) => {
     const newCache = cache || [];
     const cacheItem = newCache.find(({ key }) => key === cacheKey);
@@ -46,7 +46,7 @@ const cacheCheck = (cacheKey, active) => ChromeExtStorage.get(StorageCacheKey)
     return cacheUpdate$.then(() => Promise.resolve({ cache: newCache, value }));
   });
 
-const getCacheKey = ({ pageContext, pageMetadata }) => {
+const getCacheKey = ({ pageContext, pageMetadata }: { pageContext: any; pageMetadata: any }) => {
   // canonical url
   if (pageMetadata) {
     return pageMetadata[0].value;
@@ -56,8 +56,8 @@ const getCacheKey = ({ pageContext, pageMetadata }) => {
 };
 
 export const doPageAnnotationsRequest = (
-  tabId,
-  payload
+  tabId: number,
+  payload: any
 ) => {
   const cacheKey = getCacheKey(payload);
   const { active } = payload;

@@ -39,7 +39,7 @@ export class TooltipComponent {
       ev.preventDefault();
     }
 
-    navEmit(type, payload) {
+    navEmit(type: string, payload: any) {
       if (!this.emit) return;
       this.emit(type, payload);
     }

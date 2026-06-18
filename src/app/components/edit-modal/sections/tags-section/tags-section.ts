@@ -42,7 +42,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
 
   private destroy$: Subject<void> = new Subject();
 
-  private formInstance;
+  private formInstance: any;
 
   public tagsHint = _c('tagsHint');
 
@@ -95,7 +95,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
           const elements = this.formInstance.getTagElms();
           this.data.changed$.next({
             id: this.id,
-            value: elements.map((el) => el.innerText)
+            value: elements.map((el: any) => el.innerText)
           });
         });
       }
@@ -106,7 +106,7 @@ export class TagsSectionComponent implements AfterViewInit, OnDestroy, FormSecti
     });
   };
 
-  private transformTag = (tagData) => {
+  private transformTag = (tagData: any) => {
     const tagColor = getTagColor(tagData.value);
     tagData.style = `--tag-bg:${tagColor}`;
   };

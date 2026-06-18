@@ -41,17 +41,17 @@ export class NotebookPanelComponent implements OnInit {
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onNotebookSelection = (type, payload) => {
+  onNotebookSelection = (type: string, payload: any) => {
     if (!this.emit) return;
     this.emit(type, payload);
   };
 
-  onClick(type, payload) {
+  onClick(type: string, payload: any) {
     if (!this.emit) return;
     this.emit('click', { ...payload, type });
   }
 
-  onChange(payload) {
+  onChange(payload: any) {
     if (!this.emit) return;
     this.emit('change', payload);
   }
