@@ -30,12 +30,12 @@
 
 ## 5. Consolidate to strict
 
-- [ ] 5.1 Replace the individual sub-flags with `strict: true` and remove the explicit `strict: false` in both tsconfigs
-- [ ] 5.2 Fix residual errors from the remaining `strict` sub-flags (e.g. `strictFunctionTypes`, `noImplicitThis`, `useUnknownInCatchVariables`)
-- [ ] 5.3 Verify both builds compile cleanly
+- [x] 5.1 Replaced the individual sub-flags with `strict: true` in both `tsconfig.json` and `tsconfig.chrome-ext.json`; the explicit `strict: false` is gone.
+- [x] 5.2 Fixed all 50 residual errors from the remaining sub-flags: `noImplicitThis` (`this: any` on tagify-custom functions), `useUnknownInCatchVariables` (`catch (err: any)`), `strictFunctionTypes` (RxJS/`addEventListener`/`Promise.then` callback variance — broadened callback param types, `as EventListener`/`as Promise<T>` casts, `fromEvent<MessageEvent>` generic, `as const` tuple), and typed empty-`BehaviorSubject` initializers.
+- [x] 5.3 Verified all 4 tsconfig projects report 0 errors; default and chrome-ext builds compile cleanly.
 
 ## 6. Verification
 
-- [ ] 6.1 Run `npm test` (jest) and `npm run lint`; confirm no regressions introduced by the type fixes
-- [ ] 6.2 Confirm both tsconfigs are in sync and `strict: true` is the only strictness declaration
-- [ ] 6.3 Update `ANGULAR_22_FOLLOWUPS.md` to mark item 5 as done
+- [x] 6.1 Ran `npm test` (jest 8/8) and `npm run lint` (clean); `npm run build` and `npm run build:chrome-ext-prod` both pass. No regressions.
+- [x] 6.2 Confirmed `tsconfig.json` and `tsconfig.chrome-ext.json` both declare `strict: true` and nothing else strictness-related; no `strict: false` or individual sub-flags remain.
+- [x] 6.3 Updated `ANGULAR_22_FOLLOWUPS.md` to mark item 5 as done.

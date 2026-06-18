@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { LoginResponse } from '@pundit/communication';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -36,7 +35,7 @@ export class OauthProviderService {
       takeUntil(this.destroy$),
       map(fromEvent),
       catchError((err) => of({ error: JSON.stringify(err) }))
-    ).subscribe((authResp: LoginResponse) => {
+    ).subscribe((authResp: any) => {
       if ('user' in authResp) {
         this.authEventService.set(authResp);
 

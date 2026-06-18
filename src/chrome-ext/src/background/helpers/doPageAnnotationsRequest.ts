@@ -6,7 +6,7 @@ const StorageCacheKey = 'page-annotations-cache';
 const SIZE_LIMIT = 1000;
 const TIME_LIMIT = 60 * 60 * 24 * 7; // one week in seconds
 
-const cacheCheck = (cacheKey: string, active: boolean) => ChromeExtStorage.get(StorageCacheKey)
+const cacheCheck = (cacheKey: string, active: boolean) => (ChromeExtStorage.get(StorageCacheKey) as Promise<ChromePageAnnotationCacheItem[]>)
   .then((cache: ChromePageAnnotationCacheItem[]) => {
     const newCache = cache || [];
     const cacheItem = newCache.find(({ key }) => key === cacheKey);

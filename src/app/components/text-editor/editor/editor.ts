@@ -21,7 +21,7 @@ class Editor {
 
   public menuEvent$: Subject<{
     type: string;
-    payload: any;
+    payload?: any;
   }> = new Subject();
 
   public init(
@@ -29,7 +29,7 @@ class Editor {
     {
       target: HTMLElement;
       appendTo: HTMLElement;
-      onChange: (content: object) => void;
+      onChange: (content: any) => void;
     }
   ) {
     // menu

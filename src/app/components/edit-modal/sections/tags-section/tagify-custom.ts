@@ -1,7 +1,7 @@
 // clone of tagify dropdown hide method
 // to fix shadowroot check
 // <tagify>/src/parts/dropdown.js:hide( force )
-export function customDropdownHide(force = false): any {
+export function customDropdownHide(this: any, force = false): any {
   const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
   const { scope, dropdown } = this.DOM;
   const isManual = this.settings.dropdown.position === 'manual' && !force;
@@ -47,7 +47,7 @@ export function getNodeHeight(node: any) {
 // clone of tagify dropdown render method
 // to fix shadowroot check
 // <tagify>/src/parts/dropdown.js:render()
-export function customShadowRootRender() {
+export function customShadowRootRender(this: any) {
   const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
   // let the element render in the DOM first, to accurately measure it.
   // this.DOM.dropdown.style.cssText = "left:-9999px; top:-9999px;";

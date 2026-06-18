@@ -141,7 +141,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   getUserSemanticPredicates() {
     return from(SemanticPredicateModel.get()).pipe(
-      tap(({ data }) => {
+      tap(({ data }: any) => {
         this.semanticPredicateService.load(data);
       })
     );
@@ -300,7 +300,7 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public addPendingAnnotation$(): Observable<Annotation> {
     return this.annotationService.getAnnotationRequestPayload$().pipe(
-      switchMap((pendingPayload: HighlightAnnotation) => {
+      switchMap((pendingPayload: HighlightAnnotation | CommentAnnotation) => {
         this.state.annotation.pendingPayload = pendingPayload;
         const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
           this.pendingAnnotationId,

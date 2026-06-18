@@ -69,7 +69,7 @@ export const checkActiveState = (tabId: number) => {
           return;
         }
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
-        ChromeExtStorage.get(activeKey).then(async (active: boolean) => {
+        (ChromeExtStorage.get(activeKey) as Promise<boolean>).then(async (active: boolean) => {
           const tabUrl = tab.url!;
 
           const isViewer = isPdfViewer(tabUrl);

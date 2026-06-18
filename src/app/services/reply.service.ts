@@ -133,7 +133,7 @@ export class ReplyService {
     if (!result) {
       result = {
         annotationId: id,
-        replies$: new BehaviorSubject([])
+        replies$: new BehaviorSubject<Reply[]>([])
       };
       this.repliesByAnnotationId.push(result);
     }

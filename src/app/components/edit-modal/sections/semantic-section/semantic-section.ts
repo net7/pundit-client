@@ -305,7 +305,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
             object: undefined as SemanticItem | undefined,
             objectType: rawValues.objectType
           };
-          ['predicate', 'object'].forEach((key: 'predicate' | 'object') => {
+          (['predicate', 'object'] as const).forEach((key) => {
             const { providerId } = row[key];
             const provider = this.getProviderById(providerId, key)!;
             rowValue[key] = provider.get(rawValues[key] as string);

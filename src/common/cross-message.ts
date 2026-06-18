@@ -14,7 +14,7 @@ const handlers: {
 } = {};
 
 if (addEventListener) {
-  addEventListener(CommonEventType.CrossMsgResponse, (ev: CustomEvent) => {
+  addEventListener(CommonEventType.CrossMsgResponse, ((ev: CustomEvent) => {
     const { detail }: { detail: CrossMsgData } = ev;
     const { messageId, response, error } = detail;
     if (handlers[messageId]) {
@@ -26,7 +26,7 @@ if (addEventListener) {
       // clear
       handlers[messageId] = null;
     }
-  });
+  }) as EventListener);
 }
 
 export function CrossMessage(requestId: string) {

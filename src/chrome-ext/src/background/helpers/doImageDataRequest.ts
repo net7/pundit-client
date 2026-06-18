@@ -14,7 +14,7 @@ export const doImageDataRequest = (tab: chrome.tabs.Tab, payload: any) => {
   const { url } = payload;
 
   toDataURL(url)
-    .then((data: string) => {
+    .then((data) => {
       chrome.tabs.sendMessage(tabId, {
         type: CommonEventType.ImageDataResponse,
         payload: { url, data }

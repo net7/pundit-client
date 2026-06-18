@@ -8,7 +8,7 @@ export const destroyExtension = () => {
   // remove listeners
   Object.keys(listenersMap).forEach((type) => {
     const handler = listenersMap[type as keyof typeof listenersMap];
-    window.removeEventListener(type, handler);
+    window.removeEventListener(type, handler as EventListener);
   });
 
   // emit signal

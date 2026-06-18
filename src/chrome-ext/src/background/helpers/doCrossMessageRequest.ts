@@ -75,12 +75,12 @@ export const doCrossMessageRequest = (tab: any, payload: any) => {
   const request$ = handler ? handler(args) : undefined;
   if (request$) {
     ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
-      .then((value: string) => {
-        CommunicationSettings.apiBaseUrl = value;
+      .then((value) => {
+        CommunicationSettings.apiBaseUrl = value as string;
         return ChromeExtStorage.get(ChromeExtStorageKey.AuthBaseUrl);
       })
-      .then((value: string) => {
-        CommunicationSettings.authBaseUrl = value;
+      .then((value) => {
+        CommunicationSettings.authBaseUrl = value as string;
         return request$;
       })
       .then((response) => {

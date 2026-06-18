@@ -29,7 +29,7 @@ export class PopupService implements OnDestroy {
     this.destroy$.next(true);
     this.destroy$.complete();
     this.destroy$ = new Subject<boolean>();
-    return fromEvent(window, 'message')
+    return fromEvent<MessageEvent>(window, 'message')
       .pipe(
         filter((message: MessageEvent) => this.filterOriginIfExists(message, origin)),
         take(1),

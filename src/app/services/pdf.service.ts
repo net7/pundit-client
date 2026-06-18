@@ -103,7 +103,7 @@ export class PdfService {
         url: this.documentUrl,
         originalUrl: this.originalUrl,
       });
-    } catch (err) {
+    } catch (err: any) {
       this.error$.next({
         type: err.name,
         payload: this.pdfApp

@@ -145,18 +145,22 @@ v22 default is fine here and the explicit setting can be dropped.
 
 ---
 
-## 5. Consider re-enabling TypeScript `strict`
+## 5. Consider re-enabling TypeScript `strict` — ✅ DONE
 
-**Priority: low / large.**
-
-**Context.** TypeScript 6 defaults `strict: true`. This project has always been
+**Context.** TypeScript 6 defaults `strict: true`. This project had always been
 non-strict, so `strict: false` was set explicitly in `tsconfig.json` and
 `tsconfig.chrome-ext.json` to preserve behavior. Turning strict on surfaced
 600+ errors (implicit any, strict null, uninitialized properties).
 
-**Steps (incremental).** Enable one flag at a time and fix the fallout:
-`noImplicitAny` → `strictNullChecks` → `strictPropertyInitialization` → full
-`strict`. This is a real code-quality project, not a quick win.
+**Outcome.** Done incrementally, one flag at a time, each as its own commit:
+`noImplicitAny` (246 errors) → `strictNullChecks` (257) →
+`strictPropertyInitialization` (139) → consolidate to full `strict: true` (50
+residual from `strictFunctionTypes`/`noImplicitThis`/`useUnknownInCatchVariables`).
+Both `tsconfig.json` and `tsconfig.chrome-ext.json` now declare `strict: true`
+(no `strict: false`, no individual sub-flags). A pre-step also established a
+clean `tsc --noEmit` baseline across all configs. Verified throughout: all four
+tsconfig projects report 0 tsc errors, and the default build, chrome-ext build,
+jest (8/8) and lint all pass. See OpenSpec change `enable-typescript-strict`.
 
 ---
 

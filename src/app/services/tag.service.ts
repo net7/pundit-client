@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable()
 export class TagService {
-  private tags$: Subject<Tag[]> = new BehaviorSubject([]);
+  private tags$: Subject<Tag[]> = new BehaviorSubject<Tag[]>([]);
 
   private tags!: Tag[];
 

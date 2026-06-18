@@ -17,7 +17,7 @@ export class ChromeExtService {
 
   load(): Promise<void> {
     return new Promise((res) => {
-      window.addEventListener(CommonEventType.PunditLoaded, (ev: CustomEvent) => {
+      window.addEventListener(CommonEventType.PunditLoaded, ((ev: CustomEvent) => {
         const { id } = ev.detail;
         config.set('chromeExtId', id);
         config.set('chromeExtUrl', `chrome-extension://${id}`);
@@ -35,7 +35,7 @@ export class ChromeExtService {
         // api onload hook
         (window as any).Pundit_API.onLoad();
         res();
-      }, false);
+      }) as EventListener, false);
     });
   }
 

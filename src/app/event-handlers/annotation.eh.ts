@@ -161,7 +161,7 @@ export class AnnotationEH extends EventHandler {
         first(),
         takeUntil(this.onMenuFocusLost),
       ) // keep listening until the menu is closed
-      .subscribe((e: MouseEvent) => {
+      .subscribe((e: Event) => {
         let clickedElement: HTMLElement | undefined;
         const { path, target } = e as any || {};
         if (Array.isArray(path) && path.length) {

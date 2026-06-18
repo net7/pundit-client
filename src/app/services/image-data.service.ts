@@ -33,7 +33,7 @@ export class ImageDataService {
     });
 
     // listen to image data (base64) response
-    window.addEventListener(CommonEventType.ImageDataResponse, (ev: CustomEvent) => {
+    window.addEventListener(CommonEventType.ImageDataResponse, ((ev: CustomEvent) => {
       const { url, data, error }: {
         url: string;
         data: string;
@@ -47,7 +47,7 @@ export class ImageDataService {
         this.images[url].status = ImageDataStatus.Loaded;
         this.images[url].data.next(this.domSanitizer.bypassSecurityTrustUrl(data));
       }
-    }, false);
+    }) as EventListener, false);
   }
 
   add(url: string) {

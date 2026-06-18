@@ -120,7 +120,7 @@ export class EmailProviderService implements OnDestroy {
       takeUntil(this.destroy$),
       map(fromEvent),
       catchError((err) => of({ error: JSON.stringify(err), source: 'login' }))
-    ).subscribe((authResp: LoginResponse) => {
+    ).subscribe((authResp: any) => {
       if (authResp) {
         this.authEventService.set(authResp);
       }
