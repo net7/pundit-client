@@ -145,26 +145,24 @@ extension were validated for syntax/structure, not runtime.
 
 ---
 
-## 4. `ChangeDetectionStrategy.Eager` stamped on every component
+## 4. Migrate components to `OnPush` change detection — ✅ DONE
 
-**Priority: low (works as-is; this is a perf opportunity, not a bug).**
+**Outcome.** Done (commits `9dc930ab` apply / `fcf08c3e` archive; OpenSpec change
+`migrate-onpush-change-detection`). Every component now declares
+`changeDetection: ChangeDetectionStrategy.OnPush` — verified across ~40 component
+files including `app.component.ts`. No component is left on `Eager`.
 
-**Context (corrected).** The Angular 22 `ng update` renamed the old default
-change-detection strategy and added an explicit
-`changeDetection: ChangeDetectionStrategy.Eager` to **all 36 components**
-(not just `social-action-bar` as originally noted), to preserve the legacy
-"check always" behavior. **No component uses `OnPush`.**
+**Context (for history).** Angular 22 made `OnPush` the implicit default for new
+components and renamed the old "check always" default to `Eager` — verified in the
+official API docs: the `ChangeDetectionStrategy` enum is literally
+`{ OnPush, Eager, Default: ChangeDetectionStrategy.Eager }`. The v17→22 `ng update`
+stamped an explicit `ChangeDetectionStrategy.Eager` on all components to preserve
+legacy behavior; this migration then converted them to `OnPush` component-by-component,
+auditing each for mutation-in-place patterns.
 
-**Opportunity.** `Eager` (= old `Default`, CheckAlways) re-checks every component
-on every tick. Migrating hot components to `ChangeDetectionStrategy.OnPush` is the
-main perf win left on the table, but it requires auditing each component for
-mutation-in-place patterns (OnPush only re-renders on input identity change,
-events, or async-pipe emissions). Do it component-by-component, highest-traffic
-first; not a blanket find/replace.
-
-**Steps.** Pick a leaf/presentational component, switch to `OnPush`, verify it
-still updates correctly, repeat. The explicit `Eager` on the rest can stay until
-each is converted.
+**Note.** The app is still **zone-based** (`provideZoneChangeDetection()` in
+`app.config.ts:23`, `zone.js@0.15`). OnPush is now the main prerequisite for going
+zoneless — see item 9.
 
 ---
 
@@ -187,37 +185,21 @@ jest (8/8) and lint all pass. See OpenSpec change `enable-typescript-strict`.
 
 ---
 
-## 7. Adopt standalone components + `inject()` (modern Angular architecture)
+## 7. Adopt standalone components + `inject()` — ✅ DONE
 
-**Priority: medium (large, optional; this is the biggest "not benefiting from
-modern Angular" item).**
+**Outcome.** Done (commits `7ecd3fa0` apply / `66ca8c6e` archive; OpenSpec change
+`migrate-standalone-inject`). The app is now standalone-based: **no
+`standalone: false` and no `@NgModule` remain in `src/`** (the only matches left are
+in the OpenSpec history and this doc). Bootstrap uses `ApplicationConfig` +
+`appConfig.providers` in `app.config.ts`; component DI is via `inject()`. The
+custom-element / embed bootstrap and the login-module sub-app continue to work.
 
-**Context.** The app is intentionally still **NgModule-based**: 37 components
-declare `standalone: false`, wired through `@NgModule` declarations, and DI is
-done via constructors. The two lint rules that would push toward the modern style
-— `@angular-eslint/prefer-standalone` and `@angular-eslint/prefer-inject` — are
-deliberately **off** (`eslint.config.js:67-68`). Standalone is the Angular default
-since v19; NgModules are now legacy. Nothing is broken, but the app gets none of
-the benefits (simpler wiring, lazy loading without modules, smaller graph,
-`inject()` ergonomics).
-
-**Why deferred.** It's a broad refactor with real risk: every component must drop
-`standalone: false` and declare its own `imports`, the `@NgModule` declarations
-must be dismantled/relocated, and the custom-element bootstrap + login-module
-sub-app need to keep working. Best done as its own dedicated effort, not folded
-into the version bump.
-
-**Steps (when tackled).**
-1. Run `ng generate @angular/core:standalone` migrations in order:
-   `convert-to-standalone` → `prune-ng-modules` → `standalone-bootstrap`.
-   Note: this app bootstraps as a custom element / embed bundle, so the
-   `standalone-bootstrap` step needs manual review against `scripts/postbuild.js`
-   and the custom-element entry, not a blind apply.
-2. Migrate constructor DI to `inject()` with `ng generate @angular/core:inject`.
-3. Re-enable `@angular-eslint/prefer-standalone` and `prefer-inject` in
-   `eslint.config.js` and fix the stragglers.
-4. Consider doing this **before** item 4 — OnPush + standalone + `inject()` are
-   naturally migrated together per component.
+**Context (for history).** The app was previously NgModule-based with
+`standalone: false` components and constructor DI. The two lint rules
+`@angular-eslint/prefer-standalone` and `@angular-eslint/prefer-inject` were kept
+off during the version bump; revisit re-enabling them now that the migration is
+complete to catch any future regressions. (A handful of `constructor(...)` calls
+remain in non-DI plain classes — handlers, models, providers — which is expected.)
 
 ---
 
@@ -241,3 +223,54 @@ into the version bump.
   `eslint --fix` had stripped `standalone: false`; fully restored in the v20
   commit (`e206fd9`). The branch tip is correct; individual mid-branch commits
   are not all bisect-clean.
+
+---
+
+## 9. Go zoneless
+
+**Priority: medium (the natural next perf step now that OnPush is universal).**
+
+**Context.** The app still uses `provideZoneChangeDetection()` (`app.config.ts:23`)
+and ships `zone.js@0.15` as a runtime dep + polyfill. With every component now on
+`OnPush` (item 4) and standalone + `inject()` done (item 7), the main prerequisite
+for zoneless is in place. Zoneless drops zone.js entirely, relying on signals /
+explicit `markForCheck` / async-pipe to drive change detection.
+
+**Why not yet.** Needs an audit for code that implicitly relied on zone.js patching
+to trigger CD — `setTimeout`/`setInterval`, raw `addEventListener`, non-Angular
+async callbacks (ProseMirror, tippy.js, draggable, pdf.js, the Tagify integration),
+and anything in the custom-element / embed bootstrap path.
+
+**Steps.**
+1. Swap `provideZoneChangeDetection()` → `provideZonelessChangeDetection()` in
+   `app.config.ts`; remove `zone.js` from polyfills and `package.json`.
+2. Run the full app (item 3 smoke test) and hunt for views that stop updating —
+   wrap the offending third-party callbacks in a signal write or `markForCheck`.
+3. Verify the embed bundle and chrome extension, where the bootstrap differs.
+
+---
+
+## 10. Modern A22 reactivity / DI APIs (optional, not adopted)
+
+**Priority: low (all optional; nothing is broken). These are real, stable Angular 22
+APIs — verified against the official docs — that the app simply hasn't adopted yet.**
+
+- **`@Service()` decorator + `injectAsync`.** All 29 services use
+  `@Injectable({ providedIn: 'root' })`. Angular 22 added `@Service()` (from
+  `@angular/core`) as a cleaner, tree-shakeable root-singleton replacement, and
+  `injectAsync(() => import('...'))` for lazy-loading services on demand. Candidates
+  for lazy loading: the heavy/rarely-needed services (`pdf.service`,
+  `document-info-pdf.service`, `image-data.service`).
+- **Signal Forms (`@angular/forms/signals`).** The app still uses classic
+  `FormGroup` / `FormControl` / `ReactiveFormsModule` in `notebook-share-modal.ds.ts`
+  and the login `signup`/`signin` components. The stable `form()` /
+  `FormField` / `required` / `email` / `submit` API gives type-safe, signal-driven
+  form state with less boilerplate.
+- **Resource APIs (`resource` / `rxResource` / `httpResource`).** Not used anywhere.
+  Note the app's data layer is built on `@n7-frontend/boilerplate` DataSources + RxJS,
+  not Angular `HttpClient` directly, so `httpResource` is **not** a drop-in — adopting
+  resources would be a deeper data-layer shift, not a quick win. `rxResource`
+  (`@angular/core/rxjs-interop`) is the closer fit if wrapping existing observables.
+- **Incremental hydration — N/A.** `provideClientHydration()` (incremental hydration
+  on by default in v22) is SSR-only. This app is a browser-extension / embeddable
+  custom-element app with no server rendering, so hydration features do not apply.
