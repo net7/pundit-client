@@ -16,39 +16,39 @@ import { TextEditorComponent } from "../../../text-editor/text-editor";
 
 const TEXT_MIN_LIMIT = 3;
 
-export type CommentSectionValue = string | null;
+export type AiRequestSectionValue = string | null;
 
-export type CommentSectionOptions = {
+export type AiRequestSectionOptions = {
   label: string;
 };
 
 @Component({
-  selector: "pnd-comment-section",
-  templateUrl: "./comment-section.html",
+  selector: "pnd-ai-request-section",
+  templateUrl: "./request-section.html",
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [TextEditorComponent],
 })
-export class CommentSectionComponent
+export class AiRequestSectionComponent
   implements
     AfterViewInit,
     OnDestroy,
-    FormSection<CommentSectionValue, CommentSectionOptions>
+    FormSection<AiRequestSectionValue, AiRequestSectionOptions>
 {
   private changeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input() public sectionId: string = "comment";
+  id = "aiRequest";
 
-  get id() {
-    return this.sectionId;
-  }
+  editor: any;
 
   @Input() public data!: FormSectionData<
-    CommentSectionValue,
-    CommentSectionOptions
+    AiRequestSectionValue,
+    AiRequestSectionOptions
   >;
+
   @Input() public reset$!: Subject<void>;
 
   public editorData!: TextEditorData;
+
   private destroy$: Subject<void> = new Subject();
 
   ngAfterViewInit() {
