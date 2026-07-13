@@ -1,9 +1,7 @@
-/* eslint-disable max-lines */
-/* eslint-disable complexity */
 import { _t } from "@net7/core";
 import { SemanticTripleType } from "@pundit/communication";
 import { cloneDeep } from "lodash";
-import { EMPTY, Observable, from } from "rxjs";
+import { EMPTY, Observable, firstValueFrom, from } from "rxjs";
 import { catchError, filter, map, switchMap } from "rxjs/operators";
 import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
 import {
@@ -19,6 +17,9 @@ import { AnalyticsModel } from "src/common/models";
 import { AnalyticsAction, AnalyticsData } from "src/common/types";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
+
+import mapChunks from "./annotation-range-selector.util";
+import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 
 export class MainLayoutEditModalHandler implements LayoutHandler {
   constructor(
@@ -54,14 +55,13 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     const isUpdate = this.isUpdate();
     let workingToast: ToastInstance;
     if (!isUpdate) {
-      // toast "working..."
       workingToast = this.layoutDS.toastService.working();
     }
     this.onEditModalSave(payload)
       .pipe(
         catchError((e) => {
           this.layoutEH.handleError(e);
-          // toast
+          // toast di errore generico se il salvataggio fallisce
           this.layoutDS.toastService.error({
             title: _t("toast#annotationsave_error_title"),
             text: _t("toast#annotationsave_error_text"),
@@ -75,25 +75,45 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         filter((data) => data),
       )
       .subscribe((data) => {
-        // clear previous annotation payload
         this.layoutDS.state.annotation.pendingPayload = null;
         this.layoutDS.state.annotation.updatePayload = null;
 
-        if (data.isUpdate) {
-          // signal
+        if (isUpdate) {
+          // Caso UPDATE: qui "data" è ancora un singolo oggetto
+          // { requestPayload, isUpdate }, non un array.
           this.layoutEH.appEvent$.next({
             type: AppEvent.CommentUpdate,
             payload: data.requestPayload,
           });
-          // close the edit modal — the create flow closes it via onAnnotationCreated;
-          // the update flow must emit the same close signal (EditModalEH listens to
-          // MainLayoutEvent.AnnotationCreated to run closeModal()).
           this.layoutEH.emitOuter(
             getEventType(MainLayoutEvent.AnnotationCreated),
           );
-        } else {
-          this.onAnnotationCreated(data, workingToast);
+          return;
         }
+
+        const createdAnnotations: any[] = data;
+
+        createdAnnotations.forEach((annotation, index) => {
+          if (index === 0) {
+            // Solo per la PRIMA annotazione eseguiamo il flusso "visibile":
+            // chiusura modale, toast di successo, chiusura del working toast.
+            // Se lo facessimo per ognuna, avremmo N toast e N tentativi di
+            // chiudere un modale già chiuso.
+            this.onAnnotationCreated(annotation, workingToast);
+          } else {
+            // Per le annotazioni successive (generate dall'AI) ripetiamo solo
+            // la parte "silenziosa": notifica interna, aggiornamento tag,
+            // tracking analytics — senza toast/chiusura modale duplicati.
+            this.layoutEH.appEvent$.next({
+              type: AppEvent.AnnotationCreateSuccess,
+              payload: annotation,
+            });
+            this.layoutDS.tagService.addMany(annotation?.tags);
+            AnalyticsModel.track(
+              this.getAnnotationCreatedAnalytics(annotation),
+            );
+          }
+        });
       });
   }
 
@@ -206,6 +226,12 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
   }
 
+  /*
+   Qui adesso costruisco i payload da salvare, normalizzando però 
+   la forma salvando tutto tramite una array, sia che il payload sia singolo,
+   quindi un'annotazione normale e sia che il payload sia multiplo, quando contiene le 
+   risposte dell'IA
+   */
   private onEditModalSave(payload: any): Observable<any> {
     const isUpdate = this.isUpdate();
 
@@ -218,7 +244,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       return from(
         this.getEditRequestPayload(cloneDeep(updatePayload), payload),
       ).pipe(
-        map((updateRequestPayload) => ({
+        map(({ payload: updateRequestPayload }) => ({
           requestPayload: updateRequestPayload,
           isUpdate,
         })),
@@ -233,9 +259,20 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     return from(
       this.getEditRequestPayload(cloneDeep(pendingPayload), payload),
     ).pipe(
-      switchMap((pendingRequestPayload) =>
-        this.layoutDS.saveAnnotation(pendingRequestPayload),
-      ),
+      switchMap(({ payload: pendingRequestPayload, aiPayloads }) => {
+        const payloadsToSave =
+          aiPayloads && aiPayloads.length
+            ? aiPayloads
+            : [pendingRequestPayload];
+
+        return from(
+          Promise.all(
+            payloadsToSave.map((p) =>
+              firstValueFrom(this.layoutDS.saveAnnotation(p)),
+            ),
+          ),
+        );
+      }),
     );
   }
 
@@ -247,291 +284,33 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-   
+  /*
+  Qui viene preso il payload e nel caso in cui
+  l'utente abbia mandato un prompt AI, viene chiamata la funzione mapChunks che ritorna un array di payload
+   */
   private async getEditRequestPayload(
     annotationPayload: any,
     formState: EditModalFormState,
-  ) {
-    const notebook = formState?.notebook?.value || null;
-    const comment =
-      typeof formState?.comment?.value === "string"
-        ? formState?.comment?.value.trim()
-        : null;
-    const tags = formState?.tags?.value || null;
-    const semantic = formState?.semantic?.value || null;
+  ): Promise<{ payload: any; aiPayloads: any[] | null }> {
+    EditModalPayloadBuilder.applyFormValuesToPayload(
+      annotationPayload,
+      formState,
+    );
+    const aiPayloads = await this.generateAiPayloads(
+      annotationPayload,
+      formState?.aiRequest?.value,
+    );
+    return { payload: annotationPayload, aiPayloads };
+  }
+
+  private async generateAiPayloads(
+    annotationPayload: any,
+    aiRequestValue: any,
+  ): Promise<any[] | null> {
     const aiRequest =
-      typeof formState?.aiRequest?.value === "string"
-        ? formState?.aiRequest?.value.trim()
-        : null;
-
-    // check notebook value
-    if (notebook) {
-      annotationPayload.notebookId = notebook;
-    }
-    // check comment value
-    this.applyCommentPayload(annotationPayload, comment);
-    // check tags value
-    if (Array.isArray(tags)) {
-      annotationPayload.tags = tags.length ? tags : undefined;
-    }
-    // check semantic value
-    this.applySemanticPayload(annotationPayload, semantic);
-    // check Ai Request value
-    if (aiRequest != null) {
-      console.log(annotationPayload, aiRequest);
-      await this.mapChunks(annotationPayload, aiRequest);
-    }
-    return annotationPayload;
+      typeof aiRequestValue === "string" ? aiRequestValue.trim() : null;
+    return aiRequest ? mapChunks(annotationPayload, aiRequest) : null;
   }
-
-  private applyCommentPayload(annotationPayload: any, comment: string | null) {
-    if (comment) {
-      annotationPayload.type = "Commenting";
-      annotationPayload.content = { comment };
-    } else {
-      annotationPayload.type = "Highlighting";
-      annotationPayload.content = undefined;
-    }
-  }
-
-  private applySemanticPayload(annotationPayload: any, semantic: any) {
-    if (!Array.isArray(semantic)) {
-      return;
-    }
-    annotationPayload.type = semantic.length ? "Linking" : "Highlighting";
-    annotationPayload.content = semantic.length
-      ? semantic.map((row) => this.getSemanticContentRow(row))
-      : undefined;
-  }
-
-  private getSemanticContentRow(row: any) {
-    const { predicate, object, objectType } = row;
-    // old semantic annotation check
-    if (object?.rdfTypes?.length) {
-      return row;
-    }
-    const objectPayload = this.getObjectPayload(object, objectType);
-    return {
-      predicate: {
-        label: predicate.label,
-        uri: predicate.uri,
-      },
-      ...objectPayload,
-    };
-  }
-
-  private getObjectPayload = (object: any, objectType: string) => {
-    if (objectType === "literal") {
-      return { objectType, object: { text: object.label } };
-    }
-    if (objectType === "uri") {
-      return {
-        objectType,
-        object: {
-          uri: object.label,
-          source: "free-text",
-        },
-      };
-    }
-    return {};
-  };
 
   private isUpdate = () => !!this.layoutDS.state.annotation.updatePayload;
-
-  // al momento metterò qui la funzione per provare la chiave
-
-  private toTextNode(node: Node): Node {
-    if (node.nodeType === Node.TEXT_NODE) return node;
-    const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-    const firstText = walker.nextNode();
-    return firstText ?? node;
-  }
-
-  private buildChunkProjection(range: Range): {
-    chunks: { id: string; text: string }[];
-    chunkMap: Map<string, Text>;
-  } {
-    const chunks: { id: string; text: string }[] = [];
-    const chunkMap = new Map<string, Text>();
-    // la funzione commonAncestorContainer mi permette di prendere il sottoalbero che contiene il mio range, dentro il quale quindi applicherò la funzione
-    // createTreeWalker per scorrere tutti i nodi che contengono del testo
-    const root =
-      range.commonAncestorContainer.nodeType === Node.TEXT_NODE
-        ? (range.commonAncestorContainer.parentNode as Element)
-        : (range.commonAncestorContainer as Element);
-
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-      acceptNode: (node) =>
-        range.intersectsNode(node)
-          ? NodeFilter.FILTER_ACCEPT
-          : NodeFilter.FILTER_REJECT,
-    });
-
-    let i = 0;
-    while (walker.nextNode()) {
-      const node = walker.currentNode as Text;
-      const text = node.textContent?.trim();
-      if (!text) continue;
-
-      const id = `c${++i}`;
-      chunks.push({ id, text });
-      chunkMap.set(id, node);
-    }
-
-    return { chunks, chunkMap };
-  }
-
-  private async mapChunks(
-    annotationPayload: any,
-    aiRequest: string,
-  ): Promise<void> {
-    const range = this.restoreRangeFromPayload(annotationPayload);
-    if (!range) {
-      console.warn("[mapChunks] Range non trovato nel DOM");
-      return;
-    }
-
-    const { chunks, chunkMap } = this.buildChunkProjection(range);
-    //console.log("[mapChunks] chunks per LLM:", chunks);
-    //console.log("[mapChunks] chunkMap privata:", chunkMap);
-    //console.log("[mapChunks] prompt:", aiRequest);
-
-    const response = await fetch(
-      "https://llm.graphia-ssh.eu/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer sk-Q4a0hn-WBld_ynRRWfHqug`, // verrà dalla config utente
-        },
-        body: JSON.stringify({
-          model: "DeepSeek-V3.1-vLLM",
-          messages: [
-            {
-              role: "system",
-              content: `Sei un assistente che analizza testo.
-  Ricevi una lista di chunk di testo con id e testo.
-  Devi rispondere SOLO con un JSON array di oggetti con questa forma:
-  [{ "chunkId": "c1", "quote": "la parte esatta da evidenziare" }]
-  Usa solo testo che esiste letteralmente nei chunk forniti.`,
-            },
-            {
-              role: "user",
-              content: `Chunks di testo:\n${JSON.stringify(chunks, null, 2)}\n\nPrompt utente: ${aiRequest}`,
-            },
-          ],
-        }),
-      },
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("[mapChunks] errore LLM:", response.status, errorText);
-      return;
-    }
-
-    const data = await response.json();
-    const raw = data.choices?.[0]?.message?.content ?? "[]";
-
-    let toolCalls: { chunkId: string; quote: string }[];
-    try {
-      toolCalls = JSON.parse(raw);
-    } catch {
-      console.warn("[mapChunks] risposta LLM non parsabile:", raw);
-      return;
-    }
-
-    //console.log("[mapChunks] risposta LLM:", toolCalls);
-
-    for (const call of toolCalls) {
-      const node = chunkMap.get(call.chunkId);
-      if (!node) {
-        console.warn("[mapChunks] chunkId non trovato:", call.chunkId);
-        continue;
-      }
-
-      const startOffset = node.textContent?.indexOf(call.quote) ?? -1;
-      if (startOffset === -1) {
-        console.warn("[mapChunks] quote non trovata nel chunk:", call.quote);
-        continue;
-      }
-
-      const finalRange = document.createRange();
-      finalRange.setStart(node, startOffset);
-      finalRange.setEnd(node, startOffset + call.quote.length);
-
-      //console.log("[mapChunks] Range finale costruito:", finalRange.toString());
-      //  qui il prossimo step sarà passare finalRange all' Annotator dopo però averlo ricostruito correttamente
-    }
-  }
-
-  // Questa funzione ricostruisce il Range come oggetto dal DOM usando startContainer xpath del rangeSelector
-  private restoreRangeFromPayload(annotationPayload: any): Range | null {
-    const selected = annotationPayload?.subject?.selected;
-    if (!selected) return null;
-
-    const { startContainer, endContainer, startOffset, endOffset } =
-      selected.rangeSelector ?? {};
-
-    if (startContainer && endContainer) {
-      try {
-        const toRelative = (xpath: string) =>
-          xpath.startsWith("/") ? xpath.slice(1) : xpath;
-
-        const startNode = document.evaluate(
-          toRelative(startContainer),
-          document.body,
-          null,
-          XPathResult.FIRST_ORDERED_NODE_TYPE,
-          null,
-        ).singleNodeValue;
-
-        const endNode = document.evaluate(
-          toRelative(endContainer),
-          document.body,
-          null,
-          XPathResult.FIRST_ORDERED_NODE_TYPE,
-          null,
-        ).singleNodeValue;
-
-        //console.log("[restoreRange] startNode:", startNode);
-        //console.log("[restoreRange] endNode:", endNode);
-
-        if (startNode && endNode) {
-          const range = document.createRange();
-          range.setStart(this.toTextNode(startNode), startOffset ?? 0);
-          range.setEnd(this.toTextNode(endNode), endOffset ?? 0);
-          return range;
-        }
-      } catch (e) {
-        console.warn("[restoreRange] xpath fallito, provo textQuote", e);
-      }
-    }
-
-    // fallback textQuoteSelector
-    const { exact, prefix } = selected.textQuoteSelector ?? {};
-    if (!exact) return null;
-
-    const walker = document.createTreeWalker(
-      document.body,
-      NodeFilter.SHOW_TEXT,
-    );
-    while (walker.nextNode()) {
-      const node = walker.currentNode as Text;
-      const idx = node.textContent?.indexOf(exact) ?? -1;
-      if (idx === -1) continue;
-      if (
-        prefix &&
-        !node.textContent?.substring(0, idx).endsWith(prefix.trim())
-      )
-        continue;
-
-      const range = document.createRange();
-      range.setStart(node, idx);
-      range.setEnd(node, idx + exact.length);
-      return range;
-    }
-
-    return null;
-  }
 }
