@@ -1,6 +1,6 @@
 import { _t } from "@net7/core";
 import { SemanticTripleType } from "@pundit/communication";
-import { cloneDeep } from "lodash";
+import { cloneDeep, uniq } from "lodash";
 import { EMPTY, Observable, firstValueFrom, from } from "rxjs";
 import { catchError, filter, map, switchMap } from "rxjs/operators";
 import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
@@ -145,19 +145,18 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   }
 
   private getAnnotationCreatedAnalytics(data: any): AnalyticsData {
-    let analyticsData: AnalyticsData | undefined;
     // comment
     if (data.type === "Commenting") {
-      analyticsData = {
+      return {
         action: AnalyticsAction.CommentAnnotationCreated,
-        payload: {
-          scope: "fragment",
-        },
+        payload: { scope: "fragment" },
       };
-      // semantic
-    } else if (data.type === "Linking") {
+    }
+
+    // semantic
+    if (data.type === "Linking") {
       const { content }: { content: SemanticTripleType[] } = data;
-      analyticsData = {
+      return {
         action: AnalyticsAction.SemanticAnnotationCreated,
         payload: {
           scope: "fragment",
@@ -169,9 +168,11 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           "number-triples": content.length,
         },
       };
-      // tags
-    } else if (Array.isArray(data.tags) && data.tags.length) {
-      analyticsData = {
+    }
+
+    // tags
+    if (Array.isArray(data.tags) && data.tags.length) {
+      return {
         action: AnalyticsAction.TagAnnotationCreated,
         payload: {
           scope: "fragment",
@@ -179,7 +180,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         },
       };
     }
-    return analyticsData!;
+
+    throw new Error("Invalid annotation type for analytics");
   }
 
   private onCreateNotebookError(payload: any) {
@@ -232,6 +234,59 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
    quindi un'annotazione normale e sia che il payload sia multiplo, quando contiene le 
    risposte dell'IA
    */
+  private saveAnnotationsSequentially(payloads: any[]): Observable<any[]> {
+    return from(
+      (async (): Promise<any[]> => {
+        const saved: any[] = [];
+        for (const p of payloads) {
+          if (this.isValidAnnotationPayload(p)) {
+            try {
+              const result = await firstValueFrom(
+                this.layoutDS.saveAnnotation(p),
+              );
+              saved.push(result);
+            } catch (error) {
+              console.error(
+                "[saveAnnotation] Errore salvataggio annotazione:",
+                error,
+              );
+            }
+          }
+        }
+        return saved;
+      })(),
+    );
+  }
+
+  private isValidAnnotationPayload(p: any): boolean {
+    const selected = p?.subject?.selected;
+    if (!selected) {
+      console.warn(
+        "[saveAnnotation] Payload saltato: subject.selected mancante",
+        p,
+      );
+      return false;
+    }
+    if (
+      !selected.rangeSelector?.startContainer ||
+      !selected.rangeSelector?.endContainer
+    ) {
+      console.warn(
+        "[saveAnnotation] Payload saltato: rangeSelector incompleto",
+        selected,
+      );
+      return false;
+    }
+    if (!selected.textQuoteSelector?.exact) {
+      console.warn(
+        "[saveAnnotation] Payload saltato: textQuoteSelector.exact mancante",
+        selected,
+      );
+      return false;
+    }
+    return true;
+  }
+
   private onEditModalSave(payload: any): Observable<any> {
     const isUpdate = this.isUpdate();
 
@@ -265,13 +320,9 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
             ? aiPayloads
             : [pendingRequestPayload];
 
-        return from(
-          Promise.all(
-            payloadsToSave.map((p) =>
-              firstValueFrom(this.layoutDS.saveAnnotation(p)),
-            ),
-          ),
-        );
+        // Salva le annotazioni in sequenza (non in parallelo) per evitare
+        // race condition sul refresh del token JWT che causa 401.
+        return this.saveAnnotationsSequentially(payloadsToSave);
       }),
     );
   }
@@ -286,7 +337,8 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
 
   /*
   Qui viene preso il payload e nel caso in cui
-  l'utente abbia mandato un prompt AI, viene chiamata la funzione mapChunks che ritorna un array di payload
+  l'utente abbia mandato un prompt AI, viene chiamata la funzione mapChunks che ritorna un array di payload.
+  Tutti i payload (sia il principale che quelli generati dall'IA) devono avere applicati i valori della form.
    */
   private async getEditRequestPayload(
     annotationPayload: any,
@@ -300,6 +352,38 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload,
       formState?.aiRequest?.value,
     );
+    console.log(annotationPayload);
+    // I payload generati dall'IA hanno già type e content corretti
+    // impostati da addPayloadForRange in base a annotation_type.
+    // Applichiamo i valori della form (notebook, tags) ma preserviamo
+    // type e content che sono stati impostati dall'IA.
+    if (aiPayloads && Array.isArray(aiPayloads)) {
+      aiPayloads.forEach((payload) => {
+        // Salva type, content e tags originali impostati dall'IA
+        const aiType = payload.type;
+        const aiContent = payload.content;
+        const aiTags = payload.tags;
+        // Preserva il subject.selected originale (calcolato dall'IA)
+        const aiSelected = payload.subject?.selected;
+        // Applica i form values (notebook, tags della form)
+        EditModalPayloadBuilder.applyFormValuesToPayload(payload, formState);
+        // Ripristina type e content impostati dall'IA
+        if (aiType) {
+          payload.type = aiType;
+        }
+        if (aiContent !== undefined) {
+          payload.content = aiContent;
+        }
+        // I tag dell'IA si sommano a quelli della form, rimuovendo duplicati
+        const formTags = payload.tags;
+        payload.tags = uniq([...(formTags || []), ...(aiTags || [])]);
+        // Ripristina il subject.selected generato dall'IA
+        if (aiSelected && payload.subject) {
+          payload.subject.selected = aiSelected;
+        }
+      });
+    }
+
     return { payload: annotationPayload, aiPayloads };
   }
 
