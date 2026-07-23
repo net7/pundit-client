@@ -1,29 +1,36 @@
-import { LayoutDataSource, _t } from '@net7/core';
+import { LayoutDataSource, _t } from "@net7/core";
+import { from, of, BehaviorSubject, Observable } from "rxjs";
+import { switchMap, tap } from "rxjs/operators";
+import { difference } from "lodash";
 import {
-  from, of, BehaviorSubject, Observable
-} from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
-import { difference } from 'lodash';
+  Annotation,
+  CommentAnnotation,
+  HighlightAnnotation,
+  Tag,
+} from "@pundit/communication";
+import { PunditLoginService } from "src/app/login-module/public-api";
+import { AnnotationService } from "src/app/services/annotation.service";
+import { AnchorService } from "src/app/services/anchor.service";
 import {
-  Annotation, CommentAnnotation, HighlightAnnotation, Tag
-} from '@pundit/communication';
-import { PunditLoginService } from 'src/app/login-module/public-api';
-import { AnnotationService } from 'src/app/services/annotation.service';
-import { AnchorService } from 'src/app/services/anchor.service';
-import { NotebookData, NotebookService } from 'src/app/services/notebook.service';
-import { UserService } from 'src/app/services/user.service';
-import { ToastInstance, ToastService } from 'src/app/services/toast.service';
-import { selectionModel } from 'src/app/models/selection/selection-model';
-import { tooltipModel } from 'src/app/models/tooltip-model';
-import { TagModel } from 'src/common/models/tag-model';
-import { TagService } from 'src/app/services/tag.service';
-import { EditModalParams } from 'src/app/types';
-import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
-import { SocialService } from 'src/app/services/social.service';
-import { ReplyService } from 'src/app/services/reply.service';
-import { PdfService } from 'src/app/services/pdf.service';
-import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
-import { AnnotationModel, SemanticPredicateModel } from '../../../common/models';
+  NotebookData,
+  NotebookService,
+} from "src/app/services/notebook.service";
+import { UserService } from "src/app/services/user.service";
+import { ToastInstance, ToastService } from "src/app/services/toast.service";
+import { selectionModel } from "src/app/models/selection/selection-model";
+import { tooltipModel } from "src/app/models/tooltip-model";
+import { TagModel } from "src/common/models/tag-model";
+import { TagService } from "src/app/services/tag.service";
+import { EditModalParams } from "src/app/types";
+import { SemanticPredicateService } from "src/app/services/semantic-predicate.service";
+import { SocialService } from "src/app/services/social.service";
+import { ReplyService } from "src/app/services/reply.service";
+import { PdfService } from "src/app/services/pdf.service";
+import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
+import {
+  AnnotationModel,
+  SemanticPredicateModel,
+} from "../../../common/models";
 
 type MainLayoutState = {
   isLogged: boolean;
@@ -35,7 +42,7 @@ type MainLayoutState = {
   anonymousSelectionRange: Range | null;
   emailVerifiedToast: ToastInstance | null;
   identitySyncLoading: boolean;
-}
+};
 
 export class MainLayoutDS extends LayoutDataSource {
   public userService!: UserService;
@@ -65,18 +72,18 @@ export class MainLayoutDS extends LayoutDataSource {
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
-  public pendingAnnotationId = 'pending-id';
+  public pendingAnnotationId = "pending-id";
 
   public state: MainLayoutState = {
     isLogged: false,
     annotation: {
       pendingPayload: null,
       updatePayload: null,
-      deleteId: null
+      deleteId: null,
     },
     anonymousSelectionRange: null,
     emailVerifiedToast: null,
-    identitySyncLoading: false
+    identitySyncLoading: false,
   };
 
   public usersList: any[] = [];
@@ -99,35 +106,34 @@ export class MainLayoutDS extends LayoutDataSource {
   isUserLogged = () => this.state.isLogged;
 
   getPublicData() {
-    return this.documentInfoService.get().pipe(
-      switchMap((info) => {
-        const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[], true)).pipe(
-          tap((response) => {
-            const { data: searchData } = response;
-            // remove private annotations
-            this.removePrivateAnnotations(searchData);
-            // handle response
-            this.handleSearchResponse(searchData);
-            // emit loaded signal
-            this.hasLoaded$.next(true);
-          })
-        );
-      })
-    );
+    return this.getAnnotations(true);
   }
 
   getUserAnnotations() {
+    return this.getAnnotations(false);
+  }
+
+  private getAnnotations(includePrivate: boolean) {
     return this.documentInfoService.get().pipe(
       switchMap((info) => {
         const { pageContext, pageMetadata } = info;
-        return from(AnnotationModel.search(pageContext, pageMetadata as { key: string; value: string }[])).pipe(
-          tap(({ data: searchData }) => {
+        return from(
+          AnnotationModel.search(
+            pageContext,
+            pageMetadata as { key: string; value: string }[],
+            includePrivate,
+          ),
+        ).pipe(
+          tap((response) => {
+            const { data: searchData } = response;
+            if (includePrivate) {
+              this.removePrivateAnnotations(searchData);
+            }
             this.handleSearchResponse(searchData);
             this.hasLoaded$.next(true);
-          })
+          }),
         );
-      })
+      }),
     );
   }
 
@@ -135,7 +141,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(TagModel.get()).pipe(
       tap(({ data: tags }) => {
         this.tagService.load(tags);
-      })
+      }),
     );
   }
 
@@ -143,7 +149,7 @@ export class MainLayoutDS extends LayoutDataSource {
     return from(SemanticPredicateModel.get()).pipe(
       tap(({ data }: any) => {
         this.semanticPredicateService.load(data);
-      })
+      }),
     );
   }
 
@@ -159,11 +165,14 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.annotationService.create(payload).pipe(
       switchMap(({ data }) => {
         const { id } = data;
-        const newAnnotation = this.annotationService.getAnnotationFromPayload(id, payload);
+        const newAnnotation = this.annotationService.getAnnotationFromPayload(
+          id,
+          payload,
+        );
         this.anchorService.add(newAnnotation);
         this.removePendingAnnotation();
         return of(newAnnotation);
-      })
+      }),
     );
   }
 
@@ -178,15 +187,21 @@ export class MainLayoutDS extends LayoutDataSource {
    * @param saveButtonLabel (optional) save button label
    */
   public openEditModal({
-    textQuote, saveButtonLabel, sections, validation
+    textQuote,
+    saveButtonLabel,
+    sections,
+    validation,
   }: EditModalParams) {
     // clear
     selectionModel.clearSelection();
     tooltipModel.hide();
 
     // update component
-    this.one('edit-modal').update({
-      textQuote, saveButtonLabel, sections, validation
+    this.one("edit-modal").update({
+      textQuote,
+      saveButtonLabel,
+      sections,
+      validation,
     });
   }
 
@@ -200,7 +215,10 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public setDefaultNotebook() {
     const currentNotebookId = this.notebookService.getSelected()?.id;
-    if (!currentNotebookId || !this.notebookService.getNotebookById(currentNotebookId)) {
+    if (
+      !currentNotebookId ||
+      !this.notebookService.getNotebookById(currentNotebookId)
+    ) {
       const { id: userId } = this.userService.whoami();
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
@@ -225,19 +243,21 @@ export class MainLayoutDS extends LayoutDataSource {
   private openEmailVerifiedToast() {
     if (!this.state.emailVerifiedToast) {
       this.state.emailVerifiedToast = this.toastService.warn({
-        title: _t('toast#verify_email_title'),
-        text: _t('toast#verify_email_text'),
+        title: _t("toast#verify_email_title"),
+        text: _t("toast#verify_email_text"),
         autoClose: false,
         hasDismiss: false,
-        actions: [{
-          text: _t('toast#verify_email_action'),
-          payload: 'mailverify'
-        }],
+        actions: [
+          {
+            text: _t("toast#verify_email_action"),
+            payload: "mailverify",
+          },
+        ],
         onAction: (payload) => {
-          if (payload === 'mailverify') {
+          if (payload === "mailverify") {
             this.doEmailVerifyRequest();
           }
-        }
+        },
       });
     }
   }
@@ -249,29 +269,27 @@ export class MainLayoutDS extends LayoutDataSource {
     // TODO Vedere verify
     this.punditLoginService.verifyEmail().subscribe((response: any) => {
       workingToast.close();
-      if ('mail' in response) {
+      if ("mail" in response) {
         this.toastService.success({
-          title: _t('toast#verify_email_success_title'),
-          text: _t('toast#verify_email_success_text', {
-            mail: response.mail
+          title: _t("toast#verify_email_success_title"),
+          text: _t("toast#verify_email_success_text", {
+            mail: response.mail,
           }),
-          autoClose: false
+          autoClose: false,
         });
       } else {
-        console.warn('Email verify response error', response);
+        console.warn("Email verify response error", response);
         this.toastService.error({
-          title: _t('toast#genericerror_title'),
-          text: _t('toast#genericerror_text'),
-          autoClose: false
+          title: _t("toast#genericerror_title"),
+          text: _t("toast#genericerror_text"),
+          autoClose: false,
         });
       }
     });
   }
 
   private handleSearchResponse(searchData: any) {
-    const {
-      users, annotations, notebooks, socials, replies
-    } = searchData;
+    const { users, annotations, notebooks, socials, replies } = searchData;
     // update notebooks
     this.notebookService.load(notebooks);
     // load order matters
@@ -289,7 +307,9 @@ export class MainLayoutDS extends LayoutDataSource {
   private removePrivateAnnotations(searchData: any) {
     const { annotations }: { annotations: Annotation[] } = searchData;
     const annotationIds = annotations.map(({ id }) => id);
-    const annotationConfigIds = this.annotationService.getAnnotations().map(({ id }) => id);
+    const annotationConfigIds = this.annotationService
+      .getAnnotations()
+      .map(({ id }) => id);
     difference(annotationConfigIds, annotationIds).forEach((annotationId) => {
       this.socialService.removeCachedAndStats(annotationId);
       this.replyService.removeCachedByAnnotationId(annotationId);
@@ -302,14 +322,15 @@ export class MainLayoutDS extends LayoutDataSource {
     return this.annotationService.getAnnotationRequestPayload$().pipe(
       switchMap((pendingPayload: HighlightAnnotation | CommentAnnotation) => {
         this.state.annotation.pendingPayload = pendingPayload;
-        const pendingAnnotation = this.annotationService.getAnnotationFromPayload(
-          this.pendingAnnotationId,
-          this.state.annotation.pendingPayload
-        );
+        const pendingAnnotation =
+          this.annotationService.getAnnotationFromPayload(
+            this.pendingAnnotationId,
+            this.state.annotation.pendingPayload,
+          );
         this.removePendingAnnotation();
         this.anchorService.add(pendingAnnotation);
         return of(pendingAnnotation);
-      })
+      }),
     );
   }
 
@@ -317,7 +338,7 @@ export class MainLayoutDS extends LayoutDataSource {
     const notebook = this.notebookService.getSelected()!;
     notebook.users = this.usersList;
     if (openModal) {
-      this.one('notebook-share-modal').update(notebook);
+      this.one("notebook-share-modal").update(notebook);
     }
   }
 }
@@ -333,4 +354,4 @@ export type OpenModalParams = {
     values?: Tag[];
     visible: boolean;
   };
-}
+};
