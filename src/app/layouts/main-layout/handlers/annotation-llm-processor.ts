@@ -19,12 +19,28 @@ function buildLabelUri(label: string): string {
   return `${base}${prop}`;
 }
 
+function buildSemanticContent(triple: any): any[] | undefined {
+  if (!triple?.label) {
+    return undefined;
+  }
+  return [
+    {
+      predicate: {
+        label: triple.label,
+        uri: buildLabelUri(triple.label),
+      },
+      objectType: triple.objectType || "literal",
+      object: triple.object || { text: "" },
+    },
+  ];
+}
+
 function applyAnnotationType(
   payload: any,
   annotationType?: string,
   commentText?: string,
   tags?: string[],
-  label?: string,
+  triple?: any,
 ): void {
   if (annotationType === "Commenting" && commentText) {
     payload.type = "Commenting";
@@ -34,13 +50,7 @@ function applyAnnotationType(
     payload.content = undefined;
   } else if (annotationType === "semanticAnnotation") {
     payload.type = "Linking";
-    payload.content = undefined;
-    if (label) {
-      payload.predicate = {
-        label: label,
-        uri: buildLabelUri(label),
-      };
-    }
+    payload.content = buildSemanticContent(triple);
   } else {
     payload.type = "Highlighting";
     payload.content = undefined;
@@ -57,7 +67,7 @@ function addPayloadForRange(
   annotationType?: string,
   commentText?: string,
   tags?: string[],
-  label?: string,
+  triple?: any,
 ): void {
   const finalRange = document.createRange();
   finalRange.setStart(node, startIndex);
@@ -71,7 +81,7 @@ function addPayloadForRange(
 
   const newPayload = cloneDeep(annotationPayload);
   newPayload.subject = { ...newPayload.subject, selected };
-  applyAnnotationType(newPayload, annotationType, commentText, tags, label);
+  applyAnnotationType(newPayload, annotationType, commentText, tags, triple);
   newPayloads.push(newPayload);
 }
 
@@ -109,7 +119,7 @@ async function processToolCall(
         annotationType,
         call.comment,
         call.tags,
-        call.label,
+        call.triple,
       );
     }
   } else {
@@ -132,7 +142,7 @@ async function processToolCall(
       annotationType,
       call.comment,
       call.tags,
-      call.label,
+      call.triple,
     );
   }
 }
