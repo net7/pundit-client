@@ -2,11 +2,29 @@ import { cloneDeep } from "lodash";
 import { serializeRangeToSelector } from "./annotation-range-utils";
 import { positionsSameWords } from "./annotation-range-restore";
 
+function buildLabelUri(label: string): string {
+  const base = "http://www.w3.org/2000/01/rdf-schema#";
+  const map: Record<string, string> = {
+    identifies: "isDefinedBy",
+    "is related to": "isRelatedTo",
+    describes: "describes",
+    "has author": "hasAuthor",
+    "has type": "hasType",
+    cites: "cites",
+    quotes: "quotes",
+    "replies to": "repliesTo",
+    "represents the date": "representsTheDate",
+  };
+  const prop = map[label] || label;
+  return `${base}${prop}`;
+}
+
 function applyAnnotationType(
   payload: any,
   annotationType?: string,
   commentText?: string,
   tags?: string[],
+  label?: string,
 ): void {
   if (annotationType === "Commenting" && commentText) {
     payload.type = "Commenting";
@@ -17,6 +35,12 @@ function applyAnnotationType(
   } else if (annotationType === "semanticAnnotation") {
     payload.type = "Linking";
     payload.content = undefined;
+    if (label) {
+      payload.predicate = {
+        label: label,
+        uri: buildLabelUri(label),
+      };
+    }
   } else {
     payload.type = "Highlighting";
     payload.content = undefined;
@@ -33,6 +57,7 @@ function addPayloadForRange(
   annotationType?: string,
   commentText?: string,
   tags?: string[],
+  label?: string,
 ): void {
   const finalRange = document.createRange();
   finalRange.setStart(node, startIndex);
@@ -46,7 +71,7 @@ function addPayloadForRange(
 
   const newPayload = cloneDeep(annotationPayload);
   newPayload.subject = { ...newPayload.subject, selected };
-  applyAnnotationType(newPayload, annotationType, commentText, tags);
+  applyAnnotationType(newPayload, annotationType, commentText, tags, label);
   newPayloads.push(newPayload);
 }
 
@@ -84,6 +109,7 @@ async function processToolCall(
         annotationType,
         call.comment,
         call.tags,
+        call.label,
       );
     }
   } else {
@@ -106,6 +132,7 @@ async function processToolCall(
       annotationType,
       call.comment,
       call.tags,
+      call.label,
     );
   }
 }
