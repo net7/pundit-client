@@ -1,98 +1,90 @@
 @if (data) {
 <div [hidden]="!data.visible" class="pnd-modal pnd-edit-modal">
+  <div
+    class="pnd-modal__overlay pnd-edit-modal__overlay"
+    (click)="onClose($event.target)"
+  >
     <div
-        class="pnd-modal__overlay pnd-edit-modal__overlay"
-        (click)="onClose($event.target)"
+      class="pnd-modal__window pnd-edit-modal__window"
+      [attr.id]="draggableTarget"
     >
-        <div
-            class="pnd-modal__window pnd-edit-modal__window"
-            [attr.id]="draggableTarget"
-        >
-            <div class="pnd-edit-modal__handle" [attr.id]="draggableHandle">
-                <pnd-svg-icon [data]="{ id: 'drag' }"></pnd-svg-icon>
-            </div>
-            <div class="pnd-modal__close">
-                <pnd-svg-icon
-                    [data]="{ id: 'times' }"
-                    (click)="onClose()"
-                ></pnd-svg-icon>
-            </div>
-            <div class="pnd-edit-modal__highlight-wrapper">
-                <div class="pnd-edit-modal__highlight">
-                    {{ data.textQuote }}
-                </div>
-            </div>
-            <!-- Comment Section -->
-            @if (data.sections?.comment) {
-            <pnd-comment-section
-                [data]="data.sections.comment"
-                [reset$]="reset$"
-            >
-            </pnd-comment-section>
-            }
-            <!-- END // Comment Section -->
-            <!-- Semantic Section -->
-            @if (data.sections?.semantic) {
-            <pnd-semantic-section
-                [data]="data.sections.semantic"
-                [reset$]="reset$"
-            >
-            </pnd-semantic-section>
-            }
-            <!-- END // Semantic Section -->
-            <!-- Ai Request Section -->
-            @if (data.sections?.aiRequest) {
-            <pnd-comment-section
-                [data]="data.sections.aiRequest"
-                [sectionId]="'aiRequest'"
-                [reset$]="reset$"
-            >
-            </pnd-comment-section>
-            }
-            <!-- END // Ai Request Section -->
-            <!-- Tags Section -->
-            @if (data.sections?.tags) {
-            <pnd-tags-section [data]="data.sections.tags" [reset$]="reset$">
-            </pnd-tags-section>
-            }
-            <!-- END // Tags Section -->
-            <div class="pnd-edit-modal__footer">
-                <div class="pnd-edit-modal__footer-notebook">
-                    <!-- Tags Section -->
-                    @if (data.sections?.notebook) {
-                    <pnd-notebook-section
-                        [data]="data.sections.notebook"
-                        [emit]="emit"
-                        [reset$]="reset$"
-                    >
-                    </pnd-notebook-section>
-                    }
-                    <!-- END // Tags Section -->
-                </div>
-                @if (!data.hideActions) {
-                <div class="pnd-edit-modal__footer-actions">
-                    @if (data.actions.cancel; as cancelAction) {
-                    <button
-                        [disabled]="cancelAction.disabled"
-                        class="pnd-btn {{ cancelAction.classes || '' }}"
-                        (click)="onClose()"
-                    >
-                        {{ cancelAction.label }}
-                    </button>
-                    } @if (data.actions.save; as saveAction) {
-                    <button
-                        #saveButton
-                        [disabled]="saveAction.disabled"
-                        class="pnd-btn {{ saveAction.classes || '' }}"
-                        (click)="onSave()"
-                    >
-                        {{ saveAction.label }}
-                    </button>
-                    }
-                </div>
-                }
-            </div>
+      <div class="pnd-edit-modal__handle" [attr.id]="draggableHandle">
+        <pnd-svg-icon [data]="{ id: 'drag' }"></pnd-svg-icon>
+      </div>
+      <div class="pnd-modal__close">
+        <pnd-svg-icon
+          [data]="{ id: 'times' }"
+          (click)="onClose()"
+        ></pnd-svg-icon>
+      </div>
+      <div class="pnd-edit-modal__highlight-wrapper">
+        <div class="pnd-edit-modal__highlight">{{ data.textQuote }}</div>
+      </div>
+      <!-- Comment Section -->
+      @if (data.sections?.comment) {
+      <pnd-comment-section [data]="data.sections.comment" [reset$]="reset$">
+      </pnd-comment-section>
+      }
+      <!-- END // Comment Section -->
+      <!-- Semantic Section -->
+      @if (data.sections?.semantic) {
+      <pnd-semantic-section [data]="data.sections.semantic" [reset$]="reset$">
+      </pnd-semantic-section>
+      }
+      <!-- END // Semantic Section -->
+      <!-- Ai Request Section -->
+      @if (data.sections?.aiRequest) {
+      <pnd-comment-section
+        [data]="data.sections.aiRequest"
+        [sectionId]="'aiRequest'"
+        [reset$]="reset$"
+      >
+      </pnd-comment-section>
+      }
+      <!-- END // Ai Request Section -->
+      <!-- Tags Section -->
+      @if (data.sections?.tags) {
+      <pnd-tags-section [data]="data.sections.tags" [reset$]="reset$">
+      </pnd-tags-section>
+      }
+      <!-- END // Tags Section -->
+      <div class="pnd-edit-modal__footer">
+        <div class="pnd-edit-modal__footer-notebook">
+          <!-- Tags Section -->
+          @if (data.sections?.notebook) {
+          <pnd-notebook-section
+            [data]="data.sections.notebook"
+            [emit]="emit"
+            [reset$]="reset$"
+          >
+          </pnd-notebook-section>
+          }
+          <!-- END // Tags Section -->
         </div>
+        @if (!data.hideActions) {
+        <div class="pnd-edit-modal__footer-actions">
+          @if (data.actions.cancel; as cancelAction) {
+          <button
+            [disabled]="cancelAction.disabled"
+            class="pnd-btn {{ cancelAction.classes || '' }}"
+            (click)="onClose()"
+          >
+            {{ cancelAction.label }}
+          </button>
+          } @if (data.actions.save; as saveAction) {
+          <button
+            #saveButton
+            [disabled]="saveAction.disabled"
+            class="pnd-btn {{ saveAction.classes || '' }}"
+            (click)="onSave()"
+          >
+            {{ saveAction.label }}
+          </button>
+          }
+        </div>
+        }
+      </div>
     </div>
+  </div>
 </div>
 }

@@ -3,7 +3,7 @@
   "version": "1.11.7",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "test": "jest",
     "test:watch": "jest --watch",

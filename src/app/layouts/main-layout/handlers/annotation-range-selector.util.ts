@@ -7,9 +7,13 @@ function toTextNode(node: Node): Node {
   return firstText ?? node;
 }
 
-// funzione che scompone un Range in chunk di testo, restituendo sia l'array di chunk
-// dove troviamo l'id del nodo di testo e il testo stesso, sia una mappa che dall'id
-// riprende il nodo del dom, fondamentale per ricostruire il range dopo la risposta dell'LLM
+/**
+ * Restituisce:
+ * - chunks: array di { id, text } da inviare all'LLM
+ * - chunkMap: mappa id → nodo Text reale del DOM
+ * - chunkPrefixLen: mappa id → numero di caratteri di whitespace
+ *   iniziali rimossi (utile se in futuro volessimo fare un trim selettivo)
+ */
 function buildChunkProjection(range: Range): {
   chunks: { id: string; text: string }[];
   chunkMap: Map<string, Text>;
@@ -35,8 +39,12 @@ function buildChunkProjection(range: Range): {
   let i = 0;
   while (walker.nextNode()) {
     const node = walker.currentNode as Text;
-    const text = node.textContent?.trim();
-    if (!text) {
+    // NON facciamo trim: il testo viene inviato all'LLM così com'è,
+    // in modo che gli offset start/end calcolati dall'LLM corrispondano
+    // direttamente agli offset da usare nel nodo DOM reale.
+    const text = node.textContent ?? "";
+    // Saltiamo chunk vuoti
+    if (text.length === 0) {
       continue;
     }
     // se abbiamo individuato un nodo di testo valido,
@@ -82,6 +90,21 @@ function getXPathForNode(node: Node): string {
   return "/" + parts.join("/");
 }
 
+/**
+ * Calcola la posizione di un nodo Text nel document.body.textContent,
+ * sommando le lunghezze di tutti i text node precedenti nel body.
+ */
+function getTextOffsetInBody(node: Node): number {
+  let offset = 0;
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  while (walker.nextNode()) {
+    const current = walker.currentNode as Text;
+    if (current === node) break;
+    offset += current.textContent?.length ?? 0;
+  }
+  return offset;
+}
+
 /* 
     Questa funzione trasforma un Range del DOM nella struttra che si 
     aspetta la funzione saveAnnotation, e quindi la struttura
@@ -93,13 +116,18 @@ function serializeRangeToSelector(range: Range): any {
   const endXPath = getXPathForNode(range.endContainer);
   const text = range.toString();
 
-  // Questa è una soluzione semplice per ricercare il testo selezionato dal body,
-  // infatti in questo modo, con la funzione indexOf, potremmo ottenere dei comportamenti inattesi
-  // per testi identici in più parti della pagina, perchè indexOf prende la prima occorrenza
-  const bodyText = document.body.textContent ?? "";
-  const start = bodyText.indexOf(text);
-  const end = start >= 0 ? start + text.length : -1;
+  // Calcola la posizione reale del testo selezionato nel body,
+  // partendo dal nodo specifico (startContainer) e non cercando
+  // con indexOf che troverebbe la prima occorrenza nel body.
+  const nodeOffset = getTextOffsetInBody(
+    range.startContainer.nodeType === Node.TEXT_NODE
+      ? range.startContainer
+      : range.startContainer.firstChild!,
+  );
+  const start = nodeOffset + range.startOffset;
+  const end = start + text.length;
 
+  const bodyText = document.body.textContent ?? "";
   const prefix =
     start > 0 ? bodyText.slice(Math.max(0, start - 20), start) : "";
   const suffix = end > 0 ? bodyText.slice(end, end + 20) : "";
@@ -127,6 +155,69 @@ function serializeRangeToSelector(range: Range): any {
    5) per ogni porzione di testo indicata dalla risposta, viene ritrovato il nodo dalla mappa tramite l'id
       e viene ricostruito un range preciso, che viene trasformato in un payload da mandare a saveAnnotation;
    */
+function addPayloadForRange(
+  node: Text,
+  startIndex: number,
+  endIndex: number,
+  annotationPayload: any,
+  newPayloads: any[],
+  annotationType?: string,
+  commentText?: string,
+  tags?: string[],
+): void {
+  const finalRange = document.createRange();
+  finalRange.setStart(node, startIndex);
+  finalRange.setEnd(node, endIndex);
+
+  console.warn("[mapChunks] Serializzando range a selector...");
+  const selected = serializeRangeToSelector(finalRange);
+
+  if (!annotationPayload) {
+    console.error("[mapChunks] ERRORE: annotationPayload è undefined!");
+    return;
+  }
+
+  const newPayload = cloneDeep(annotationPayload);
+  newPayload.subject = { ...newPayload.subject, selected };
+
+  // Applica annotation_type, commento e tags dalla risposta LLM.
+  // L'LLM risponde con: "Highlighting" | "Commenting" | "tag" | "semanticAnnotation"
+  if (annotationType === "Commenting" && commentText) {
+    newPayload.type = "Commenting";
+    newPayload.content = { comment: commentText };
+    newPayload.tags = tags && tags.length ? tags : undefined;
+  } else if (annotationType === "tag") {
+    newPayload.type = "Highlighting";
+    newPayload.content = undefined;
+    newPayload.tags = tags && tags.length ? tags : undefined;
+  } else if (annotationType === "semanticAnnotation") {
+    newPayload.type = "Linking";
+    newPayload.content = undefined;
+    newPayload.tags = tags && tags.length ? tags : undefined;
+  } else {
+    // "Highlighting" o default
+    newPayload.type = "Highlighting";
+    newPayload.content = undefined;
+    newPayload.tags = tags && tags.length ? tags : undefined;
+  }
+
+  newPayloads.push(newPayload);
+  logPayloadCreation(newPayloads.length, newPayload);
+}
+
+function logPayloadCreation(count: number, payload: any): void {
+  console.warn(
+    "[mapChunks] Payload creato con successo. Totale:",
+    count,
+    "- tipo:",
+    payload.type,
+    "- commento:",
+    payload.content?.comment?.substring(0, 50),
+    "- tags:",
+    payload.tags?.join(", "),
+  );
+}
+
 export default async function mapChunks(
   annotationPayload: any,
   aiRequest: string,
@@ -145,10 +236,32 @@ export default async function mapChunks(
 
   // Step 3: inviamo SOLO i chunk testuali e il prompt a
   // pundithomex, che gestisce la chiave e interroga l'LLM.
-  const response = await fetch("https://app.thepund.test/ai/annotate", {
+  // Ho aggiunto un filtro per ipotetiche righe vuote, che non dovrebbero esserci.
+  // Importante: all'LLM bisogna mandare il testo senza modifiche, quindi senza trim(), così
+  // che il calcolo degli indici coincida con il testo originale
+  const filteredChunks = chunks.filter(
+    (c) => typeof c.text === "string" && c.text.trim().length > 0,
+  );
+  if (filteredChunks.length !== chunks.length) {
+    console.warn("[mapChunks] removed empty chunks before send", {
+      original: chunks.length,
+      filtered: filteredChunks.length,
+    });
+  }
+  if (filteredChunks.length === 0) {
+    console.warn("[mapChunks] no valid chunks to send");
+    return [];
+  }
+
+  const response = await fetch(`https://app.thepund.test/ai/annotate`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chunks, prompt: aiRequest }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    },
+    credentials: "include",
+    body: JSON.stringify({ chunks: filteredChunks, prompt: aiRequest }),
   });
 
   if (!response.ok) {
@@ -157,54 +270,129 @@ export default async function mapChunks(
     return [];
   }
 
-  const data = await response.json();
-  const raw = data.result ?? "[]";
-
-  // Step 4: la risposta dell'LLM deve essere un JSON array con dati
-  // dalla forma {id, testo}. Se così non fosse scartiamo la risposta
-  let toolCalls: { chunkId: string; quote: string }[];
+  const respText = await response.text();
+  let data: any;
   try {
-    toolCalls = JSON.parse(raw);
+    data = respText ? JSON.parse(respText) : {};
   } catch {
-    console.warn("[mapChunks] risposta LLM non parsabile:", raw);
+    console.error("[mapChunks] backend returned non-JSON response:", respText);
     return [];
   }
 
-  const newPayloads: any[] = [];
+  const raw = data.result ?? "[]";
 
-  // Step 5: per ogni porzione di testo indicata dalla risposta,
-  // si deve ricostruire il range preciso e trasformarlo in un payload da mandare a saveAnnotation.
-  // In questo momento interpreto ogni chunk come un range separato.
-  for (const call of toolCalls) {
-    const node = chunkMap.get(call.chunkId);
-    if (!node) {
-      console.warn("[mapChunks] chunkId non trovato:", call.chunkId);
-      continue;
-    }
+  // Step 4: la risposta del backend è un JSON array con oggetti
+  // dalla forma { chunkId, quote, words_counter, annotation_type, comment, tags }.
+  let toolCalls: {
+    chunkId: string;
+    quote: string;
+    words_counter: number;
+    annotation_type?: string;
+    comment?: string;
+    tags?: string[];
+  }[];
 
-    const startOffset = node.textContent?.indexOf(call.quote) ?? -1;
-    if (startOffset === -1) {
-      console.warn("[mapChunks] quote non trovata nel chunk:", call.quote);
-      continue;
-    }
+  try {
+    toolCalls = Array.isArray(raw) ? raw : JSON.parse(raw);
 
-    //console.log(call);
-    // Con la funzione document.createRange() ricostruisco un Range preciso che corrisponde
-    // alla porzione di testo indicata dalla risposta dell'LLM, usando il nodo reale del DOM
-    // e l'offset calcolato con indexOf.
-    const finalRange = document.createRange();
-    finalRange.setStart(node, startOffset);
-    finalRange.setEnd(node, startOffset + call.quote.length);
-
-    // Adesso bisogna ricostruire il payload da salvare e da inviare a saveAnnotation,
-    // aggiornando subject.selected con il nuovo rangeSelector/textQuoteSelector
-    const selected = serializeRangeToSelector(finalRange);
-    const newPayload = cloneDeep(annotationPayload);
-    newPayload.subject = { ...newPayload.subject, selected };
-
-    newPayloads.push(newPayload);
+    console.warn("[mapChunks] risposta LLM parsata:", toolCalls);
+  } catch (error) {
+    console.warn("[mapChunks] risposta backend non parsabile:", raw, error);
+    return [];
   }
 
+  console.warn("[mapChunks] Ricevuti elementi dal backend:", toolCalls.length);
+
+  const newPayloads: any[] = [];
+
+  // Step 5: per ogni elemento, ricostruisce il range preciso nel DOM
+  // e lo trasforma in un payload da mandare a saveAnnotation.
+  for (const call of toolCalls) {
+    try {
+      const node = chunkMap.get(call.chunkId);
+      if (!node) {
+        console.warn("[mapChunks] chunkId non trovato:", call.chunkId);
+        continue;
+      }
+
+      const quote = call.quote ?? "";
+      if (!quote) {
+        console.warn("[mapChunks] quote mancante:", call);
+        continue;
+      }
+
+      const nodeText = node.textContent ?? "";
+      const wordCount = call.words_counter ?? 1;
+      const annotationType = call.annotation_type;
+      if (wordCount > 1) {
+        // Caso in cui la stessa parola/frase compare più volte nel chunk
+        const starterPositions = positionsSameWords(nodeText, quote);
+        console.warn(starterPositions);
+
+        if (starterPositions.length === 0) {
+          console.warn("[mapChunks] quote non trovate nel DOM reale:", {
+            quote,
+            chunkId: call.chunkId,
+            nodeText: nodeText.substring(0, 100),
+          });
+          continue;
+        }
+
+        for (let i = 0; i < starterPositions.length; i++) {
+          const startIndex = starterPositions[i];
+          const endIndex = startIndex + quote.length;
+          addPayloadForRange(
+            node,
+            startIndex,
+            endIndex,
+            annotationPayload,
+            newPayloads,
+            annotationType,
+            call.comment,
+            call.tags,
+          );
+        }
+      } else {
+        // Trova la quote nel nodo DOM reale con indexOf
+        const startIndex = nodeText.indexOf(quote);
+        if (startIndex === -1) {
+          console.warn("[mapChunks] quote non trovata nel DOM reale:", {
+            quote,
+            chunkId: call.chunkId,
+            nodeText: nodeText.substring(0, 100),
+          });
+          continue;
+        }
+        const endIndex = startIndex + quote.length;
+        addPayloadForRange(
+          node,
+          startIndex,
+          endIndex,
+          annotationPayload,
+          newPayloads,
+          annotationType,
+          call.comment,
+          call.tags,
+        );
+      }
+    } catch (error) {
+      console.error(
+        "[mapChunks] Errore durante l'elaborazione di un elemento:",
+        {
+          call,
+          error: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+        },
+      );
+      continue;
+    }
+  }
+
+  console.warn(
+    "[mapChunks] COMPLETATO - Ritornando",
+    newPayloads.length,
+    "payload(s)",
+  );
   return newPayloads;
 }
 
@@ -217,7 +405,8 @@ function restoreRangeFromXPath(selected: any): Range | null {
   try {
     const toRelative = (xpath: string) =>
       xpath.startsWith("/") ? xpath.slice(1) : xpath;
-
+    // grazie alla funzione document.evaluate() posso ritrovare i nodi reali del DOM a partire
+    // dagli xpath salvati nel payload, e quindi ricostruire il range preciso
     const startNode = document.evaluate(
       toRelative(startContainer),
       document.body,
@@ -236,6 +425,8 @@ function restoreRangeFromXPath(selected: any): Range | null {
 
     if (!startNode || !endNode) return null;
 
+    // Per costruire il range utilizzo la funzione createRange() passando come parametri
+    // i nodi reali del DOM trovati tramite la funzione evaluate().
     const range = document.createRange();
     range.setStart(toTextNode(startNode), startOffset ?? 0);
     range.setEnd(toTextNode(endNode), endOffset ?? 0);
@@ -245,11 +436,14 @@ function restoreRangeFromXPath(selected: any): Range | null {
     return null;
   }
 }
-
+// Questa funzione ricostruisce il Range a partire dal testo selezionato
+// e viene quindi utilizzata nel caso in cui ci sia un errore nel ritrovare il range tramite xpath
 function restoreRangeFromTextQuote(selected: any): Range | null {
   const { exact, prefix } = selected.textQuoteSelector ?? {};
   if (!exact) return null;
-
+  // in questo caso utilizzo un TreeWalker per scansionare il DOM e trovare il nodo
+  // che contiene il testo esatto selezionato. Questo potrebbe causare problemi se il testo selezionato
+  // è presente in più punti della pagina, ma per ora è una soluzione semplice.
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const node = walker.currentNode as Text;
@@ -275,4 +469,12 @@ function restoreRangeFromPayload(annotationPayload: any): Range | null {
   if (!selected) return null;
 
   return restoreRangeFromXPath(selected) ?? restoreRangeFromTextQuote(selected);
+}
+
+// questa funzione mi permette di ritornare gl indici iniziali delle stringhe di parole ripetute in un unico chunk
+function positionsSameWords(quote: string, subQuote: string): number[] {
+  const secureSubQuote = subQuote.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`\\b${secureSubQuote}\\b`, "gi");
+
+  return [...quote.matchAll(regex)].map((match) => match.index);
 }
