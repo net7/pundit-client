@@ -1,5 +1,4 @@
 import { _t } from "@net7/core";
-import { SemanticTripleType } from "@pundit/communication";
 import { cloneDeep, uniq } from "lodash";
 import { EMPTY, Observable, firstValueFrom, from } from "rxjs";
 import { catchError, filter, map, switchMap } from "rxjs/operators";
@@ -14,12 +13,14 @@ import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
 import { LayoutHandler } from "src/app/types";
 import { AnalyticsModel } from "src/common/models";
-import { AnalyticsAction, AnalyticsData } from "src/common/types";
+import { AnalyticsAction } from "src/common/types";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
 import mapChunks from "./annotation-range-selector.util";
 import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
+import { isValidAnnotationPayload } from "./edit-modal-validation";
+import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
 
 export class MainLayoutEditModalHandler implements LayoutHandler {
   constructor(
@@ -79,8 +80,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         this.layoutDS.state.annotation.updatePayload = null;
 
         if (isUpdate) {
-          // Caso UPDATE: qui "data" è ancora un singolo oggetto
-          // { requestPayload, isUpdate }, non un array.
           this.layoutEH.appEvent$.next({
             type: AppEvent.CommentUpdate,
             payload: data.requestPayload,
@@ -92,26 +91,16 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         }
 
         const createdAnnotations: any[] = data;
-
         createdAnnotations.forEach((annotation, index) => {
           if (index === 0) {
-            // Solo per la PRIMA annotazione eseguiamo il flusso "visibile":
-            // chiusura modale, toast di successo, chiusura del working toast.
-            // Se lo facessimo per ognuna, avremmo N toast e N tentativi di
-            // chiudere un modale già chiuso.
             this.onAnnotationCreated(annotation, workingToast);
           } else {
-            // Per le annotazioni successive (generate dall'AI) ripetiamo solo
-            // la parte "silenziosa": notifica interna, aggiornamento tag,
-            // tracking analytics — senza toast/chiusura modale duplicati.
             this.layoutEH.appEvent$.next({
               type: AppEvent.AnnotationCreateSuccess,
               payload: annotation,
             });
             this.layoutDS.tagService.addMany(annotation?.tags);
-            AnalyticsModel.track(
-              this.getAnnotationCreatedAnalytics(annotation),
-            );
+            AnalyticsModel.track(getAnnotationCreatedAnalytics(annotation));
           }
         });
       });
@@ -140,54 +129,12 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     // update tags;
     this.layoutDS.tagService.addMany(data?.tags);
 
-    // analytics
-    AnalyticsModel.track(this.getAnnotationCreatedAnalytics(data));
-  }
-
-  private getAnnotationCreatedAnalytics(data: any): AnalyticsData {
-    // comment
-    if (data.type === "Commenting") {
-      return {
-        action: AnalyticsAction.CommentAnnotationCreated,
-        payload: { scope: "fragment" },
-      };
-    }
-
-    // semantic
-    if (data.type === "Linking") {
-      const { content }: { content: SemanticTripleType[] } = data;
-      return {
-        action: AnalyticsAction.SemanticAnnotationCreated,
-        payload: {
-          scope: "fragment",
-          predicate: content.map(({ predicate }) => predicate.label),
-          "object-type": content.map(({ objectType }) => objectType),
-          "object-lod": content.map((triple) =>
-            triple.objectType === "uri" ? triple.object.label : null,
-          ),
-          "number-triples": content.length,
-        },
-      };
-    }
-
-    // tags
-    if (Array.isArray(data.tags) && data.tags.length) {
-      return {
-        action: AnalyticsAction.TagAnnotationCreated,
-        payload: {
-          scope: "fragment",
-          tags: data.tags,
-        },
-      };
-    }
-
-    throw new Error("Invalid annotation type for analytics");
+    AnalyticsModel.track(getAnnotationCreatedAnalytics(data));
   }
 
   private onCreateNotebookError(payload: any) {
     this.layoutEH.handleError(payload);
 
-    // toast
     this.layoutDS.toastService.error({
       title: _t("toast#genericerror_title"),
       text: _t("toast#genericerror_text"),
@@ -195,12 +142,10 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   }
 
   private onCreateNotebookSuccess() {
-    // signal
     this.layoutEH.appEvent$.next({
       type: AppEvent.NotebookCreateSuccess,
     });
 
-    // analytics
     AnalyticsModel.track({
       action: AnalyticsAction.NotebookCreated,
       payload: {
@@ -214,7 +159,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       type: AppEvent.SelectedNotebookChanged,
     });
 
-    // analytics
     AnalyticsModel.track({
       action: AnalyticsAction.NotebookCurrentChanged,
       payload: {
@@ -228,18 +172,12 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     this.layoutDS.removePendingAnnotation();
   }
 
-  /*
-   Qui adesso costruisco i payload da salvare, normalizzando però 
-   la forma salvando tutto tramite una array, sia che il payload sia singolo,
-   quindi un'annotazione normale e sia che il payload sia multiplo, quando contiene le 
-   risposte dell'IA
-   */
   private saveAnnotationsSequentially(payloads: any[]): Observable<any[]> {
     return from(
       (async (): Promise<any[]> => {
         const saved: any[] = [];
         for (const p of payloads) {
-          if (this.isValidAnnotationPayload(p)) {
+          if (isValidAnnotationPayload(p)) {
             try {
               const result = await firstValueFrom(
                 this.layoutDS.saveAnnotation(p),
@@ -256,35 +194,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         return saved;
       })(),
     );
-  }
-
-  private isValidAnnotationPayload(p: any): boolean {
-    const selected = p?.subject?.selected;
-    if (!selected) {
-      console.warn(
-        "[saveAnnotation] Payload saltato: subject.selected mancante",
-        p,
-      );
-      return false;
-    }
-    if (
-      !selected.rangeSelector?.startContainer ||
-      !selected.rangeSelector?.endContainer
-    ) {
-      console.warn(
-        "[saveAnnotation] Payload saltato: rangeSelector incompleto",
-        selected,
-      );
-      return false;
-    }
-    if (!selected.textQuoteSelector?.exact) {
-      console.warn(
-        "[saveAnnotation] Payload saltato: textQuoteSelector.exact mancante",
-        selected,
-      );
-      return false;
-    }
-    return true;
   }
 
   private onEditModalSave(payload: any): Observable<any> {
@@ -335,11 +244,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
     });
   }
 
-  /*
-  Qui viene preso il payload e nel caso in cui
-  l'utente abbia mandato un prompt AI, viene chiamata la funzione mapChunks che ritorna un array di payload.
-  Tutti i payload (sia il principale che quelli generati dall'IA) devono avere applicati i valori della form.
-   */
   private async getEditRequestPayload(
     annotationPayload: any,
     formState: EditModalFormState,
@@ -352,7 +256,7 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       annotationPayload,
       formState?.aiRequest?.value,
     );
-    console.log(annotationPayload);
+    console.warn(annotationPayload);
     // I payload generati dall'IA hanno già type e content corretti
     // impostati da addPayloadForRange in base a annotation_type.
     // Applichiamo i valori della form (notebook, tags) ma preserviamo
