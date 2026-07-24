@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Deploy embed + pdf-viewer standalone su S3 e invalidazione CloudFront.
+# Deploy embed su S3 e invalidazione CloudFront.
 #
 # Uso: ./deploy.sh stage|prod
 #
@@ -12,16 +12,12 @@ ENV="${1:-}"
 case "$ENV" in
   stage)
     EMBED_DIST="dist/embed-stage"
-    PDF_DIST="dist/pdf-standalone-stage"
     EMBED_S3="s3://static-pundit/releases/stage"
-    PDF_S3="s3://static-pundit/releases/stage/pdf-viewer"
     INVALIDATION_PATHS="/releases/stage/*"
     ;;
   prod)
     EMBED_DIST="dist/embed-prod"
-    PDF_DIST="dist/pdf-standalone-prod"
     EMBED_S3="s3://static-pundit/releases"
-    PDF_S3="s3://static-pundit/releases/pdf-viewer"
     INVALIDATION_PATHS="/releases/*"
     ;;
   *)
@@ -37,14 +33,12 @@ if ! aws sts get-caller-identity > /dev/null 2>&1; then
   echo "Credenziali AWS mancanti o non valide (env var o AWS_PROFILE)" >&2
   exit 1
 fi
-
+npm install
 npm run "build:embed-$ENV"
-npm run "build:pdf-standalone-$ENV"
 
-# Niente --delete: releases/ contiene anche stage/ e pdf-viewer/, un sync
-# distruttivo dell'embed prod cancellerebbe gli altri deploy.
+# Niente --delete: releases/ contiene anche stage/, un sync distruttivo
+# dell'embed prod cancellerebbe il deploy di stage.
 aws s3 sync --acl public-read "$EMBED_DIST/" "$EMBED_S3"
-aws s3 sync --acl public-read "$PDF_DIST/" "$PDF_S3"
 
 aws cloudfront create-invalidation --distribution-id "$DISTRIBUTION_ID" --paths "$INVALIDATION_PATHS"
 
