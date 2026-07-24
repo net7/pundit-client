@@ -1,6 +1,4 @@
-import {
-  Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener
-} from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ChangeDetectionStrategy, NgZone, inject } from '@angular/core';
 import { ReplaySubject } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
 import { PunditLoginService } from 'src/app/login-module/public-api';
@@ -18,12 +16,39 @@ import { PdfService } from 'src/app/services/pdf.service';
 import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
 import { AppEventData } from 'src/app/types';
 import { MainLayoutConfig as config } from './main-layout.config';
+import { SidebarLayoutComponent } from '../sidebar-layout/sidebar-layout';
+import { TooltipComponent } from '../../components/tooltip/tooltip';
+import { EditModalComponent } from '../../components/edit-modal/edit-modal';
+import { DeleteModalComponent } from '../../components/delete-modal/delete-modal';
+import { PdfErrorModalComponent } from '../../components/pdf-error-modal/pdf-error-modal';
+import { NotebookShareModalComponent } from '../../components/notebook-share-modal/notebook-share-modal';
+import { ToastComponent } from '../../components/toast/toast';
+import { PunditLoginComponent } from '../../login-module/lib/pundit-login-module/pundit-login.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  selector: 'main-layout',
-  templateUrl: './main-layout.html'
+    selector: 'main-layout',
+    templateUrl: './main-layout.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SidebarLayoutComponent, TooltipComponent, EditModalComponent, DeleteModalComponent, PdfErrorModalComponent, NotebookShareModalComponent, ToastComponent, PunditLoginComponent, AsyncPipe]
 })
 export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
+  private anchorService = inject(AnchorService);
+  private annotationService = inject(AnnotationService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  private replyService = inject(ReplyService);
+  private loginService = inject(PunditLoginService);
+  private notebookService = inject(NotebookService);
+  private punditLoginService = inject(PunditLoginService);
+  toastService = inject(ToastService);
+  tagService = inject(TagService);
+  socialService = inject(SocialService);
+  semanticPredicateService = inject(SemanticPredicateService);
+  private userService = inject(UserService);
+  private pdfService = inject(PdfService);
+  private documentInfoService = inject(DocumentInfoService);
+  private ngZone = inject(NgZone);
+
   @HostListener('document:keyup', ['$event'])
   onKeyUp({ key }: KeyboardEvent) {
     if (key === 'Escape') {
@@ -35,22 +60,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
 
   public appEvent$: ReplaySubject<AppEventData> = new ReplaySubject();
 
-  constructor(
-    private anchorService: AnchorService,
-    private annotationService: AnnotationService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private replyService: ReplyService,
-    private loginService: PunditLoginService,
-    private notebookService: NotebookService,
-    private punditLoginService: PunditLoginService,
-    public toastService: ToastService,
-    public tagService: TagService,
-    public socialService: SocialService,
-    public semanticPredicateService: SemanticPredicateService,
-    private userService: UserService,
-    private pdfService: PdfService,
-    private documentInfoService: DocumentInfoService,
-  ) {
+  constructor() {
     super(config);
   }
 
@@ -71,6 +81,7 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
       semanticPredicateService: this.semanticPredicateService,
       pdfService: this.pdfService,
       documentInfoService: this.documentInfoService,
+      ngZone: this.ngZone,
     };
   }
 

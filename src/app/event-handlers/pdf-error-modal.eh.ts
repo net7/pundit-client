@@ -3,7 +3,7 @@ import { PdfErrorModalDS } from '../data-sources';
 import { PdfErrorModalEvent, getEventType, MainLayoutEvent } from '../event-types';
 
 export class PdfErrorModalEH extends EventHandler {
-  public dataSource: PdfErrorModalDS;
+  public dataSource!: PdfErrorModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

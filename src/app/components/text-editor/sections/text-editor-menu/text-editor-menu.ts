@@ -1,5 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { Subject } from 'rxjs';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../../../svg-icon/svg-icon';
 
 /**
  * Interface for TextEditorMenu's "data"
@@ -34,7 +36,7 @@ export interface TextEditorMenuGroup {
 
 export interface TextEditorMenuButton {
   id: string;
-  command: (state: any, dispatch: any) => any;
+  command: ((state: any, dispatch: any) => any) | null;
   title?: string;
   active?: boolean;
   disabled?: boolean;
@@ -42,11 +44,13 @@ export interface TextEditorMenuButton {
 }
 
 @Component({
-  selector: 'pnd-text-editor-menu',
-  templateUrl: './text-editor-menu.html'
+    selector: 'pnd-text-editor-menu',
+    templateUrl: './text-editor-menu.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, SvgIconComponent]
 })
 export class TextEditorMenuComponent {
-  @Input() public data: TextEditorMenuData;
+  @Input() public data!: TextEditorMenuData;
 
   onClick(button: TextEditorMenuButton) {
     this.data.menuEvent$.next({

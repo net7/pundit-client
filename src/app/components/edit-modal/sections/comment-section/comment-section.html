@@ -1,8 +1,10 @@
-<div class="pnd-edit-modal__comment-wrapper" *ngIf="data">
+@if (data) {
+  <div class="pnd-edit-modal__comment-wrapper">
     <div class="pnd-edit-modal__comment-label">
-        {{ data.options.label }}
+      {{ data.options.label }}
     </div>
     <div class="pnd-edit-modal__comment-editor">
-        <pnd-text-editor [data]="editorData"></pnd-text-editor>
+      <pnd-text-editor [data]="editorData"></pnd-text-editor>
     </div>
-</div>
+  </div>
+}

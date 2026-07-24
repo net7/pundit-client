@@ -74,7 +74,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
               anonymousSelectionRange: lastSelectionRange,
             } = this.layoutDS.state;
             selectionModel.setSelectionFromRange(lastSelectionRange);
-            tooltipModel.show(selectionModel.getCurrentSelection());
+            tooltipModel.show(selectionModel.getCurrentSelection()!);
           }
           // login toast
           this.layoutDS.toastService.success({
@@ -110,6 +110,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
 
   private doSyncRequest() {
     this.layoutDS.punditLoginService.sso()
+      // eslint-disable-next-line complexity -- Existing identity sync branches predate the flat-config migration.
       .subscribe((resp: LoginResponse) => {
         const currentUser = this.layoutDS.userService.whoami();
         if ('user' in resp) {

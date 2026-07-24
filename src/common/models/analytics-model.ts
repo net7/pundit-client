@@ -61,7 +61,7 @@ analytics.init([
 ]);
 
 export class AnalyticsModel {
-  static userId: string = null;
+  static userId: string | null = null;
 
   // @CrossMessage(CrossMsgRequestId.AnalyticsTrigger)
   static trigger({ action, payload }: AnalyticsData) {

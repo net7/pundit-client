@@ -3,7 +3,7 @@ import { TooltipDS } from '../data-sources';
 import { getEventType, MainLayoutEvent, TooltipEvent } from '../event-types';
 
 export class TooltipEH extends EventHandler {
-  public dataSource: TooltipDS;
+  public dataSource!: TooltipDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

@@ -18,7 +18,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
     this.layoutEH.outerEvents$.subscribe(({ type }) => {
       switch (type) {
         case DeleteModalEvent.Confirm: {
-          const { deleteId } = this.layoutDS.state.annotation;
+          const deleteId = this.layoutDS.state.annotation.deleteId!;
           // toast "working..."
           const workingToast = this.layoutDS.toastService.working();
           // update loading state
@@ -69,7 +69,7 @@ export class MainLayoutDeleteModalHandler implements LayoutHandler {
   }
 
   private onDeleteModalConfirm() {
-    const { deleteId } = this.layoutDS.state.annotation;
+    const deleteId = this.layoutDS.state.annotation.deleteId!;
     return this.layoutDS.annotationService.remove(deleteId).pipe(
       tap(() => {
         this.layoutDS.socialService.removeCachedAndStats(deleteId);

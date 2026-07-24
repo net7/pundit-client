@@ -11,10 +11,11 @@ export class SortByPipe implements PipeTransform {
     if (!value || order === '' || !order) { return value; } // no array
     if (value.length <= 1) { return value; } // array with only one item
     if (!column || column === '') {
-      if (order === 'asc') { return value.sort(); }
-      return value.sort().reverse();
+      const sorted = [...value].sort();
+      if (order === 'asc') { return sorted; }
+      return sorted.reverse();
     } // sort 1d array
-    const iterFun = (val) => (val[column] && typeof val[column] === 'string' ? val[column].toLowerCase() : column);
+    const iterFun = (val: any) => (val[column] && typeof val[column] === 'string' ? val[column].toLowerCase() : column);
     return orderBy(value, [iterFun], [order as boolean | 'asc' | 'desc']);
   }
 }

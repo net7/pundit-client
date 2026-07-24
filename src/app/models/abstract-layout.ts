@@ -37,7 +37,7 @@ export abstract class AbstractLayout {
 
     // handlers
     if (Array.isArray(this.config.handlers)) {
-      this.config.handlers.forEach((HandlerClass) => {
+      this.config.handlers.forEach((HandlerClass: any) => {
         const handlerInstance = new HandlerClass(
           layoutDSInstance,
           layoutEHInstance

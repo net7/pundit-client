@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
 import { first, switchMap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -10,43 +10,49 @@ import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
 import { environment as env } from '../../../../../environments/environment';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { NgClass } from '@angular/common';
 
 @Component({
-  selector: 'lib-pundit-login-signin',
-  templateUrl: './signin.component.html',
-  styleUrls: []
+    selector: 'lib-pundit-login-signin',
+    templateUrl: './signin.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SvgIconComponent, FormsModule, ReactiveFormsModule, NgClass]
 })
 export class SignInComponent {
-  email: EmailAuthProvider;
+  private configService = inject(LoginConfigurationService);
+  private emailProviderService = inject(EmailProviderService);
+  private oauthProviderService = inject(OauthProviderService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  google: OAuthProvider;
+  email!: EmailAuthProvider;
 
-  egi: OAuthProvider;
+  google: OAuthProvider | undefined;
 
-  facebook: OAuthProvider;
+  egi: OAuthProvider | undefined;
 
-  loginForm: UntypedFormGroup;
+  facebook: OAuthProvider | undefined;
+
+  loginForm!: UntypedFormGroup;
 
   isLoading = false;
 
-  serviceErrorMessage: string;
+  serviceErrorMessage!: string | null;
 
-  terms: TermsParameters;
+  terms: TermsParameters | undefined;
 
   lostPasswordLink = `${env.userLink}password/reset`;
 
-  constructor(
-    private configService: LoginConfigurationService,
-    private emailProviderService: EmailProviderService,
-    private oauthProviderService: OauthProviderService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();
     this.terms = this.configService.getTermsParams();
     this.initProviders(oauth, email);
     this.emailProviderService.isLoading$.subscribe((val) => {
       this.isLoading = !!val;
+      this.changeDetectorRef.markForCheck();
     });
   }
 
@@ -68,6 +74,7 @@ export class SignInComponent {
       // on form change clear service error
       this.loginForm.valueChanges.subscribe(() => {
         this.serviceErrorMessage = null;
+        this.changeDetectorRef.markForCheck();
       });
     }
   }
@@ -110,6 +117,7 @@ export class SignInComponent {
       switchMap(({ status }: any) => of(validationHelper.getServiceErrorMessage(status)))
     ).subscribe((errorMessage) => {
       this.serviceErrorMessage = errorMessage;
+      this.changeDetectorRef.markForCheck();
     });
     this.emailProviderService.login(this.loginForm.value, this.terms);
 
@@ -119,10 +127,10 @@ export class SignInComponent {
     });
   }
 
-  getErrorMessage = (input) => {
-    if (!this.loginForm.get(input).touched) {
+  getErrorMessage = (input: string) => {
+    if (!this.loginForm.get(input)!.touched) {
       return null;
     }
-    return validationHelper.getErrorMessage(input, this.loginForm.get(input).errors);
-  }
+    return validationHelper.getErrorMessage(input, this.loginForm.get(input)!.errors);
+  };
 }

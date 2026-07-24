@@ -1,4 +1,6 @@
-<div class="pnd-edit-modal__notebook-wrapper" *ngIf="notebookSelectorData">
+@if (notebookSelectorData) {
+  <div class="pnd-edit-modal__notebook-wrapper">
     <notebook-selector [data]="notebookSelectorData" [emit]="onEmit">
     </notebook-selector>
-</div>
+  </div>
+}

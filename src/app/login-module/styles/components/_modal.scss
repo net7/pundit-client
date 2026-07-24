@@ -1,3 +1,7 @@
+@use "../generic/color_scheme";
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * RESOURCE MODAL
  *
@@ -8,35 +12,35 @@
    #RESOURCE MODAL
 \* ------------------------------------ */
 .pnd-login-modal {
-    z-index: $z-index-max;
-    color: $color-text;
-    font-size: $font-size-m;
-    font-family: $font-family-main;
-    font-weight: $font-weight-normal;
+    z-index: variables.$z-index-max;
+    color: variables.$color-text;
+    font-size: variables.$font-size-m;
+    font-family: variables.$font-family-main;
+    font-weight: variables.$font-weight-normal;
 
     &__window {
         position: relative;
         z-index: 20;
-        max-width: $modal-width;
-        background: $color-background-base;
-        border: 1px solid $color-border-normal;
-        margin: $space*8 auto 0 auto;
-        border-radius: $border-radius-hard;
+        max-width: variables.$modal-width;
+        background: variables.$color-background-base;
+        border: 1px solid variables.$color-border-normal;
+        margin: variables.$space*8 auto 0 auto;
+        border-radius: variables.$border-radius-hard;
         overflow-y: auto;
-        @include cardShadow-1;
+        @include mixins.cardShadow-1;
     }
 
     /* Close */
     &__close {
         position: absolute;
-        top: $space*2;
-        right: $space*2;
+        top: variables.$space*2;
+        right: variables.$space*2;
         cursor: pointer;
     }
 
     &__close-link {
-        color: $color-gray-04;
-        font-size: $font-size-l;
+        color: color_scheme.$color-gray-04;
+        font-size: variables.$font-size-l;
         text-decoration: none;
     }
 
@@ -49,13 +53,13 @@
 
     /* Error */
     &__error-title {
-        margin-bottom: $space*2;
-        font-size: $font-size-l;
-        font-family: $font-family-main;
+        margin-bottom: variables.$space*2;
+        font-size: variables.$font-size-l;
+        font-family: variables.$font-family-main;
     }
 
     &__error-text {
-        font-size: $font-size-s;
+        font-size: variables.$font-size-s;
     }
 }
 
@@ -65,41 +69,41 @@
 \* ------------------------------------ */
 .pnd-login-modal {
     &__header {
-        padding: $space*3;
+        padding: variables.$space*3;
         text-align: center;
     }
 
     &__header-logo {
-        margin-bottom: $space;
-        font-size: $font-size-xxxl;
-        color: $color-main;
+        margin-bottom: variables.$space;
+        font-size: variables.$font-size-xxxl;
+        color: color_scheme.$color-main;
         
         .pnd-svg-icon, .pnd-svg-icon svg {
-            width: $font-size-xxxl;
-            height: $font-size-xxxl;
+            width: variables.$font-size-xxxl;
+            height: variables.$font-size-xxxl;
         }
     }
 
     &__header-title {
-        margin: 0 0 $space/2 0;
-        font-family: $font-family-main;
-        font-weight: $font-weight-normal;
-        font-size: $font-size-xxl;
+        margin: 0 0 variables.$space*0.5 0;
+        font-family: variables.$font-family-main;
+        font-weight: variables.$font-weight-normal;
+        font-size: variables.$font-size-xxl;
     }
 
     &__header-small-title {
-        margin: 0 0 $space/2 0;
-        font-family: $font-family-main;
-        font-weight: $font-weight-normal;
-        font-size: $font-size-xl;
+        margin: 0 0 variables.$space*0.5 0;
+        font-family: variables.$font-family-main;
+        font-weight: variables.$font-weight-normal;
+        font-size: variables.$font-size-xl;
     }
 
     &__header-text {
         margin: 0;
-        font-family: $font-family-main;
-        font-weight: $font-weight-normal;
-        font-size: $font-size-m;
-        color: $color-text-light;
+        font-family: variables.$font-family-main;
+        font-weight: variables.$font-weight-normal;
+        font-size: variables.$font-size-m;
+        color: variables.$color-text-light;
     }
 }
 
@@ -108,13 +112,13 @@
 \* ------------------------------------ */
 .pnd-login-modal {
     &__form {
-        padding: 0 $space*3 $space*3 $space*3;
-        border-bottom: 1px solid $color-border-normal;
+        padding: 0 variables.$space*3 variables.$space*3 variables.$space*3;
+        border-bottom: 1px solid variables.$color-border-normal;
     }
 
     &__form-row {
-        margin-bottom: $space*1.5;
-        @include consistent;
+        margin-bottom: variables.$space*1.5;
+        @include mixins.consistent;
 
         &:last-child {
             margin-bottom: 0;
@@ -123,10 +127,10 @@
 
     &__form-label {
         display: block;
-        margin-bottom: $space;
-        color: $color-text;
-        font-size: $font-size-m;
-        font-weight: $font-weight-normal;
+        margin-bottom: variables.$space;
+        color: variables.$color-text;
+        font-size: variables.$font-size-m;
+        font-weight: variables.$font-weight-normal;
     }
 
     &__form-input {
@@ -138,14 +142,14 @@
         display: flex;
 
         .pnd-login-modal__form-checkbox {
-            margin-right: $space;
+            margin-right: variables.$space;
             flex-grow: 0;
             flex-shrink: 0;
             cursor: pointer;
         }
 
         .pnd-login-modal__form-label {
-            font-size: $font-size-s;
+            font-size: variables.$font-size-s;
             cursor: pointer;
         }
     }
@@ -169,7 +173,7 @@
 \* ------------------------------------ */
 .pnd-login-modal {
     &__social-buttons {
-        padding: $space*3;
+        padding: variables.$space*3;
         text-align: center;
         
         .pnd-btn {
@@ -177,8 +181,8 @@
         }
 
         .pnd-btn:not(:last-child) {
-            margin-right: $space;
-            margin-bottom: $space;
+            margin-right: variables.$space;
+            margin-bottom: variables.$space;
         }
     }
 }
@@ -189,29 +193,29 @@
 \* ------------------------------------ */
 .pnd-login-modal {
     &__footer {
-        padding: $space*2;
-        border-top: 1px solid $color-border-normal;
+        padding: variables.$space*2;
+        border-top: 1px solid variables.$color-border-normal;
         text-align: center;
     }
 
     &__footer-text {
         display: inline-block;
-        margin: 0 $space/2 0 0;
-        font-size: $font-size-s;
+        margin: 0 variables.$space*0.5 0 0;
+        font-size: variables.$font-size-s;
     }
 
     &__footer-link {
         display: inline-block;
-        font-size: $font-size-s;
-        color: $color-text;
-        transition: all $transition-durations;
+        font-size: variables.$font-size-s;
+        color: variables.$color-text;
+        transition: all variables.$transition-durations;
         text-decoration: underline;
-        text-decoration-color: rgba($color-text, .3);
+        text-decoration-color: rgba(variables.$color-text, .3);
         text-underline-offset: 5px;
         
         &:hover {
-            color: $color-text-link;
-            text-decoration-color: rgba($color-text-link, .7);
+            color: variables.$color-text-link;
+            text-decoration-color: rgba(variables.$color-text-link, .7);
         }
     }
 }
@@ -230,7 +234,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba($color-gray-02, .8);
+        background-color: rgba(color_scheme.$color-gray-02, .8);
     }
 }
 
@@ -244,9 +248,9 @@
     }
 
     &__form-error {
-        margin-top: $space/2;
-        color: $color-error;
-        font-size: $font-size-xs;
-        font-weight: $font-weight-bold;
+        margin-top: variables.$space*0.5;
+        color: color_scheme.$color-error;
+        font-size: variables.$font-size-xs;
+        font-weight: variables.$font-weight-bold;
     }
 }

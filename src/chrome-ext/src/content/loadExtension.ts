@@ -21,8 +21,8 @@ export const loadExtension = () => {
 
   // add listeners
   Object.keys(listenersMap).forEach((type) => {
-    const handler = listenersMap[type];
-    window.addEventListener(type, handler, false);
+    const handler = listenersMap[type as keyof typeof listenersMap];
+    window.addEventListener(type, handler as EventListener, false);
   });
 
   const appRoot = document.createElement('pnd-root');

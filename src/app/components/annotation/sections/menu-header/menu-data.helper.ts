@@ -8,7 +8,7 @@ export interface ActionButtonConfig {
   avoidEdit?: boolean;
 }
 
-export const menuNotebookItems = (id, notebooks) => notebooks.map(({ id: itemId, label }) => ({
+export const menuNotebookItems = (id: string, notebooks: any[]) => notebooks.map(({ id: itemId, label }: any) => ({
   label,
   payload: {
     id,
@@ -17,7 +17,7 @@ export const menuNotebookItems = (id, notebooks) => notebooks.map(({ id: itemId,
   },
 }));
 
-export const menuNotebookHeader = (id) => ({
+export const menuNotebookHeader = (id: string) => ({
   label: _t('annotation#changenotebook'),
   payload:
     {
@@ -26,7 +26,7 @@ export const menuNotebookHeader = (id) => ({
     }
 });
 
-export const menuNotebookSection = (id, currentUserNotebooks) => {
+export const menuNotebookSection = (id: string, currentUserNotebooks: any[]) => {
   const header = menuNotebookHeader(id);
   const items = menuNotebookItems(id, currentUserNotebooks);
   return {
@@ -48,7 +48,7 @@ export const blockEditAction = (annotation: Annotation): boolean => {
   return !!hasObjectUri || !!hasDate;
 };
 
-export const menuIconButton = (id) => ({
+export const menuIconButton = (id: string) => ({
   id: 'ellipsis-v',
   payload: {
     id,

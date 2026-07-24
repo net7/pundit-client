@@ -6,11 +6,11 @@ class ChromeExtState {
     badgeInterval: null,
     badgeIntervalCount: 0,
     rootExistMessageSended: false
-  }
+  };
 
   set(newData: Partial<ChromeExtStateData>) {
     Object.keys(newData).forEach((key) => {
-      this.data[key] = newData[key];
+      (this.data as any)[key] = (newData as any)[key];
     });
   }
 

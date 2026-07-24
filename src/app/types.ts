@@ -8,6 +8,7 @@ export type AppEventData = {
 export interface AnchorHref {
   href: string;
   target?: '_self' | '_blank' | '_parent' | '_top';
+  payload?: any;
 }
 
 export interface AnchorPayload {
@@ -87,8 +88,8 @@ export interface SemanticProvider {
   id: string;
   label: string;
   items: SemanticItem[];
-  selected: SemanticItem;
-  get: (uri: string) => SemanticItem;
+  selected: SemanticItem | null;
+  get: (uri: string) => SemanticItem | undefined;
   search: (query?: string) => Observable<SemanticItem[]>;
   setSelected: (uri: string) => void;
 }

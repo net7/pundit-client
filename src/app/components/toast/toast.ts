@@ -2,8 +2,10 @@
 // TOAST.ts
 //---------------------------
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
+import { NgClass, NgStyle, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
 
 /**
  * Interface for ToastComponent's "data"
@@ -92,25 +94,27 @@ export interface ToastAction {
 }
 
 @Component({
-  selector: 'pnd-toast',
-  templateUrl: './toast.html'
+    selector: 'pnd-toast',
+    templateUrl: './toast.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, NgStyle, SvgIconComponent, AsyncPipe]
 })
 export class ToastComponent {
-  @Input() data: ToastData;
+  @Input() data!: ToastData;
 
   @Input() emit: any;
 
-  onClick(payload) {
+  onClick(payload: any) {
     if (!this.emit) return;
 
     this.emit('click', payload);
   }
 
-  onMouseover(payload) {
+  onMouseover(payload: any) {
     this.emit('mouseover', payload);
   }
 
-  onMouseout(payload) {
+  onMouseout(payload: any) {
     this.emit('mouseout', payload);
   }
 }

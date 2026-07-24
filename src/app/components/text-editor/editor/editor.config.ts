@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { DOMOutputSpec, Schema } from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
+import { Command } from 'prosemirror-state';
 import { schema as baseSchema } from 'prosemirror-schema-basic';
 import * as sl from 'prosemirror-schema-list';
 import ListCommand from './list-command';
@@ -69,7 +69,7 @@ const customSchema = {
     link: {
       attrs: {
         href: {},
-        title: { default: null },
+        title: { default: null as string | null },
         target: { default: '_blank' },
       },
       inclusive: false,
@@ -83,7 +83,7 @@ const customSchema = {
           };
         }
       }],
-      toDOM(node): DOMOutputSpec {
+      toDOM(node: any): DOMOutputSpec {
         const { href, title, target } = node.attrs;
         return ['a', { href, title, target }, 0];
       }
@@ -127,7 +127,7 @@ const commands = {
   code: toggleMark(schema.marks.code),
   ul: ulCommand.toggle(),
   ol: olCommand.toggle(),
-  link: null, // command manually triggered
+  link: null as Command | null, // command manually triggered
 };
 
 export default {

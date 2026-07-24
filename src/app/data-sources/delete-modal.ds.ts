@@ -27,12 +27,20 @@ export class DeleteModalDS extends DataSource {
   }
 
   public close() {
-    this.output.visible = false;
+    this.setOutput({ visible: false });
   }
 
   public open() {
-    this.output.visible = true;
+    this.setOutput({ visible: true });
   }
 
   public isVisible = () => this.output?.visible;
+
+  private setOutput(update: Partial<DeleteModalData>) {
+    this.output = {
+      ...this.output,
+      ...update
+    };
+    this.out$.next(this.output);
+  }
 }

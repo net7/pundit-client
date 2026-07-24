@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import { CrossMsgData, CommonEventType } from './types';
@@ -11,11 +10,11 @@ const handlers: {
   [x: string]: {
     resolve: (value: unknown) => void;
     reject: (reason?: any) => void;
-  };
+  } | null;
 } = {};
 
 if (addEventListener) {
-  addEventListener(CommonEventType.CrossMsgResponse, (ev: CustomEvent) => {
+  addEventListener(CommonEventType.CrossMsgResponse, ((ev: CustomEvent) => {
     const { detail }: { detail: CrossMsgData } = ev;
     const { messageId, response, error } = detail;
     if (handlers[messageId]) {
@@ -27,14 +26,13 @@ if (addEventListener) {
       // clear
       handlers[messageId] = null;
     }
-  });
+  }) as EventListener);
 }
 
 export function CrossMessage(requestId: string) {
   return (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
-    // eslint-disable-next-line func-names
-    descriptor.value = function (...args) {
+    descriptor.value = function (...args: any[]) {
       let result;
       if (crossMessageEnabled()) {
         const idPrefix = new Date().valueOf();

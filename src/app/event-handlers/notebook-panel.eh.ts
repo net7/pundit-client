@@ -3,7 +3,7 @@ import { NotebookPanelDS } from '../data-sources';
 import { getEventType, NotebookPanelEvent, SidebarLayoutEvent } from '../event-types';
 
 export class NotebookPanelEH extends EventHandler {
-  public dataSource: NotebookPanelDS;
+  public dataSource!: NotebookPanelDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {

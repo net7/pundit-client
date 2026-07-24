@@ -3,13 +3,21 @@ import {
   Component,
   Input,
   ElementRef,
-  ViewChild
+  ViewChild,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  inject
 } from '@angular/core';
 import { FormSectionData } from 'src/app/types';
-import * as Draggable from 'draggable';
+import Draggable from 'draggable';
 import { merge, Subject } from 'rxjs';
 import { isEmpty } from 'lodash';
 import { EditModalEvent, getEventType } from 'src/app/event-types';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { CommentSectionComponent } from './sections/comment-section/comment-section';
+import { SemanticSectionComponent } from './sections/semantic-section/semantic-section';
+import { TagsSectionComponent } from './sections/tags-section/tags-section';
+import { NotebookSectionComponent } from './sections/notebook-section/notebook-section';
 
 /**
  * Interface for EditModal's "data"
@@ -51,17 +59,21 @@ export type EditModalFormState = {
 }
 
 @Component({
-  selector: 'pnd-edit-modal',
-  templateUrl: './edit-modal.html'
+    selector: 'pnd-edit-modal',
+    templateUrl: './edit-modal.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [SvgIconComponent, CommentSectionComponent, SemanticSectionComponent, TagsSectionComponent, NotebookSectionComponent]
 })
 export class EditModalComponent implements AfterContentChecked {
-  @ViewChild('saveButton') saveButton: ElementRef;
+  private changeDetectorRef = inject(ChangeDetectorRef);
 
-  @Input() public data: EditModalData;
+  @ViewChild('saveButton') saveButton!: ElementRef;
 
-  @Input() public emit: (type: string, payload?: any) => void;
+  @Input() public data!: EditModalData;
 
-  private lastInternalId: string = null;
+  @Input() public emit!: (type: string, payload?: any) => void;
+
+  private lastInternalId: string | null = null;
 
   private loaded = false;
 
@@ -71,7 +83,7 @@ export class EditModalComponent implements AfterContentChecked {
 
   public draggableHandle = 'pnd-modal-draggable-handle';
 
-  public draggableInstance;
+  public draggableInstance: any;
 
   public reset$: Subject<void> = new Subject();
 
@@ -100,6 +112,7 @@ export class EditModalComponent implements AfterContentChecked {
       // for data refresh
       setTimeout(() => {
         this.reset$.next();
+        this.changeDetectorRef.markForCheck();
       });
     }
     if (!this.loaded && this.data?.visible) {
@@ -112,35 +125,39 @@ export class EditModalComponent implements AfterContentChecked {
       // init changed$ listener
       this.initChangedListener();
     }
-  }
+  };
 
   private initDraggableInstance = () => {
     // fix element dom loaded
     setTimeout(() => {
       const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-      const target = shadowRoot.getElementById(this.draggableTarget);
-      const handle = shadowRoot.getElementById(this.draggableHandle);
+      const target = shadowRoot!.getElementById(this.draggableTarget);
+      const handle = shadowRoot!.getElementById(this.draggableHandle);
       const limit = this.getDragLimit(target);
       this.draggableInstance = new Draggable(target, { handle, limit });
       this.data._setDraggableInstance(this.draggableInstance);
+      this.changeDetectorRef.markForCheck();
     });
-  }
+  };
 
   private initFormState = () => {
     // reset form state
     this.formState = {};
     const { sections } = this.data;
-    Object.keys(sections).forEach((key) => {
+    this.formState = Object.keys(sections).reduce<EditModalFormState>((state, key) => {
       const { initialValue } = sections[key];
-      this.formState[key] = {
-        value: initialValue || null
+      return {
+        ...state,
+        [key]: {
+          value: initialValue || null
+        }
       };
-    });
+    }, {});
 
     // update save button state
     // with initial form state values
     this.updateSaveButtonState();
-  }
+  };
 
   private initChangedListener = () => {
     const { sections } = this.data;
@@ -149,25 +166,28 @@ export class EditModalComponent implements AfterContentChecked {
 
     // listen to sections changed$
     merge(...sources$).subscribe(({ id, value, errors }) => {
-      this.formState[id] = { value, errors };
+      this.formState = {
+        ...this.formState,
+        [id]: { value, errors }
+      };
 
       // update save button state
       this.updateSaveButtonState();
     });
-  }
+  };
 
   private updateSaveButtonState() {
     const { sections, validation } = this.data;
-    const sectionErrors: boolean[] = [];
-    const requiredErrors: boolean[] = [];
-    Object.keys(sections).forEach((key, index) => {
+    const sectionErrors = Object.keys(sections).map((key) => {
       // check for errors
       const currentSectionErrors = this.formState[key]?.errors;
-      sectionErrors[index] = !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
+      return !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
+    });
 
+    const requiredErrors = Object.keys(sections).map((key) => {
       // check required
       const sectionValue = this.formState[key]?.value;
-      requiredErrors[index] = !!(sections[key].required && isEmpty(sectionValue));
+      return !!(sections[key].required && isEmpty(sectionValue));
     });
 
     const hasSectionErrors = !!sectionErrors.find((value) => !!value);
@@ -177,15 +197,24 @@ export class EditModalComponent implements AfterContentChecked {
       disabled = true;
     } else if (hasRequiredErrors) {
       const numOfErrors = requiredErrors.filter((value) => !!value).length;
-      const isOrCondition = validation?.required.condition === 'OR';
+      const isOrCondition = validation?.required?.condition === 'OR';
       disabled = !!(isOrCondition ? numOfErrors === (requiredErrors.length - 1) : numOfErrors);
     }
     // update save button
-    const saveAction = this.data.actions.save;
-    saveAction.disabled = disabled;
+    this.data = {
+      ...this.data,
+      actions: {
+        ...this.data.actions,
+        save: {
+          ...this.data.actions.save,
+          disabled
+        }
+      }
+    };
+    this.changeDetectorRef.markForCheck();
   }
 
-  private getDragLimit = (target) => {
+  private getDragLimit = (target: any) => {
     if (!target) {
       return null;
     }
@@ -194,5 +223,5 @@ export class EditModalComponent implements AfterContentChecked {
     const tw = Math.max(target.clientWidth || 200);
     const th = Math.max(target.clientHeight || 200);
     return { x: [0, vw - tw], y: [0, vh - th] };
-  }
+  };
 }

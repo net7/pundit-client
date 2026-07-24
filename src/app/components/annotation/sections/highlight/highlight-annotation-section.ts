@@ -1,23 +1,28 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy
+} from '@angular/core';
 import { _t } from '@net7/core';
 import { Annotation } from '@pundit/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { AsyncPipe, DatePipe } from '@angular/common';
 
 @Component({
-  selector: 'pnd-highlight-annotation-section',
-  templateUrl: './highlight-annotation-section.html',
+    selector: 'pnd-highlight-annotation-section',
+    templateUrl: './highlight-annotation-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [AsyncPipe, DatePipe]
 })
 export class HighlightAnnotationSectionComponent implements OnInit {
   id = 'highlight';
 
-  @Input() public data$: Subject<Annotation>;
+  @Input() public data$!: Subject<Annotation>;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
   public classHypo = '';
 
-  public highlight$: Observable<any>;
+  public highlight$!: Observable<any>;
 
   ngOnInit(): void {
     this.highlight$ = this.data$.pipe(map(this.transformData));

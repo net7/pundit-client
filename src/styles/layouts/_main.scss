@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * MAIN
  *
@@ -7,13 +9,13 @@
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */

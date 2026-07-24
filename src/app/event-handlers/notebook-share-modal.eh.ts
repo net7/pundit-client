@@ -3,7 +3,7 @@ import { NotebookShareModalDS } from '../data-sources';
 import { getEventType, MainLayoutEvent, NotebookShareModalEvent } from '../event-types';
 
 export class NotebookShareModalEH extends EventHandler {
-  dataSource: NotebookShareModalDS;
+  dataSource!: NotebookShareModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
@@ -46,7 +46,7 @@ export class NotebookShareModalEH extends EventHandler {
     });
   }
 
-  private onClick(payload) {
+  private onClick(payload: any) {
     const { source } = payload;
     switch (source) {
       case 'close-icon':

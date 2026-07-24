@@ -16,14 +16,16 @@ const PDF_BODY_CLASS = 'pnd-document-is-pdf';
 
 const PDF_VIEWER_TOOLBAR_HEIGHT = 32;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class PdfService {
   private pdfApp: PDFViewerApp;
 
   // PDF through proxy to work around CORS restrictions
-  private documentUrl: string;
+  private documentUrl!: string;
 
-  private originalUrl: string;
+  private originalUrl!: string;
 
   private allowedEvents: PdfViewerEvents[] = [
     PdfViewerEvents.PageRendered,
@@ -53,13 +55,21 @@ export class PdfService {
       // set urls
       const urlParams = new URLSearchParams(window.location.search);
       const source = urlParams.get('source');
-      // FIXME: update proxy url
+      // originalUrl = documento reale (identità/annotazioni). documentUrl = da
+      // dove pdfjs scarica i byte: nel viewer web i PDF http/cross-origin
+      // arrivano via 'fetchUrl' (proxy same-origin fornito dal server), che
+      // aggira mixed-content e CORS. Nell'estensione 'fetchUrl' è assente e si
+      // scarica direttamente dal contesto privilegiato.
+      const fetchUrl = urlParams.get('fetchUrl');
       this.originalUrl = source || '/no-pdf-file.pdf';
-      this.documentUrl = `${this.originalUrl}`;
+      this.documentUrl = fetchUrl || this.originalUrl;
       // add body class
       document.body.classList.add(PDF_BODY_CLASS);
-      // pdf app init
-      document.addEventListener('webviewerloaded', () => {
+      // pdf app init: nel viewer web standalone viewer.js gira a
+      // DOMContentLoaded, prima che Angular istanzi questo servizio, quindi
+      // l'evento 'webviewerloaded' può essere già scattato. Se initializedPromise
+      // è già disponibile procedi subito, altrimenti attendi l'evento.
+      const onViewerLoaded = () => {
         from(this.pdfApp.initializedPromise).pipe(
           first(),
         ).subscribe(() => {
@@ -67,15 +77,20 @@ export class PdfService {
           this.listenPdfViewer();
           this.listenScroll();
         });
-      });
+      };
+      if ((this.pdfApp as { initializedPromise?: Promise<void> }).initializedPromise) {
+        onViewerLoaded();
+      } else {
+        document.addEventListener('webviewerloaded', onViewerLoaded);
+      }
     }
   }
 
   isActive = () => !!this.pdfApp;
 
-  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID);
+  getDocumentContainer = (): HTMLElement => document.getElementById(PDF_DOCUMENT_CONTAINER_ID)!;
 
-  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID);
+  getScrollContainer = (): HTMLElement => document.getElementById(PDF_SCROLL_CONTAINER_ID)!;
 
   getViewerToolbarHeight = () => PDF_VIEWER_TOOLBAR_HEIGHT;
 
@@ -84,7 +99,7 @@ export class PdfService {
   getFingerprint(): string {
     const { pdfDocument } = this.pdfApp;
     if (Array.isArray(pdfDocument.fingerprints)) {
-      return pdfDocument.fingerprints[0];
+      return pdfDocument.fingerprints[0]!;
     }
     return pdfDocument.fingerprint;
   }
@@ -103,7 +118,7 @@ export class PdfService {
         url: this.documentUrl,
         originalUrl: this.originalUrl,
       });
-    } catch (err) {
+    } catch (err: any) {
       this.error$.next({
         type: err.name,
         payload: this.pdfApp
@@ -143,9 +158,9 @@ export class PdfService {
     return pathSegments[pathSegments.length - 1];
   }
 
-  onScroll({ target }) {
+  onScroll({ target }: { target: any }) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    const sidebarAnnotationsContainer = shadowRoot.querySelector('.pnd-sidebar__content') as HTMLElement;
+    const sidebarAnnotationsContainer = shadowRoot!.querySelector('.pnd-sidebar__content') as HTMLElement;
     const { scrollTop } = target;
     sidebarAnnotationsContainer.style.marginTop = `${-scrollTop}px`;
   }

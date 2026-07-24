@@ -3,11 +3,11 @@ import { selectionModel as model } from '../selection-model';
 
 describe('Selection', () => {
   describe('changed$ payload', () => {
-    let fakeEvent;
-    let fakeGetRangeAtCollapsedFalse;
+    let fakeEvent: Event | null;
+    let fakeGetRangeAtCollapsedFalse: jest.Mock | null;
     beforeEach(() => {
       fakeEvent = new Event('selectionchange');
-      fakeGetRangeAtCollapsedFalse = jasmine.createSpy().and.returnValue((() => {
+      fakeGetRangeAtCollapsedFalse = jest.fn().mockReturnValue((() => {
         const fakeTextNode = document.createTextNode('Hello world');
         const range = document.createRange();
         range.setStart(fakeTextNode, 0);
@@ -22,10 +22,10 @@ describe('Selection', () => {
     });
 
     it('returns a Range', (done) => {
-      spyOn(document, 'getSelection').and.returnValue({
+      jest.spyOn(document, 'getSelection').mockReturnValue({
         rangeCount: 1,
         getRangeAt: fakeGetRangeAtCollapsedFalse
-      } as Selection);
+      } as unknown as Selection);
 
       model.changed$.pipe(
         first()
@@ -33,7 +33,7 @@ describe('Selection', () => {
         expect(model.getCurrentRange() instanceof Range).toBeTruthy();
         done();
       });
-      document.dispatchEvent(fakeEvent);
+      document.dispatchEvent(fakeEvent!);
     });
   });
 });

@@ -1,3 +1,5 @@
+@use "variables";
+
 //
 // MIXINS
 //
@@ -37,26 +39,26 @@
 // ------------------------------------ //
 @mixin placeholder {
     &::-webkit-input-placeholder {
-        color: $form-input-placeholder-color;
-        font-weight: $font-weight-normal;
-        font-family: $font-family-main;
+        color: variables.$form-input-placeholder-color;
+        font-weight: variables.$font-weight-normal;
+        font-family: variables.$font-family-main;
     }
 
     &:-moz-placeholder {
-        color: $form-input-placeholder-color;
-        font-weight: $font-weight-normal;
-        font-family: $font-family-main;
+        color: variables.$form-input-placeholder-color;
+        font-weight: variables.$font-weight-normal;
+        font-family: variables.$font-family-main;
     }
 
     &::-moz-placeholder {
-        color: $form-input-placeholder-color;
-        font-weight: $font-weight-normal;
-        font-family: $font-family-main;
+        color: variables.$form-input-placeholder-color;
+        font-weight: variables.$font-weight-normal;
+        font-family: variables.$font-family-main;
     }
 
     &:-ms-input-placeholder {
-        color: $form-input-placeholder-color;
-        font-weight: $font-weight-normal;
-        font-family: $font-family-main;
+        color: variables.$form-input-placeholder-color;
+        font-weight: variables.$font-weight-normal;
+        font-family: variables.$font-family-main;
     }
 }

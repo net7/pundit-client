@@ -1,7 +1,7 @@
 import { _t } from '@net7/core';
 import { _c } from 'src/app/models/config';
 
-const annotationDerefUrl = (id) => {
+const annotationDerefUrl = (id: string) => {
   const baseDereferenceURL = _c('baseDereferenceURL');
   const path = `html/annotation/${id}`;
   return new URL(path, baseDereferenceURL).toString();
@@ -23,7 +23,7 @@ const buildUrl = (id: string, source: 'twitter' | 'facebook') => {
   return url;
 };
 
-export const shareButton = (id) => ({
+export const shareButton = (id: string) => ({
   id: 'share',
   payload: {
     id,
@@ -31,7 +31,7 @@ export const shareButton = (id) => ({
   },
 });
 
-export const shareActionButtons = (config: { id }) => {
+export const shareActionButtons = (config: { id: string }) => {
   const { id } = config;
   const actions = [
     {

@@ -2,9 +2,10 @@ import { takeUntil } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
-import { EditModalParams, LayoutHandler, SemanticItem } from 'src/app/types';
+import { EditModalParams, LayoutHandler } from 'src/app/types';
 import { _t } from '@net7/core';
 import { Annotation, SemanticTripleType } from '@pundit/communication';
+import { cloneDeep } from 'lodash';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
 
@@ -20,65 +21,72 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutEH.appEvent$.pipe(
       takeUntil(this.layoutEH.destroy$)
     ).subscribe(({ type, payload }) => {
-      switch (type) {
-        case AppEvent.KeyUpEscape:
-          this.onKeyupEscape();
-          this.layoutEH.emitOuter(getEventType(MainLayoutEvent.KeyUpEscape));
-          break;
-        case AppEvent.AnnotationDeleteClick:
-          this.onAnnotationDeleteClick(payload);
-          this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationDeleteClick));
-          break;
-        case AppEvent.AnnotationMouseEnter:
-          this.onAnnotationMouseEnter(payload);
-          break;
-        case AppEvent.AnnotationMouseLeave:
-          this.onAnnotationMouseLeave(payload);
-          break;
-        case AppEvent.AnnotationEditComment:
-          this.onAnnotationEdit(payload, 'comment');
-          break;
-        case AppEvent.AnnotationEditTags:
-          this.onAnnotationEdit(payload, 'tags');
-          break;
-        case AppEvent.AnnotationEditSemantic:
-          this.onAnnotationEdit(payload, 'semantic');
-          break;
-        case AppEvent.AnnotationNewFullPage:
-          this.onFullPageAnnotationCreate(payload);
-          break;
-        case AppEvent.SidebarCollapse:
-          this.onSidebarCollapse(payload);
-          break;
-        case AppEvent.SidebarLogoutClick:
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.Logout,
-            payload: {
-              callback: () => {
-                // emit signal
-                this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
-              }
-            }
-          });
-          break;
-        case AppEvent.Logout:
-          this.onLogout(payload);
-          this.layoutEH.appEvent$.next({
-            type: AppEvent.Clear
-          });
-          break;
-        case AppEvent.Refresh:
-          this.onRefresh();
-          break;
-        case AppEvent.ClearAnonymousSelectionRange:
-          this.layoutDS.state.anonymousSelectionRange = null;
-          break;
-        default:
-          break;
-      }
+      this.handleAppEvent(type, payload);
 
       this.layoutEH.detectChanges();
     });
+  }
+
+  private handleAppEvent(type: string, payload?: any) {
+    const handlers: Record<string, () => void> = {
+      [AppEvent.KeyUpEscape]: () => {
+        this.onKeyupEscape();
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.KeyUpEscape));
+      },
+      [AppEvent.AnnotationDeleteClick]: () => {
+        this.onAnnotationDeleteClick(payload);
+        this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationDeleteClick));
+      },
+      [AppEvent.AnnotationMouseEnter]: () => {
+        this.onAnnotationMouseEnter(payload);
+      },
+      [AppEvent.AnnotationMouseLeave]: () => {
+        this.onAnnotationMouseLeave(payload);
+      },
+      [AppEvent.AnnotationEditComment]: () => {
+        this.onAnnotationEdit(payload, 'comment');
+      },
+      [AppEvent.AnnotationEditTags]: () => {
+        this.onAnnotationEdit(payload, 'tags');
+      },
+      [AppEvent.AnnotationEditSemantic]: () => {
+        this.onAnnotationEdit(payload, 'semantic');
+      },
+      [AppEvent.AnnotationNewFullPage]: () => {
+        this.onFullPageAnnotationCreate(payload);
+      },
+      [AppEvent.SidebarCollapse]: () => {
+        this.onSidebarCollapse(payload);
+      },
+      [AppEvent.SidebarLogoutClick]: () => {
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.Logout,
+          payload: {
+            callback: () => {
+              // emit signal
+              this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+            }
+          }
+        });
+      },
+      [AppEvent.Logout]: () => {
+        this.onLogout(payload);
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.Clear
+        });
+      },
+      [AppEvent.Refresh]: () => {
+        this.onRefresh();
+      },
+      [AppEvent.ClearAnonymousSelectionRange]: () => {
+        this.layoutDS.state.anonymousSelectionRange = null;
+      }
+    };
+
+    const handler = handlers[type];
+    if (handler) {
+      handler();
+    }
   }
 
   private onKeyupEscape() {
@@ -88,23 +96,24 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onAnnotationDeleteClick(payload) {
+  private onAnnotationDeleteClick(payload: any) {
     this.layoutDS.state.annotation.deleteId = payload;
   }
 
-  private onAnnotationMouseEnter({ id }) {
+  private onAnnotationMouseEnter({ id }: { id: string }) {
     this.layoutDS.anchorService.addHoverClass(id);
   }
 
-  private onAnnotationMouseLeave({ id }) {
+  private onAnnotationMouseLeave({ id }: { id: string }) {
     this.layoutDS.anchorService.removeHoverClass(id);
   }
 
-  private onAnnotationEdit(payload, mode: 'comment'| 'tags' | 'semantic') {
-    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload);
+  // eslint-disable-next-line complexity -- Existing edit-modal assembly branches predate the flat-config migration.
+  private onAnnotationEdit(payload: any, mode: 'comment'| 'tags' | 'semantic') {
+    const { data$ } = this.layoutDS.annotationService.getAnnotationById(payload)!;
     const annotation = data$.getValue();
     this.layoutDS.removePendingAnnotation();
-    this.layoutDS.state.annotation.updatePayload = annotation;
+    this.layoutDS.state.annotation.updatePayload = cloneDeep(annotation);
     const isFullPage = !annotation.subject?.selected;
     const params = {
       sections: [{
@@ -146,10 +155,12 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.openEditModal(params);
   }
 
-  private getSemanticData(rawSemantic: SemanticTripleType[]): {
-    predicate: SemanticItem;
-    object: SemanticItem;
-  }[] {
+  private getSemanticData(rawSemantic: SemanticTripleType[]): Array<{
+    predicate: any;
+    object: any;
+    objectType: any;
+    _raw: SemanticTripleType;
+  }> | undefined {
     return rawSemantic.length ? rawSemantic.map((triple) => {
       const { predicate } = triple;
       let object = null;
@@ -192,7 +203,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }) : undefined;
   }
 
-  private onSidebarCollapse({ isCollapsed }) {
+  private onSidebarCollapse({ isCollapsed }: { isCollapsed: boolean }) {
     if (isCollapsed) {
       document.body.classList.remove(SIDEBAR_EXPANDED_CLASS);
     } else {
@@ -200,7 +211,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private onLogout(payload) {
+  private onLogout(payload: any) {
     this.resetAppData(payload);
     if (!payload?.skipRequest) {
       this.layoutDS.punditLoginService.logout().catch((error) => {
@@ -209,7 +220,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     }
   }
 
-  private resetAppData = (payload) => {
+  private resetAppData = (payload: any) => {
     this.layoutDS.userService.clear();
     this.layoutDS.notebookService.clear();
     this.layoutDS.tagService.clear();
@@ -227,7 +238,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     if (payload?.callback) {
       payload.callback();
     }
-  }
+  };
 
   private onRefresh() {
     // reset
@@ -254,7 +265,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
       this.layoutDS.openEditModal(openModalConfig);
     });
-  }
+  };
 
   private buildEditModalConf = (pendingAnnotation: Annotation, type: string): EditModalParams => {
     const isTagging = type !== 'tagging ';
@@ -288,5 +299,5 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
       },
       sections
     };
-  }
+  };
 }

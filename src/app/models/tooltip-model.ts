@@ -3,11 +3,11 @@ import { Subject } from 'rxjs';
 import { selectionFocusRect, isSelectionBackwards } from '@net7/annotator';
 
 class TooltipModel {
-  public changed$: Subject<any> = new Subject();
+  public changed$: Subject<void> = new Subject<void>();
 
-  private instance;
+  private instance!: ReturnType<typeof createPopper>;
 
-  private tooltipWrapper: HTMLElement;
+  private tooltipWrapper!: HTMLElement;
 
   /** Vertical padding for the tooltip (y axis) */
   private padding = 5;
@@ -67,7 +67,7 @@ class TooltipModel {
    */
   private load() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    this.tooltipWrapper = shadowRoot.getElementById('pnd-tooltip');
+    this.tooltipWrapper = shadowRoot!.getElementById('pnd-tooltip')!;
 
     this.instance = createPopper(this.virtualTarget as VirtualElement, this.tooltipWrapper, {
       placement: 'top',
@@ -101,7 +101,7 @@ class TooltipModel {
     const isBackwards = isSelectionBackwards(selection);
     const {
       x, y, width, height
-    } = selectionFocusRect(selection);
+    } = selectionFocusRect(selection)!;
     this.x = x + width / 2; this.y = y;
     this.x = isBackwards ? x : x + width;
     this.y = isBackwards ? y - this.padding : y + height + this.padding;

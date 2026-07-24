@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
 import {
   SocialType, Reply
@@ -12,6 +12,9 @@ import { SocialService } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserData, UserService } from 'src/app/services/user.service';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
+import { SocialActionBarComponent } from '../social-action-bar/social-action-bar';
 
 export type ReplyFormState = {
   value?: string;
@@ -28,35 +31,35 @@ export type ReplyFormState = {
 export type ReplyType = 'Reply';
 
 @Component({
-  selector: 'pnd-annotation-reply',
-  templateUrl: './reply.html'
+    selector: 'pnd-annotation-reply',
+    templateUrl: './reply.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, SvgIconComponent, SocialActionBarComponent, AsyncPipe]
 })
 export class ReplyComponent implements OnInit {
-  @Input() public data: Reply
+  private userService = inject(UserService);
+  private replyService = inject(ReplyService);
+  private socialService = inject(SocialService);
+  private toastService = inject(ToastService);
+  imageDataService = inject(ImageDataService);
 
-  @Input() public annotationId: string;
+  @Input() public data!: Reply;
+
+  @Input() public annotationId!: string;
 
   @Input() public emit: any;
 
   public readonly ACTIONS: SocialType[] = ['Like', 'Dislike', 'Report'];
 
-  public socials$: Observable<any>;
+  public socials$!: Observable<any>;
 
-  public menuData;
+  public menuData: any;
 
-  public activeMenu;
+  public activeMenu: any;
 
-  public formState: ReplyFormState;
+  public formState!: ReplyFormState;
 
-  public userData;
-
-  constructor(
-    private userService: UserService,
-    private replyService: ReplyService,
-    private socialService: SocialService,
-    private toastService: ToastService,
-    public imageDataService: ImageDataService
-  ) {}
+  public userData: any;
 
   ngOnInit(): void {
     this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId, this.data.id);
@@ -68,7 +71,7 @@ export class ReplyComponent implements OnInit {
   }
 
   private resetFormState = (newReply: string) => {
-    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
+    const isValidReply = (reply: string): boolean => !!reply && reply.length > 3;
     return {
       value: newReply,
       placeholder: _t('social#reply_placeholder'),
@@ -83,7 +86,7 @@ export class ReplyComponent implements OnInit {
         classes: 'pnd-btn-cta'
       }]
     };
-  }
+  };
 
   private getMenuData() {
     const currentUser = this.userService.whoami()?.id;
@@ -102,7 +105,7 @@ export class ReplyComponent implements OnInit {
       : null;
   }
 
-  private createActionButtons= (id) => [{
+  private createActionButtons = (id: string) => [{
     label: _t('social#reply_edit'),
     payload: {
       id,
@@ -115,9 +118,9 @@ export class ReplyComponent implements OnInit {
       id,
       source: 'action-delete',
     },
-  }]
+  }];
 
-  onClick($event, payload) {
+  onClick($event: any, payload: any) {
     if (!payload || this.formState?.isLoading) {
       return;
     }
@@ -172,7 +175,7 @@ export class ReplyComponent implements OnInit {
       });
   }
 
-  onReplyChange(payload) {
+  onReplyChange(payload: any) {
     this.formState = this.resetFormState(payload);
   }
 
@@ -188,10 +191,12 @@ export class ReplyComponent implements OnInit {
         return;
       }
       this.formState.isLoading = true;
-      this.replyService.update(this.data.id,
+      this.replyService.update(
+        this.data.id,
         {
-          userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value
-        }).pipe(
+          userId, type: 'Comment', annotationId: this.annotationId, comment: this.formState.value as string
+        }
+      ).pipe(
         catchError(() => {
           this.toastService.error({
             title: _t('toast#annotation_reply_edit_error_title'),
@@ -227,15 +232,15 @@ export class ReplyComponent implements OnInit {
       el.focus();
       el.setSelectionRange(el.value.length, el.value.length);
     });
-  }
+  };
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
+    return shadowRoot!.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 
   private getUserData(userId: string) {
-    const user = this.userService.getUserById(userId);
+    const user = this.userService.getUserById(userId)!;
     let separator = ' ';
     // is email check
     if (user.username.includes('@')) {

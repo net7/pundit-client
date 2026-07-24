@@ -1,86 +1,90 @@
-<ng-container *ngIf="data">
-    <div class="pnd-notebook-selector {{ data._meta?.isExpanded ? 'is-expanded' : '' }}">
-
-        <ng-container *ngIf="data.mode === 'select'">
-            <!-- Selected element -->
-            <button class="pnd-notebook-selector__selected"
-                    (click)="onToggleExpand()">
-                <div class="pnd-notebook-selector__selected-label"
-                     title="{{data.selectedNotebook.label}}">
+@if (data) {
+  <div class="pnd-notebook-selector {{ data._meta?.isExpanded ? 'is-expanded' : '' }}">
+    @if (data.mode === 'select') {
+      <!-- Selected element -->
+      <button class="pnd-notebook-selector__selected"
+        (click)="onToggleExpand()">
+        <div class="pnd-notebook-selector__selected-label"
+          title="{{data.selectedNotebook.label}}">
                     <ng-container *ngTemplateOutlet="sharingModeIcon;
                                   context: {sharingMode: data.selectedNotebook.sharingMode}">
-                    </ng-container>
-                    {{data.selectedNotebook.label}}
-                </div>
-                <div class="pnd-notebook-selector__selected-right-icon">
-                    <pnd-svg-icon *ngIf="!data._meta?.isExpanded" [data]="{ id: 'angle-down' }"></pnd-svg-icon>
-                    <pnd-svg-icon *ngIf="data._meta?.isExpanded" [data]="{ id: 'angle-up' }"></pnd-svg-icon>
-                </div>                
-            </button>
-
-            <!-- Dropdown -->
-            <div class="pnd-notebook-selector__dropdown"
-                 name="current-notebook"
-                 id="current-notebook">
-
-                <!-- list of selectable notebooks -->
-                <div class="pnd-notebook-selector__dropdown-list">
-                    <ng-container *ngFor="let notebook of data.notebookList | sortBy: 'asc' : 'label'">
-                        <div (click)="onClick('option', notebook.id)"
-                             class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook.id ? 'is-current' : ''}}">
+          </ng-container>
+          {{data.selectedNotebook.label}}
+        </div>
+        <div class="pnd-notebook-selector__selected-right-icon">
+          @if (!data._meta?.isExpanded) {
+            <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+          }
+          @if (data._meta?.isExpanded) {
+            <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+          }
+        </div>
+      </button>
+      <!-- Dropdown -->
+      <div class="pnd-notebook-selector__dropdown"
+        name="current-notebook"
+        id="current-notebook">
+        <!-- list of selectable notebooks -->
+        <div class="pnd-notebook-selector__dropdown-list">
+          @for (notebook of data.notebookList | sortBy: 'asc' : 'label'; track notebook) {
+            <div (click)="onClick('option', notebook.id)"
+              class="pnd-notebook-selector__dropdown-notebook {{notebook.id === data.selectedNotebook.id ? 'is-current' : ''}}">
                             <ng-container *ngTemplateOutlet="sharingModeIcon; context: {
                                  sharingMode: notebook.sharingMode
                              }"></ng-container>
-                            {{ notebook.label }}
-                        </div>
-                    </ng-container>
-                </div>
-
-                <!-- create new notebook option -->
-                <ng-container *ngIf="data.createOption as create">
-                    <div class="pnd-notebook-selector__dropdown-new"
-                         (click)="onInputMode()">
-                        {{ create.label }}
-                    </div>
-                </ng-container>
+              {{ notebook.label }}
             </div>
-        </ng-container>
-
-        <!-- Creating a new notebook -->
-        <div *ngIf="data.mode === 'input'"
-             class="pnd-notebook-selector__create">
-            <input type="text"
-                   name="new-notebook"
-                   class="pnd-notebook-selector__create-field small"
-                   placeholder="Insert new notebook's name"
-                   (input)="onInput($event.target.value)">
-            <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
-                    [disabled]="!!data.isLoading"
-                    (click)="onCreation('')">
-                {{ labels.cancel }}
-            </button>
-            <button class="pnd-btn pnd-btn-cta pnd-notebook-selector__create-btn-save"
+          }
+        </div>
+        <!-- create new notebook option -->
+        @if (data.createOption; as create) {
+          <div class="pnd-notebook-selector__dropdown-new"
+            (click)="onInputMode()">
+            {{ create.label }}
+          </div>
+        }
+      </div>
+    }
+    <!-- Creating a new notebook -->
+    @if (data.mode === 'input') {
+      <div
+        class="pnd-notebook-selector__create">
+        <input type="text"
+          name="new-notebook"
+          class="pnd-notebook-selector__create-field small"
+          placeholder="Insert new notebook's name"
+          (input)="onInput($event.target.value)">
+        <button class="pnd-btn pnd-notebook-selector__create-btn-cancel"
+          [disabled]="!!data.isLoading"
+          (click)="onCreation('')">
+          {{ labels.cancel }}
+        </button>
+        <button class="pnd-btn pnd-btn-cta pnd-notebook-selector__create-btn-save"
                     [ngClass]="{
                         'is-loading': !!data.isLoading
                     }"
-                    [disabled]="!!(data.isLoading || data._meta.inputValue?.length < 3)"
-                    (click)="onCreation(data._meta.inputValue)">
-                <ng-container *ngIf="data.isLoading">
-                    <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-                </ng-container>
-                <ng-container *ngIf="!data.isLoading">
-                    {{ labels.create }}
-                </ng-container>
-            </button>
-        </div>
-
-    </div>
-</ng-container>
+          [disabled]="!!(data.isLoading || data._meta.inputValue?.length < 3)"
+          (click)="onCreation(data._meta.inputValue)">
+          @if (data.isLoading) {
+            <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+          }
+          @if (!data.isLoading) {
+            {{ labels.create }}
+          }
+        </button>
+      </div>
+    }
+  </div>
+}
 
 <!-- NG TEMPLATES -->
 
 <ng-template #sharingModeIcon
-             let-icon="sharingMode">
-    <pnd-svg-icon *ngIf="icon === 'private'" [data]="{ id: 'lock' }"></pnd-svg-icon>
-    <pnd-svg-icon *ngIf="icon === 'shared'" [data]="{ id: 'users' }"></pnd-svg-icon>
+  let-icon="sharingMode">
+  @if (icon === 'private') {
+    <pnd-svg-icon [data]="{ id: 'lock' }"></pnd-svg-icon>
+  }
+  @if (icon === 'shared') {
+    <pnd-svg-icon [data]="{ id: 'users' }"></pnd-svg-icon>
+  }
 </ng-template>

@@ -3,7 +3,7 @@
  * Handles the calculation and updating of annotation positions based on their highlights.
  * Provides functionality for positioning annotations correctly in the sidebar.
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AnchorService } from './anchor.service';
 import { AnnotationService } from './annotation.service';
 import { PdfService } from './pdf.service';
@@ -11,13 +11,14 @@ import { PdfService } from './pdf.service';
 const TOP_MARGIN = 60;
 const TOP_MARGIN_FULLPAGE = 110;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class AnnotationPositionService {
-  constructor(
-    private annotationService: AnnotationService,
-    private anchorService: AnchorService,
-    private pdfService: PdfService
-  ) {}
+  private annotationService = inject(AnnotationService);
+  private anchorService = inject(AnchorService);
+  private pdfService = inject(PdfService);
+
 
   /** Recalculate the position and order of each annotation present in the sidebar */
   update() {
@@ -47,8 +48,8 @@ export class AnnotationPositionService {
       })
     );
     // get all <n7-annotation> nodes present in the sidebar
-    const rawElements = shadowRoot.querySelectorAll<HTMLElement>('annotation');
-    const positionMap = [];
+    const rawElements = shadowRoot!.querySelectorAll<HTMLElement>('annotation');
+    const positionMap: Array<{ el: HTMLElement; anchorPosition: number; created: any }> = [];
     rawElements.forEach((el, index) => {
       // get the data corresponding to each <n7-annotation>
       const { anchor, created } = annotations[index];
@@ -72,7 +73,7 @@ export class AnnotationPositionService {
       });
     });
 
-    const positions = [];
+    const positions: Array<{ start: number; end: number }> = [];
     positionMap.sort((a, b) => {
       // sort the mapped hightlights/annotations by position & creation-date
       const { created: aCreated, anchorPosition: aAnchorPosition } = a;

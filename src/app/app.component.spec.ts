@@ -1,13 +1,27 @@
+import { Component } from '@angular/core';
 import { TestBed, waitForAsync } from '@angular/core/testing';
 import { AppComponent } from './app.component';
+import { MainLayoutComponent } from './layouts/main-layout/main-layout';
+
+@Component({
+  selector: 'main-layout',
+  template: '',
+  standalone: true
+})
+class MainLayoutStubComponent {}
 
 describe('AppComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [
+      imports: [
         AppComponent
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(AppComponent, {
+        remove: { imports: [MainLayoutComponent] },
+        add: { imports: [MainLayoutStubComponent] }
+      })
+      .compileComponents();
   }));
 
   it('should create the app', () => {

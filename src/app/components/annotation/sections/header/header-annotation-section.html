@@ -1,32 +1,35 @@
-<ng-container *ngIf="(header$ | async) as data">
-    <div class="pnd-annotation__header">
-
-        <div class="pnd-annotation__header-thumb-wrapper">
-            <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
-            <img *ngIf="serializedBy !== 'hypothesis'; else hypoLogo" [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
-                onerror="this.style.display='none'" alt="{{data.user.name}}" class="pnd-annotation__header-thumb-image">
-            <ng-template #hypoLogo>
-                <img [src]="logoHypothesis" class="pnd-annotation__header-thumb-image-hypo">
-            </ng-template>
-        </div>
-
-        <div class="pnd-annotation__header-info">
-            <a *ngIf="data.user.anchor as anchor" [href]="anchor" target="_blank">
-                <div class="pnd-annotation__header-name">{{data.user.name}}</div>
-            </a>
-            <div *ngIf="!data.user.anchor" class="pnd-annotation__header-name">{{data.user.name}}</div>
-
-            <div class="pnd-annotation__header-additional-info">
-                <span class="pnd-annotation__header-date">{{data.date}}</span>
-                <span *ngIf="data.notebook.anchor as anchor" class="pnd-annotation__header-notebook">in
-                    <a [href]="anchor" target="_blank" class="pnd-annotation__header-notebook-link">
-                        <span>{{ data.notebook.name }}</span>
-                    </a>
-                </span>
-            </div>
-        </div>
-
-        <pnd-menu-header-section [data$]="data$" [emit]="emit" [annotationId]="annotationId" [state$]="state$" [serializedBy]="serializedBy">
-        </pnd-menu-header-section>
+@if ((header$ | async); as data) {
+  <div class="pnd-annotation__header">
+    <div class="pnd-annotation__header-thumb-wrapper">
+      <span class="pnd-annotation__header-initials">{{ data.user.initials }}</span>
+      @if (serializedBy !== 'hypothesis') {
+        <img [src]="(imageDataService.images[data.user.image]?.data | async) || data.user.image"
+          onerror="this.style.display='none'" alt="{{data.user.name}}" class="pnd-annotation__header-thumb-image">
+      } @else {
+        <img [src]="logoHypothesis" class="pnd-annotation__header-thumb-image-hypo">
+      }
     </div>
-</ng-container>
+    <div class="pnd-annotation__header-info">
+      @if (data.user.anchor; as anchor) {
+        <a [href]="anchor" target="_blank">
+          <div class="pnd-annotation__header-name">{{data.user.name}}</div>
+        </a>
+      }
+      @if (!data.user.anchor) {
+        <div class="pnd-annotation__header-name">{{data.user.name}}</div>
+      }
+      <div class="pnd-annotation__header-additional-info">
+        <span class="pnd-annotation__header-date">{{data.date}}</span>
+        @if (data.notebook.anchor; as anchor) {
+          <span class="pnd-annotation__header-notebook">in
+            <a [href]="anchor" target="_blank" class="pnd-annotation__header-notebook-link">
+              <span>{{ data.notebook.name }}</span>
+            </a>
+          </span>
+        }
+      </div>
+    </div>
+    <pnd-menu-header-section [data$]="data$" [emit]="emit" [annotationId]="annotationId" [state$]="state$" [serializedBy]="serializedBy">
+    </pnd-menu-header-section>
+  </div>
+}

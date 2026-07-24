@@ -1,9 +1,6 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
-import {
-  Reply,
-  ReplyAttributes, SocialType
-} from '@pundit/communication';
+import { Reply, ReplyAttributes, SocialType } from '@pundit/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';
@@ -12,53 +9,37 @@ import { ReplyService } from 'src/app/services/reply.service';
 import { SocialService, SocialStats } from 'src/app/services/social.service';
 import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
-import { ReplyFormState, ReplyType } from '../reply/reply';
-import { } from '../social-annotation-section';
-
-type SocialBarState = {
-  like?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  dislike?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  report?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  endorse?: {
-    madeByUser?: boolean;
-    total: number;
-  };
-  reply?: {
-    madeByUser?: boolean;
-    total: number;
-    toggleForm?: boolean;
-    form: ReplyFormState;
-  };
-  isLogged: boolean;
-}
+import { ReplyType } from '../reply/reply';
+import { SocialBarState, createInitialState, resetFormState } from './social-action-bar.helpers';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
 
 @Component({
-  selector: 'pnd-social-action-bar',
-  templateUrl: './social-action-bar.html'
+    selector: 'pnd-social-action-bar',
+    templateUrl: './social-action-bar.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, SvgIconComponent]
 })
 export class SocialActionBarComponent implements OnInit {
-  @Input() socials$: Observable<SocialStats>
+  private userService = inject(UserService);
+  private punditLoginService = inject(PunditLoginService);
+  private socialService = inject(SocialService);
+  private replyService = inject(ReplyService);
+  private toastService = inject(ToastService);
 
-  @Input() replies$: Observable<Reply[]>;
+  @Input() socials$!: Observable<SocialStats>;
 
-  @Input() annotationId: string;
+  @Input() replies$!: Observable<Reply[]>;
 
-  @Input() parentId: string;
+  @Input() annotationId!: string;
+
+  @Input() parentId!: string;
 
   @Input() emit: any;
 
-  @Input() actions: (SocialType | ReplyType)[];
+  @Input() actions!: (SocialType | ReplyType)[];
 
-  public state: SocialBarState;
+  public state!: SocialBarState;
 
   public labels = {
     reply: _t('social#reply'),
@@ -70,14 +51,6 @@ export class SocialActionBarComponent implements OnInit {
       action: action.toLowerCase()
     })
   };
-
-  constructor(
-    private userService: UserService,
-    private punditLoginService: PunditLoginService,
-    private socialService: SocialService,
-    private replyService: ReplyService,
-    private toastService: ToastService
-  ) { }
 
   ngOnInit(): void {
     this.initState();
@@ -99,34 +72,10 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private initState = () => {
-    this.state = {
-      like: this.actions.includes('Like') ? { total: 0, } : undefined,
-      dislike: this.actions.includes('Dislike') ? { total: 0 } : undefined,
-      report: this.actions.includes('Report') ? { total: 0 } : undefined,
-      endorse: this.actions.includes('Endorse') ? { total: 0 } : undefined,
-      reply: this.actions.includes('Reply') ? { total: 0, form: this.resetFormState() } : undefined,
-      isLogged: false,
-    };
-  }
+    this.state = createInitialState(this.actions);
+  };
 
-  private resetFormState = (newReply?: string) => {
-    const isValidReply = (reply: string): boolean => reply && reply.length > 3;
-    return {
-      value: newReply,
-      placeholder: _t('social#reply_placeholder'),
-      actions: [{
-        label: _t('social#reply_cancel'),
-        source: 'cancel',
-        classes: 'pnd-btn-light'
-      }, {
-        label: _t('social#reply_save'),
-        source: 'save',
-        disabled: !isValidReply(newReply),
-        classes: 'pnd-btn-cta'
-      }],
-      isLoading: false
-    };
-  }
+  private resetFormState = (newReply?: string) => resetFormState(newReply);
 
   private setSocialState(socials: SocialStats) {
     if (this.state?.like) {
@@ -145,7 +94,7 @@ export class SocialActionBarComponent implements OnInit {
 
   private setReplyState(replies: Reply[]) {
     const currentUserId = this.userService.whoami()?.id;
-    const isReplyFromUser = (c) => c.userId === currentUserId;
+    const isReplyFromUser = (c: Reply) => c.userId === currentUserId;
     if (this.state?.reply) {
       const userReplies = !!replies.filter(isReplyFromUser).length;
       this.state.reply = {
@@ -208,14 +157,15 @@ export class SocialActionBarComponent implements OnInit {
         hasUserDislike: false,
         hasUserLike: true,
         totalDislikes:
-          this.state.dislike.madeByUser ? this.state.dislike.total - 1 : this.state.dislike.total,
-        totalLikes: this.state.like.total + 1
+          this.state.dislike!.madeByUser ? this.state.dislike!.total - 1 : this.state.dislike!.total,
+        totalLikes: this.state.like!.total + 1
       } as SocialStats;
       this.updateSocialState(newStats);
       this.createSocial('Like');
     }
   }
 
+  // eslint-disable-next-line complexity -- Existing social-state merge branches predate the flat-config migration.
   private updateSocialState = (newStats: SocialStats) => {
     const oldStats: SocialStats = {
       totalLikes: this.state?.like?.total || 0,
@@ -228,9 +178,11 @@ export class SocialActionBarComponent implements OnInit {
       hasUserLike: !!this.state?.like?.madeByUser,
     };
     this.socialService.updateStatsByAnnotationId(
-      { ...oldStats, ...newStats }, this.annotationId, this.parentId
+      { ...oldStats, ...newStats },
+      this.annotationId,
+      this.parentId
     );
-  }
+  };
 
   private dislike() {
     if (this.state.dislike?.madeByUser) {
@@ -244,8 +196,8 @@ export class SocialActionBarComponent implements OnInit {
       const newStats = {
         hasUserDislike: true,
         hasUserLike: false,
-        totalLikes: this.state?.like.madeByUser ? this.state.like.total - 1 : this.state.like.total,
-        totalDislikes: this.state.dislike.total + 1
+        totalLikes: this.state.like!.madeByUser ? this.state.like!.total - 1 : this.state.like!.total,
+        totalDislikes: this.state.dislike!.total + 1
       } as SocialStats;
       this.updateSocialState(newStats);
       this.createSocial('Dislike');
@@ -263,7 +215,7 @@ export class SocialActionBarComponent implements OnInit {
       this.removeSocial('Endorse');
     } else {
       const newStats = {
-        totalEndorses: this.state.endorse.total + 1,
+        totalEndorses: this.state.endorse!.total + 1,
         hasUserEndorse: true
       } as SocialStats;
       this.updateSocialState(newStats);
@@ -281,7 +233,7 @@ export class SocialActionBarComponent implements OnInit {
       this.removeSocial('Report');
     } else {
       const newStats = {
-        totalReports: this.state.report.total + 1,
+        totalReports: this.state.report!.total + 1,
         hasUserReport: true
       } as SocialStats;
       this.updateSocialState(newStats);
@@ -320,20 +272,21 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private onReplySave() {
-    if (this.state.reply.form.isLoading) {
+    const reply = this.state.reply!;
+    if (reply.form.isLoading) {
       return;
     }
     const payload: ReplyAttributes = {
       type: 'Comment',
       userId: this.userService.whoami().id,
       annotationId: this.annotationId,
-      comment: this.state.reply.form.value
+      comment: reply.form.value as string
     };
-    this.state.reply.form.isLoading = true;
+    reply.form.isLoading = true;
     this.replyService.create(payload).pipe(
       catchError(() => {
-        this.state.reply.toggleForm = false;
-        this.state.reply.form = this.resetFormState();
+        reply.toggleForm = false;
+        reply.form = this.resetFormState();
         this.toastService.error({
           title: _t('toast#annotation_reply_save_error_title'),
           text: _t('toast#annotation_reply_save_error_text'),
@@ -346,8 +299,8 @@ export class SocialActionBarComponent implements OnInit {
       })
     ).subscribe(
       () => {
-        this.state.reply.toggleForm = false;
-        this.state.reply.form = this.resetFormState();
+        reply.toggleForm = false;
+        reply.form = this.resetFormState();
         this.toastService.success({
           title: _t('toast#annotation_reply_save_success_title'),
           text: _t('toast#annotation_reply_save_success_text'),
@@ -357,25 +310,25 @@ export class SocialActionBarComponent implements OnInit {
   }
 
   private onReplyCancel() {
-    this.state.reply.toggleForm = false;
-    this.state.reply.form = this.resetFormState();
+    this.state.reply!.toggleForm = false;
+    this.state.reply!.form = this.resetFormState();
   }
 
   onReplyChange(e: string) {
-    this.state.reply.form = this.resetFormState(e);
+    this.state.reply!.form = this.resetFormState(e);
   }
 
   private checkFocus = () => {
-    if (this.state.reply.toggleForm) {
+    if (this.state.reply!.toggleForm) {
       setTimeout(() => {
         const el = this.getTextAreaEl();
         el.focus();
       });
     }
-  }
+  };
 
   private getTextAreaEl() {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
+    return shadowRoot!.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
   }
 }

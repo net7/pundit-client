@@ -18,12 +18,12 @@ export const onContentScriptMessage = (
   message: RuntimeMessage,
   sender: chrome.runtime.MessageSender
 ) => {
-  const { tab } = sender;
+  const tab = sender.tab!;
   const { type, payload } = message;
   switch (type) {
     case CommonEventType.AnnotationsUpdate:
-      helpers.updateBadgeText(tab.id, payload);
-      helpers.updateBadgeTitle(tab.id, payload);
+      helpers.updateBadgeText(tab.id!, payload);
+      helpers.updateBadgeTitle(tab.id!, payload);
       break;
     case CommonEventType.RootElementExists:
       onBrowserActionClicked(tab);
@@ -46,10 +46,10 @@ export const onContentScriptMessage = (
       break;
     case CommonEventType.DocumentInfoResponse:
       CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
-      CommunicationSettings.token = null;
-      helpers.doPageAnnotationsRequest(tab.id, payload).then(({ tabId, total }) => {
+      CommunicationSettings.token = null as any;
+      helpers.doPageAnnotationsRequest(tab.id!, payload).then(({ tabId, total }) => {
         if (tabId === tab.id && total !== null) {
-          helpers.updateBadgeText(tab.id, total);
+          helpers.updateBadgeText(tab.id!, total);
         }
       }).catch((err) => {
         console.warn('Annotations request: ', err);

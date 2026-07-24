@@ -1,13 +1,15 @@
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { AuthConfig } from '../interfaces';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginConfigurationService {
-  constructor(@Inject('config') private authConfig: AuthConfig) {
+  private authConfig = inject<AuthConfig>('config' as any);
+
+  constructor() {
     if (!this.authConfig) {
-      console.warn('Missing Auth config. Pass config params using PunditLoginModule.forRoot().');
+      console.warn('Missing Auth config. Pass config params using providePunditLogin().');
       this.authConfig = {
         oauthproviders: [
           {

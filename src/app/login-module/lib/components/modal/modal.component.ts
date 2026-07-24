@@ -1,21 +1,31 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ModalService } from '../../services/modal.service';
+import { NgClass } from '@angular/common';
+import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { ErrorComponent } from '../error/error.component';
+import { SignInComponent } from '../signin/signin.component';
+import { SignUpComponent } from '../signup/signup.component';
 
 @Component({
-  selector: 'lib-pundit-login-modal',
-  templateUrl: './modal.component.html',
-  styleUrls: [],
+    selector: 'lib-pundit-login-modal',
+    templateUrl: './modal.component.html',
+    styleUrls: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, SvgIconComponent, ErrorComponent, SignInComponent, SignUpComponent]
 })
 export class ModalComponent implements OnDestroy {
-  show: boolean;
+  private modalService = inject(ModalService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
+  show!: boolean;
 
   status: modalStateType = 'SIGNIN';
 
-  private destroyed$ = new Subject();
+  private destroyed$ = new Subject<void>();
 
-  constructor(private modalService: ModalService) {
+  constructor() {
     this.status = 'SIGNIN';
     this.modalService
       .isOpen()
@@ -23,6 +33,7 @@ export class ModalComponent implements OnDestroy {
       .subscribe((value) => {
         this.status = this.modalService.isRegister ? 'SIGNUP' : 'SIGNIN';
         this.show = value;
+        this.changeDetectorRef.markForCheck();
       });
   }
 

@@ -1,6 +1,8 @@
 import { EditorView } from 'prosemirror-view';
 import { EditorState } from 'prosemirror-state';
-import { DOMParser, DOMSerializer } from 'prosemirror-model';
+import {
+  DOMParser, DOMSerializer, Schema, NodeType
+} from 'prosemirror-model';
 import { toggleMark } from 'prosemirror-commands';
 import { wrapInList } from 'prosemirror-schema-list';
 import { Subject } from 'rxjs';
@@ -11,23 +13,24 @@ import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-edito
 import { isMarkActive, isNodeActive } from './helpers';
 
 class Editor {
-  private editorView;
+  private editorView!: EditorView;
 
-  private schema;
+  private schema!: Schema;
 
-  private menu: TextEditorMenuData;
+  private menu!: TextEditorMenuData;
 
   public menuEvent$: Subject<{
     type: string;
-    payload: any;
+    payload?: any;
   }> = new Subject();
 
   public init(
-    { target, appendTo, onChange }:
+    { target, appendTo, onChange, onRefresh }:
     {
       target: HTMLElement;
       appendTo: HTMLElement;
-      onChange: (content: object) => void;
+      onChange: (content: any) => void;
+      onRefresh?: () => void;
     }
   ) {
     // menu
@@ -52,6 +55,7 @@ class Editor {
 
         // send changes
         onChange(this.getContent());
+        onRefresh?.();
       }
     });
 
@@ -59,7 +63,7 @@ class Editor {
     this.updateMenuState();
 
     // listen
-    this.listen();
+    this.listen(onRefresh);
   }
 
   public focus() {
@@ -126,8 +130,8 @@ class Editor {
         buttons: group.map((button) => ({
           id: button,
           type: '',
-          title: _t(labels[button]),
-          command: commands[button],
+          title: _t(labels[button as keyof typeof labels]),
+          command: commands[button as keyof typeof commands],
           disabled: true
         }))
       })),
@@ -139,20 +143,24 @@ class Editor {
     this.schema = editorConfig.schema;
   }
 
-  private listen() {
+  private listen(onRefresh?: () => void) {
     this.menuEvent$.subscribe(({ type, payload }) => {
       switch (type) {
         case 'click':
           this.handleClick(payload);
+          onRefresh?.();
           break;
         case 'linkinput':
           this.handleLinkInput(payload);
+          onRefresh?.();
           break;
         case 'linkcancel':
           this.handleLinkCancel();
+          onRefresh?.();
           break;
         case 'linksave':
           this.handleLinkSave();
+          onRefresh?.();
           break;
         default:
           break;
@@ -176,7 +184,7 @@ class Editor {
       }
     } else {
       const { state, dispatch } = this.editorView;
-      button.command(state, dispatch);
+      button.command!(state, dispatch);
     }
   }
 
@@ -206,7 +214,7 @@ class Editor {
     const { linkForm } = this.menu;
     // reset
     linkForm.visible = false;
-    linkForm.inputValue = null;
+    linkForm.inputValue = undefined;
   }
 
   private updateMenuState() {
@@ -266,16 +274,16 @@ class Editor {
 
     return Object.keys(markTypes).filter((key) => {
       const mark = markTypes[key];
-      return toggleMark(mark)(this.editorView.state, null, this.editorView);
+      return toggleMark(mark)(this.editorView.state, undefined, this.editorView);
     });
   }
 
-  private isListAvailable(type) {
+  private isListAvailable(type: NodeType) {
     const { state } = this.editorView;
     return wrapInList(type)(state);
   }
 
-  private isListActive(type) {
+  private isListActive(type: NodeType) {
     const { state } = this.editorView;
     return isNodeActive(state, type);
   }

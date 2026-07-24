@@ -1,147 +1,151 @@
 import { EventHandler } from '@net7/core';
 import { fromEvent, Subject, race } from 'rxjs';
 import { first, takeUntil } from 'rxjs/operators';
+import { AppEventData } from 'src/app/types';
 import { AnnotationEvent, getEventType, SidebarLayoutEvent } from '../event-types';
 import { AnnotationService } from '../services/annotation.service';
 import { NotebookService } from '../services/notebook.service';
 
 export class AnnotationEH extends EventHandler {
-  public annotationService: AnnotationService;
+  public annotationService!: AnnotationService;
 
-  public notebookService: NotebookService;
+  public notebookService!: NotebookService;
 
   private onMenuFocusLost = new Subject();
 
   public listen() {
-    this.innerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        /**
-         * Handle all click events on an annotation with different "source" values
-         */
-        case AnnotationEvent.Click: {
-          const { source, id } = payload;
-          const annotation = this.annotationService.getAnnotationById(id);
-          if (!annotation) {
-            return;
-          }
-          const currentState = annotation.state$.getValue();
-          switch (source) {
-            case 'box': // click on the annotation container (while collapsed)
-              if (currentState?.isCollapsed) {
-                this.annotationService.updateAnnotationState(id, { isCollapsed: false });
-                this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: false });
-              }
-              break;
-            case 'compress': // collapse the annotation
-              this.annotationService.updateAnnotationState(id, { isCollapsed: true });
-              this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
-              break;
-            case 'action-delete': // click on the "delete" button
-              this.closeAnnotationMenu(id);
-              this.emitOuter(getEventType(AnnotationEvent.Delete), id);
-              break;
-            case 'action-comment': // click on the "edit comment" button
-              this.closeAnnotationMenu(id);
-              this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
-              break;
-            case 'action-tags': // click on the "edit tag" button
-              this.closeAnnotationMenu(id);
-              this.emitOuter(getEventType(AnnotationEvent.EditTags), id);
-              break;
-            case 'action-semantic': // click on the "edit tag" button
-              this.closeAnnotationMenu(id);
-              this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
-              break;
-            case 'menu-header': { // annotation update menu header
-              const newState = { activeMenu: 'actions' };
-              this.annotationService.updateAnnotationState(id, newState);
-              this.listenDocumentClicks(annotation.id);
-              break;
-            }
-            case 'menu-share': { // annotation update menu header
-              const newState = { activeMenu: 'share' };
-              this.annotationService.updateAnnotationState(id, newState);
-              this.listenDocumentClicks(annotation.id);
-              break;
-            }
-            case 'copy-url': { // annotation update menu header
-              this.emitOuter(getEventType(AnnotationEvent.ShareLinkCopied), id);
-              navigator.clipboard.writeText(payload?.data);
-              this.closeAnnotationMenu(id);
-              break;
-            }
-            case 'document': // annotation update menu header
-              this.closeAnnotationMenu(id);
-              break;
-            case 'action-notebooks': // annotation update menu header
-              if (currentState?.activeMenu !== 'notebooks') {
-                this.annotationService.updateAnnotationState(id, { activeMenu: 'notebooks' });
-                this.listenDocumentClicks(annotation.id);
-              }
-              break;
-            default:
-              break;
-          }
-        } break;
-        case AnnotationEvent.UpdateNotebook:
-        case AnnotationEvent.MouseEnter:
-        case AnnotationEvent.MouseLeave:
-          this.emitOuter(getEventType(type), payload);
-          break;
-        case AnnotationEvent.CreateNotebook: {
-          const annotation = this.annotationService.getAnnotationById(payload.annotation);
-          if (!annotation) { return; }
-          const { id } = annotation;
-          const newState = { isNotebookSelectorLoading: true };
-          this.annotationService.updateAnnotationState(id, newState);
-          this.emitOuter(getEventType(type), payload);
-          break;
-        }
-        case AnnotationEvent.ReplyChanged:
-          this.emitOuter(getEventType(type));
-          break;
-        default:
-          console.warn('unhandled inner event of type', type);
-          break;
-      }
-    });
+    this.innerEvents$.subscribe((ev) => this.handleInnerEvent(ev));
+    this.outerEvents$.subscribe((ev) => this.handleOuterEvent(ev));
+  }
 
-    this.outerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case SidebarLayoutEvent.AnnotationUpdateNotebook: {
-          const { annotationID } = payload;
-          const annotation = this.annotationService.getAnnotationById(annotationID);
-          if (!annotation) { return; }
-          const newState = { activeMenu: undefined, isNotebookSelectorLoading: false };
-          this.annotationService.updateAnnotationState(annotationID, newState);
-          break;
-        }
-        case SidebarLayoutEvent.AnchorMouseOver: {
-          const annotationID = payload;
-          const annotation = this.annotationService.getAnnotationById(annotationID);
-          if (!annotation) { return; }
-          this.annotationService.updateAnnotationState(annotationID, { classes: 'is-hovered' });
-          break;
-        }
-        case SidebarLayoutEvent.AnchorMouseLeave: {
-          const annotationID = payload;
-          const annotation = this.annotationService.getAnnotationById(annotationID);
-          if (!annotation) { return; }
-          this.annotationService.updateAnnotationState(annotationID, { classes: '' });
-          break;
-        }
-        case SidebarLayoutEvent.AnchorClick: {
-          const annotationID = payload;
-          const annotation = this.annotationService.getAnnotationById(annotationID);
-          if (!annotation) { return; }
-          this.updateAnnotationState(annotation);
-          break;
-        }
-        default:
-          console.warn('unhandled inner event of type', type);
-          break;
+  private handleInnerEvent({ type, payload }: AppEventData) {
+    switch (type) {
+      /**
+       * Handle all click events on an annotation with different "source" values
+       */
+      case AnnotationEvent.Click:
+        this.handleClickEvent(payload);
+        break;
+      case AnnotationEvent.UpdateNotebook:
+      case AnnotationEvent.MouseEnter:
+      case AnnotationEvent.MouseLeave:
+        this.emitOuter(getEventType(type), payload);
+        break;
+      case AnnotationEvent.CreateNotebook: {
+        const annotation = this.annotationService.getAnnotationById(payload.annotation);
+        if (!annotation) { return; }
+        const { id } = annotation;
+        const newState = { isNotebookSelectorLoading: true };
+        this.annotationService.updateAnnotationState(id, newState);
+        this.emitOuter(getEventType(type), payload);
+        break;
       }
-    });
+      case AnnotationEvent.ReplyChanged:
+        this.emitOuter(getEventType(type));
+        break;
+      default:
+        console.warn('unhandled inner event of type', type);
+        break;
+    }
+  }
+
+  private handleClickEvent(payload: any) {
+    const { source, id } = payload;
+    const annotation = this.annotationService.getAnnotationById(id);
+    if (!annotation) {
+      return;
+    }
+    const currentState = annotation.state$.getValue();
+    const handlers: Record<string, () => void> = {
+      box: () => { // click on the annotation container (while collapsed)
+        if (currentState?.isCollapsed) {
+          this.annotationService.updateAnnotationState(id, { isCollapsed: false });
+          this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: false });
+        }
+      },
+      compress: () => { // collapse the annotation
+        this.annotationService.updateAnnotationState(id, { isCollapsed: true });
+        this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
+      },
+      'action-delete': () => { // click on the "delete" button
+        this.closeAnnotationMenu(id);
+        this.emitOuter(getEventType(AnnotationEvent.Delete), id);
+      },
+      'action-comment': () => { // click on the "edit comment" button
+        this.closeAnnotationMenu(id);
+        this.emitOuter(getEventType(AnnotationEvent.EditComment), id);
+      },
+      'action-tags': () => { // click on the "edit tag" button
+        this.closeAnnotationMenu(id);
+        this.emitOuter(getEventType(AnnotationEvent.EditTags), id);
+      },
+      'action-semantic': () => { // click on the "edit tag" button
+        this.closeAnnotationMenu(id);
+        this.emitOuter(getEventType(AnnotationEvent.EditSemantic), id);
+      },
+      'menu-header': () => { // annotation update menu header
+        const newState = { activeMenu: 'actions' };
+        this.annotationService.updateAnnotationState(id, newState);
+        this.listenDocumentClicks(annotation.id);
+      },
+      'menu-share': () => { // annotation update menu header
+        const newState = { activeMenu: 'share' };
+        this.annotationService.updateAnnotationState(id, newState);
+        this.listenDocumentClicks(annotation.id);
+      },
+      'copy-url': () => { // annotation update menu header
+        this.emitOuter(getEventType(AnnotationEvent.ShareLinkCopied), id);
+        navigator.clipboard.writeText(payload?.data);
+        this.closeAnnotationMenu(id);
+      },
+      document: () => { // annotation update menu header
+        this.closeAnnotationMenu(id);
+      },
+      'action-notebooks': () => { // annotation update menu header
+        if (currentState?.activeMenu !== 'notebooks') {
+          this.annotationService.updateAnnotationState(id, { activeMenu: 'notebooks' });
+          this.listenDocumentClicks(annotation.id);
+        }
+      },
+    };
+    handlers[source]?.();
+  }
+
+  private handleOuterEvent({ type, payload }: AppEventData) {
+    switch (type) {
+      case SidebarLayoutEvent.AnnotationUpdateNotebook: {
+        const { annotationID } = payload;
+        const annotation = this.annotationService.getAnnotationById(annotationID);
+        if (!annotation) { return; }
+        const newState = { activeMenu: undefined as string | undefined, isNotebookSelectorLoading: false };
+        this.annotationService.updateAnnotationState(annotationID, newState);
+        break;
+      }
+      case SidebarLayoutEvent.AnchorMouseOver: {
+        const annotationID = payload;
+        const annotation = this.annotationService.getAnnotationById(annotationID);
+        if (!annotation) { return; }
+        this.annotationService.updateAnnotationState(annotationID, { classes: 'is-hovered' });
+        break;
+      }
+      case SidebarLayoutEvent.AnchorMouseLeave: {
+        const annotationID = payload;
+        const annotation = this.annotationService.getAnnotationById(annotationID);
+        if (!annotation) { return; }
+        this.annotationService.updateAnnotationState(annotationID, { classes: '' });
+        break;
+      }
+      case SidebarLayoutEvent.AnchorClick: {
+        const annotationID = payload;
+        const annotation = this.annotationService.getAnnotationById(annotationID);
+        if (!annotation) { return; }
+        this.updateAnnotationState(annotation);
+        break;
+      }
+      default:
+        console.warn('unhandled inner event of type', type);
+        break;
+    }
   }
 
   /**
@@ -152,13 +156,13 @@ export class AnnotationEH extends EventHandler {
   listenDocumentClicks(annotationID: string) {
     const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
     // listen for clicks on the document
-    race(fromEvent(shadowRoot, 'click'), fromEvent(document, 'click'))
+    race(fromEvent(shadowRoot!, 'click'), fromEvent(document, 'click'))
       .pipe(
         first(),
         takeUntil(this.onMenuFocusLost),
       ) // keep listening until the menu is closed
-      .subscribe((e: MouseEvent) => {
-        let clickedElement: HTMLElement;
+      .subscribe((e: Event) => {
+        let clickedElement: HTMLElement | undefined;
         const { path, target } = e as any || {};
         if (Array.isArray(path) && path.length) {
           [clickedElement] = path;
@@ -166,7 +170,7 @@ export class AnnotationEH extends EventHandler {
           clickedElement = target;
         }
         // only act if the clicked item is NOT the notebook-selector component
-        const className = clickedElement?.className || '';
+        const className = this.getElementClassName(clickedElement);
         const isNotebookSelector = className.match(
           /(pnd-notebook-selector__)(selected|dropdown-new|create-field|create-btn-save)/gi
         );
@@ -177,14 +181,25 @@ export class AnnotationEH extends EventHandler {
       });
   }
 
+  private getElementClassName(element?: HTMLElement): string {
+    const className = element?.className;
+    if (typeof className === 'string') {
+      return className;
+    }
+    if (className && typeof (className as unknown as SVGAnimatedString).baseVal === 'string') {
+      return (className as unknown as SVGAnimatedString).baseVal;
+    }
+    return '';
+  }
+
   private closeAnnotationMenu(id: string) {
     this.annotationService.updateAnnotationState(id, { activeMenu: undefined });
   }
 
-  private updateAnnotationState = (annotation) => {
+  private updateAnnotationState = (annotation: any) => {
     const { state$ } = annotation;
     const currentState = state$.getValue();
     const newState = { isCollapsed: !currentState.isCollapsed };
     this.annotationService.updateAnnotationState(annotation.id, newState);
-  }
+  };
 }

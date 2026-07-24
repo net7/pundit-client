@@ -1,3 +1,6 @@
+@use "../generic/mixins";
+@use "../generic/variables";
+
 /**
  * MODAL
  *
@@ -9,49 +12,49 @@
 \* ------------------------------------ */
 .pnd-modal {
     position: relative;
-    z-index: $z-index-modal;
+    z-index: variables.$z-index-modal;
     text-align: left;
     
     &__window {
         position: relative;
-        max-width: $modal-width;
-        margin: $space*10 auto 0 auto;
-        @include modalShadow;
-        border: 1px solid $color-border-normal;
-        border-radius: $border-radius;
-        background: $color-background-base;
+        max-width: variables.$modal-width;
+        margin: variables.$space*10 auto 0 auto;
+        @include mixins.modalShadow;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        background: variables.$color-background-base;
         overflow-y: auto;
     }
     
     &__header {
-        padding: $space*2 $space*3;
-        background-color: $color-background-light;
+        padding: variables.$space*2 variables.$space*3;
+        background-color: variables.$color-background-light;
     }
 
     &__header-text {
-        color: $color-text;
+        color: variables.$color-text;
         // margin-bottom: $space;
-        font-size: $font-size-xxl;
-        font-weight: $font-weight-bold;
+        font-size: variables.$font-size-xxl;
+        font-weight: variables.$font-weight-bold;
     }
 
     &__body {
-        padding: $space*3;
-        border-top: 1px solid $color-border-normal;
-        border-bottom: 1px solid $color-border-normal;
+        padding: variables.$space*3;
+        border-top: 1px solid variables.$color-border-normal;
+        border-bottom: 1px solid variables.$color-border-normal;
     }
     
     &__body-text {
-        color: $color-text;
-        font-size: $font-size-m;
+        color: variables.$color-text;
+        font-size: variables.$font-size-m;
     }
 
     &__actions {
-        padding: $space*2;
+        padding: variables.$space*2;
         text-align: right;
         
         .pnd-btn:not( :first-child ) {
-            margin-left: $space;
+            margin-left: variables.$space;
         }
     }
 }
@@ -63,21 +66,21 @@
 .pnd-modal {
     &__close {
         position: absolute;
-        top: $space*1.5;
-        right: $space*2;
+        top: variables.$space*1.5;
+        right: variables.$space*2;
         cursor: pointer;
 
         .pnd-svg-icon {
-            width: $font-size-l;
-            height: $font-size-l;
+            width: variables.$font-size-l;
+            height: variables.$font-size-l;
             
             svg {
-                width: $font-size-l;
-                height: $font-size-l;
-                color: $color-text-light;
-                transition: color $transition-durations;
+                width: variables.$font-size-l;
+                height: variables.$font-size-l;
+                color: variables.$color-text-light;
+                transition: color variables.$transition-durations;
                 &:hover {
-                    color: $color-text-link;
+                    color: variables.$color-text-link;
                 }
             }
 
@@ -99,7 +102,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba( $color-background-light, .5);
+        background-color: rgba( variables.$color-background-light, .5);
     }
 }
 
@@ -107,13 +110,13 @@
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */

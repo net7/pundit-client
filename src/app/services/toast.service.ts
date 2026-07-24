@@ -46,7 +46,9 @@ const DEFAULTS: ToastParams = {
   autoCloseDelay: 3000 // 3secs
 };
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ToastService {
   static counter = 0;
 
@@ -55,7 +57,7 @@ export class ToastService {
   private toasts: {
     id: string;
     data: ToastBox;
-    onAction: EmitFunction;
+    onAction?: EmitFunction;
     instance: ToastInstance;
   }[] = [];
 
@@ -96,11 +98,11 @@ export class ToastService {
           this.close(payload.id);
         } else {
           const toast = this.toasts.find(({ id }) => id === payload.id);
-          if (toast.onAction) {
+          if (toast?.onAction) {
             toast.onAction(payload.action, toast.instance);
 
             // trigger change detector
-            ToastService.changeDetectorRef.detectChanges();
+            ToastService.changeDetectorRef.markForCheck();
           }
         }
         break;
@@ -138,7 +140,9 @@ export class ToastService {
         this.update(toastId, newParams);
       }
     };
-    this.toasts.push({
+    this.toasts = [
+      ...this.toasts,
+      {
       instance,
       id: toastId,
       data: {
@@ -147,10 +151,10 @@ export class ToastService {
         text: this.getDataText(toastParams.text),
         closeIcon: toastParams.hasDismiss
           ? this.getDataCloseIcon(toastId)
-          : null,
+          : undefined,
         actions: toastParams.actions
           ? this.getDataActions(toastId, toastParams.actions)
-          : null,
+          : undefined,
         _meta: {
           id: toastId
         },
@@ -158,8 +162,9 @@ export class ToastService {
       },
       onAction: toastParams.onAction
         ? this.getOnAction(toastParams.onAction)
-        : null
-    });
+        : undefined
+      }
+    ];
 
     // update stream
     setTimeout(() => {
@@ -181,7 +186,7 @@ export class ToastService {
     const index = this.toasts.map(({ id }) => id).indexOf(toastId);
     if (index >= 0) {
       // remove toast
-      this.toasts.splice(index, 1);
+      this.toasts = this.toasts.filter(({ id }) => id !== toastId);
       // remove mouseover state
       delete this.mouseoverState[toastId];
       // update stream
@@ -195,36 +200,41 @@ export class ToastService {
     });
 
     // trigger change detector
-    ToastService.changeDetectorRef.detectChanges();
+    ToastService.changeDetectorRef.markForCheck();
   }
 
   private update(toastId: string, params: ToastUpdateParams) {
-    const toast = this.toasts.find(({ id }) => id === toastId);
+    const toast = this.toasts.find(({ id }) => id === toastId)!;
+    const data = { ...toast.data };
     if (params.text) {
-      toast.data.text = this.getDataText(params.text);
+      data.text = this.getDataText(params.text);
     }
     if (params.title) {
-      toast.data.title = this.getDataTitle(params.title);
+      data.title = this.getDataTitle(params.title);
     }
     if (params.type) {
-      toast.data.classes = this.getDataClasses(params.type);
+      data.classes = this.getDataClasses(params.type);
     }
     if (params.actions) {
-      toast.data.actions = this.getDataActions(toast.id, params.actions);
+      data.actions = this.getDataActions(toast.id, params.actions);
     }
     if (params.hasDismiss) {
-      toast.data.closeIcon = this.getDataCloseIcon(toast.id);
+      data.closeIcon = this.getDataCloseIcon(toast.id);
     }
-    if (params.onAction) {
-      toast.onAction = this.getOnAction(params.onAction);
-    }
+    const updatedToast = {
+      ...toast,
+      data,
+      onAction: params.onAction ? this.getOnAction(params.onAction) : toast.onAction
+    };
+    this.toasts = this.toasts.map((item) => (item.id === toastId ? updatedToast : item));
+    this.updateDataStream();
   }
 
   private getDataClasses = (type: ToastType) => `is-${type}`;
 
-  private getDataText = (text: string): string => text;
+  private getDataText = (text: string | undefined): string | undefined => text;
 
-  private getDataTitle = (title: string): string => title;
+  private getDataTitle = (title: string | undefined): string | undefined => title;
 
   private getDataActions(toastId: string, actions: ToastAction[]): ToastAction[] {
     return actions.map((action) => ({
@@ -254,10 +264,10 @@ export class ToastService {
   private onAutoClose(toastId: string, params: ToastParams) {
     const { autoClose, autoCloseDelay } = params;
     if (autoClose) {
-      const toast = this.toasts.find(({ id }) => id === toastId);
+      const toast = this.toasts.find(({ id }) => id === toastId)!;
       const timerDelay = 200; // ms
       const timer$ = interval(timerDelay);
-      const tickCounterLimit = (autoCloseDelay / timerDelay);
+      const tickCounterLimit = (autoCloseDelay! / timerDelay);
       let tickCounter = 0;
       timer$.pipe(
         filter(() => !this.mouseoverState[toastId]),
@@ -269,7 +279,7 @@ export class ToastService {
       ).subscribe((tick: number) => {
         const progress = (tick * 100) / tickCounterLimit;
         // update progress
-        toast.data.progress$.next(progress);
+        toast.data.progress$!.next(progress);
         // close check
         if (tick === tickCounterLimit) {
           // timeout to complete animation before close
@@ -277,12 +287,12 @@ export class ToastService {
             this.close(toastId);
 
             // trigger change detector
-            ToastService.changeDetectorRef.detectChanges();
+            ToastService.changeDetectorRef.markForCheck();
           }, timerDelay * 2);
         }
 
         // trigger change detector
-        ToastService.changeDetectorRef.detectChanges();
+        ToastService.changeDetectorRef.markForCheck();
       });
     }
   }

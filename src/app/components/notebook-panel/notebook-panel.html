@@ -1,86 +1,86 @@
 <div class="pnd-notebook-panel">
-    <ng-container *ngIf="data && data.selected.sharingMode as currentSharingMode; else panelloader">
-        <section class="pnd-notebook-panel__section">
-            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.current }}</div>
-            <div class="pnd-notebook-panel__current-notebook-name">
-                <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}">
-                    <pnd-svg-icon *ngIf="data.icons[currentSharingMode]" 
-                        [data]="{ id: data.icons[currentSharingMode] }">
-                    </pnd-svg-icon>
-                </span>
-                {{data.selected.label}}
-            </div>
-        </section>
-    
-        <section class="pnd-notebook-panel__section pnd-grid-2">
-            <div class="pnd-notebook-panel__status">
-                <!-- <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.statusTitle }}</div> -->
-                <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
-                <div class="pnd-notebook-panel__status-description pnd-text-small">
-                    {{ data.labels.statusTypes[currentSharingMode].description }}
-                </div>
-            </div>
-            <div class="pnd-notebook-panel__change-status">
-                <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeStatus }}</div>
-                <div class="pnd-notebook-panel__buttons">
-                    <ng-container *ngFor="let type of ['public', 'private']">
-                        <button (click)="onClick(type, data.selected)"
-                                class="pnd-btn"
+  @if (data && data.selected.sharingMode; as currentSharingMode) {
+    <section class="pnd-notebook-panel__section">
+      <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.current }}</div>
+      <div class="pnd-notebook-panel__current-notebook-name">
+        <span class="pnd-notebook-panel__sharing-mode {{ data.icons[currentSharingMode] }}">
+          @if (data.icons[currentSharingMode]) {
+            <pnd-svg-icon
+              [data]="{ id: data.icons[currentSharingMode] }">
+            </pnd-svg-icon>
+          }
+        </span>
+        {{data.selected.label}}
+      </div>
+    </section>
+    <section class="pnd-notebook-panel__section pnd-grid-2">
+      <div class="pnd-notebook-panel__status">
+        <!-- <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.statusTitle }}</div> -->
+        <div class="pnd-notebook-panel__current-notebook-status">{{currentSharingMode.toUpperCase()}}</div>
+        <div class="pnd-notebook-panel__status-description pnd-text-small">
+          {{ data.labels.statusTypes[currentSharingMode].description }}
+        </div>
+      </div>
+      <div class="pnd-notebook-panel__change-status">
+        <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeStatus }}</div>
+        <div class="pnd-notebook-panel__buttons">
+          @for (type of ['public', 'private']; track type) {
+            @if (data.selected.sharingMode !== type) {
+              <button (click)="onClick(type, data.selected)"
+                class="pnd-btn"
                                 [ngClass]="{
                                     'is-loading': !!data.isLoading
                                 }"
-                                [disabled]="!!data.isLoading"
-                                *ngIf="data.selected.sharingMode !== type">
-                            <ng-container *ngIf="data.isLoading">
-                                <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-                            </ng-container>
-                            <ng-container *ngIf="!data.isLoading">
-                                {{ data.labels.statusTypes[type].title }}
-                            </ng-container>
-                        </button>
-                    </ng-container>
-                    <!-- <button (click)="onClick('shared', data.selected)"
-                            class="pnd-btn"
-                            *ngIf="data.selected.sharingMode !== 'shared'"
-                            disabled
-                            title="{{ data.labels.commingSoon }}">
-                        {{ data.labels.statusTypes.shared.title }}
-                    </button> -->
-                    <!-- <p class="pnd-text-small">{{ data.labels.sharedSoon }}</p> -->
-                </div>
-            </div>
-        </section>
-    
-        <section class="pnd-notebook-panel__section">
-            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeCurrent }}</div>
-            <notebook-selector [data]="data._meta.notebookSelectorData"
-                               [emit]="onNotebookSelection">
-            </notebook-selector>
-        </section>
-    
-        <section class="pnd-notebook-panel__section">
-            <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.shareNotebook.title }}</div>
-            <button [disabled]="data.selected.userId !== userId" (click)="onShareClick()" class="pnd-btn pnd-notebook-panel__share-button">
-                <span class="button-icon">
-                    <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
-                </span>
-                <span class="button-label">{{ data.labels.shareNotebook.button }}</span>
-            </button>
-            <p class="pnd-text-small">{{ data.labels.shareNotebook.description }}</p>
-        </section>
-
-        <section *ngIf="data.selected.userId === userId" class="pnd-notebook-panel__section">
-            <div class="pnd-notebook-panel__label pnd-text">Currently shared with:</div>
-            
-            <div class="pnd-notebook-panel__item-share-list">
-                <pnd-notebook-share-user-item *ngFor="let item of data.usersList" [item]="item" 
-                [emit]="emit"></pnd-notebook-share-user-item>
-            </div>
-        
-        </section>
-        
-    </ng-container>
-    <ng-template #panelloader>
-        <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-    </ng-template>  
+                [disabled]="!!data.isLoading"
+                >
+                @if (data.isLoading) {
+                  <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+                }
+                @if (!data.isLoading) {
+                  {{ data.labels.statusTypes[type].title }}
+                }
+              </button>
+            }
+          }
+          <!-- <button (click)="onClick('shared', data.selected)"
+          class="pnd-btn"
+          *ngIf="data.selected.sharingMode !== 'shared'"
+          disabled
+          title="{{ data.labels.commingSoon }}">
+          {{ data.labels.statusTypes.shared.title }}
+        </button> -->
+        <!-- <p class="pnd-text-small">{{ data.labels.sharedSoon }}</p> -->
+      </div>
+    </div>
+  </section>
+  <section class="pnd-notebook-panel__section">
+    <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.changeCurrent }}</div>
+    <notebook-selector [data]="data._meta.notebookSelectorData"
+      [emit]="onNotebookSelection">
+    </notebook-selector>
+  </section>
+  <section class="pnd-notebook-panel__section">
+    <div class="pnd-notebook-panel__label pnd-text">{{ data.labels.shareNotebook.title }}</div>
+    <button [disabled]="data.selected.userId !== userId" (click)="onShareClick()" class="pnd-btn pnd-notebook-panel__share-button">
+      <span class="button-icon">
+        <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
+      </span>
+      <span class="button-label">{{ data.labels.shareNotebook.button }}</span>
+    </button>
+    <p class="pnd-text-small">{{ data.labels.shareNotebook.description }}</p>
+  </section>
+  @if (data.selected.userId === userId) {
+    <section class="pnd-notebook-panel__section">
+      <div class="pnd-notebook-panel__label pnd-text">Currently shared with:</div>
+      <div class="pnd-notebook-panel__item-share-list">
+        @for (item of data.usersList; track item) {
+          <pnd-notebook-share-user-item [item]="item"
+          [emit]="emit"></pnd-notebook-share-user-item>
+        }
+      </div>
+    </section>
+  }
+} @else {
+  <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+}
 </div>

@@ -1,6 +1,4 @@
-import {
-  ChangeDetectorRef, Component, Input, OnDestroy, OnInit
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { Annotation } from '@pundit/communication';
 import {
   BehaviorSubject, Observable, Subject
@@ -21,36 +19,39 @@ import {
   menuNotebookSection
 } from './menu-data.helper';
 import { shareActionButtons, shareButton } from './menu-share.helper';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { SvgIconComponent } from '../../../svg-icon/svg-icon';
+import { NotebookSelectorComponent } from '../../../notebook-selector/notebook-selector';
 
 @Component({
-  selector: 'pnd-menu-header-section',
-  templateUrl: './menu-header-section.html',
+    selector: 'pnd-menu-header-section',
+    templateUrl: './menu-header-section.html',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [NgClass, SvgIconComponent, NotebookSelectorComponent, AsyncPipe]
 })
 export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
+  private ref = inject(ChangeDetectorRef);
+  private userService = inject(UserService);
+  private notebookService = inject(NotebookService);
+  imageDataService = inject(ImageDataService);
+
   id = 'header';
 
-  @Input() public data$: BehaviorSubject<Annotation>;
+  @Input() public data$!: BehaviorSubject<Annotation>;
 
   @Input() public emit: any;
 
-  @Input() public state$: BehaviorSubject<AnnotationState>;
+  @Input() public state$!: BehaviorSubject<AnnotationState>;
 
-  @Input() public annotationId: string;
+  @Input() public annotationId!: string;
 
-  @Input() public serializedBy: string;
+  @Input() public serializedBy!: string;
 
-  public menu$: Observable<any>;
+  public menu$!: Observable<any>;
 
   public notebookSelectorData: any;
 
   private destroy$: Subject<any> = new Subject();
-
-  constructor(
-    private ref: ChangeDetectorRef,
-    private userService: UserService,
-    private notebookService: NotebookService,
-    public imageDataService: ImageDataService
-  ) {}
 
   ngOnInit(): void {
     this.menu$ = this.data$.pipe(map(this.transformData));
@@ -62,6 +63,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
         } else {
           this.notebookSelectorData = this.updateNotebookSelector(data, state);
         }
+        this.ref.markForCheck();
       });
   }
 
@@ -82,7 +84,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   newNotebookSelector(annotation: Annotation, state: any) {
     const notebook = this.notebookService.getNotebookById(
       annotation.notebookId
-    );
+    )!;
     const notebooks = this.notebookService.getByUserIdShared(annotation.userId);
     const notebookSelectorData: NotebookSelectorData = {
       isLoading: state?.isNotebookSelectorLoading,
@@ -107,15 +109,17 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     if (!this.notebookSelectorData) {
       return this.newNotebookSelector(annotation, state);
     }
-    this.notebookSelectorData.isLoading = state?.isNotebookSelectorLoading;
     const notebooks = this.notebookService.getByUserIdShared(annotation.userId);
     const notebook = this.notebookService.getNotebookById(
       annotation.notebookId
-    );
-    this.notebookSelectorData.selectedNotebook = notebook;
-    this.notebookSelectorData.notebookList = notebooks;
+    )!;
 
-    return this.notebookSelectorData;
+    return {
+      ...this.notebookSelectorData,
+      isLoading: state?.isNotebookSelectorLoading,
+      selectedNotebook: notebook,
+      notebookList: notebooks
+    };
   }
 
   private isCurrentUser(user: UserData) {
@@ -125,7 +129,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getMenuData(annotation: Annotation) {
     const { id } = annotation;
-    const user = this.userService.getUserById(annotation.userId);
+    const user = this.userService.getUserById(annotation.userId)!;
     const buttonConfig: ActionButtonConfig = {
       id,
       type: annotation.type,
@@ -160,7 +164,7 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
       };
   }
 
-  onClick(ev: Event, payload) {
+  onClick(ev: Event, payload: any) {
     if (!this.emit) return;
     ev.stopImmediatePropagation();
 
@@ -180,13 +184,13 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     }
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   }
 
   /**
    * Event emitter for the internal notebook-selector component
    */
-  onNotebookSelection = (type, payload) => {
+  onNotebookSelection = (type: string, payload: any) => {
     if (!this.emit) return;
     // const annotationID = this.data.payload.id;
     const annotationID = this.annotationId;
@@ -195,6 +199,6 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
     this.emit(type, { annotation: annotationID, notebook: notebookID });
 
     // trigger change detector
-    this.ref.detectChanges();
+    this.ref.markForCheck();
   };
 }

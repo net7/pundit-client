@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * GLOBAL
  *
@@ -12,12 +14,12 @@
     position: absolute;
     top: 0;
     right: 0;
-    z-index: $z-index-pundit;
+    z-index: variables.$z-index-pundit;
     box-sizing: border-box;
-    color: $color-text;
-    font-size: $font-size-m;
-    font-family: $font-family-main;
-    font-weight: $font-weight-normal;
+    color: variables.$color-text;
+    font-size: variables.$font-size-m;
+    font-family: variables.$font-family-main;
+    font-weight: variables.$font-weight-normal;
     line-height: 1.3;
 }
 

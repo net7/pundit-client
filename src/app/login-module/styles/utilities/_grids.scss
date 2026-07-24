@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * GRIDS
  *
@@ -13,8 +15,8 @@
 [class*="pnd-grid-"],
 [class^="pnd-grid-"] {
     display: grid;
-    grid-column-gap: $grid-gutter-h;
-    grid-row-gap: $grid-gutter-v;
+    grid-column-gap: variables.$grid-gutter-h;
+    grid-row-gap: variables.$grid-gutter-v;
 }
 
 /* 2 */

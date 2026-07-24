@@ -1,3 +1,5 @@
+@use "../generic/variables";
+
 /**
  * ANNOTATION-FORM
  *
@@ -11,7 +13,7 @@
     width: 100%;
 
     &__textarea, &__select, &__actions {
-        padding: $space;
+        padding: variables.$space;
     }
 
     &__textarea {
@@ -43,7 +45,7 @@
     }
 
     &__actions-item:last-child a {
-        margin-left: $space;
+        margin-left: variables.$space;
     }
 
     &__select-items {
@@ -59,13 +61,13 @@
 /* ------------------------------------ *\
    #MEDIA-QUERIES
 \* ------------------------------------ */
-@media all and (max-width: $breakpoint-laptop) {
+@media all and (max-width: variables.$breakpoint-laptop) {
 }
 
-@media all and (max-width: $breakpoint-ipad-portrait) {
+@media all and (max-width: variables.$breakpoint-ipad-portrait) {
 }
 
-@media all and (max-width: $breakpoint-smartphone-landscape) {
+@media all and (max-width: variables.$breakpoint-smartphone-landscape) {
 }
 
 /* Retina */

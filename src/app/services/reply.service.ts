@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Reply, ReplyAttributes
 } from '@pundit/communication';
@@ -14,14 +14,14 @@ type ReplyData= {
   annotationId: string;
   replies$: BehaviorSubject<Reply[]>;
 }
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ReplyService {
-  private repliesByAnnotationId: ReplyData[] = [];
+  private userService = inject(UserService);
+  private socialService = inject(SocialService);
 
-  constructor(
-    private userService: UserService,
-    private socialService: SocialService
-  ) { }
+  private repliesByAnnotationId: ReplyData[] = [];
 
   load(rawReplies: Reply[]) {
     rawReplies.forEach((c) => this.add(c));
@@ -36,9 +36,7 @@ export class ReplyService {
       tap(({ data }) => {
         const { id } = data;
         const requestPayload = attributes;
-        const newReply = this.getReplyFromPayload(
-          id, requestPayload
-        );
+        const newReply = this.getReplyFromPayload(id, requestPayload);
         this.add(newReply);
 
         // analytics
@@ -135,7 +133,7 @@ export class ReplyService {
     if (!result) {
       result = {
         annotationId: id,
-        replies$: new BehaviorSubject([])
+        replies$: new BehaviorSubject<Reply[]>([])
       };
       this.repliesByAnnotationId.push(result);
     }

@@ -28,15 +28,15 @@ export class NotebookPanelDS extends DataSource {
       description: _t('notebookpanel#share_description'),
     },
     commingSoon: _t('notebookpanel#comingsoon')
-  }
+  };
 
   public iconMap = {
     public: '', // no icon
     private: 'lock',
     shared: 'users'
-  }
+  };
 
-  transform(data) {
+  transform(data: any) {
     // Data for the internal notebook-selector component
     const notebookSelectorData: NotebookSelectorData = {
       createOption: {
@@ -60,7 +60,10 @@ export class NotebookPanelDS extends DataSource {
    * @param loading boolean
    */
   changeLoadingState(loading: boolean) {
-    this.output.isLoading = loading;
+    this.output = {
+      ...this.output,
+      isLoading: loading
+    };
   }
 
   /**
@@ -68,6 +71,15 @@ export class NotebookPanelDS extends DataSource {
    * @param loading boolean
    */
   changeNotebookSelectorLoadingState(loading: boolean) {
-    this.output._meta.notebookSelectorData.isLoading = loading;
+    this.output = {
+      ...this.output,
+      _meta: {
+        ...this.output._meta,
+        notebookSelectorData: {
+          ...this.output._meta.notebookSelectorData,
+          isLoading: loading
+        }
+      }
+    };
   }
 }

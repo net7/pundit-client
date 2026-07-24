@@ -13,124 +13,74 @@ import {
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
 
-export const doCrossMessageRequest = (tab, payload) => {
+// Maps each CrossMsgRequestId to the model invocation it performed in the
+// original switch. Each handler receives the request `args` and returns the
+// resulting request, mirroring the previous `Model.method.apply(null, args)`.
+const requestHandlers: {
+  [key in CrossMsgRequestId]?: (args: any) => unknown
+} = {
+  // NOTEBOOK REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.NotebookCreate]: (args) => NotebookModel.create.apply(null, args),
+  [CrossMsgRequestId.NotebookRemove]: (args) => NotebookModel.remove.apply(null, args),
+  [CrossMsgRequestId.NotebookSearch]: (args) => NotebookModel.search.apply(null, args),
+  [CrossMsgRequestId.NotebookUpdate]: (args) => NotebookModel.update.apply(null, args),
+  [CrossMsgRequestId.NotebookSetDefault]: (args) => NotebookModel.setDefault.apply(null, args),
+  [CrossMsgRequestId.NotebookUserSearch]: (args) => NotebookModel.userSearch.apply(null, args),
+  [CrossMsgRequestId.NotebookUserInviteWithEmail]:
+    (args) => NotebookModel.userInviteWithEmail.apply(null, args),
+  [CrossMsgRequestId.NotebookUserRemoveWithEmail]:
+    (args) => NotebookModel.userRemoveWithEmail.apply(null, args),
+  [CrossMsgRequestId.NotebookResendEmail]: (args) => NotebookModel.resendEmail.apply(null, args),
+  // [CrossMsgRequestId.NotebookUserInviteWithId]:
+  //   (args) => NotebookModel.userInviteWithId.apply(null, args),
+  // [CrossMsgRequestId.NotebookUserRemove]: (args) => NotebookModel.userRemove.apply(null, args),
+  // ANNOTATION REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.AnnotationCreate]: (args) => AnnotationModel.create.apply(null, args),
+  [CrossMsgRequestId.AnnotationGet]: (args) => AnnotationModel.get.apply(null, args),
+  [CrossMsgRequestId.AnnotationRemove]: (args) => AnnotationModel.remove.apply(null, args),
+  [CrossMsgRequestId.AnnotationSearch]: (args) => AnnotationModel.search.apply(null, args),
+  [CrossMsgRequestId.AnnotationUpdate]: (args) => AnnotationModel.update.apply(null, args),
+  // SOCIAL REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.SocialCreate]: (args) => SocialModel.create.apply(null, args),
+  [CrossMsgRequestId.SocialRemove]: (args) => SocialModel.remove.apply(null, args),
+  // REPLY REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.ReplyCreate]: (args) => ReplyModel.create.apply(null, args),
+  [CrossMsgRequestId.ReplyRemove]: (args) => ReplyModel.remove.apply(null, args),
+  [CrossMsgRequestId.ReplyUpdate]: (args) => ReplyModel.update.apply(null, args),
+  // AUTH REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.AuthSignup]: (args) => AuthModel.signup.apply(null, args),
+  [CrossMsgRequestId.AuthLogin]: (args) => AuthModel.login.apply(null, args),
+  [CrossMsgRequestId.AuthLogout]: (args) => AuthModel.logout.apply(null, args),
+  [CrossMsgRequestId.AuthVerifyMail]: (args) => AuthModel.verifyEmail.apply(null, args),
+  [CrossMsgRequestId.AuthSso]: (args) => AuthModel.sso.apply(null, args),
+  // ANALYTICS REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.AnalyticsTrigger]: (args) => AnalyticsModel.trigger.apply(null, args),
+  // TAG REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.TagGet]: (args) => TagModel.get.apply(null, args),
+  // SEMANTIC PREDICATE REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.SemanticPredicateGet]: (args) => SemanticPredicateModel.get.apply(null, args),
+};
+
+export const doCrossMessageRequest = (tab: any, payload: any) => {
   const { messageId, requestId, args } = payload;
-  let request$;
-  switch (requestId) {
-    // NOTEBOOK REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.NotebookCreate:
-      request$ = NotebookModel.create.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookRemove:
-      request$ = NotebookModel.remove.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookSearch:
-      request$ = NotebookModel.search.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookUpdate:
-      request$ = NotebookModel.update.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookSetDefault:
-      request$ = NotebookModel.setDefault.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookUserSearch:
-      request$ = NotebookModel.userSearch.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookUserInviteWithEmail:
-      request$ = NotebookModel.userInviteWithEmail.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookUserRemoveWithEmail:
-      request$ = NotebookModel.userRemoveWithEmail.apply(null, args);
-      break;
-    case CrossMsgRequestId.NotebookResendEmail:
-      request$ = NotebookModel.resendEmail.apply(null, args);
-      break;
-    // case CrossMsgRequestId.NotebookUserInviteWithId:
-    //   request$ = NotebookModel.userInviteWithId.apply(null, args);
-    //   break;
-    // case CrossMsgRequestId.NotebookUserRemove:
-    //   request$ = NotebookModel.userRemove.apply(null, args);
-    //   break;
-    // ANNOTATION REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.AnnotationCreate:
-      request$ = AnnotationModel.create.apply(null, args);
-      break;
-    case CrossMsgRequestId.AnnotationGet:
-      request$ = AnnotationModel.get.apply(null, args);
-      break;
-    case CrossMsgRequestId.AnnotationRemove:
-      request$ = AnnotationModel.remove.apply(null, args);
-      break;
-    case CrossMsgRequestId.AnnotationSearch:
-      request$ = AnnotationModel.search.apply(null, args);
-      break;
-    case CrossMsgRequestId.AnnotationUpdate:
-      request$ = AnnotationModel.update.apply(null, args);
-      break;
-    // SOCIAL REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.SocialCreate:
-      request$ = SocialModel.create.apply(null, args);
-      break;
-    case CrossMsgRequestId.SocialRemove:
-      request$ = SocialModel.remove.apply(null, args);
-      break;
-    // REPLY REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.ReplyCreate:
-      request$ = ReplyModel.create.apply(null, args);
-      break;
-    case CrossMsgRequestId.ReplyRemove:
-      request$ = ReplyModel.remove.apply(null, args);
-      break;
-    case CrossMsgRequestId.ReplyUpdate:
-      request$ = ReplyModel.update.apply(null, args);
-      break;
-    // AUTH REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.AuthSignup:
-      request$ = AuthModel.signup.apply(null, args);
-      break;
-    case CrossMsgRequestId.AuthLogin:
-      request$ = AuthModel.login.apply(null, args);
-      break;
-    case CrossMsgRequestId.AuthLogout:
-      request$ = AuthModel.logout.apply(null, args);
-      break;
-    case CrossMsgRequestId.AuthVerifyMail:
-      request$ = AuthModel.verifyEmail.apply(null, args);
-      break;
-    case CrossMsgRequestId.AuthSso:
-      request$ = AuthModel.sso.apply(null, args);
-      break;
-    // ANALYTICS REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.AnalyticsTrigger:
-      request$ = AnalyticsModel.trigger.apply(null, args);
-      break;
-    // TAG REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.TagGet:
-      request$ = TagModel.get.apply(null, args);
-      break;
-    // SEMANTIC PREDICATE REQUEST
-    // --------------------------------------------------->
-    case CrossMsgRequestId.SemanticPredicateGet:
-      request$ = SemanticPredicateModel.get.apply(null, args);
-      break;
-    default:
-      break;
-  }
+  const handler = requestHandlers[requestId as CrossMsgRequestId];
+  const request$ = handler ? handler(args) : undefined;
   if (request$) {
     ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
-      .then((value: string) => {
-        CommunicationSettings.apiBaseUrl = value;
+      .then((value) => {
+        CommunicationSettings.apiBaseUrl = value as string;
         return ChromeExtStorage.get(ChromeExtStorageKey.AuthBaseUrl);
       })
-      .then((value: string) => {
-        CommunicationSettings.authBaseUrl = value;
+      .then((value) => {
+        CommunicationSettings.authBaseUrl = value as string;
         return request$;
       })
       .then((response) => {

@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core';
-import { LoginResponse } from '@pundit/communication';
+import { Injectable, inject } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
 import { catchError, map, takeUntil } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
@@ -13,49 +12,47 @@ import { PopupService } from './popup.service';
   providedIn: 'root'
 })
 export class OauthProviderService {
-    private destroy$: Subject<boolean> = new Subject<boolean>();
+  private authEventService = inject(AuthEventService);
+  private popupService = inject(PopupService);
 
-    private selectedProvider: OAuthProvider = null;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
-    constructor(
-        private authEventService: AuthEventService,
-        private popupService: PopupService
-    ) { }
+  private selectedProvider: OAuthProvider | null = null;
 
-    login(provider: OAuthProvider) {
-      const url = this.createOAuthURL(provider);
-      const event$ = this.popupService.open(url, provider?.popup);
+  login(provider: OAuthProvider) {
+    const url = this.createOAuthURL(provider);
+    const event$ = this.popupService.open(url, provider?.popup);
 
-      // save selected provider (for analytics)
-      this.selectedProvider = provider;
-      this.listenEvent(event$);
-    }
+    // save selected provider (for analytics)
+    this.selectedProvider = provider;
+    this.listenEvent(event$);
+  }
 
-    private listenEvent(event$: Observable<MessageEvent>) {
-      event$.pipe(
-        takeUntil(this.destroy$),
-        map(fromEvent),
-        catchError((err) => of({ error: JSON.stringify(err) }))
-      ).subscribe((authResp: LoginResponse) => {
-        if ('user' in authResp) {
-          this.authEventService.set(authResp);
+  private listenEvent(event$: Observable<MessageEvent>) {
+    event$.pipe(
+      takeUntil(this.destroy$),
+      map(fromEvent),
+      catchError((err) => of({ error: JSON.stringify(err) }))
+    ).subscribe((authResp: any) => {
+      if ('user' in authResp) {
+        this.authEventService.set(authResp);
 
-          // analytics
-          let action;
-          if (this.selectedProvider.id === 'google') {
-            action = AnalyticsAction.AccessGoogleCompleted;
-          } else if (this.selectedProvider.id === 'facebook') {
-            action = AnalyticsAction.AccessFacebookCompleted;
-          } else if (this.selectedProvider.id === 'egi') {
-            action = AnalyticsAction.AccessEgiCompleted;
-          }
-          AnalyticsModel.userId = authResp.user.id;
-          AnalyticsModel.track({ action });
+        // analytics
+        let action;
+        if (this.selectedProvider!.id === 'google') {
+          action = AnalyticsAction.AccessGoogleCompleted;
+        } else if (this.selectedProvider!.id === 'facebook') {
+          action = AnalyticsAction.AccessFacebookCompleted;
+        } else if (this.selectedProvider!.id === 'egi') {
+          action = AnalyticsAction.AccessEgiCompleted;
         }
-      });
-    }
+        AnalyticsModel.userId = authResp.user.id;
+        AnalyticsModel.track({ action: action! });
+      }
+    });
+  }
 
-    private createOAuthURL(provider: OAuthProvider) {
-      return `${provider.params.url}?client_id=${provider.params.clientId}&redirect_uri=${provider.params.redirect}&scope=${provider.params.scope}&response_type=code`;
-    }
+  private createOAuthURL(provider: OAuthProvider) {
+    return `${provider.params.url}?client_id=${provider.params.clientId}&redirect_uri=${provider.params.redirect}&scope=${provider.params.scope}&response_type=code`;
+  }
 }
