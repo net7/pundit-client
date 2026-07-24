@@ -55,13 +55,21 @@ export class PdfService {
       // set urls
       const urlParams = new URLSearchParams(window.location.search);
       const source = urlParams.get('source');
-      // FIXME: update proxy url
+      // originalUrl = documento reale (identità/annotazioni). documentUrl = da
+      // dove pdfjs scarica i byte: nel viewer web i PDF http/cross-origin
+      // arrivano via 'fetchUrl' (proxy same-origin fornito dal server), che
+      // aggira mixed-content e CORS. Nell'estensione 'fetchUrl' è assente e si
+      // scarica direttamente dal contesto privilegiato.
+      const fetchUrl = urlParams.get('fetchUrl');
       this.originalUrl = source || '/no-pdf-file.pdf';
-      this.documentUrl = `${this.originalUrl}`;
+      this.documentUrl = fetchUrl || this.originalUrl;
       // add body class
       document.body.classList.add(PDF_BODY_CLASS);
-      // pdf app init
-      document.addEventListener('webviewerloaded', () => {
+      // pdf app init: nel viewer web standalone viewer.js gira a
+      // DOMContentLoaded, prima che Angular istanzi questo servizio, quindi
+      // l'evento 'webviewerloaded' può essere già scattato. Se initializedPromise
+      // è già disponibile procedi subito, altrimenti attendi l'evento.
+      const onViewerLoaded = () => {
         from(this.pdfApp.initializedPromise).pipe(
           first(),
         ).subscribe(() => {
@@ -69,7 +77,12 @@ export class PdfService {
           this.listenPdfViewer();
           this.listenScroll();
         });
-      });
+      };
+      if ((this.pdfApp as { initializedPromise?: Promise<void> }).initializedPromise) {
+        onViewerLoaded();
+      } else {
+        document.addEventListener('webviewerloaded', onViewerLoaded);
+      }
     }
   }
 
