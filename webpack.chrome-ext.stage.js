@@ -8,8 +8,8 @@ const prodConfig = require("./webpack.chrome-ext.prod");
 // con i domini locali, in coerenza con local.stage.ts.
 let urls = {
   API_BASE_URL: "https://api.thepund.netseven.work",
-  FEED_PDF_BASE_URL: "http://feed.thepund.netseven.work/pdf.php?source=",
-  FEED_WEB_BASE_URL: "http://feed.thepund.netseven.work/?url=",
+  FEED_PDF_BASE_URL: "https://feed.thepund.netseven.work/pdf.php?source=",
+  FEED_WEB_BASE_URL: "https://feed.thepund.netseven.work/?url=",
 };
 try {
   urls = { ...urls, ...require("./src/environments/chrome-ext-urls.stage.js") };
