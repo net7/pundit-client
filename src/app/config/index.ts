@@ -1,12 +1,13 @@
-import { environment as env } from '../../environments/environment';
+import { environment as env } from "../../environments/environment";
 
 export default {
   // env
   ...env,
   // static config
-  name: 'Pundit',
+  name: "Pundit",
   tooltipDelay: 200,
-  highlightTag: 'pnd-mark',
+  highlightTag: "pnd-mark",
+  highlightAiPreviewTag: "pnd-mark-preview",
   toastTimer: 500,
   indexUpdateDelay: 1500, // elastic-search index update delay
 };

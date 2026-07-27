@@ -34,12 +34,13 @@
       <!-- END // Semantic Section -->
       <!-- Ai Request Section -->
       @if (data.sections?.aiRequest) {
-      <pnd-comment-section
+      <pnd-ai-request-section
         [data]="data.sections.aiRequest"
-        [sectionId]="'aiRequest'"
         [reset$]="reset$"
+        [aiPreviewActive]="aiPreviewActive"
+        (generate)="onAiGenerate($event)"
       >
-      </pnd-comment-section>
+      </pnd-ai-request-section>
       }
       <!-- END // Ai Request Section -->
       <!-- Tags Section -->
@@ -63,7 +64,25 @@
         </div>
         @if (!data.hideActions) {
         <div class="pnd-edit-modal__footer-actions">
-          @if (data.actions.cancel; as cancelAction) {
+          @if (data.sections?.aiRequest) {
+          <button class="pnd-btn" (click)="onClose()">
+            {{ data.actions.cancel?.label || 'Cancel' }}
+          </button>
+          <button
+            class="pnd-btn"
+            [disabled]="disableGenerate"
+            (click)="onGenerate()"
+          >
+            Generate
+          </button>
+          <button
+            class="pnd-btn pnd-btn-cta"
+            [disabled]="!aiPreviewActive"
+            (click)="onAiAccept()"
+          >
+            Save All
+          </button>
+          } @else { @if (data.actions.cancel; as cancelAction) {
           <button
             [disabled]="cancelAction.disabled"
             class="pnd-btn {{ cancelAction.classes || '' }}"
@@ -80,7 +99,7 @@
           >
             {{ saveAction.label }}
           </button>
-          }
+          } }
         </div>
         }
       </div>

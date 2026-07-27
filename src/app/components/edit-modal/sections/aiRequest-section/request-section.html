@@ -1,8 +1,14 @@
 @if (data) {
-<div class="pnd-edit-modal__comment-wrapper">
-  <div class="pnd-edit-modal__comment-label">{{ data.options.label }}</div>
-  <div class="pnd-edit-modal__comment-editor">
-    <pnd-text-editor [data]="editorData"></pnd-text-editor>
+<div class="pnd-edit-modal__ai-request-wrapper">
+  <div class="pnd-edit-modal__ai-request-label">{{ data.options.label }}</div>
+  <div class="pnd-edit-modal__ai-request-textarea-wrapper">
+    <textarea
+      #textarea
+      class="pnd-edit-modal__ai-request-textarea"
+      [value]="value"
+      placeholder="What the IA should do?"
+      (input)="onInput($any($event.target).value)"
+    ></textarea>
   </div>
 </div>
 }

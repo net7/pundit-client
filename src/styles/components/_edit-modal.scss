@@ -19,7 +19,7 @@
     }
 
     &__highlight-wrapper {
-        padding: variables.$space*2;
+        padding: variables.$space * 2;
         max-height: 120px;
         overflow-x: hidden;
         overflow-y: auto;
@@ -35,7 +35,7 @@
     }
 
     &__comment-wrapper {
-        padding: variables.$space*2;
+        padding: variables.$space * 2;
         border-top: 1px solid variables.$annotation-border-color;
         border-bottom: 1px solid variables.$annotation-border-color;
         background-color: variables.$annotation-comment-background-color;
@@ -48,7 +48,7 @@
 
     &__comment-textarea {
         width: 100%;
-        height: variables.$space*20;
+        height: variables.$space * 20;
         resize: none;
     }
 
@@ -57,12 +57,51 @@
     }
 
     &__tag-wrapper {
-        padding: variables.$space*2;
+        padding: variables.$space * 2;
         border-top: 1px solid variables.$annotation-border-color;
         border-bottom: 1px solid variables.$annotation-border-color;
     }
-}
 
+    // sezione per ai Request
+
+    &__ai-request-wrapper {
+        padding: variables.$space * 2;
+        border-top: 1px solid variables.$annotation-border-color;
+        border-bottom: 1px solid variables.$annotation-border-color;
+        background-color: variables.$annotation-comment-background-color;
+    }
+
+    &__ai-request-label {
+        margin-bottom: variables.$space;
+        font-size: variables.$font-size-s;
+    }
+
+    &__ai-request-textarea-wrapper {
+        width: 100%;
+        line-height: 20px;
+    }
+
+    &__ai-request-textarea {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        height: variables.$space * 5%;
+        padding: variables.$space;
+        border: 1px solid variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        background-color: variables.$color-background-base;
+        font-size: variables.$font-size-s;
+        line-height: 20px;
+        min-height: variables.$space * 5;
+        max-height: variables.$space * 32;
+        resize: vertical;
+    }
+
+    &__ai-request-textarea::placeholder {
+        color: variables.$color-text-light;
+    }
+}
 
 /* ------------------------------------ *\
    #FOOTER
@@ -72,7 +111,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: variables.$space*2;
+        padding: variables.$space * 2;
 
         .pnd-notebook-selector {
             width: 100%;
@@ -82,20 +121,19 @@
     &__footer-notebook {
         flex-grow: 2;
         flex-shrink: 0;
-        padding-right: variables.$space*2;
+        padding-right: variables.$space * 2;
     }
 
     &__footer-actions {
         flex-grow: 0;
         flex-shrink: 0;
         text-align: right;
-        
+
         .pnd-btn:last-child {
-            margin-left: variables.$space*0.5;
+            margin-left: variables.$space * 0.5;
         }
     }
 }
-
 
 /* ------------------------------------ *\
    #CLOSE
@@ -108,7 +146,6 @@
         }
     }
 }
-
 
 /* ------------------------------------ *\
    #HANDLE
@@ -140,7 +177,6 @@
     }
 }
 
-
 /* ------------------------------------ *\
    #OVERLAY
 \* ------------------------------------ */
@@ -150,7 +186,6 @@
         background-color: transparent;
     }
 }
-
 
 /* ------------------------------------ *\
    #TAGIFY FIX
@@ -174,7 +209,7 @@
     &__semantic-wrapper {
         position: relative;
         z-index: 10;
-        padding: variables.$space*2;
+        padding: variables.$space * 2;
         border-top: 1px solid variables.$annotation-border-color;
         border-bottom: 1px solid variables.$annotation-border-color;
         background-color: variables.$annotation-comment-background-color;
@@ -191,7 +226,7 @@
         justify-content: space-between;
         margin-bottom: variables.$space;
     }
-    
+
     &__semantic-row:last-child {
         margin-bottom: 0;
     }
@@ -206,7 +241,7 @@
         .pnd-dropdown__selected:disabled {
             cursor: not-allowed;
             color: variables.$color-text-light;
-            
+
             &:hover .pnd-dropdown__selected-right-icon {
                 color: variables.$color-text-light;
             }
@@ -227,9 +262,9 @@
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
-        right: variables.$space*0.5;
+        right: variables.$space * 0.5;
         margin: 0;
-        padding: variables.$space*0.125*3 variables.$space*0.25*3;
+        padding: variables.$space * 0.125 * 3 variables.$space * 0.25 * 3;
         background-color: variables.$color-background-light;
         color: variables.$color-text-light;
         text-transform: uppercase;
@@ -238,7 +273,7 @@
         border-radius: variables.$border-radius;
     }
 
-    &__semantic-object-input[type=text] {
+    &__semantic-object-input[type="text"] {
         width: 100%;
         padding-right: 58px;
 
@@ -266,18 +301,19 @@
             color: variables.$color-text-light;
             font-size: variables.$font-size-s;
             transition: color variables.$transition-durations;
-            
-            .pnd-svg-icon, .pnd-svg-icon svg {
+
+            .pnd-svg-icon,
+            .pnd-svg-icon svg {
                 width: variables.$font-size-s;
                 height: variables.$font-size-s;
             }
-    
+
             &:hover {
                 color: variables.$color-text-link;
                 border: 1px solid variables.$color-text-link;
             }
         }
-        
+
         .pnd-dropdown__list-wrapper {
             position: absolute;
             top: 30px;
@@ -296,7 +332,6 @@
         }
     }
 }
-
 
 /* ------------------------------------ *\
    #MEDIA-QUERIES

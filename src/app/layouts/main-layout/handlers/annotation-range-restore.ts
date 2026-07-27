@@ -1,35 +1,61 @@
 import { toTextNode } from "./annotation-range-utils";
 
+function safeOffset(offset: any, textLength: number): number {
+  return Math.min(
+    typeof offset === "number" ? offset : 0,
+    Math.max(0, textLength),
+  );
+}
+
+function evaluateXPath(xpath: string): Node | null {
+  const relative = xpath.startsWith("/") ? xpath.slice(1) : xpath;
+  return document.evaluate(
+    relative,
+    document.body,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null,
+  ).singleNodeValue;
+}
+
 function restoreRangeFromXPath(selected: any): Range | null {
   const { startContainer, endContainer, startOffset, endOffset } =
     selected.rangeSelector ?? {};
   if (!startContainer || !endContainer) return null;
   try {
-    const toRelative = (xpath: string) =>
-      xpath.startsWith("/") ? xpath.slice(1) : xpath;
-    const startNode = document.evaluate(
-      toRelative(startContainer),
-      document.body,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null,
-    ).singleNodeValue;
-    const endNode = document.evaluate(
-      toRelative(endContainer),
-      document.body,
-      null,
-      XPathResult.FIRST_ORDERED_NODE_TYPE,
-      null,
-    ).singleNodeValue;
+    const startNode = evaluateXPath(startContainer);
+    const endNode = evaluateXPath(endContainer);
     if (!startNode || !endNode) return null;
+    const startText = toTextNode(startNode).textContent ?? "";
+    const endText = toTextNode(endNode).textContent ?? "";
     const range = document.createRange();
-    range.setStart(toTextNode(startNode), startOffset ?? 0);
-    range.setEnd(toTextNode(endNode), endOffset ?? 0);
+    range.setStart(
+      toTextNode(startNode),
+      safeOffset(startOffset, startText.length),
+    );
+    range.setEnd(toTextNode(endNode), safeOffset(endOffset, endText.length));
     return range;
   } catch (e) {
     console.warn("[restoreRange] xpath fallito, provo textQuote", e);
     return null;
   }
+}
+
+function matchTextInNode(
+  node: Text,
+  exact: string,
+  prefix?: string,
+): Range | null {
+  const textContent = node.textContent ?? "";
+  const idx = textContent.indexOf(exact);
+  if (idx === -1) return null;
+  if (prefix && !textContent.substring(0, idx).endsWith(prefix.trim()))
+    return null;
+  const safeEnd = Math.min(idx + exact.length, Math.max(0, textContent.length));
+  const range = document.createRange();
+  range.setStart(node, idx);
+  range.setEnd(node, safeEnd);
+  return range;
 }
 
 function restoreRangeFromTextQuote(selected: any): Range | null {
@@ -38,14 +64,8 @@ function restoreRangeFromTextQuote(selected: any): Range | null {
   const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
   while (walker.nextNode()) {
     const node = walker.currentNode as Text;
-    const idx = node.textContent?.indexOf(exact) ?? -1;
-    if (idx === -1) continue;
-    if (prefix && !node.textContent?.substring(0, idx).endsWith(prefix.trim()))
-      continue;
-    const range = document.createRange();
-    range.setStart(node, idx);
-    range.setEnd(node, idx + exact.length);
-    return range;
+    const result = matchTextInNode(node, exact, prefix);
+    if (result) return result;
   }
   return null;
 }
