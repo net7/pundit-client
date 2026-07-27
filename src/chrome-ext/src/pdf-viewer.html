@@ -33,6 +33,16 @@ See https://github.com/adobe-type-tools/cmap-resources
     <link rel="resource" type="application/l10n" href="./assets/pdfjs/web/locale/locale.properties">
     <script src="./assets/pdfjs/build/pdf.js"></script>
     <script src="./assets/pdfjs/web/viewer.js"></script>
+    <script>
+      // viewer.js hardcodes an absolute asset layout (extension root):
+      //  - defaultUrl points to a demo pdf that 404s outside the extension;
+      //    the real document is always opened from ?source= by Pundit.
+      //  - workerSrc is /assets/pdfjs/build/pdf.worker.js, which 404s when the
+      //    viewer is served from a sub-path (e.g. the web deploy under
+      //    /pdf-viewer/). A document-relative path resolves in both contexts.
+      PDFViewerApplicationOptions.set('defaultUrl', '');
+      PDFViewerApplicationOptions.set('workerSrc', './assets/pdfjs/build/pdf.worker.js');
+    </script>
   </head>
 
   <body tabindex="1">
