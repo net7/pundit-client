@@ -11,6 +11,7 @@ export default {
   "editmodal#notebook_create": "Create new notebook",
   "editmodal#cancel": "Cancel",
   "editmodal#save": "Save comment",
+  "editmodal#save_ai_request": "Generate",
   "editmodal#save_tags": "Save tags",
   "editmodal#add_tag": "Add a tag",
   "editmodal#semantic_object_placeholder": "Add an object",
@@ -113,6 +114,8 @@ export default {
     "Pundit couldn't delete your reply, please try again later.",
   "toast#annotation_share_link_copied_title":
     "Annotation link copied to clipboard.",
+  "toast#ai_no_results_title": "AI Preview",
+  "toast#ai_no_results_text": "No results generated. Try a different prompt.",
   // annotation
   "annotation#changenotebook": "Change notebook",
   "annotation#addcomment": "Add comment",

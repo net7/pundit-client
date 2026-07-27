@@ -3,26 +3,26 @@
  * Handles the creation, updating, and removal of annotation highlights.
  * Provides functionality for attaching event listeners to highlights and managing their state.
  */
-import { Injectable, inject } from '@angular/core';
-import { Annotation } from '@pundit/communication';
-import { Subject } from 'rxjs';
-import { AnalyticsModel } from 'src/common/models';
-import { AnalyticsAction } from 'src/common/types';
+import { Injectable, inject } from "@angular/core";
+import { Annotation } from "@pundit/communication";
+import { Subject } from "rxjs";
+import { AnalyticsModel } from "src/common/models";
+import { AnalyticsAction } from "src/common/types";
 import {
   anchor,
   highlightRange,
   removeHighlights,
   HighlightElement,
-  SelectorWithType
-} from '@net7/annotator';
-import { AnchorEvent } from '../event-types';
-import { _c } from '../models/config';
-import { AnnotationService } from './annotation.service';
+  SelectorWithType,
+} from "@net7/annotator";
+import { AnchorEvent } from "../event-types";
+import { _c } from "../models/config";
+import { AnnotationService } from "./annotation.service";
 
-const HOVER_CLASS = 'is-hovered';
+const HOVER_CLASS = "is-hovered";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class AnchorService {
   private annotationService = inject(AnnotationService);
@@ -31,7 +31,7 @@ export class AnchorService {
 
   private orphans: Annotation[] = [];
 
-  public events$: Subject<{type: string; payload: any}> = new Subject();
+  public events$: Subject<{ type: string; payload: any }> = new Subject();
 
   // fix analytics duplicates
   private analyticsAnchoredIds: string[] = [];
@@ -45,13 +45,16 @@ export class AnchorService {
     });
   }
 
-  async add(annotation: Annotation): Promise<void> {
+  async add(annotation: Annotation, cssClassOverride?: string): Promise<void> {
     if (!this.getHighlightById(annotation.id)) {
       try {
         const selectors = this.createSelectors(annotation);
         const { range, type } = await anchor(document.body, selectors);
-        const tag = _c('highlightTag');
-        const cssClass = annotation.serializedBy === 'hypothesis' ? `${tag}-hypo` : tag;
+        const tag = _c("highlightTag");
+        const baseClass =
+          cssClassOverride ||
+          (annotation.serializedBy === "hypothesis" ? `${tag}-hypo` : tag);
+        const cssClass = cssClassOverride || baseClass;
         const highlights = highlightRange({ range, tag, cssClass });
         this.attachEvents(highlights, annotation.id);
         this.annotationHighlights.push({ highlights, targetId: annotation.id });
@@ -62,9 +65,9 @@ export class AnchorService {
           AnalyticsModel.track({
             action: AnalyticsAction.AnnotationAnchoringSuccess,
             payload: {
-              'anchoring-type': type,
-              'annotation-type': annotation.type.toLowerCase()
-            }
+              "anchoring-type": type,
+              "annotation-type": annotation.type.toLowerCase(),
+            },
           });
         }
       } catch {
@@ -76,8 +79,8 @@ export class AnchorService {
           AnalyticsModel.track({
             action: AnalyticsAction.AnnotationAnchoringError,
             payload: {
-              'annotation-id': annotation.id
-            }
+              "annotation-id": annotation.id,
+            },
           });
         }
       }
@@ -89,17 +92,37 @@ export class AnchorService {
       const { highlights } = this.getHighlightById(annotationId)!;
       removeHighlights(highlights);
       this.detachEvents(highlights);
-      const index = this.annotationHighlights.findIndex((hl) => hl.targetId === annotationId);
+      const index = this.annotationHighlights.findIndex(
+        (hl) => hl.targetId === annotationId,
+      );
       this.annotationHighlights.splice(index, 1);
     }
   }
 
+  getHighlightsByPrefix(prefix: string): AnnotationHighlight[] {
+    return this.annotationHighlights.filter((hl) =>
+      hl.targetId.startsWith(prefix),
+    );
+  }
+
+  removeByPrefix(prefix: string) {
+    this.getHighlightsByPrefix(prefix).forEach((hl) => {
+      this.remove(hl.targetId);
+    });
+  }
+
   removeAll() {
-    this.annotationHighlights.map((hl) => hl.targetId).forEach(this.remove.bind(this));
+    this.annotationHighlights
+      .map((hl) => hl.targetId)
+      .forEach(this.remove.bind(this));
   }
 
   getHighlightById(annotationId: string): AnnotationHighlight | null {
-    return this.annotationHighlights.find(({ targetId }) => targetId === annotationId) || null;
+    return (
+      this.annotationHighlights.find(
+        ({ targetId }) => targetId === annotationId,
+      ) || null
+    );
   }
 
   checkOrphans() {
@@ -145,34 +168,47 @@ export class AnchorService {
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {
-    if (!annotation || !annotation.subject?.selected) return [{ start: 0, end: 0, type: 'TextPositionSelector' }];
+    if (!annotation || !annotation.subject?.selected)
+      return [{ start: 0, end: 0, type: "TextPositionSelector" }];
     const target = annotation.subject.selected;
     const selectors: SelectorWithType[] = [];
     if (target.rangeSelector) {
-      selectors.push({ type: 'RangeSelector', ...target.rangeSelector });
+      selectors.push({ type: "RangeSelector", ...target.rangeSelector });
     }
     if (target.textPositionSelector) {
-      selectors.push({ type: 'TextPositionSelector', ...target.textPositionSelector });
+      selectors.push({
+        type: "TextPositionSelector",
+        ...target.textPositionSelector,
+      });
     }
     if (target.textQuoteSelector) {
-      selectors.push({ type: 'TextQuoteSelector', ...target.textQuoteSelector });
+      selectors.push({
+        type: "TextQuoteSelector",
+        ...target.textQuoteSelector,
+      });
     }
     return selectors;
   }
 
   private attachEvents(highlights: HighlightElement[], annotationId: string) {
     highlights.forEach((el) => {
-      el.addEventListener('mouseover', this.onMouseOver.bind(this, annotationId));
-      el.addEventListener('mouseleave', this.onMouseLeave.bind(this, annotationId));
-      el.addEventListener('click', this.onClick.bind(this, annotationId));
+      el.addEventListener(
+        "mouseover",
+        this.onMouseOver.bind(this, annotationId),
+      );
+      el.addEventListener(
+        "mouseleave",
+        this.onMouseLeave.bind(this, annotationId),
+      );
+      el.addEventListener("click", this.onClick.bind(this, annotationId));
     });
   }
 
   private detachEvents(highlights: HighlightElement[]) {
     highlights.forEach((el) => {
-      el.removeEventListener('mouseover', this.onMouseOver);
-      el.removeEventListener('mouseleave', this.onMouseLeave);
-      el.removeEventListener('click', this.onClick);
+      el.removeEventListener("mouseover", this.onMouseOver);
+      el.removeEventListener("mouseleave", this.onMouseLeave);
+      el.removeEventListener("click", this.onClick);
     });
   }
 
