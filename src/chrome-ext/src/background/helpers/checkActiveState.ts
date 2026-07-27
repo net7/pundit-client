@@ -77,9 +77,9 @@ export const checkActiveState = (tabId: number) => {
           const isFeedPdf = isFeedPdfUrl(tabUrl);
           if (isFeedWeb) {
             const webDocumentSource = getFeedWebSource(tabUrl);
-            // redirect
+            // redirect (getFeedWebSource already returns the decoded URL)
             chrome.tabs.update({
-              url: decodeURIComponent(webDocumentSource),
+              url: webDocumentSource,
             });
             // trigger click
             if (!active) {
