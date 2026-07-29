@@ -27,7 +27,7 @@ function buildChunkProjection(range: Range): {
   while (walker.nextNode()) {
     const node = walker.currentNode as Text;
     const text = node.textContent ?? "";
-    if (text.length === 0) continue;
+    if (typeof text !== "string" || text.trim().length === 0) continue;
     const id = `c${++i}`;
     chunks.push({ id, text });
     chunkMap.set(id, node);

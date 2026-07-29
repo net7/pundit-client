@@ -1,9 +1,3 @@
-/* eslint-disable global-require */
-/* eslint-disable import/no-dynamic-require */
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable import/no-extraneous-dependencies */
-
 const fs = require('fs-extra');
 const path = require('path');
 const _ = require('lodash');

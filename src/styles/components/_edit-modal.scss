@@ -101,6 +101,64 @@
     &__ai-request-textarea::placeholder {
         color: variables.$color-text-light;
     }
+
+    &__ai-request-options {
+        margin-top: variables.$space * 1.5;
+    }
+
+    &__ai-request-options-label {
+        margin-bottom: variables.$space * 0.75;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$color-text;
+    }
+
+    &__ai-request-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: variables.$space;
+    }
+
+    &__ai-request-chip-input {
+        position: absolute;
+        opacity: 0;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+    }
+
+    &__ai-request-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: (variables.$space * 0.5) (variables.$space * 1.5);
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
+        border-radius: 16px;
+        border: 1px solid variables.$color-border-normal;
+        background-color: variables.$color-background-base;
+        color: variables.$color-text;
+        cursor: pointer;
+        user-select: none;
+        transition: all variables.$transition-durations ease-in-out;
+
+        &:hover {
+            border-color: variables.$color-text-link;
+            color: variables.$color-text-link;
+            background-color: color-scheme.$color-gray-01;
+        }
+
+        &.is-selected {
+            background-color: variables.$color-text-link;
+            border-color: variables.$color-text-link;
+            color: color-scheme.$color-gray-00;
+
+            &:hover {
+                background-color: color-scheme.$color-text-hover;
+                border-color: color-scheme.$color-text-hover;
+            }
+        }
+    }
 }
 
 /* ------------------------------------ *\
@@ -127,10 +185,13 @@
     &__footer-actions {
         flex-grow: 0;
         flex-shrink: 0;
-        text-align: right;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: variables.$space;
 
         .pnd-btn:last-child {
-            margin-left: variables.$space * 0.5;
+            margin-left: 0;
         }
     }
 }

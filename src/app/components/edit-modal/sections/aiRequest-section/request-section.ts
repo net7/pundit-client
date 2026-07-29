@@ -17,7 +17,12 @@ import { FormSection, FormSectionData } from "src/app/types";
 
 const TEXT_MIN_LIMIT = 3;
 
-export type AiRequestSectionValue = string | null;
+export type AiRequestSectionObjectValue = {
+  prompt: string;
+  annotationType: string;
+};
+
+export type AiRequestSectionValue = AiRequestSectionObjectValue | string | null;
 
 export type AiRequestSectionOptions = {
   label: string;
@@ -51,14 +56,24 @@ export class AiRequestSectionComponent
 
   @Input() public aiPreviewActive = false;
 
-  @Output() public generate = new EventEmitter<string>();
+  @Output() public generate = new EventEmitter<
+    { prompt: string; annotationType: string } | string
+  >();
 
   public value = "";
+  public annotationType = "highlight";
+
+  public annotationTypes = [
+    { value: "comment", label: "Comment" },
+    { value: "highlight", label: "Highlight" },
+    { value: "tags", label: "Tag" },
+    { value: "semantic_annotation", label: "Semantic" },
+  ];
 
   private destroy$: Subject<void> = new Subject();
 
   ngAfterViewInit() {
-    this.value = this.data.initialValue || "";
+    this.extractInitialValue();
     this.checkFocus();
     this.reset$.pipe(takeUntil(this.destroy$)).subscribe(this.onReset);
     this.changeDetectorRef.markForCheck();
@@ -71,8 +86,16 @@ export class AiRequestSectionComponent
 
   onInput(value: string) {
     this.value = value;
+    this.emitChange();
+  }
 
-    const textValue = typeof value === "string" && value.trim();
+  onTypeChange(type: string) {
+    this.annotationType = type;
+    this.emitChange();
+  }
+
+  private emitChange() {
+    const textValue = typeof this.value === "string" && this.value.trim();
     const errors = [];
 
     if (textValue && textValue.length < TEXT_MIN_LIMIT) {
@@ -80,7 +103,10 @@ export class AiRequestSectionComponent
     }
 
     this.data.changed$.next({
-      value: textValue || null,
+      value: {
+        prompt: textValue || "",
+        annotationType: this.annotationType,
+      },
       errors,
       id: this.id,
     });
@@ -89,13 +115,26 @@ export class AiRequestSectionComponent
   onGenerate() {
     const textValue = typeof this.value === "string" && this.value.trim();
     if (textValue && textValue.length >= TEXT_MIN_LIMIT) {
-      this.generate.emit(textValue);
+      this.generate.emit({
+        prompt: textValue,
+        annotationType: this.annotationType,
+      });
     }
   }
 
-  private onReset = () => {
+  private extractInitialValue = () => {
     const { initialValue } = this.data;
-    this.value = initialValue || "";
+    if (typeof initialValue === "object" && initialValue !== null) {
+      this.value = initialValue.prompt || "";
+      this.annotationType = initialValue.annotationType || "highlight";
+    } else {
+      this.value = (initialValue as string) || "";
+      this.annotationType = "highlight";
+    }
+  };
+
+  private onReset = () => {
+    this.extractInitialValue();
     this.checkFocus();
     this.changeDetectorRef.markForCheck();
   };
