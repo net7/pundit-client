@@ -283,6 +283,20 @@ annotation {
         font-style: italic;
     }
 
+    &.is-preview {
+        .pnd-annotation__highlight-text {
+            background-color: color-scheme.$color-preview-highlight;
+            border-bottom: 2px solid color-scheme.$color-preview-border;
+        }
+
+        &.is-hovered, &:hover {
+            .pnd-annotation__highlight-text {
+                background-color: rgba($color: #ff9800, $alpha: 0.55);
+                border-bottom: 2px solid color-scheme.$color-preview-border;
+            }
+        }
+    }
+
     .hypo {
         background-color: #ddddce;
     }
@@ -831,6 +845,20 @@ annotation {
         
         pnd-social-annotation-section {
             display: none;
+        }
+
+        &.is-preview {
+            .pnd-annotation__highlight {
+                background-color: color-scheme.$color-preview-highlight;
+                border-bottom: 2px solid color-scheme.$color-preview-border;
+            }
+
+            &.is-hovered, &:hover {
+                .pnd-annotation__highlight {
+                    background-color: rgba($color: #ff9800, $alpha: 0.55);
+                    border-bottom: 2px solid color-scheme.$color-preview-border;
+                }
+            }
         }
 
         &.is-hovered, &:hover {

@@ -99,6 +99,8 @@ export class EditModalComponent
 
   private lastPrompt = "";
 
+  private lastAnnotationType = "highlight";
+
   public draggableTarget = "pnd-modal-draggable-target";
 
   public draggableHandle = "pnd-modal-draggable-handle";
@@ -118,7 +120,10 @@ export class EditModalComponent
     if (!textValue || textValue.length < 3) {
       return true;
     }
-    return textValue === this.lastPrompt;
+    return (
+      textValue === this.lastPrompt &&
+      this.annotationType === this.lastAnnotationType
+    );
   }
 
   ngAfterContentChecked() {
@@ -149,8 +154,8 @@ export class EditModalComponent
     this.emit(getEventType(EditModalEvent.Save), this.formState);
   }
 
-  onAiGenerate(prompt: string) {
-    this.emit(getEventType(EditModalEvent.AiGenerate), prompt);
+  onAiGenerate(payload: { prompt: string; annotationType?: string } | string) {
+    this.emit(getEventType(EditModalEvent.AiGenerate), payload);
   }
 
   onAiAccept() {
@@ -162,14 +167,38 @@ export class EditModalComponent
   }
 
   get value(): string {
-    return (this.formState?.aiRequest?.value as string) || "";
+    const aiValue = this.formState?.aiRequest?.value;
+    if (
+      typeof aiValue === "object" &&
+      aiValue !== null &&
+      "prompt" in aiValue
+    ) {
+      return (aiValue as any).prompt || "";
+    }
+    return (aiValue as string) || "";
+  }
+
+  get annotationType(): string {
+    const aiValue = this.formState?.aiRequest?.value;
+    if (
+      typeof aiValue === "object" &&
+      aiValue !== null &&
+      "annotationType" in aiValue
+    ) {
+      return (aiValue as any).annotationType || "highlight";
+    }
+    return "highlight";
   }
 
   onGenerate() {
     const textValue = typeof this.value === "string" && this.value.trim();
     if (textValue && textValue.length >= 3) {
       this.lastPrompt = textValue;
-      this.emit(getEventType(EditModalEvent.AiGenerate), textValue);
+      this.lastAnnotationType = this.annotationType;
+      this.emit(getEventType(EditModalEvent.AiGenerate), {
+        prompt: textValue,
+        annotationType: this.annotationType,
+      });
     }
   }
 
@@ -181,6 +210,7 @@ export class EditModalComponent
       this.lastInternalId = this.data?._internalId;
       this.loaded = false;
       this.lastPrompt = "";
+      this.lastAnnotationType = "highlight";
       setTimeout(() => {
         this.reset$.next();
         this.changeDetectorRef.markForCheck();

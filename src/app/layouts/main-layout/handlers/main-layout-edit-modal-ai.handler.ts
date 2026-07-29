@@ -2,7 +2,7 @@ import { _t } from "@net7/core";
 import { cloneDeep, uniq } from "lodash";
 import { Observable, firstValueFrom, from } from "rxjs";
 import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
-import { AppEvent } from "src/app/event-types";
+import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
 import { AnalyticsModel } from "src/common/models";
@@ -25,7 +25,11 @@ export class MainLayoutEditModalAiHandler {
     private layoutEH: MainLayoutEH,
   ) {}
 
-  async onAiGenerate(prompt: string) {
+  async onAiGenerate(
+    request: { prompt: string; annotationType?: string } | string,
+  ) {
+    const { prompt, annotationType } = this.parseAiRequest(request);
+
     const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
     if (!pendingPayload) {
       console.warn("[AiGenerate] Nessun pendingPayload disponibile");
@@ -49,7 +53,11 @@ export class MainLayoutEditModalAiHandler {
     this.removeAiPreviews();
 
     try {
-      const aiPayloads = await mapChunks(annotationPayload, prompt);
+      const aiPayloads = await mapChunks(
+        annotationPayload,
+        prompt,
+        annotationType,
+      );
       if (!aiPayloads || aiPayloads.length === 0) {
         console.warn("[AiGenerate] Nessun payload generato dall'AI");
         workingToast.close();
@@ -61,26 +69,13 @@ export class MainLayoutEditModalAiHandler {
         return;
       }
 
-      this.aiPreviewPayloads = aiPayloads;
-
-      this.layoutDS.removePendingAnnotation();
-
-      for (let i = 0; i < aiPayloads.length; i++) {
-        const aiPayload = aiPayloads[i];
-        const previewId = `${AI_PREVIEW_ID_PREFIX}${i}`;
-        const previewAnnotation =
-          this.layoutDS.annotationService.getAnnotationFromPayload(
-            previewId,
-            aiPayload,
-          );
-        await this.layoutDS.anchorService.add(
-          previewAnnotation,
-          _c("highlightAiPreviewTag") as string,
-        );
-      }
+      await this.renderAiPreviews(aiPayloads);
 
       workingToast.close();
       aiPreviewState$.next(true);
+      this.layoutEH.appEvent$.next({
+        type: AppEvent.AiPreviewReady,
+      });
     } catch (error) {
       console.error("[AiGenerate] Errore durante la generazione AI:", error);
       workingToast.close();
@@ -89,6 +84,41 @@ export class MainLayoutEditModalAiHandler {
         text: _t("toast#genericerror_text"),
         timer: _c("toastTimer"),
       });
+    }
+  }
+
+  private parseAiRequest(
+    request: { prompt: string; annotationType?: string } | string,
+  ): { prompt: string; annotationType: string } {
+    if (typeof request === "string") {
+      return { prompt: request, annotationType: "highlight" };
+    }
+    if (request && typeof request === "object") {
+      return {
+        prompt: request.prompt || "",
+        annotationType: request.annotationType || "highlight",
+      };
+    }
+    return { prompt: "", annotationType: "highlight" };
+  }
+
+  private async renderAiPreviews(aiPayloads: any[]): Promise<void> {
+    this.aiPreviewPayloads = aiPayloads;
+    this.layoutDS.removePendingAnnotation();
+
+    for (let i = 0; i < aiPayloads.length; i++) {
+      const aiPayload = aiPayloads[i];
+      const previewId = `${AI_PREVIEW_ID_PREFIX}${i}`;
+      const previewAnnotation =
+        this.layoutDS.annotationService.getAnnotationFromPayload(
+          previewId,
+          aiPayload,
+        );
+      await this.layoutDS.anchorService.add(
+        previewAnnotation,
+        _c("highlightAiPreviewTag") as string,
+      );
+      this.layoutDS.annotationService.add(previewAnnotation);
     }
   }
 
@@ -151,11 +181,22 @@ export class MainLayoutEditModalAiHandler {
 
   removeAiPreviews() {
     this.layoutDS.anchorService.removeByPrefix(AI_PREVIEW_ID_PREFIX);
+    if (this.aiPreviewPayloads.length > 0) {
+      for (let i = 0; i < this.aiPreviewPayloads.length; i++) {
+        const previewId = `${AI_PREVIEW_ID_PREFIX}${i}`;
+        this.layoutDS.annotationService.removeCached(previewId);
+      }
+    }
     this.aiPreviewPayloads = [];
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.AiPreviewClear,
+    });
   }
 
   private onAnnotationCreated(data: any, workingToast: ToastInstance) {
-    this.layoutEH.emitOuter("annotation-created", { payload: data });
+    this.layoutEH.emitOuter(getEventType(MainLayoutEvent.AnnotationCreated), {
+      payload: data,
+    });
     this.layoutEH.appEvent$.next({
       type: AppEvent.AnnotationCreateSuccess,
       payload: data,
@@ -206,9 +247,21 @@ export class MainLayoutEditModalAiHandler {
       annotationPayload,
       formState,
     );
+    const aiVal = formState?.aiRequest?.value;
+    let prompt = "";
+    let annotationType = "highlight";
+
+    if (typeof aiVal === "string") {
+      prompt = aiVal;
+    } else if (aiVal && typeof aiVal === "object") {
+      prompt = (aiVal as any).prompt || "";
+      annotationType = (aiVal as any).annotationType || "highlight";
+    }
+
     const aiPayloads = await this.generateAiPayloads(
       annotationPayload,
-      formState?.aiRequest?.value,
+      prompt,
+      annotationType,
     );
     if (aiPayloads && Array.isArray(aiPayloads)) {
       aiPayloads.forEach((payload) => {
@@ -236,9 +289,12 @@ export class MainLayoutEditModalAiHandler {
   private async generateAiPayloads(
     annotationPayload: any,
     aiRequestValue: any,
+    annotationType: string = "highlight",
   ): Promise<any[] | null> {
     const aiRequest =
       typeof aiRequestValue === "string" ? aiRequestValue.trim() : null;
-    return aiRequest ? mapChunks(annotationPayload, aiRequest) : null;
+    return aiRequest
+      ? mapChunks(annotationPayload, aiRequest, annotationType)
+      : null;
   }
 }
