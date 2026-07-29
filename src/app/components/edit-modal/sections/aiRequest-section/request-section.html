@@ -1,0 +1,36 @@
+@if (data) {
+<div class="pnd-edit-modal__ai-request-wrapper">
+  <div class="pnd-edit-modal__ai-request-label">{{ data.options.label }}</div>
+  <div class="pnd-edit-modal__ai-request-textarea-wrapper">
+    <textarea
+      #textarea
+      class="pnd-edit-modal__ai-request-textarea"
+      [value]="value"
+      placeholder="What the IA should do?"
+      (input)="onInput($any($event.target).value)"
+    ></textarea>
+  </div>
+  <div class="pnd-edit-modal__ai-request-options">
+    <div class="pnd-edit-modal__ai-request-options-label">Annotation type:</div>
+    <div class="pnd-edit-modal__ai-request-chips">
+      @for (type of annotationTypes; track type.value) {
+      <label
+        class="pnd-edit-modal__ai-request-chip"
+        [class.is-selected]="annotationType === type.value"
+      >
+        <input
+          type="radio"
+          class="pnd-edit-modal__ai-request-chip-input"
+          name="aiAnnotationType"
+          [value]="type.value"
+          [checked]="annotationType === type.value"
+          (change)="onTypeChange(type.value)"
+        />
+        <span class="pnd-edit-modal__ai-request-chip-label">{{ type.label }}</span>
+      </label>
+      }
+    </div>
+  </div>
+</div>
+}
+

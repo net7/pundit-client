@@ -30,7 +30,8 @@ import { DocumentInfoService } from './document-info/document-info.service';
 export enum AnnotationCssClass {
   Empty = '',
   Delete = 'is-deleted',
-  Edit = 'is-edited'
+  Edit = 'is-edited',
+  Preview = 'is-preview'
 }
 
 export type AnnotationState = {
@@ -108,12 +109,14 @@ export class AnnotationService {
     } else {
       const { id } = rawAnnotation;
       const data$ = new BehaviorSubject<Annotation>(rawAnnotation);
+      const isPreview = id?.startsWith('ai-preview-');
       const state$ = new BehaviorSubject<any>({
         id: rawAnnotation.id,
         activeMenu: undefined,
         isNotebookSelectorLoading: false,
         source: 'box',
         isCollapsed: true,
+        classes: isPreview ? AnnotationCssClass.Preview : AnnotationCssClass.Empty
       });
       this.annotations.push({ id, data$, state$ });
       this.rawAnnotations.push(rawAnnotation);

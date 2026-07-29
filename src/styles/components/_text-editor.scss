@@ -14,7 +14,6 @@
     font-size: variables.$font-size-xs;
 }
 
-
 .pnd-text-editor {
     &__menu-wrapper {
         background-color: color-scheme.$color-gray-02;
@@ -60,7 +59,7 @@
         &:hover {
             background: color-scheme.$color-gray-03;
         }
-        
+
         &.is-active {
             background: color-scheme.$color-gray-03;
         }
@@ -107,7 +106,7 @@
     }
 
     &__link-btn-save {
-        margin-left: variables.$space*0.5;
+        margin-left: variables.$space * 0.5;
     }
 }
 
@@ -118,7 +117,7 @@
 
     &__view {
         padding: 0 variables.$space;
-         
+
         .ProseMirror {
             position: relative;
         }

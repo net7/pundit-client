@@ -122,6 +122,12 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       },
       [AppEvent.PdfViewerLoaded]: () => {
         this.pdfViewerChanged$.next();
+      },
+      [AppEvent.AiPreviewReady]: () => {
+        this.layoutDS.updateAnnotations(true);
+      },
+      [AppEvent.AiPreviewClear]: () => {
+        this.layoutDS.updateAnnotations(true);
       }
     };
   }

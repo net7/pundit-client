@@ -1,7 +1,7 @@
-import { MainLayoutDS } from './main-layout.ds';
-import { MainLayoutEH } from './main-layout.eh';
-import * as DS from '../../data-sources';
-import * as EH from '../../event-handlers';
+import { MainLayoutDS } from "./main-layout.ds";
+import { MainLayoutEH } from "./main-layout.eh";
+import * as DS from "../../data-sources";
+import * as EH from "../../event-handlers";
 import {
   MainLayoutAnchorHandler,
   MainLayoutAppEventsHandler,
@@ -15,25 +15,25 @@ import {
   MainLayoutIdentityHandler,
   MainLayoutPdfErrorModalHandler,
   MainLayoutNotebookShareModalHandler,
-} from './handlers';
+} from "./handlers";
 
 export const MainLayoutConfig = {
-  layoutId: 'main-layout',
+  layoutId: "main-layout",
   widgets: [
     {
-      id: 'delete-modal',
-      hasStaticData: true
+      id: "delete-modal",
+      hasStaticData: true,
     },
     {
-      id: 'pdf-error-modal',
-      hasStaticData: true
+      id: "pdf-error-modal",
+      hasStaticData: true,
     },
     {
-      id: 'tooltip',
-      hasStaticData: true
+      id: "tooltip",
+      hasStaticData: true,
     },
-    { id: 'notebook-share-modal' },
-    { id: 'edit-modal' },
+    { id: "notebook-share-modal" },
+    { id: "edit-modal" },
   ],
   layoutDS: MainLayoutDS,
   layoutEH: MainLayoutEH,
@@ -49,9 +49,9 @@ export const MainLayoutConfig = {
     MainLayoutPdfHandler,
     MainLayoutIdentityHandler,
     MainLayoutPdfErrorModalHandler,
-    MainLayoutNotebookShareModalHandler
+    MainLayoutNotebookShareModalHandler,
   ],
   widgetsDataSources: DS,
   widgetsEventHandlers: EH,
-  layoutOptions: {}
+  layoutOptions: {},
 };

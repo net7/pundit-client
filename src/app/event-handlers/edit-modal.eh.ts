@@ -1,56 +1,83 @@
-import { EventHandler } from '@net7/core';
-import { EditModalDS } from '../data-sources';
-import {
-  EditModalEvent, getEventType, MainLayoutEvent
-} from '../event-types';
+import { EventHandler } from "@net7/core";
+import { EditModalDS } from "../data-sources";
+import { EditModalEvent, getEventType, MainLayoutEvent } from "../event-types";
 
 export class EditModalEH extends EventHandler {
   public dataSource!: EditModalDS;
 
   public listen() {
     this.innerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case EditModalEvent.Close:
-          this.dataSource.close();
-          this.emitOuter(getEventType(EditModalEvent.Close));
-          break;
-        case EditModalEvent.Save:
-          // don't close the modal yet! we are waiting for success response.
-          this.emitOuter(getEventType(EditModalEvent.Save), payload);
-          break;
-        case EditModalEvent.NotebookChange:
-          this.emitOuter(getEventType(EditModalEvent.NotebookChange));
-          break;
-        case EditModalEvent.CreateNotebookError:
-          this.emitOuter(getEventType(EditModalEvent.CreateNotebookError), payload);
-          break;
-        case EditModalEvent.CreateNotebookSuccess:
-          this.emitOuter(getEventType(EditModalEvent.CreateNotebookSuccess));
-          break;
-        case EditModalEvent.NotebookSelectorModeChanged:
-          this.dataSource.changeActionsVisibility(payload === 'input');
-          break;
-        default:
-          break;
-      }
+      this.handleInnerEvent(type, payload);
     });
 
     this.outerEvents$.subscribe(({ type, payload }) => {
-      switch (type) {
-        case MainLayoutEvent.ClickTooltip:
-          if (payload === 'highlight') {
-            this.closeModal();
-          }
-          break;
-        case MainLayoutEvent.AnnotationCreated:
-        case MainLayoutEvent.KeyUpEscape:
-          this.closeModal();
-          break;
-        default:
-          // console.warn('Unhandled outer event:', type, payload);
-          break;
-      }
+      this.handleOuterEvent(type, payload);
     });
+  }
+
+  private emitSimpleEvent(eventType: string) {
+    this.emitOuter(getEventType(eventType));
+  }
+
+  private handleInnerEvent(type: string, payload: any) {
+    const simpleEvents: string[] = [
+      EditModalEvent.NotebookChange,
+      EditModalEvent.CreateNotebookSuccess,
+      EditModalEvent.AiGenerated,
+      EditModalEvent.AiAccept,
+      EditModalEvent.AiDiscard,
+    ];
+
+    if (simpleEvents.includes(type)) {
+      this.emitSimpleEvent(type);
+      return;
+    }
+
+    switch (type) {
+      case EditModalEvent.Close:
+        this.dataSource.close();
+        this.emitSimpleEvent(EditModalEvent.Close);
+        break;
+      case EditModalEvent.Save:
+        this.emitOuter(getEventType(EditModalEvent.Save), payload);
+        break;
+      case EditModalEvent.CreateNotebookError:
+        this.emitOuter(
+          getEventType(EditModalEvent.CreateNotebookError),
+          payload,
+        );
+        break;
+      case EditModalEvent.NotebookSelectorModeChanged:
+        this.dataSource.changeActionsVisibility(payload === "input");
+        break;
+      case EditModalEvent.AiGenerate:
+        this.emitOuter(getEventType(EditModalEvent.AiGenerate), payload);
+        break;
+      default:
+        break;
+    }
+  }
+
+  private handleOuterEvent(type: string, payload: any) {
+    switch (type) {
+      case MainLayoutEvent.ClickTooltip:
+        if (payload === "highlight") {
+          this.closeModal();
+        }
+        break;
+      case MainLayoutEvent.AnnotationCreated:
+      case MainLayoutEvent.KeyUpEscape:
+        this.closeModal();
+        break;
+      case EditModalEvent.AiGenerated:
+        this.dataSource.setAiPreviewActive(true);
+        break;
+      case EditModalEvent.AiDiscard:
+        this.dataSource.setAiPreviewActive(false);
+        break;
+      default:
+        break;
+    }
   }
 
   /**
@@ -59,7 +86,7 @@ export class EditModalEH extends EventHandler {
   private closeModal() {
     if (this.dataSource.isVisible()) {
       this.dataSource.close();
-      this.emitOuter('close');
+      this.emitOuter("close");
     }
   }
 }
