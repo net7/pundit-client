@@ -66,5 +66,8 @@ deploy-*.sh
 .nx/cache
 .nx/workspace-data
 
+# URL feed/API per build chrome-ext stage in locale (generato da pundit-deployment/render-env.sh)
+src/environments/chrome-ext-urls.stage.js
 
+# Variabili d'ambiente locali (chiavi API, mai committare)
 .env
