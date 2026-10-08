@@ -1,4 +1,4 @@
-import { auth, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
+import { auth, UserLoginRequestParams, UserSignupRequestParams } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 

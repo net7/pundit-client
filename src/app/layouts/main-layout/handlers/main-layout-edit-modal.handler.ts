@@ -1,5 +1,5 @@
 import { _t } from '@net7/core';
-import { SemanticTripleType } from '@pundit/communication';
+import { SemanticTripleType } from 'src/communication';
 import { cloneDeep } from 'lodash';
 import { EMPTY, Observable, of } from 'rxjs';
 import { catchError, filter } from 'rxjs/operators';

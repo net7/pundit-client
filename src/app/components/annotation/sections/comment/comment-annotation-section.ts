@@ -1,7 +1,7 @@
 import {
   Component, Input, OnInit, ChangeDetectionStrategy
 } from '@angular/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation } from 'src/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AsyncPipe } from '@angular/common';

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
+import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from 'src/communication';
 import {
   EMPTY, from, Observable, of, Subject
 } from 'rxjs';

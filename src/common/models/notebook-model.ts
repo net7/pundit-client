@@ -1,4 +1,4 @@
-import { notebook, NotebookAttributes, NotebookPermissions } from '@pundit/communication';
+import { notebook, NotebookAttributes, NotebookPermissions } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 

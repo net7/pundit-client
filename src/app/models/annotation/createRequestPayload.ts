@@ -13,7 +13,7 @@ import {
   SemanticTripleType,
   CommentAnnotation,
   CommentAnnotationBuilder,
-} from '@pundit/communication';
+} from 'src/communication';
 import { DocumentInfoPdf } from 'src/app/services/document-info/document-info-pdf.service';
 import { DocumentInfoWebpage } from 'src/app/services/document-info/document-info-webpage.service';
 import { describe } from '@net7/annotator';

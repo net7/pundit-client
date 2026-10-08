@@ -21,6 +21,8 @@ const common = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    // Mirror tsconfig `baseUrl: './'` so absolute imports like `src/communication` resolve.
+    modules: [path.resolve(__dirname), 'node_modules'],
   },
   plugins: [
     new webpack.DefinePlugin({

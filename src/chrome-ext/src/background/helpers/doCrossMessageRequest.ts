@@ -1,4 +1,4 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from 'src/communication';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {

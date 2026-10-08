@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { from, Subject, EMPTY } from 'rxjs';
-import { Notebook, NotebookPermissions, SharingModeType } from '@pundit/communication';
+import { Notebook, NotebookPermissions, SharingModeType } from 'src/communication';
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';

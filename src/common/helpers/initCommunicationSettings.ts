@@ -1,4 +1,4 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from 'src/communication';
 // import mixpanel from 'mixpanel-browser';
 import { environment as env } from '../../environments/environment';
 import { CommonEventType } from '../types';

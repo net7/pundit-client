@@ -12,7 +12,7 @@ import {
   CommentAnnotation,
   HighlightAnnotation,
   LinkAnnotation
-} from '@pundit/communication';
+} from 'src/communication';
 import {
   Subject, from, BehaviorSubject, Observable, of
 } from 'rxjs';

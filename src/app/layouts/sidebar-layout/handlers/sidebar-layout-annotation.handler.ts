@@ -8,7 +8,7 @@ import { EMPTY } from 'rxjs';
 import { _c } from 'src/app/models/config';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
-import { Annotation, AnnotationAttributes } from '@pundit/communication';
+import { Annotation, AnnotationAttributes } from 'src/communication';
 import { AnnotationCssClass } from 'src/app/services/annotation.service';
 import { SidebarLayoutDS } from '../sidebar-layout.ds';
 import { SidebarLayoutEH } from '../sidebar-layout.eh';

@@ -1,6 +1,6 @@
 import { from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AuthToken, LoginResponse, SourceType } from '@pundit/communication';
+import { AuthToken, LoginResponse, SourceType } from 'src/communication';
 import { AxiosError } from 'axios';
 
 export const fromEvent = (message: MessageEvent): LoginResponse => {

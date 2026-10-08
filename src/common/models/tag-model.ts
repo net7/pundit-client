@@ -1,4 +1,4 @@
-import { tag } from '@pundit/communication';
+import { tag } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
