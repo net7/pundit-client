@@ -35,8 +35,7 @@ function restoreRangeFromXPath(selected: any): Range | null {
     );
     range.setEnd(toTextNode(endNode), safeOffset(endOffset, endText.length));
     return range;
-  } catch (e) {
-    console.warn("[restoreRange] xpath fallito, provo textQuote", e);
+  } catch {
     return null;
   }
 }

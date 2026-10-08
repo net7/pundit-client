@@ -21,7 +21,10 @@ import { CommentSectionComponent } from "./sections/comment-section/comment-sect
 import { SemanticSectionComponent } from "./sections/semantic-section/semantic-section";
 import { TagsSectionComponent } from "./sections/tags-section/tags-section";
 import { NotebookSectionComponent } from "./sections/notebook-section/notebook-section";
-import { AiRequestSectionComponent } from "./sections/aiRequest-section/request-section";
+import {
+  AiRequestSectionComponent,
+  AiRequestSectionValue,
+} from "./sections/aiRequest-section/request-section";
 
 /**
  * Interface for EditModal's "data"
@@ -154,10 +157,6 @@ export class EditModalComponent
     this.emit(getEventType(EditModalEvent.Save), this.formState);
   }
 
-  onAiGenerate(payload: { prompt: string; annotationType?: string } | string) {
-    this.emit(getEventType(EditModalEvent.AiGenerate), payload);
-  }
-
   onAiAccept() {
     this.emit(getEventType(EditModalEvent.AiAccept));
   }
@@ -166,28 +165,16 @@ export class EditModalComponent
     this.emit(getEventType(EditModalEvent.AiDiscard));
   }
 
+  private get aiRequestValue(): AiRequestSectionValue {
+    return (this.formState?.aiRequest?.value as AiRequestSectionValue) ?? null;
+  }
+
   get value(): string {
-    const aiValue = this.formState?.aiRequest?.value;
-    if (
-      typeof aiValue === "object" &&
-      aiValue !== null &&
-      "prompt" in aiValue
-    ) {
-      return (aiValue as any).prompt || "";
-    }
-    return (aiValue as string) || "";
+    return this.aiRequestValue?.prompt || "";
   }
 
   get annotationType(): string {
-    const aiValue = this.formState?.aiRequest?.value;
-    if (
-      typeof aiValue === "object" &&
-      aiValue !== null &&
-      "annotationType" in aiValue
-    ) {
-      return (aiValue as any).annotationType || "highlight";
-    }
-    return "highlight";
+    return this.aiRequestValue?.annotationType || "highlight";
   }
 
   onGenerate() {

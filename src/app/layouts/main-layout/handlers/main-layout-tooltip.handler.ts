@@ -193,7 +193,6 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
     this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
       this.layoutDS.openEditModal({
         textQuote: pendingAnnotation.subject.selected!.text,
-        saveButtonLabel: _t("editmodal#save_ai_request"),
         sections: [
           {
             id: "aiRequest",

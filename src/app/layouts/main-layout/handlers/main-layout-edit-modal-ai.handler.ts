@@ -36,14 +36,12 @@ export class MainLayoutEditModalAiHandler {
     private layoutEH: MainLayoutEH,
   ) {}
 
-  async onAiGenerate(
-    request: { prompt: string; annotationType?: string } | string,
-  ) {
-    const { prompt, annotationType } = this.parseAiRequest(request);
+  async onAiGenerate(request: { prompt: string; annotationType?: string }) {
+    const prompt = request?.prompt || "";
+    const annotationType = toAiAnnotationType(request?.annotationType);
 
     const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
     if (!pendingPayload) {
-      console.warn("[AiGenerate] Nessun pendingPayload disponibile");
       return;
     }
 
@@ -70,7 +68,6 @@ export class MainLayoutEditModalAiHandler {
         annotationType,
       );
       if (aiPayloads.length === 0) {
-        console.warn("[AiGenerate] Nessun payload generato dall'AI");
         workingToast.close();
         this.layoutDS.toastService.info({
           title: _t("toast#ai_no_results_title"),
@@ -117,21 +114,6 @@ export class MainLayoutEditModalAiHandler {
       annotationPayload,
       annotationType,
     );
-  }
-
-  private parseAiRequest(
-    request: { prompt: string; annotationType?: string } | string,
-  ): { prompt: string; annotationType: AiAnnotationType } {
-    if (typeof request === "string") {
-      return { prompt: request, annotationType: "highlight" };
-    }
-    if (request && typeof request === "object") {
-      return {
-        prompt: request.prompt || "",
-        annotationType: toAiAnnotationType(request.annotationType),
-      };
-    }
-    return { prompt: "", annotationType: "highlight" };
   }
 
   private async renderAiPreviews(aiPayloads: any[]): Promise<void> {

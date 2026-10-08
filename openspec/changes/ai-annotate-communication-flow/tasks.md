@@ -36,14 +36,14 @@
 
 ## 7. Dead code and debug logs
 
-- [ ] 7.1 Run `tsc --noEmit --noUnusedLocals --noUnusedParameters` scoped to the touched files and remove unused locals, params and imports
-- [ ] 7.2 Check emitters of `AiGenerate`; if none sends a string, remove the `parseAiRequest` string branch and the `AiRequestSectionValue` string variant
-- [ ] 7.3 Check `editmodal#save_ai_request` / `saveButtonLabel` for the AI modal; remove if not rendered
-- [ ] 7.4 Remove unreferenced exports/files left by the refactor (grep each symbol)
-- [ ] 7.5 Remove debug `console.warn` calls from the AI flow files (`annotation-*.ts`, `main-layout-edit-modal-ai.handler.ts`, AI section); keep `console.error` for real failures
+- [x] 7.1 Run `tsc --noEmit --noUnusedLocals --noUnusedParameters` scoped to the touched files and remove unused locals, params and imports — no unused locals/params in the AI flow files; remaining hits are pre-existing elsewhere (reply.ts, selection handler, sidebar layout, annotation.service `pdfService`, cross-message, notebook-model)
+- [x] 7.2 Check emitters of `AiGenerate`; if none sends a string, remove the `parseAiRequest` string branch and the `AiRequestSectionValue` string variant — no emitter sends a string: removed the string branch and variant. Also found the AI section's `generate` output / `onGenerate()` is never triggered (no template trigger; the real Generate is the modal footer's `onGenerate`): removed it with `EditModalComponent.onAiGenerate` and the `(generate)` binding
+- [x] 7.3 Check `editmodal#save_ai_request` / `saveButtonLabel` for the AI modal; remove if not rendered — not rendered (the AI modal only shows Cancel / Generate / Save All): removed `saveButtonLabel` and the `en_US` key (no `it_IT` entry existed)
+- [x] 7.4 Remove unreferenced exports/files left by the refactor (grep each symbol) — none left; `getXPathForNode` / `getTextOffsetInBody` are exported but used internally, so kept
+- [x] 7.5 Remove debug `console.warn` calls from the AI flow files (`annotation-*.ts`, `main-layout-edit-modal-ai.handler.ts`, AI section); keep `console.error` for real failures — removed 14 `console.warn`; kept `console.error`, renaming stale `[mapChunks]` tags to `[processLLMResponse]` / `[addPayloadForRange]`
 
 ## 8. Verification
 
-- [ ] 8.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test`
-- [ ] 8.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present)
+- [x] 8.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test` — tsc 0 errors (4 projects, excluding the local `./local.prod` TS2307), lint clean, 16 suites / 47 tests
+- [x] 8.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present) — all builds pass; `ai/annotate` present in every app bundle and in the background; `thepund.test` absent from source-built code (the one hit in the local background bundle comes from the gitignored `chrome-ext-urls.stage.js` local override)
 - [ ] 8.3 Manual check (developer) on stage once `POST {apiBaseUrl}/ai/annotate` with Bearer auth is available: generate, preview, accept, discard, error toast when the backend fails, standard comment/tag/semantic save unchanged

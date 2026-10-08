@@ -2,9 +2,7 @@ import {
   AfterViewInit,
   Component,
   Input,
-  Output,
   OnDestroy,
-  EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   ElementRef,
@@ -22,7 +20,7 @@ export type AiRequestSectionObjectValue = {
   annotationType: string;
 };
 
-export type AiRequestSectionValue = AiRequestSectionObjectValue | string | null;
+export type AiRequestSectionValue = AiRequestSectionObjectValue | null;
 
 export type AiRequestSectionOptions = {
   label: string;
@@ -55,10 +53,6 @@ export class AiRequestSectionComponent
   @Input() public reset$!: Subject<void>;
 
   @Input() public aiPreviewActive = false;
-
-  @Output() public generate = new EventEmitter<
-    { prompt: string; annotationType: string } | string
-  >();
 
   public value = "";
   public annotationType = "highlight";
@@ -112,25 +106,10 @@ export class AiRequestSectionComponent
     });
   }
 
-  onGenerate() {
-    const textValue = typeof this.value === "string" && this.value.trim();
-    if (textValue && textValue.length >= TEXT_MIN_LIMIT) {
-      this.generate.emit({
-        prompt: textValue,
-        annotationType: this.annotationType,
-      });
-    }
-  }
-
   private extractInitialValue = () => {
     const { initialValue } = this.data;
-    if (typeof initialValue === "object" && initialValue !== null) {
-      this.value = initialValue.prompt || "";
-      this.annotationType = initialValue.annotationType || "highlight";
-    } else {
-      this.value = (initialValue as string) || "";
-      this.annotationType = "highlight";
-    }
+    this.value = initialValue?.prompt || "";
+    this.annotationType = initialValue?.annotationType || "highlight";
   };
 
   private onReset = () => {

@@ -11,7 +11,6 @@ export default {
   "editmodal#notebook_create": "Create new notebook",
   "editmodal#cancel": "Cancel",
   "editmodal#save": "Save comment",
-  "editmodal#save_ai_request": "Generate",
   "editmodal#save_tags": "Save tags",
   "editmodal#add_tag": "Add a tag",
   "editmodal#semantic_object_placeholder": "Add an object",

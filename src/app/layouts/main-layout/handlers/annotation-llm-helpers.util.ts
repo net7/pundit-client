@@ -80,7 +80,7 @@ export function addPayloadForRange(
   const selected = serializeRangeToSelector(finalRange);
 
   if (!annotationPayload) {
-    console.error("[mapChunks] ERRORE: annotationPayload è undefined!");
+    console.error("[addPayloadForRange] ERRORE: annotationPayload è undefined!");
     return;
   }
 

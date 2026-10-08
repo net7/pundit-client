@@ -29,13 +29,7 @@ async function processToolCall(
 
   if (wordCount > 1) {
     const starterPositions = positionsSameWords(nodeText, quote);
-    console.warn(starterPositions);
     if (starterPositions.length === 0) {
-      console.warn("[mapChunks] quote non trovate nel DOM reale:", {
-        quote,
-        chunkId: call.chunkId,
-        nodeText: nodeText.substring(0, 100),
-      });
       return;
     }
     for (let i = 0; i < starterPositions.length; i++) {
@@ -57,11 +51,6 @@ async function processToolCall(
   } else {
     const match = findQuoteIndex(nodeText, quote);
     if (match.index === -1) {
-      console.warn("[mapChunks] quote non trovata nel DOM reale:", {
-        quote,
-        chunkId: call.chunkId,
-        nodeText: nodeText.substring(0, 100),
-      });
       return;
     }
     addPayloadForRange(
@@ -131,14 +120,12 @@ async function processContiguousToolCall(
 ): Promise<void> {
   const bounds = extractQuoteBounds(call);
   if (!bounds) {
-    console.warn("[mapChunks] contiguous call mancante di id o quote:", call);
     return;
   }
 
   const startNode = chunkMap.get(bounds.startChunkId);
   const endNode = chunkMap.get(bounds.endChunkId);
   if (!startNode || !endNode) {
-    console.warn("[mapChunks] chunkId non trovato:", bounds);
     return;
   }
 
@@ -149,7 +136,6 @@ async function processContiguousToolCall(
     bounds.endQuote,
   );
   if (!range) {
-    console.warn("[mapChunks] quote non trovate nel DOM:", bounds);
     return;
   }
 
@@ -180,7 +166,6 @@ async function executeSingleToolCalls(
       const node = chunkMap.get(call.chunkId);
       const quote = call.quote ?? "";
       if (!node || !quote) {
-        console.warn("[mapChunks] chunkId o quote mancante:", call);
         continue;
       }
       await processToolCall(
@@ -193,7 +178,7 @@ async function executeSingleToolCalls(
       );
     } catch (error) {
       console.error(
-        "[mapChunks] Errore durante l'elaborazione di un elemento:",
+        "[processLLMResponse] Errore durante l'elaborazione di un elemento:",
         {
           call,
           error: error instanceof Error ? error.message : String(error),
@@ -222,7 +207,7 @@ async function executeContiguousToolCalls(
       );
     } catch (error) {
       console.error(
-        "[mapChunks] Errore durante l'elaborazione di un elemento contiguo:",
+        "[processLLMResponse] Errore durante l'elaborazione di un elemento contiguo:",
         {
           call,
           error: error instanceof Error ? error.message : String(error),
@@ -249,10 +234,6 @@ async function processLLMResponse(
     const merged = mergeContiguousToolCalls(singleCalls, chunkMap);
     singleCalls = merged.singleCalls;
     allContiguousCalls = [...allContiguousCalls, ...merged.contiguousCalls];
-    console.warn("[mapChunks] auto-merged single calls into contiguous:", {
-      singleRemaining: singleCalls.length,
-      contiguousTotal: allContiguousCalls.length,
-    });
   }
 
   const newPayloads: any[] = [];
