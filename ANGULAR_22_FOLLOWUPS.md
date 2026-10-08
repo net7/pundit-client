@@ -212,17 +212,42 @@ remain in non-DI plain classes — handlers, models, providers — which is expe
 - **`tsconfig` `baseUrl` + `ignoreDeprecations: "6.0"`.** `baseUrl` is deprecated
   in TS and removed in TS 7. Before a TS 7 bump, migrate absolute `src/...`
   imports to explicit `paths` mappings (or relative imports) and drop `baseUrl`.
+  This includes the `src/communication` imports, the chrome-ext webpack
+  `resolve.modules` that mirrors `baseUrl`, and the jest `^src/communication$`
+  stub mapping.
 - **`ts-loader@8` + `target: es2020`** in the chrome-ext webpack build is old
   (2021). It works with TS 6 after the tsconfig fixes, but bumping to
   `ts-loader@9` is advisable when touching that pipeline.
 - **Old runtime deps untouched by the Angular bump** that may want attention
-  eventually: `axios@0.21`, `pdfjs-dist@2.5`, `document-register-element`
+  eventually: `axios@0.26` (bumped from 0.21 when the communication layer was
+  inlined; 1.x or native fetch is a separate migration), `pdfjs-dist@2.5`,
+  `document-register-element`
   (custom-elements polyfill — likely unnecessary in modern Chrome),
   `protractor` (dead e2e tooling, still in devDeps).
 - **History note:** the v19 commit (`9663d94`) captured a transient state where
   `eslint --fix` had stripped `standalone: false`; fully restored in the v20
   commit (`e206fd9`). The branch tip is correct; individual mid-branch commits
   are not all bisect-clean.
+- **Inlined communication layer (`src/communication`, from
+  `net7/pundit-communication@904a5d0`)** — known items deliberately left out of
+  the 1:1 move:
+  - `auth/refresh.ts` `refreshHook` does `const { status } = err.response`,
+    which throws a `TypeError` on response-less failures (network down, CORS,
+    abort) and replaces the original `AxiosError`, losing status/URL in
+    `handleError` logs. Fix: `err.response?.status`, plus a case in
+    `auth/refresh.spec.ts`.
+  - Concurrent 401s each start their own `/api/auth/refresh`, with no
+    de-duplication. If annotation-server rotates the refresh-token cookie, the
+    later refreshes fail and clear the token (user logged out). Verify server
+    behavior; if it rotates, share one in-flight refresh promise.
+  - The old local clone carried an uncommitted `skipAuth: true` on the SSO
+    `/api/auth/me` call (so a stale Bearer is not sent). It was never released;
+    decide whether to apply it.
+  - `CommunicationSettings.token` is now typed `AuthToken | null`, so the
+    `null as any` cast in `chrome-ext/src/background/handlers/onContentScriptMessage.ts`
+    can be dropped.
+  - Archive the `net7/pundit-communication` and `net7/pundit-common` GitHub
+    repositories (no longer consumed).
 
 ---
 
