@@ -30,9 +30,9 @@
 
 ## 6. Standard Save flow
 
-- [ ] 6.1 Restore `onEditModalSave` / `onEditModalSaveEvent` in `main-layout-edit-modal.handler.ts` to `develop`'s synchronous single-annotation flow, building the payload with `EditModalPayloadBuilder.applyFormValuesToPayload`
-- [ ] 6.2 Remove `saveAnnotationsSequentially` and the array branch from the edit-modal handler, and `getEditRequestPayload` / `generateAiPayloads` from the AI handler
-- [ ] 6.3 Restore `main-layout-edit-modal.handler.spec.ts` to `develop`'s synchronous version and confirm it passes (and fails if the update branch stops emitting the close signal)
+- [x] 6.1 Restore `onEditModalSave` / `onEditModalSaveEvent` in `main-layout-edit-modal.handler.ts` to `develop`'s synchronous single-annotation flow, building the payload with `EditModalPayloadBuilder.applyFormValuesToPayload`
+- [x] 6.2 Remove `saveAnnotationsSequentially` and the array branch from the edit-modal handler, and `getEditRequestPayload` / `generateAiPayloads` from the AI handler
+- [x] 6.3 Restore `main-layout-edit-modal.handler.spec.ts` to `develop`'s synchronous version and confirm it passes (and fails if the update branch stops emitting the close signal)
 
 ## 7. Dead code and debug logs
 

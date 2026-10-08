@@ -1,7 +1,6 @@
 import { _t } from "@net7/core";
-import { cloneDeep, uniq } from "lodash";
+import { cloneDeep } from "lodash";
 import { Observable, firstValueFrom, from } from "rxjs";
-import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
 import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
@@ -237,64 +236,5 @@ export class MainLayoutEditModalAiHandler {
         return saved;
       })(),
     );
-  }
-
-  async getEditRequestPayload(
-    annotationPayload: any,
-    formState: EditModalFormState,
-  ): Promise<{ payload: any; aiPayloads: any[] | null }> {
-    EditModalPayloadBuilder.applyFormValuesToPayload(
-      annotationPayload,
-      formState,
-    );
-    const aiVal = formState?.aiRequest?.value;
-    let prompt = "";
-    let annotationType = "highlight";
-
-    if (typeof aiVal === "string") {
-      prompt = aiVal;
-    } else if (aiVal && typeof aiVal === "object") {
-      prompt = (aiVal as any).prompt || "";
-      annotationType = (aiVal as any).annotationType || "highlight";
-    }
-
-    const aiPayloads = await this.generateAiPayloads(
-      annotationPayload,
-      prompt,
-      annotationType,
-    );
-    if (aiPayloads && Array.isArray(aiPayloads)) {
-      aiPayloads.forEach((payload) => {
-        const aiType = payload.type;
-        const aiContent = payload.content;
-        const aiTags = payload.tags;
-        const aiSelected = payload.subject?.selected;
-        EditModalPayloadBuilder.applyFormValuesToPayload(payload, formState);
-        if (aiType) {
-          payload.type = aiType;
-        }
-        if (aiContent !== undefined) {
-          payload.content = aiContent;
-        }
-        const formTags = payload.tags;
-        payload.tags = uniq([...(formTags || []), ...(aiTags || [])]);
-        if (aiSelected && payload.subject) {
-          payload.subject.selected = aiSelected;
-        }
-      });
-    }
-    return { payload: annotationPayload, aiPayloads };
-  }
-
-  private async generateAiPayloads(
-    annotationPayload: any,
-    aiRequestValue: any,
-    annotationType: string = "highlight",
-  ): Promise<any[] | null> {
-    const aiRequest =
-      typeof aiRequestValue === "string" ? aiRequestValue.trim() : null;
-    return aiRequest
-      ? mapChunks(annotationPayload, aiRequest, annotationType)
-      : null;
   }
 }

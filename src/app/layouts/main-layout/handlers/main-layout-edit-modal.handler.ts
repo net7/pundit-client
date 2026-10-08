@@ -1,7 +1,8 @@
 import { _t } from "@net7/core";
 import { cloneDeep } from "lodash";
-import { EMPTY, Observable, firstValueFrom, from } from "rxjs";
-import { catchError, filter, map, switchMap } from "rxjs/operators";
+import { EMPTY, Observable, of } from "rxjs";
+import { catchError, filter } from "rxjs/operators";
+import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
 import { _c } from "src/app/models/config";
 import {
   AppEvent,
@@ -16,8 +17,8 @@ import { AnalyticsAction } from "src/common/types";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
-import { isValidAnnotationPayload } from "./edit-modal-validation";
 import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
+import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { MainLayoutEditModalAiHandler } from "./main-layout-edit-modal-ai.handler";
 
 export class MainLayoutEditModalHandler implements LayoutHandler {
@@ -100,23 +101,11 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           return;
         }
 
-        const createdAnnotations: any[] = data;
-        createdAnnotations.forEach((annotation, index) => {
-          if (index === 0) {
-            this.onAnnotationCreated(annotation, workingToast);
-          } else {
-            this.layoutEH.appEvent$.next({
-              type: AppEvent.AnnotationCreateSuccess,
-              payload: annotation,
-            });
-            this.layoutDS.tagService.addMany(annotation?.tags);
-            AnalyticsModel.track(getAnnotationCreatedAnalytics(annotation));
-          }
-        });
+        this.onAnnotationCreated(data, workingToast);
       });
   }
 
-  private onEditModalSave(payload: any): Observable<any> {
+  private onEditModalSave(formState: EditModalFormState): Observable<any> {
     const isUpdate = this.isUpdate();
 
     if (isUpdate) {
@@ -124,14 +113,11 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       if (!updatePayload) {
         return this.missingAnnotationPayloadError("update");
       }
-      return from(
-        this.aiHandler.getEditRequestPayload(cloneDeep(updatePayload), payload),
-      ).pipe(
-        map(({ payload: updateRequestPayload }) => ({
-          requestPayload: updateRequestPayload,
-          isUpdate,
-        })),
+      const updateRequestPayload = this.getEditRequestPayload(
+        cloneDeep(updatePayload),
+        formState,
       );
+      return of({ requestPayload: updateRequestPayload, isUpdate });
     }
 
     const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
@@ -139,17 +125,19 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
       return this.missingAnnotationPayloadError("create");
     }
 
-    return from(
-      this.aiHandler.getEditRequestPayload(cloneDeep(pendingPayload), payload),
-    ).pipe(
-      switchMap(({ payload: pendingRequestPayload, aiPayloads }) => {
-        const payloadsToSave =
-          aiPayloads && aiPayloads.length
-            ? aiPayloads
-            : [pendingRequestPayload];
-        return this.saveAnnotationsSequentially(payloadsToSave);
-      }),
+    const pendingRequestPayload = this.getEditRequestPayload(
+      cloneDeep(pendingPayload),
+      formState,
     );
+    return this.layoutDS.saveAnnotation(pendingRequestPayload);
+  }
+
+  private getEditRequestPayload(
+    annotationPayload: any,
+    formState: EditModalFormState,
+  ) {
+    EditModalPayloadBuilder.applyFormValuesToPayload(annotationPayload, formState);
+    return annotationPayload;
   }
 
   private onAnnotationCreated(data: any, workingToast: ToastInstance) {
@@ -205,30 +193,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
   private onEditModalClose() {
     this.aiHandler.removeAiPreviews();
     this.layoutDS.removePendingAnnotation();
-  }
-
-  private saveAnnotationsSequentially(payloads: any[]): Observable<any[]> {
-    return from(
-      (async (): Promise<any[]> => {
-        const saved: any[] = [];
-        for (const p of payloads) {
-          if (isValidAnnotationPayload(p)) {
-            try {
-              const result = await firstValueFrom(
-                this.layoutDS.saveAnnotation(p),
-              );
-              saved.push(result);
-            } catch (error) {
-              console.error(
-                "[saveAnnotation] Errore salvataggio annotazione:",
-                error,
-              );
-            }
-          }
-        }
-        return saved;
-      })(),
-    );
   }
 
   private missingAnnotationPayloadError(mode: "create" | "update") {
