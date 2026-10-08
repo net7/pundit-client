@@ -5,16 +5,28 @@ import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
 import { AnalyticsModel } from "src/common/models";
+import { AiAnnotationType } from "src/communication";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
-import mapChunks from "./annotation-range-selector.util";
+import { prepareAiRequest } from "./annotation-range-selector.util";
+import { processLLMResponse } from "./annotation-llm-processor";
 import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { isValidAnnotationPayload } from "./edit-modal-validation";
 import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
 import { aiPreviewState$ } from "src/app/components/edit-modal/edit-modal";
 
 const AI_PREVIEW_ID_PREFIX = "ai-preview-";
+
+const AI_ANNOTATION_TYPES: AiAnnotationType[] = [
+  "highlight",
+  "comment",
+  "tags",
+  "semantic_annotation",
+];
+
+const toAiAnnotationType = (value?: string): AiAnnotationType =>
+  AI_ANNOTATION_TYPES.find((type) => type === value) ?? "highlight";
 
 export class MainLayoutEditModalAiHandler {
   private aiPreviewPayloads: any[] = [];
@@ -52,12 +64,12 @@ export class MainLayoutEditModalAiHandler {
     this.removeAiPreviews();
 
     try {
-      const aiPayloads = await mapChunks(
+      const aiPayloads = await this.requestAiPayloads(
         annotationPayload,
         prompt,
         annotationType,
       );
-      if (!aiPayloads || aiPayloads.length === 0) {
+      if (aiPayloads.length === 0) {
         console.warn("[AiGenerate] Nessun payload generato dall'AI");
         workingToast.close();
         this.layoutDS.toastService.info({
@@ -76,8 +88,8 @@ export class MainLayoutEditModalAiHandler {
         type: AppEvent.AiPreviewReady,
       });
     } catch (error) {
-      console.error("[AiGenerate] Errore durante la generazione AI:", error);
       workingToast.close();
+      this.layoutEH.handleError(error);
       this.layoutDS.toastService.error({
         title: _t("toast#genericerror_title"),
         text: _t("toast#genericerror_text"),
@@ -86,16 +98,37 @@ export class MainLayoutEditModalAiHandler {
     }
   }
 
+  private async requestAiPayloads(
+    annotationPayload: any,
+    prompt: string,
+    annotationType: AiAnnotationType,
+  ): Promise<any[]> {
+    const prepared = prepareAiRequest(annotationPayload, prompt, annotationType);
+    if (!prepared) {
+      return [];
+    }
+    const { toolCalls, contiguousCalls } = await firstValueFrom(
+      this.layoutDS.aiService.annotate(prepared.request),
+    );
+    return processLLMResponse(
+      toolCalls,
+      contiguousCalls,
+      prepared.chunkMap,
+      annotationPayload,
+      annotationType,
+    );
+  }
+
   private parseAiRequest(
     request: { prompt: string; annotationType?: string } | string,
-  ): { prompt: string; annotationType: string } {
+  ): { prompt: string; annotationType: AiAnnotationType } {
     if (typeof request === "string") {
       return { prompt: request, annotationType: "highlight" };
     }
     if (request && typeof request === "object") {
       return {
         prompt: request.prompt || "",
-        annotationType: request.annotationType || "highlight",
+        annotationType: toAiAnnotationType(request.annotationType),
       };
     }
     return { prompt: "", annotationType: "highlight" };

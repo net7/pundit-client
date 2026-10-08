@@ -24,9 +24,9 @@
 
 ## 5. AI generate flow
 
-- [ ] 5.1 Replace `mapChunks` / `fetchAiAnnotations` in `annotation-range-selector.util.ts` with `prepareAiRequest(annotationPayload, prompt, annotationType)` returning `{ request: AiAnnotateRequest, chunkMap } | null`
-- [ ] 5.2 Rework `MainLayoutEditModalAiHandler.onAiGenerate`: `prepareAiRequest` → `await firstValueFrom(layoutDS.aiService.annotate(request))` → `processLLMResponse` → `renderAiPreviews`; on error close the working toast, call `layoutEH.handleError(e)` and show the generic error toast; show "no results" only for an empty successful outcome
-- [ ] 5.3 Verify no `fetch(` and no `thepund.test` remain under `src/` outside `src/communication`
+- [x] 5.1 Replace `mapChunks` / `fetchAiAnnotations` in `annotation-range-selector.util.ts` with `prepareAiRequest(annotationPayload, prompt, annotationType)` returning `{ request: AiAnnotateRequest, chunkMap } | null`
+- [x] 5.2 Rework `MainLayoutEditModalAiHandler.onAiGenerate`: `prepareAiRequest` → `await firstValueFrom(layoutDS.aiService.annotate(request))` → `processLLMResponse` → `renderAiPreviews`; on error close the working toast, call `layoutEH.handleError(e)` and show the generic error toast; show "no results" only for an empty successful outcome — plus `main-layout-edit-modal-ai.handler.spec.ts` (success, backend error, empty result, no text, unknown type)
+- [x] 5.3 Verify no `fetch(` and no `thepund.test` remain under `src/` outside `src/communication` — `thepund.test` gone; the two remaining `fetch` calls (`doImageDataRequest`, `isPdfDocument`) fetch page resources, not the annotation backend
 
 ## 6. Standard Save flow
 
