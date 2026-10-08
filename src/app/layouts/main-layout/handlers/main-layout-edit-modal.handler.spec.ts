@@ -43,9 +43,11 @@ describe('MainLayoutEditModalHandler > save', () => {
     new MainLayoutEditModalHandler(layoutDS, layoutEH).listen();
   });
 
-  it('closes the edit modal after saving an update (add a comment to a tag annotation)', () => {
+  it('closes the edit modal after saving an update (add a comment to a tag annotation)', async () => {
     // User adds a comment to an existing (tag) annotation and clicks Save.
     clickSave({ comment: { value: 'a new comment' } });
+    // The save flow builds the request payload asynchronously (AI payloads).
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     // The annotation is updated...
     expect(appEvents.some((e) => e.type === AppEvent.CommentUpdate)).toBe(true);
