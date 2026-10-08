@@ -29,11 +29,11 @@
 
 ## 5. Specs
 
-- [ ] 5.1 Add `src/communication/providers/rest.provider.spec.ts` (axios and fetch adapter mocked): Bearer header with token; no header without token or with `skipAuth`; waits for pending `ssoLoading$`; not blocked when `agent$ === ssoLoading$`; `hooks.after` applied; `retry$` re-sends config with current token
-- [ ] 5.2 Add `src/communication/auth/refresh.spec.ts`: 401 → refresh, token stored, retry; refresh failure → token `null`, error rethrown; non-401 → rethrown unchanged
-- [ ] 5.3 Add `src/communication/auth/sso.spec.ts`: success stores token; failure clears token and rethrows; `ssoLoading$` released in both cases
-- [ ] 5.4 Run `npm test`; confirm existing app specs still receive the stub and the new specs load real modules
-- [ ] 5.5 Commit the specs
+- [x] 5.1 Add `src/communication/providers/rest.provider.spec.ts` (axios and fetch adapter mocked): Bearer header with token; no header without token or with `skipAuth`; waits for pending `ssoLoading$`; not blocked when `agent$ === ssoLoading$`; `hooks.after` applied; `retry$` re-sends config with current token
+- [x] 5.2 Add `src/communication/auth/refresh.spec.ts`: 401 → refresh, token stored, retry; refresh failure → token `null`, error rethrown; non-401 → rethrown unchanged
+- [x] 5.3 Add `src/communication/auth/sso.spec.ts`: success stores token; failure clears token and rethrows; `ssoLoading$` released in both cases
+- [x] 5.4 Run `npm test`; confirm existing app specs still receive the stub and the new specs load real modules — 13 suites / 37 tests pass (21 existing + 16 new); a throwaway spec confirmed `src/communication` resolves to the stub; mutation checks (drop SSO gate, drop `skipAuth`, drop gate release, change 401) each fail the new specs
+- [x] 5.5 Commit the specs
 
 ## 6. Verification
 
