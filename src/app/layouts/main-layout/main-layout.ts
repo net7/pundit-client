@@ -23,6 +23,7 @@ import { ToastService } from "src/app/services/toast.service";
 import { UserService } from "src/app/services/user.service";
 import { PdfService } from "src/app/services/pdf.service";
 import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
+import { AiService } from "src/app/services/ai.service";
 import { AppEventData } from "src/app/types";
 import { MainLayoutConfig as config } from "./main-layout.config";
 import { SidebarLayoutComponent } from "../sidebar-layout/sidebar-layout";
@@ -69,6 +70,7 @@ export class MainLayoutComponent
   private userService = inject(UserService);
   private pdfService = inject(PdfService);
   private documentInfoService = inject(DocumentInfoService);
+  private aiService = inject(AiService);
   private ngZone = inject(NgZone);
 
   @HostListener("document:keyup", ["$event"])
@@ -103,6 +105,7 @@ export class MainLayoutComponent
       semanticPredicateService: this.semanticPredicateService,
       pdfService: this.pdfService,
       documentInfoService: this.documentInfoService,
+      aiService: this.aiService,
       ngZone: this.ngZone,
     };
   }

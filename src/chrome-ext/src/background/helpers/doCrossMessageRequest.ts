@@ -8,7 +8,8 @@ import {
   TagModel,
   SemanticPredicateModel,
   SocialModel,
-  ReplyModel
+  ReplyModel,
+  AiModel
 } from '../../../../common/models';
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
@@ -67,6 +68,9 @@ const requestHandlers: {
   // SEMANTIC PREDICATE REQUEST
   // --------------------------------------------------->
   [CrossMsgRequestId.SemanticPredicateGet]: (args) => SemanticPredicateModel.get.apply(null, args),
+  // AI REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.AiAnnotate]: (args) => AiModel.annotate.apply(null, args),
 };
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {

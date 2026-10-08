@@ -5,3 +5,4 @@ export * from './facet.interface';
 export * from './auth.interface';
 export * from './auth-token.interface';
 export * from './auth-user.interface';
+export * from './ai-annotate-response.interface';

@@ -1,26 +1,26 @@
 ## 1. Baseline
 
-- [ ] 1.1 Confirm a clean working tree on `feature/ai-annotation` and record a green baseline: `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test`, `npm run build:chrome-ext-stage`
-- [ ] 1.2 Record the current dead-code baseline: `tsc --noEmit --noUnusedLocals --noUnusedParameters` output for the AI flow files (`src/app/layouts/main-layout/handlers/*`, `src/app/components/edit-modal/**`)
+- [x] 1.1 Confirm a clean working tree on `feature/ai-annotation` and record a green baseline: `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test`, `npm run build:chrome-ext-stage` — clean tree; tsc 0 errors (4 projects, excluding the pre-existing local `./local.prod` TS2307); lint clean; 13 suites / 37 tests; build ok
+- [x] 1.2 Record the current dead-code baseline: `tsc --noEmit --noUnusedLocals --noUnusedParameters` output for the AI flow files (`src/app/layouts/main-layout/handlers/*`, `src/app/components/edit-modal/**`) — 1 pre-existing hit outside the AI flow (`main-layout-selection.handler.ts:14`, unused `layoutDS`); out of scope
 
 ## 2. Communication layer
 
-- [ ] 2.1 Add `AiAnnotateRequest` (`model/request/ai-annotate-request.interface.ts`) and `AiAnnotateResponse` (`model/response/ai-annotate-response.interface.ts`) and export them from the model indexes
-- [ ] 2.2 Add `src/communication/ai/annotate.ts` (`request$('/ai/annotate', { baseURL: apiBaseUrl, method: 'post', data, hooks: { after: refreshHook } })`) and `ai/index.ts`; export `ai` from `src/communication/index.ts`
-- [ ] 2.3 Add the `ai` namespace to `src/testing/communication.mock.ts`
-- [ ] 2.4 Add `src/communication/ai/annotate.spec.ts` (URL, method, baseURL, body, refreshHook; `request$` mocked)
+- [x] 2.1 Add `AiAnnotateRequest` (`model/request/ai-annotate-request.interface.ts`) and `AiAnnotateResponse` (`model/response/ai-annotate-response.interface.ts`) and export them from the model indexes
+- [x] 2.2 Add `src/communication/ai/annotate.ts` (`request$('/ai/annotate', { baseURL: apiBaseUrl, method: 'post', data, hooks: { after: refreshHook } })`) and `ai/index.ts`; export `ai` from `src/communication/index.ts`
+- [x] 2.3 Add the `ai` namespace to `src/testing/communication.mock.ts`
+- [x] 2.4 Add `src/communication/ai/annotate.spec.ts` (URL, method, baseURL, body, refreshHook; `request$` mocked)
 
 ## 3. Model and chrome-extension background
 
-- [ ] 3.1 Add `CrossMsgRequestId.AiAnnotate = 'ai.annotate'` in `src/common/types.ts`
-- [ ] 3.2 Add `src/common/models/ai-model.ts` with `AiModel.annotate` decorated `@CrossMessage(CrossMsgRequestId.AiAnnotate)`; export it from `src/common/models/index.ts`
-- [ ] 3.3 Register `[CrossMsgRequestId.AiAnnotate]: (args) => AiModel.annotate.apply(null, args)` in `doCrossMessageRequest.ts`
+- [x] 3.1 Add `CrossMsgRequestId.AiAnnotate = 'ai.annotate'` in `src/common/types.ts`
+- [x] 3.2 Add `src/common/models/ai-model.ts` with `AiModel.annotate` decorated `@CrossMessage(CrossMsgRequestId.AiAnnotate)`; export it from `src/common/models/index.ts`
+- [x] 3.3 Register `[CrossMsgRequestId.AiAnnotate]: (args) => AiModel.annotate.apply(null, args)` in `doCrossMessageRequest.ts`
 
 ## 4. Service
 
-- [ ] 4.1 Add `src/app/services/ai.service.ts` (`providedIn: 'root'`): `annotate(request): Observable<{ toolCalls: any[]; contiguousCalls: any[] }>` via `from(AiModel.annotate(request))`, normalizing `result` / `contiguous_chunks` (array, JSON string, missing, invalid → `[]`)
-- [ ] 4.2 Inject `AiService` in `MainLayoutComponent` and pass it to `MainLayoutDS` like the other services (`layoutDS.aiService`)
-- [ ] 4.3 Add `src/app/services/ai.service.spec.ts` (normalization cases, error propagation; `AiModel` mocked)
+- [x] 4.1 Add `src/app/services/ai.service.ts` (`providedIn: 'root'`): `annotate(request): Observable<{ toolCalls: any[]; contiguousCalls: any[] }>` via `from(AiModel.annotate(request))`, normalizing `result` / `contiguous_chunks` (array, JSON string, missing, invalid → `[]`)
+- [x] 4.2 Inject `AiService` in `MainLayoutComponent` and pass it to `MainLayoutDS` like the other services (`layoutDS.aiService`) — `main-layout.ds.ts` crossed the 300-line `max-lines` limit; added a justified file-level disable (repo convention)
+- [x] 4.3 Add `src/app/services/ai.service.spec.ts` (normalization cases, error propagation; `AiModel` mocked)
 
 ## 5. AI generate flow
 
