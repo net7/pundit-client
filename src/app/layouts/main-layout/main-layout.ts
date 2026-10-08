@@ -1,38 +1,60 @@
-import { Component, OnInit, OnDestroy, ChangeDetectorRef, HostListener, ChangeDetectionStrategy, NgZone, inject } from '@angular/core';
-import { ReplaySubject } from 'rxjs';
-import { AppEvent } from 'src/app/event-types';
-import { PunditLoginService } from 'src/app/login-module/public-api';
-import { AbstractLayout } from 'src/app/models/abstract-layout';
-import { AnchorService } from 'src/app/services/anchor.service';
-import { AnnotationService } from 'src/app/services/annotation.service';
-import { ReplyService } from 'src/app/services/reply.service';
-import { NotebookService } from 'src/app/services/notebook.service';
-import { SemanticPredicateService } from 'src/app/services/semantic-predicate.service';
-import { SocialService } from 'src/app/services/social.service';
-import { TagService } from 'src/app/services/tag.service';
-import { ToastService } from 'src/app/services/toast.service';
-import { UserService } from 'src/app/services/user.service';
-import { PdfService } from 'src/app/services/pdf.service';
-import { DocumentInfoService } from 'src/app/services/document-info/document-info.service';
-import { AppEventData } from 'src/app/types';
-import { MainLayoutConfig as config } from './main-layout.config';
-import { SidebarLayoutComponent } from '../sidebar-layout/sidebar-layout';
-import { TooltipComponent } from '../../components/tooltip/tooltip';
-import { EditModalComponent } from '../../components/edit-modal/edit-modal';
-import { DeleteModalComponent } from '../../components/delete-modal/delete-modal';
-import { PdfErrorModalComponent } from '../../components/pdf-error-modal/pdf-error-modal';
-import { NotebookShareModalComponent } from '../../components/notebook-share-modal/notebook-share-modal';
-import { ToastComponent } from '../../components/toast/toast';
-import { PunditLoginComponent } from '../../login-module/lib/pundit-login-module/pundit-login.component';
-import { AsyncPipe } from '@angular/common';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  HostListener,
+  ChangeDetectionStrategy,
+  NgZone,
+  inject,
+} from "@angular/core";
+import { ReplaySubject } from "rxjs";
+import { AppEvent } from "src/app/event-types";
+import { PunditLoginService } from "src/app/login-module/public-api";
+import { AbstractLayout } from "src/app/models/abstract-layout";
+import { AnchorService } from "src/app/services/anchor.service";
+import { AnnotationService } from "src/app/services/annotation.service";
+import { ReplyService } from "src/app/services/reply.service";
+import { NotebookService } from "src/app/services/notebook.service";
+import { SemanticPredicateService } from "src/app/services/semantic-predicate.service";
+import { SocialService } from "src/app/services/social.service";
+import { TagService } from "src/app/services/tag.service";
+import { ToastService } from "src/app/services/toast.service";
+import { UserService } from "src/app/services/user.service";
+import { PdfService } from "src/app/services/pdf.service";
+import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
+import { AppEventData } from "src/app/types";
+import { MainLayoutConfig as config } from "./main-layout.config";
+import { SidebarLayoutComponent } from "../sidebar-layout/sidebar-layout";
+import { TooltipComponent } from "../../components/tooltip/tooltip";
+import { EditModalComponent } from "../../components/edit-modal/edit-modal";
+import { DeleteModalComponent } from "../../components/delete-modal/delete-modal";
+import { PdfErrorModalComponent } from "../../components/pdf-error-modal/pdf-error-modal";
+import { NotebookShareModalComponent } from "../../components/notebook-share-modal/notebook-share-modal";
+import { ToastComponent } from "../../components/toast/toast";
+import { PunditLoginComponent } from "../../login-module/lib/pundit-login-module/pundit-login.component";
+import { AsyncPipe } from "@angular/common";
 
 @Component({
-    selector: 'main-layout',
-    templateUrl: './main-layout.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [SidebarLayoutComponent, TooltipComponent, EditModalComponent, DeleteModalComponent, PdfErrorModalComponent, NotebookShareModalComponent, ToastComponent, PunditLoginComponent, AsyncPipe]
+  selector: "main-layout",
+  templateUrl: "./main-layout.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SidebarLayoutComponent,
+    TooltipComponent,
+    EditModalComponent,
+    DeleteModalComponent,
+    PdfErrorModalComponent,
+    NotebookShareModalComponent,
+    ToastComponent,
+    PunditLoginComponent,
+    AsyncPipe,
+  ],
 })
-export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
+export class MainLayoutComponent
+  extends AbstractLayout
+  implements OnInit, OnDestroy
+{
   private anchorService = inject(AnchorService);
   private annotationService = inject(AnnotationService);
   private changeDetectorRef = inject(ChangeDetectorRef);
@@ -49,11 +71,11 @@ export class MainLayoutComponent extends AbstractLayout implements OnInit, OnDes
   private documentInfoService = inject(DocumentInfoService);
   private ngZone = inject(NgZone);
 
-  @HostListener('document:keyup', ['$event'])
+  @HostListener("document:keyup", ["$event"])
   onKeyUp({ key }: KeyboardEvent) {
-    if (key === 'Escape') {
+    if (key === "Escape") {
       this.appEvent$.next({
-        type: AppEvent.KeyUpEscape
+        type: AppEvent.KeyUpEscape,
       });
     }
   }

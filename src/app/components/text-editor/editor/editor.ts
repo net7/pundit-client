@@ -1,16 +1,17 @@
-import { EditorView } from 'prosemirror-view';
-import { EditorState } from 'prosemirror-state';
+import { EditorView } from "prosemirror-view";
+import { EditorState } from "prosemirror-state";
+import { DOMParser, DOMSerializer, Schema, NodeType } from "prosemirror-model";
+import { toggleMark } from "prosemirror-commands";
+import { wrapInList } from "prosemirror-schema-list";
+import { Subject } from "rxjs";
+import { _t } from "@net7/core";
+import getDefaultPlugins from "./plugins";
+import editorConfig from "./editor.config";
 import {
-  DOMParser, DOMSerializer, Schema, NodeType
-} from 'prosemirror-model';
-import { toggleMark } from 'prosemirror-commands';
-import { wrapInList } from 'prosemirror-schema-list';
-import { Subject } from 'rxjs';
-import { _t } from '@net7/core';
-import getDefaultPlugins from './plugins';
-import editorConfig from './editor.config';
-import { TextEditorMenuButton, TextEditorMenuData } from '../sections/text-editor-menu/text-editor-menu';
-import { isMarkActive, isNodeActive } from './helpers';
+  TextEditorMenuButton,
+  TextEditorMenuData,
+} from "../sections/text-editor-menu/text-editor-menu";
+import { isMarkActive, isNodeActive } from "./helpers";
 
 class Editor {
   private editorView!: EditorView;
@@ -24,15 +25,18 @@ class Editor {
     payload?: any;
   }> = new Subject();
 
-  public init(
-    { target, appendTo, onChange, onRefresh }:
-    {
-      target: HTMLElement;
-      appendTo: HTMLElement;
-      onChange: (content: any) => void;
-      onRefresh?: () => void;
-    }
-  ) {
+  public init({
+    target,
+    appendTo,
+    onChange,
+    onRefresh,
+  }: {
+    target: HTMLElement;
+    appendTo: HTMLElement;
+    placeholder?: string;
+    onChange: (content: any) => void;
+    onRefresh?: () => void;
+  }) {
     // menu
     this.loadMenu();
 
@@ -56,7 +60,7 @@ class Editor {
         // send changes
         onChange(this.getContent());
         onRefresh?.();
-      }
+      },
     });
 
     // first menu state check
@@ -77,12 +81,14 @@ class Editor {
   // source: https://github.com/PierBover/prosemirror-cookbook
   public getContent() {
     const { state } = this.editorView;
-    const fragment = DOMSerializer.fromSchema(state.schema).serializeFragment(state.doc.content);
-    const div = document.createElement('div');
+    const fragment = DOMSerializer.fromSchema(state.schema).serializeFragment(
+      state.doc.content,
+    );
+    const div = document.createElement("div");
     div.appendChild(fragment);
     return {
       html: div.innerHTML,
-      text: div.innerText
+      text: div.innerText,
     };
   }
 
@@ -91,7 +97,7 @@ class Editor {
     const { state } = this.editorView;
     const { tr, doc, schema } = state;
 
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     el.innerHTML = html;
     const docJson = DOMParser.fromSchema(schema).parse(el).toJSON();
     const newDoc = schema.nodeFromJSON(docJson);
@@ -116,26 +122,26 @@ class Editor {
       linkForm: {
         actions: {
           save: {
-            label: _t('texteditor#link_save'),
-            disabled: true
+            label: _t("texteditor#link_save"),
+            disabled: true,
           },
           cancel: {
-            label: _t('texteditor#link_cancel'),
+            label: _t("texteditor#link_cancel"),
           },
         },
-        label: _t('texteditor#link_label'),
-        placeholder: _t('texteditor#link_placeholder'),
+        label: _t("texteditor#link_label"),
+        placeholder: _t("texteditor#link_placeholder"),
       },
       groups: buttons.map((group) => ({
         buttons: group.map((button) => ({
           id: button,
-          type: '',
+          type: "",
           title: _t(labels[button as keyof typeof labels]),
           command: commands[button as keyof typeof commands],
-          disabled: true
-        }))
+          disabled: true,
+        })),
       })),
-      menuEvent$: this.menuEvent$
+      menuEvent$: this.menuEvent$,
     };
   }
 
@@ -146,19 +152,19 @@ class Editor {
   private listen(onRefresh?: () => void) {
     this.menuEvent$.subscribe(({ type, payload }) => {
       switch (type) {
-        case 'click':
+        case "click":
           this.handleClick(payload);
           onRefresh?.();
           break;
-        case 'linkinput':
+        case "linkinput":
           this.handleLinkInput(payload);
           onRefresh?.();
           break;
-        case 'linkcancel':
+        case "linkcancel":
           this.handleLinkCancel();
           onRefresh?.();
           break;
-        case 'linksave':
+        case "linksave":
           this.handleLinkSave();
           onRefresh?.();
           break;
@@ -173,7 +179,7 @@ class Editor {
     // to view current selection
     this.editorView.focus();
 
-    if (button.id === 'link') {
+    if (button.id === "link") {
       const { state, dispatch } = this.editorView;
       if (this.isLinkActive()) {
         const markType = this.schema.marks.link;
@@ -193,7 +199,7 @@ class Editor {
     const { linkForm } = this.menu;
     const markType = this.schema.marks.link;
     const attrs = {
-      href: linkForm.inputValue
+      href: linkForm.inputValue,
     };
     toggleMark(markType, attrs)(state, dispatch);
 
@@ -226,11 +232,12 @@ class Editor {
         button.disabled = !markAvail.includes(button.id);
 
         // list check
-        if (['ul', 'ol'].includes(button.id)) {
+        if (["ul", "ol"].includes(button.id)) {
           const { schema } = this.editorView.state;
-          const type = button.id === 'ol'
-            ? schema.nodes.ordered_list
-            : schema.nodes.bullet_list;
+          const type =
+            button.id === "ol"
+              ? schema.nodes.ordered_list
+              : schema.nodes.bullet_list;
           button.active = this.isListActive(type);
           button.disabled = button.active ? false : !this.isListAvailable(type);
         }
@@ -274,7 +281,11 @@ class Editor {
 
     return Object.keys(markTypes).filter((key) => {
       const mark = markTypes[key];
-      return toggleMark(mark)(this.editorView.state, undefined, this.editorView);
+      return toggleMark(mark)(
+        this.editorView.state,
+        undefined,
+        this.editorView,
+      );
     });
   }
 
