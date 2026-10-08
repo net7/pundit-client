@@ -4,7 +4,7 @@
  * Provides functionality for attaching event listeners to highlights and managing their state.
  */
 import { Injectable, inject } from '@angular/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation } from 'src/communication';
 import { Subject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';

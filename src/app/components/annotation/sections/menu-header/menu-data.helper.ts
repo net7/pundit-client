@@ -1,5 +1,5 @@
 import { _t } from '@net7/core';
-import { Annotation, AnnotationType } from '@pundit/communication';
+import { Annotation, AnnotationType } from 'src/communication';
 
 export interface ActionButtonConfig {
   id: string;

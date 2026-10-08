@@ -1,5 +1,5 @@
 import { _t } from '@net7/core';
-import { LoginResponse, SuccessLoginResponse } from '@pundit/communication';
+import { LoginResponse, SuccessLoginResponse } from 'src/communication';
 import { delay, filter, first } from 'rxjs/operators';
 import {
   AppEvent, getEventType, MainLayoutEvent

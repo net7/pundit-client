@@ -18,7 +18,9 @@ module.exports = {
   },
   moduleNameMapper: {
     // The networking layer must not be loaded by unit tests — stub it. See the mock.
-    '^@pundit/communication$': '<rootDir>/src/testing/communication.mock.ts',
+    // Only the exact `src/communication` specifier is mapped: specs inside
+    // src/communication import siblings by relative path and get the real code.
+    '^src/communication$': '<rootDir>/src/testing/communication.mock.ts',
   },
   // Remaining deps ship ESM that Jest must transform (it ignores node_modules by default).
   transformIgnorePatterns: ['node_modules/(?!.*(@net7|@angular|rxjs|\\.mjs$))'],

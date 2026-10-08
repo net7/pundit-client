@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { from, Observable, of } from 'rxjs';
-import { LoginResponse } from '@pundit/communication';
+import { LoginResponse } from 'src/communication';
 import { catchError, map } from 'rxjs/operators';
 import { ModalService, AuthEventService } from '../services';
 import { AuthModel } from '../../../../common/models';

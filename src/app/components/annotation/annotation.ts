@@ -5,7 +5,7 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import {
   Annotation, Reply, Tag
-} from '@pundit/communication';
+} from 'src/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
 import { AnnotationState } from 'src/app/services/annotation.service';

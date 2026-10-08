@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { LoginResponse } from '@pundit/communication';
+import { LoginResponse } from 'src/communication';
 import { Subject } from 'rxjs';
 
 @Injectable({

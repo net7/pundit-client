@@ -6,7 +6,7 @@ import { switchMap, tap } from 'rxjs/operators';
 import { difference } from 'lodash';
 import {
   Annotation, CommentAnnotation, HighlightAnnotation, Tag
-} from '@pundit/communication';
+} from 'src/communication';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnchorService } from 'src/app/services/anchor.service';

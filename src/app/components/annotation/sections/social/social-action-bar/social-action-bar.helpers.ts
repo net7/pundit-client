@@ -1,5 +1,5 @@
 import { _t } from '@net7/core';
-import { SocialType } from '@pundit/communication';
+import { SocialType } from 'src/communication';
 import { ReplyFormState, ReplyType } from '../reply/reply';
 
 export type SocialBarState = {
