@@ -1,6 +1,7 @@
 import { translate } from '@net7/core';
 import { of, Subject, throwError } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
+import { aiPreviewState$ } from 'src/app/components/edit-modal/edit-modal';
 import en_US from 'src/app/config/i18n/en_US';
 import { MainLayoutEditModalAiHandler } from './main-layout-edit-modal-ai.handler';
 import { prepareAiRequest } from './annotation-range-selector.util';
@@ -167,6 +168,45 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     expect(layoutDS.aiService.annotate).not.toHaveBeenCalled();
     expect(layoutDS.toastService.info).toHaveBeenCalled();
+  });
+
+  describe('preview state signal (re-enables Generate when no previews are shown)', () => {
+    let states: boolean[];
+    let subscription: { unsubscribe: () => void };
+
+    beforeEach(() => {
+      states = [];
+      subscription = aiPreviewState$.subscribe((active) => states.push(active));
+      prepareMock.mockReturnValue({ request, chunkMap });
+    });
+
+    afterEach(() => subscription.unsubscribe());
+
+    it('emits false when the request fails', async () => {
+      layoutDS.aiService.annotate.mockReturnValue(throwError(() => ({ response: { status: 500 } })));
+
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+      expect(states).toEqual([false]);
+    });
+
+    it('emits false when no previews can be built', async () => {
+      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [], contiguousCalls: [] }));
+      processMock.mockResolvedValue([]);
+
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+      expect(states).toEqual([false]);
+    });
+
+    it('emits true when previews are rendered', async () => {
+      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [{ chunkId: 'c0' }], contiguousCalls: [] }));
+      processMock.mockResolvedValue([{ type: 'Commenting' }]);
+
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+      expect(states).toEqual([true]);
+    });
   });
 
   it('falls back to highlight for an unknown annotation type', async () => {

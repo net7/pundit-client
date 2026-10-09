@@ -56,6 +56,11 @@ The AI generate flow SHALL prepare the request from the DOM, call `AiService.ann
 - **WHEN** the backend responds successfully but no preview payloads can be built
 - **THEN** the "no results" info toast is shown and no previews are rendered
 
+#### Scenario: Retry after a failed or empty generation
+- **WHEN** a generation ends with an error or with no results
+- **THEN** the Generate button is enabled again, also for the same prompt and annotation type
+- **AND** while previews are shown, Generate stays disabled for the same prompt and type
+
 ### Requirement: Standard Save flow without AI branches
 The edit-modal Save SHALL build the request payload synchronously from the form state and save a single annotation through `layoutDS.saveAnnotation` (create) or emit the update events (update), with no AI generation step and no multi-payload handling.
 

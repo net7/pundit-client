@@ -137,6 +137,11 @@ export class EditModalComponent
     // Ascolta lo stato della preview AI
     aiPreviewState$.pipe(takeUntil(this.destroy$)).subscribe((active) => {
       this.data = { ...this.data, aiPreviewActive: active as boolean };
+      if (!active) {
+        // generation ended without previews (error, no results): allow retrying the same prompt
+        this.lastPrompt = "";
+        this.lastAnnotationType = "highlight";
+      }
       this.changeDetectorRef.markForCheck();
     });
   }

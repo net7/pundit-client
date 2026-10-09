@@ -49,8 +49,13 @@
 - [x] 8.3 In `onAiGenerate`'s catch: known `error.response.data.code` (or HTTP 413 → `payload_too_large`) → AI error toast with the code message + `console.error` (code, backend message), no `handleError`; otherwise `handleError` + generic AI error toast
 - [x] 8.4 Cover each known code and the generic fallback in `main-layout-edit-modal-ai.handler.spec.ts` — `it.each` over the 5 codes (specific toast, logged, no `handleError`, en_US key exists), a 413 with an HTML body, and the generic fallback
 
-## 9. Verification
+## 9. Generate retry and dead preview code
 
-- [x] 9.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test` — tsc 0 errors (4 projects, excluding the local `./local.prod` TS2307), lint clean, 16 suites / 47 tests
-- [x] 9.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present) — all builds pass; `ai/annotate` present in every app bundle and in the background; `thepund.test` absent from source-built code (the one hit in the local background bundle comes from the gitignored `chrome-ext-urls.stage.js` local override)
-- [ ] 9.3 Manual check (developer) on stage once `POST {apiBaseUrl}/ai/annotate` with Bearer auth is available: generate, preview, accept, discard, error toast when the backend fails, standard comment/tag/semantic save unchanged
+- [x] 9.1 Re-enable Generate after a failed or empty generation: the AI handler emits `aiPreviewState$.next(false)` on error and on "no results"; the edit modal clears `lastPrompt` / `lastAnnotationType` when it receives `false` — covered by `edit-modal.spec.ts` (new) and the handler spec
+- [ ] 9.2 Remove the never-wired AI discard chain (`EditModalComponent.onAiDiscard`, `EditModalEvent.AiDiscard`, its cases in `edit-modal.eh.ts` and the edit-modal handler, `MainLayoutEditModalAiHandler.onAiDiscard`), the never-emitted `EditModalEvent.AiGenerated` with `EditModalDS.setAiPreviewActive`, and the unused `aiPreviewActive` input of the AI request section
+
+## 10. Verification
+
+- [x] 10.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test` — tsc 0 errors (4 projects, excluding the local `./local.prod` TS2307), lint clean, 16 suites / 47 tests
+- [x] 10.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present) — all builds pass; `ai/annotate` present in every app bundle and in the background; `thepund.test` absent from source-built code (the one hit in the local background bundle comes from the gitignored `chrome-ext-urls.stage.js` local override)
+- [ ] 10.3 Manual check (developer) on stage once `POST {apiBaseUrl}/ai/annotate` with Bearer auth is available: generate, preview, accept, discard, error toast when the backend fails, standard comment/tag/semantic save unchanged

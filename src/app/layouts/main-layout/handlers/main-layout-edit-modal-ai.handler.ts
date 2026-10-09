@@ -90,6 +90,7 @@ export class MainLayoutEditModalAiHandler {
       );
       if (aiPayloads.length === 0) {
         workingToast.close();
+        aiPreviewState$.next(false);
         this.layoutDS.toastService.info({
           title: _t("toast#ai_no_results_title"),
           text: _t("toast#ai_no_results_text"),
@@ -107,6 +108,7 @@ export class MainLayoutEditModalAiHandler {
       });
     } catch (error) {
       workingToast.close();
+      aiPreviewState$.next(false);
       this.onAiGenerateError(error);
     }
   }
