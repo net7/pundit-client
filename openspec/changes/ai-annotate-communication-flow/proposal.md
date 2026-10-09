@@ -8,7 +8,7 @@ The AI-assisted annotation work merged from PR #2 calls the backend with a raw `
 - Add `AiModel.annotate` with `@CrossMessage(CrossMsgRequestId.AiAnnotate)` and register it in the chrome-extension background dispatcher.
 - Add `AiService` (`src/app/services`) that calls `AiModel` and normalizes the response, injected into `MainLayoutDS` like the other services.
 - Rework the AI generate flow: DOM preparation (`prepareAiRequest`) → `AiService.annotate` → existing `processLLMResponse` → previews. Remove `mapChunks`/`fetchAiAnnotations` and the raw `fetch`.
-- HTTP errors from the AI call now show the generic error toast (via `handleError`) instead of the "no results" info toast; "no results" remains for a valid empty response.
+- HTTP errors from the AI call now show an "AI annotation failed" toast instead of the "no results" info toast: a code-specific message for the backend's known error codes (`payload_too_large`, `no_active_api_key`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`; a 413 from any layer counts as `payload_too_large`), a generic AI message otherwise (via `handleError`); "no results" remains for a valid empty response.
 - Restore the standard edit-modal Save to `develop`'s synchronous flow (`EditModalPayloadBuilder` + `layoutDS.saveAnnotation`), removing the unreachable AI branch, `saveAnnotationsSequentially` and array handling; the update-close spec returns to its synchronous form.
 - Remove dead code left by the AI work and debug `console.warn` logs (keep `console.error` for real failures).
 

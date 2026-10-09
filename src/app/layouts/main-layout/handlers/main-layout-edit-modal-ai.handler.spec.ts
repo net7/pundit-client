@@ -1,6 +1,7 @@
 import { translate } from '@net7/core';
 import { of, Subject, throwError } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
+import en_US from 'src/app/config/i18n/en_US';
 import { MainLayoutEditModalAiHandler } from './main-layout-edit-modal-ai.handler';
 import { prepareAiRequest } from './annotation-range-selector.util';
 import { processLLMResponse } from './annotation-llm-processor';
@@ -30,8 +31,13 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     translate.setDefaultLang('en');
     translate.setCurrentLang('en');
     [
-      'toast#genericerror_title',
-      'toast#genericerror_text',
+      'toast#ai_error_title',
+      'toast#ai_error_generic',
+      'toast#ai_error_payload_too_large',
+      'toast#ai_error_no_active_api_key',
+      'toast#ai_error_structured_output_unsupported',
+      'toast#ai_error_model_unavailable',
+      'toast#ai_error_invalid_structured_output',
       'toast#ai_no_results_title',
       'toast#ai_no_results_text',
     ].forEach((key) => translate.setLangTranslation('en', key, key));
@@ -85,7 +91,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     expect(appEvents.some((e) => e.type === AppEvent.AiPreviewReady)).toBe(true);
   });
 
-  it('shows the error toast and routes the error to handleError when the request fails', async () => {
+  it('shows the generic AI error toast and routes the error to handleError without a known code', async () => {
     prepareMock.mockReturnValue({ request, chunkMap });
     const error = { response: { status: 400, data: { error: 'no active key' } } };
     layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
@@ -94,9 +100,52 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     expect(workingToast.close).toHaveBeenCalled();
     expect(layoutEH.handleError).toHaveBeenCalledWith(error);
-    expect(layoutDS.toastService.error).toHaveBeenCalled();
+    expect(layoutDS.toastService.error).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'toast#ai_error_title',
+      text: 'toast#ai_error_generic',
+    }));
     expect(layoutDS.toastService.info).not.toHaveBeenCalled();
     expect(processMock).not.toHaveBeenCalled();
+  });
+
+  it('shows the payload-too-large message for a 413 without a JSON body (proxy)', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    prepareMock.mockReturnValue({ request, chunkMap });
+    const error = { response: { status: 413, data: '<html>413 Request Entity Too Large</html>' } };
+    layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+    expect(layoutEH.handleError).not.toHaveBeenCalled();
+    expect(layoutDS.toastService.error).toHaveBeenCalledWith(expect.objectContaining({
+      text: 'toast#ai_error_payload_too_large',
+    }));
+    consoleError.mockRestore();
+  });
+
+  it.each([
+    ['payload_too_large', 413],
+    ['no_active_api_key', 400],
+    ['structured_output_unsupported', 422],
+    ['model_unavailable', 422],
+    ['invalid_structured_output', 502],
+  ])('shows the "%s" message for a known backend error code', async (code, status) => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    prepareMock.mockReturnValue({ request, chunkMap });
+    const error = { response: { status, data: { error: 'backend text', code, message: 'detail' } } };
+    layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+    expect(workingToast.close).toHaveBeenCalled();
+    expect(layoutEH.handleError).not.toHaveBeenCalled();
+    expect(layoutDS.toastService.error).toHaveBeenCalledWith(expect.objectContaining({
+      title: 'toast#ai_error_title',
+      text: `toast#ai_error_${code}`,
+    }));
+    expect(consoleError).toHaveBeenCalledWith(expect.any(String), code, 'detail');
+    expect(en_US).toHaveProperty([`toast#ai_error_${code}`]);
+    consoleError.mockRestore();
   });
 
   it('shows the "no results" toast when the response yields no annotations', async () => {

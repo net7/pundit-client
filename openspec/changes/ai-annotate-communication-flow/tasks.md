@@ -42,8 +42,15 @@
 - [x] 7.4 Remove unreferenced exports/files left by the refactor (grep each symbol) — none left; `getXPathForNode` / `getTextOffsetInBody` are exported but used internally, so kept
 - [x] 7.5 Remove debug `console.warn` calls from the AI flow files (`annotation-*.ts`, `main-layout-edit-modal-ai.handler.ts`, AI section); keep `console.error` for real failures — removed 14 `console.warn`; kept `console.error`, renaming stale `[mapChunks]` tags to `[processLLMResponse]` / `[addPayloadForRange]`
 
-## 8. Verification
+## 8. AI error messages
 
-- [x] 8.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test` — tsc 0 errors (4 projects, excluding the local `./local.prod` TS2307), lint clean, 16 suites / 47 tests
-- [x] 8.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present) — all builds pass; `ai/annotate` present in every app bundle and in the background; `thepund.test` absent from source-built code (the one hit in the local background bundle comes from the gitignored `chrome-ext-urls.stage.js` local override)
-- [ ] 8.3 Manual check (developer) on stage once `POST {apiBaseUrl}/ai/annotate` with Bearer auth is available: generate, preview, accept, discard, error toast when the backend fails, standard comment/tag/semantic save unchanged
+- [x] 8.1 Add `AiAnnotateErrorCode` and `AiAnnotateErrorResponse` (`error`, `code?`, `message?`) to the communication response models
+- [x] 8.2 Add en_US keys `toast#ai_error_title`, `toast#ai_error_generic` and `toast#ai_error_<code>` for `payload_too_large`, `no_active_api_key`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`
+- [x] 8.3 In `onAiGenerate`'s catch: known `error.response.data.code` (or HTTP 413 → `payload_too_large`) → AI error toast with the code message + `console.error` (code, backend message), no `handleError`; otherwise `handleError` + generic AI error toast
+- [x] 8.4 Cover each known code and the generic fallback in `main-layout-edit-modal-ai.handler.spec.ts` — `it.each` over the 5 codes (specific toast, logged, no `handleError`, en_US key exists), a 413 with an HTML body, and the generic fallback
+
+## 9. Verification
+
+- [x] 9.1 `tsc --noEmit` on the four tsconfig projects, `npm run lint`, `npm test` — tsc 0 errors (4 projects, excluding the local `./local.prod` TS2307), lint clean, 16 suites / 47 tests
+- [x] 9.2 `npm run build`, `npm run build:chrome-ext-stage`, `npm run build:pdf-standalone-stage`; grep bundles for `thepund.test` (expect 0) and `ai/annotate` (expect present) — all builds pass; `ai/annotate` present in every app bundle and in the background; `thepund.test` absent from source-built code (the one hit in the local background bundle comes from the gitignored `chrome-ext-urls.stage.js` local override)
+- [ ] 9.3 Manual check (developer) on stage once `POST {apiBaseUrl}/ai/annotate` with Bearer auth is available: generate, preview, accept, discard, error toast when the backend fails, standard comment/tag/semantic save unchanged

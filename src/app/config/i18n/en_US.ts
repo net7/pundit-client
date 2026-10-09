@@ -115,6 +115,19 @@ export default {
     "Annotation link copied to clipboard.",
   "toast#ai_no_results_title": "AI Preview",
   "toast#ai_no_results_text": "No results generated. Try a different prompt.",
+  "toast#ai_error_title": "AI annotation failed",
+  "toast#ai_error_generic":
+    "Something went wrong while generating AI annotations. Please try again.",
+  "toast#ai_error_payload_too_large":
+    "The selected text is too long for AI annotation. Select a shorter passage and try again.",
+  "toast#ai_error_no_active_api_key":
+    "No active AI API key found. Add one in your AI settings to use AI annotations.",
+  "toast#ai_error_structured_output_unsupported":
+    "The selected AI model can't generate structured annotations. Choose another model in your AI settings.",
+  "toast#ai_error_model_unavailable":
+    "The selected AI model isn't available or may have been retired. Check your AI settings.",
+  "toast#ai_error_invalid_structured_output":
+    "The AI model returned an unexpected response. Try again or choose another model.",
   // annotation
   "annotation#changenotebook": "Change notebook",
   "annotation#addcomment": "Add comment",

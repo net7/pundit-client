@@ -59,7 +59,10 @@ Alternatives rejected:
 
 **Decision: Errors surface as errors.**
 - HTTP/network failures reject.
-- `onAiGenerate` catches them, closes the working toast, calls `layoutEH.handleError(e)` and shows the generic error toast.
+- `onAiGenerate` catches them and closes the working toast.
+- Errors with a known backend `code` show the "AI annotation failed" toast with a short, code-specific i18n message, and are logged (`code` + backend `message`) instead of going through `handleError` (they are not auth errors; `handleError` would only log them as unhandled). Codes: `payload_too_large` (413; also any 413 without a known code, e.g. nginx's HTML page), `no_active_api_key` (400, to be added by the backend; until then the 400 falls back to the generic case), `structured_output_unsupported` (422), `model_unavailable` (422), `invalid_structured_output` (502).
+- Any other error calls `layoutEH.handleError(e)` (keeping 401/403 → logout) and shows a generic AI error toast.
+- Messages are client i18n keys (en_US; `it_IT` is empty) rather than the backend's Italian `error` text, which also embeds the model name the client does not receive separately.
 - "No results" is shown only for a successful but empty outcome.
 - Previously failures were swallowed into "no results".
 - `handleError` already routes 401/403 to logout like other requests; the 401 refresh happens first via `refreshHook`.

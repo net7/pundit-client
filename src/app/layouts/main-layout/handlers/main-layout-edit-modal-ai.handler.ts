@@ -5,7 +5,11 @@ import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
 import { AnalyticsModel } from "src/common/models";
-import { AiAnnotationType } from "src/communication";
+import {
+  AiAnnotateErrorCode,
+  AiAnnotateErrorResponse,
+  AiAnnotationType,
+} from "src/communication";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
@@ -27,6 +31,23 @@ const AI_ANNOTATION_TYPES: AiAnnotationType[] = [
 
 const toAiAnnotationType = (value?: string): AiAnnotationType =>
   AI_ANNOTATION_TYPES.find((type) => type === value) ?? "highlight";
+
+/** Backend error codes with a dedicated message (i18n key toast#ai_error_<code>). */
+const AI_ERROR_CODES: AiAnnotateErrorCode[] = [
+  "payload_too_large",
+  "no_active_api_key",
+  "structured_output_unsupported",
+  "model_unavailable",
+  "invalid_structured_output",
+];
+
+const getAiErrorCode = (error: any): AiAnnotateErrorCode | undefined => {
+  const code = (error?.response?.data as AiAnnotateErrorResponse | undefined)
+    ?.code;
+  const known = AI_ERROR_CODES.find((c) => c === code);
+  // A 413 can also come from a proxy (e.g. nginx) with no JSON body.
+  return known ?? (error?.response?.status === 413 ? "payload_too_large" : undefined);
+};
 
 export class MainLayoutEditModalAiHandler {
   private aiPreviewPayloads: any[] = [];
@@ -86,13 +107,26 @@ export class MainLayoutEditModalAiHandler {
       });
     } catch (error) {
       workingToast.close();
-      this.layoutEH.handleError(error);
-      this.layoutDS.toastService.error({
-        title: _t("toast#genericerror_title"),
-        text: _t("toast#genericerror_text"),
-        timer: _c("toastTimer"),
-      });
+      this.onAiGenerateError(error);
     }
+  }
+
+  private onAiGenerateError(error: any) {
+    const code = getAiErrorCode(error);
+    if (code) {
+      console.error(
+        "[AiGenerate] backend error:",
+        code,
+        error?.response?.data?.message,
+      );
+    } else {
+      this.layoutEH.handleError(error);
+    }
+    this.layoutDS.toastService.error({
+      title: _t("toast#ai_error_title"),
+      text: _t(code ? `toast#ai_error_${code}` : "toast#ai_error_generic"),
+      timer: _c("toastTimer"),
+    });
   }
 
   private async requestAiPayloads(
