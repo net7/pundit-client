@@ -52,8 +52,6 @@ export class AiRequestSectionComponent
 
   @Input() public reset$!: Subject<void>;
 
-  @Input() public aiPreviewActive = false;
-
   public value = "";
   public annotationType = "highlight";
 

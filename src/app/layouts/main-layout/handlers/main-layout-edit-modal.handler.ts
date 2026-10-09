@@ -55,9 +55,6 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         case EditModalEvent.AiAccept:
           this.aiHandler.onAiAccept();
           break;
-        case EditModalEvent.AiDiscard:
-          this.aiHandler.onAiDiscard();
-          break;
         default:
           break;
       }

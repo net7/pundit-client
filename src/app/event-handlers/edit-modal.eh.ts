@@ -23,9 +23,7 @@ export class EditModalEH extends EventHandler {
     const simpleEvents: string[] = [
       EditModalEvent.NotebookChange,
       EditModalEvent.CreateNotebookSuccess,
-      EditModalEvent.AiGenerated,
       EditModalEvent.AiAccept,
-      EditModalEvent.AiDiscard,
     ];
 
     if (simpleEvents.includes(type)) {
@@ -68,12 +66,6 @@ export class EditModalEH extends EventHandler {
       case MainLayoutEvent.AnnotationCreated:
       case MainLayoutEvent.KeyUpEscape:
         this.closeModal();
-        break;
-      case EditModalEvent.AiGenerated:
-        this.dataSource.setAiPreviewActive(true);
-        break;
-      case EditModalEvent.AiDiscard:
-        this.dataSource.setAiPreviewActive(false);
         break;
       default:
         break;

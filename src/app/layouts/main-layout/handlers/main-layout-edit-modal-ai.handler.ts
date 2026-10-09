@@ -214,21 +214,6 @@ export class MainLayoutEditModalAiHandler {
     });
   }
 
-  onAiDiscard() {
-    this.removeAiPreviews();
-    aiPreviewState$.next(false);
-
-    const pendingPayload = this.layoutDS.state.annotation.pendingPayload;
-    if (pendingPayload) {
-      const pendingAnnotation =
-        this.layoutDS.annotationService.getAnnotationFromPayload(
-          this.layoutDS.pendingAnnotationId,
-          pendingPayload,
-        );
-      this.layoutDS.anchorService.add(pendingAnnotation);
-    }
-  }
-
   removeAiPreviews() {
     this.layoutDS.anchorService.removeByPrefix(AI_PREVIEW_ID_PREFIX);
     if (this.aiPreviewPayloads.length > 0) {

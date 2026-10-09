@@ -73,7 +73,7 @@ The edit-modal Save SHALL build the request payload synchronously from the form 
 - **THEN** `CommentUpdate` and the modal-close signal are emitted synchronously within the save handler
 
 ### Requirement: No dead AI code or debug logging
-Code made unreachable by this change or by the AI work (raw fetch, `mapChunks`, AI branch of the Save flow, unused helpers, variants and labels) SHALL be removed, and debug `console.warn` logging in the AI flow SHALL be removed, keeping `console.error` for real failures.
+Code made unreachable by this change or by the AI work (raw fetch, `mapChunks`, AI branch of the Save flow, the never-wired AI discard / `AiGenerated` event chain, unused inputs, helpers, variants and labels) SHALL be removed, and debug `console.warn` logging in the AI flow SHALL be removed, keeping `console.error` for real failures.
 
 #### Scenario: Static check
 - **WHEN** the project is type-checked with `--noUnusedLocals --noUnusedParameters` on the touched files

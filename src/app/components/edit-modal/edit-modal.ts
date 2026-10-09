@@ -166,10 +166,6 @@ export class EditModalComponent
     this.emit(getEventType(EditModalEvent.AiAccept));
   }
 
-  onAiDiscard() {
-    this.emit(getEventType(EditModalEvent.AiDiscard));
-  }
-
   private get aiRequestValue(): AiRequestSectionValue {
     return (this.formState?.aiRequest?.value as AiRequestSectionValue) ?? null;
   }

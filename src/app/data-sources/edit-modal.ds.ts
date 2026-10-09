@@ -67,10 +67,6 @@ export class EditModalDS extends DataSource {
     this.setOutput({ hideActions: hide });
   }
 
-  public setAiPreviewActive(active: boolean) {
-    this.setOutput({ aiPreviewActive: active });
-  }
-
   private setOutput(update: Partial<EditModalData>) {
     this.output = {
       ...this.output,

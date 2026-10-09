@@ -52,7 +52,7 @@
 ## 9. Generate retry and dead preview code
 
 - [x] 9.1 Re-enable Generate after a failed or empty generation: the AI handler emits `aiPreviewState$.next(false)` on error and on "no results"; the edit modal clears `lastPrompt` / `lastAnnotationType` when it receives `false` — covered by `edit-modal.spec.ts` (new) and the handler spec
-- [ ] 9.2 Remove the never-wired AI discard chain (`EditModalComponent.onAiDiscard`, `EditModalEvent.AiDiscard`, its cases in `edit-modal.eh.ts` and the edit-modal handler, `MainLayoutEditModalAiHandler.onAiDiscard`), the never-emitted `EditModalEvent.AiGenerated` with `EditModalDS.setAiPreviewActive`, and the unused `aiPreviewActive` input of the AI request section
+- [x] 9.2 Remove the never-wired AI discard chain (`EditModalComponent.onAiDiscard`, `EditModalEvent.AiDiscard`, its cases in `edit-modal.eh.ts` and the edit-modal handler, `MainLayoutEditModalAiHandler.onAiDiscard`), the never-emitted `EditModalEvent.AiGenerated` with `EditModalDS.setAiPreviewActive`, and the unused `aiPreviewActive` input of the AI request section
 
 ## 10. Verification
 

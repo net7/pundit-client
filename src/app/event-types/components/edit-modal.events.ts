@@ -7,7 +7,5 @@ export enum EditModalEvent {
   CreateNotebookSuccess = "edit-modal.createnotebooksuccess",
   NotebookSelectorModeChanged = "edit-modal.notebookselectormodechanged",
   AiGenerate = "edit-modal.ai-generate",
-  AiGenerated = "edit-modal.ai-generated",
   AiAccept = "edit-modal.ai-accept",
-  AiDiscard = "edit-modal.ai-discard",
 }
