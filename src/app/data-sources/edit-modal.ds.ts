@@ -42,6 +42,13 @@ export class EditModalDS extends DataSource {
           classes: "pnd-btn-cta",
           disabled: true,
         },
+        aiGenerate: {
+          label: _t("editmodal#ai_generate"),
+        },
+        aiSaveAll: {
+          label: _t("editmodal#ai_save_all"),
+          classes: "pnd-btn-cta",
+        },
       },
       _internalId: uniqueId(),
       _setDraggableInstance: (instance) => {

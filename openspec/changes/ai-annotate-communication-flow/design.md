@@ -29,7 +29,6 @@ Agreed with the user: base URL is `apiBaseUrl`; the backend serving it will expo
 
 **Non-Goals:**
 - No changes to the AI UX (prompt section, previews, accept/discard), to `processLLMResponse` / merge / range-matching logic, or to the backend.
-- No i18n of the hardcoded "Generate"/"Save All" labels; no specific UI message for the 400 "no active API key" error.
 - No dedup refactor of `onAnnotationCreated` duplicated between the two handlers beyond what dead-code removal requires.
 
 ## Decisions

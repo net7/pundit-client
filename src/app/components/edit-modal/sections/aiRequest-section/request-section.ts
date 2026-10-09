@@ -11,6 +11,7 @@ import {
 } from "@angular/core";
 import { Subject } from "rxjs";
 import { takeUntil } from "rxjs/operators";
+import { _t } from "@net7/core";
 import { FormSection, FormSectionData } from "src/app/types";
 
 const TEXT_MIN_LIMIT = 3;
@@ -55,11 +56,15 @@ export class AiRequestSectionComponent
   public value = "";
   public annotationType = "highlight";
 
+  public placeholder = _t("editmodal#ai_placeholder");
+
+  public annotationTypeLabel = _t("editmodal#ai_annotation_type");
+
   public annotationTypes = [
-    { value: "comment", label: "Comment" },
-    { value: "highlight", label: "Highlight" },
-    { value: "tags", label: "Tag" },
-    { value: "semantic_annotation", label: "Semantic" },
+    { value: "comment", label: _t("editmodal#ai_type_comment") },
+    { value: "highlight", label: _t("editmodal#ai_type_highlight") },
+    { value: "tags", label: _t("editmodal#ai_type_tags") },
+    { value: "semantic_annotation", label: _t("editmodal#ai_type_semantic") },
   ];
 
   private destroy$: Subject<void> = new Subject();

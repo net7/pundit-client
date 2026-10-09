@@ -198,6 +198,7 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
             id: "aiRequest",
             required: true,
             focus: true,
+            options: { label: _t("editmodal#ai_label") },
           },
         ],
       });

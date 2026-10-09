@@ -64,21 +64,21 @@
         <div class="pnd-edit-modal__footer-actions">
           @if (data.sections?.aiRequest) {
           <button class="pnd-btn" (click)="onClose()">
-            {{ data.actions.cancel?.label || 'Cancel' }}
+            {{ data.actions.cancel.label }}
           </button>
           <button
             class="pnd-btn"
             [disabled]="disableGenerate"
             (click)="onGenerate()"
           >
-            Generate
+            {{ data.actions.aiGenerate.label }}
           </button>
           <button
-            class="pnd-btn pnd-btn-cta"
+            class="pnd-btn {{ data.actions.aiSaveAll.classes || '' }}"
             [disabled]="!aiPreviewActive"
             (click)="onAiAccept()"
           >
-            Save All
+            {{ data.actions.aiSaveAll.label }}
           </button>
           } @else { @if (data.actions.cancel; as cancelAction) {
           <button

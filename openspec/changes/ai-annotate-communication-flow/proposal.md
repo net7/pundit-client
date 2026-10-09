@@ -26,4 +26,4 @@ The AI-assisted annotation work merged from PR #2 calls the backend with a raw `
 - Affected code: `src/common/types.ts`, `src/common/models/index.ts`, `src/chrome-ext/src/background/helpers/doCrossMessageRequest.ts`, `src/app/layouts/main-layout/main-layout.ds.ts`/`main-layout.ts`, `main-layout-edit-modal.handler.ts`, `main-layout-edit-modal-ai.handler.ts`, `annotation-range-selector.util.ts`, `annotation-llm-*.ts`, `src/testing/communication.mock.ts`, edit-modal AI section/types.
 - Backend dependency: the client will call `POST {apiBaseUrl}/ai/annotate` with Bearer auth. The backend serving `apiBaseUrl` must expose that route with token auth (outside this repo); until then the AI feature fails with an error toast.
 - No change to the AI preview / accept / discard UX.
-- Out of scope: i18n for the hardcoded "Generate"/"Save All" labels, a specific message for the backend's 400 "no active API key" error.
+- Move the AI modal's hardcoded texts (Generate, Save all, prompt placeholder and label, annotation type names) to en_US i18n keys.

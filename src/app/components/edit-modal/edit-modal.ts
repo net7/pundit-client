@@ -41,6 +41,8 @@ export interface EditModalData {
   actions: {
     cancel: EditModalAction;
     save: EditModalAction;
+    aiGenerate: EditModalAction;
+    aiSaveAll: EditModalAction;
   };
   validation?: {
     required?: {
@@ -49,7 +51,6 @@ export interface EditModalData {
   };
   hideActions?: boolean;
   aiPreviewActive?: boolean;
-  lastPrompt?: string;
   _setDraggableInstance: (instance: any) => void;
   _internalId: string;
 }

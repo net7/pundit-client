@@ -6,12 +6,12 @@
       #textarea
       class="pnd-edit-modal__ai-request-textarea"
       [value]="value"
-      placeholder="What the IA should do?"
+      [placeholder]="placeholder"
       (input)="onInput($any($event.target).value)"
     ></textarea>
   </div>
   <div class="pnd-edit-modal__ai-request-options">
-    <div class="pnd-edit-modal__ai-request-options-label">Annotation type:</div>
+    <div class="pnd-edit-modal__ai-request-options-label">{{ annotationTypeLabel }}</div>
     <div class="pnd-edit-modal__ai-request-chips">
       @for (type of annotationTypes; track type.value) {
       <label

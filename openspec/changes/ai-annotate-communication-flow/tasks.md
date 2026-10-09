@@ -53,6 +53,7 @@
 
 - [x] 9.1 Re-enable Generate after a failed or empty generation: the AI handler emits `aiPreviewState$.next(false)` on error and on "no results"; the edit modal clears `lastPrompt` / `lastAnnotationType` when it receives `false` — covered by `edit-modal.spec.ts` (new) and the handler spec
 - [x] 9.2 Remove the never-wired AI discard chain (`EditModalComponent.onAiDiscard`, `EditModalEvent.AiDiscard`, its cases in `edit-modal.eh.ts` and the edit-modal handler, `MainLayoutEditModalAiHandler.onAiDiscard`), the never-emitted `EditModalEvent.AiGenerated` with `EditModalDS.setAiPreviewActive`, and the unused `aiPreviewActive` input of the AI request section
+- [x] 9.3 Move the AI modal texts to en_US i18n keys: footer actions via `EditModalDS` (`aiGenerate`, `aiSaveAll`, like cancel/save), placeholder, annotation-type label and names via `_t()` in the AI section (like `tags-section`), section label "Instructions for the AI" passed by the tooltip handler; rename "Ai Request" / "AI Preview" to "AI annotation"; drop the dead `EditModalData.lastPrompt` field
 
 ## 10. Verification
 

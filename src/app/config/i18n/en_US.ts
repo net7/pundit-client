@@ -4,7 +4,7 @@ export default {
   "tooltip#comment": "Comment",
   "tooltip#tag": "Tag",
   "tooltip#semantic": "Semantic annotation",
-  "tooltip#aiRequest": "Ai Request",
+  "tooltip#aiRequest": "AI annotation",
   // comment modal
   "editmodal#label": "Your comment",
   "editmodal#notebook": "Save comment in notebook",
@@ -19,6 +19,15 @@ export default {
   "editmodal#semantic_remove": "Remove relation",
   "editmodal#semantic_clear": "Clear relation",
   "editmodal#save_semantic": "Save",
+  "editmodal#ai_label": "Instructions for the AI",
+  "editmodal#ai_generate": "Generate",
+  "editmodal#ai_save_all": "Save all",
+  "editmodal#ai_placeholder": "What should the AI do?",
+  "editmodal#ai_annotation_type": "Annotation type:",
+  "editmodal#ai_type_comment": "Comment",
+  "editmodal#ai_type_highlight": "Highlight",
+  "editmodal#ai_type_tags": "Tag",
+  "editmodal#ai_type_semantic": "Semantic",
   // delete modal
   "deletemodal#label": "Delete Annotation",
   "deletemodal#text":
@@ -113,7 +122,7 @@ export default {
     "Pundit couldn't delete your reply, please try again later.",
   "toast#annotation_share_link_copied_title":
     "Annotation link copied to clipboard.",
-  "toast#ai_no_results_title": "AI Preview",
+  "toast#ai_no_results_title": "AI annotation",
   "toast#ai_no_results_text": "No results generated. Try a different prompt.",
   "toast#ai_error_title": "AI annotation failed",
   "toast#ai_error_generic":
