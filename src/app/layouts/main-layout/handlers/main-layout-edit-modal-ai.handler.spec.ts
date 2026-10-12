@@ -37,6 +37,9 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       'toast#ai_error_generic',
       'toast#ai_error_payload_too_large',
       'toast#ai_error_no_active_api_key',
+      'toast#ai_error_provider_unavailable',
+      'toast#ai_error_provider_host_not_found',
+      'toast#ai_error_provider_url_blocked',
       'toast#ai_error_structured_output_unsupported',
       'toast#ai_error_model_unavailable',
       'toast#ai_error_invalid_structured_output',
@@ -129,6 +132,9 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   it.each([
     ['payload_too_large', 413],
     ['no_active_api_key', 400],
+    ['provider_unavailable', 422],
+    ['provider_host_not_found', 422],
+    ['provider_url_blocked', 422],
     ['structured_output_unsupported', 422],
     ['model_unavailable', 422],
     ['invalid_structured_output', 502],
@@ -175,6 +181,9 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     it.each([
       ['no_active_api_key', 400],
+      ['provider_unavailable', 422],
+      ['provider_host_not_found', 422],
+      ['provider_url_blocked', 422],
       ['structured_output_unsupported', 422],
       ['model_unavailable', 422],
     ])('keeps the "%s" toast open with a button to the AI settings', async (code, status) => {

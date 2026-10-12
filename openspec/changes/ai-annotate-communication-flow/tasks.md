@@ -48,6 +48,8 @@
 - [x] 8.2 Add en_US keys `toast#ai_error_title`, `toast#ai_error_generic` and `toast#ai_error_<code>` for `payload_too_large`, `no_active_api_key`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`
 - [x] 8.3 In `onAiGenerate`'s catch: known `error.response.data.code` (or HTTP 413 → `payload_too_large`) → AI error toast with the code message + `console.error` (code, backend message), no `handleError`; otherwise `handleError` + generic AI error toast
 - [x] 8.4 Cover each known code and the generic fallback in `main-layout-edit-modal-ai.handler.spec.ts` — `it.each` over the 5 codes (specific toast, logged, no `handleError`, en_US key exists), a 413 with an HTML body, and the generic fallback
+- [x] 8.5 "Open AI settings" button on the toasts of the codes fixed in the AI settings (`no_active_api_key`, `structured_output_unsupported`, `model_unavailable`): toast stays open, the button opens `<userLink>settings/ai` in a new tab and closes the toast; en_US key `toast#ai_error_open_settings`; covered by the handler spec
+- [x] 8.6 Add the provider codes sent by the backend (`provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`) to `AiAnnotateErrorCode`, with en_US messages and the settings button; covered by the handler spec
 
 ## 9. Generate retry and dead preview code
 

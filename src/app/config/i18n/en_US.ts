@@ -131,6 +131,12 @@ export default {
     "The selected text is too long for AI annotation. Select a shorter passage and try again.",
   "toast#ai_error_no_active_api_key":
     "No active AI API key found. Add one in your AI settings to use AI annotations.",
+  "toast#ai_error_provider_unavailable":
+    "The AI provider of your active key is no longer available. Edit the key or choose another one in your AI settings.",
+  "toast#ai_error_provider_host_not_found":
+    "The AI provider's host can't be found. Check the base URL of your key in your AI settings.",
+  "toast#ai_error_provider_url_blocked":
+    "Pundit can't reach the AI provider's address: it must be a public https URL. Check the base URL of your key in your AI settings.",
   "toast#ai_error_open_settings": "Open AI settings",
   "toast#ai_error_structured_output_unsupported":
     "The selected AI model can't generate structured annotations. Choose another model in your AI settings.",

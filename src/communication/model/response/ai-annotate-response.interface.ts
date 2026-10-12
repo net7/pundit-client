@@ -18,6 +18,9 @@ export interface AiAnnotateResponse {
 export type AiAnnotateErrorCode =
   | 'payload_too_large'
   | 'no_active_api_key'
+  | 'provider_unavailable'
+  | 'provider_host_not_found'
+  | 'provider_url_blocked'
   | 'structured_output_unsupported'
   | 'model_unavailable'
   | 'invalid_structured_output';

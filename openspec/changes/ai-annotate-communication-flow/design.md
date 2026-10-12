@@ -4,7 +4,7 @@ PR #2 (Federico Gueli, Duccio Breschi), now merged into `feature/ai-annotation`,
 
 Current request path:
 - `MainLayoutEditModalAiHandler.onAiGenerate` → `mapChunks` (`annotation-range-selector.util.ts`) → `fetchAiAnnotations` → raw `fetch('https://app.thepund.test/ai/annotate', { credentials: 'include' })` → manual JSON parsing → `processLLMResponse` → previews.
-- The URL is the local development host of `pundithomex`. Auth relies on the session cookie, with no Bearer token and no 401 refresh. In the chrome extension the call runs in the page, not in the background like every other request.
+- The URL is the backend's local development host. Auth relies on the session cookie, with no Bearer token and no 401 refresh. In the chrome extension the call runs in the page, not in the background like every other request.
 
 Standard annotation path, which the AI flow should mirror:
 - handler → `layoutDS.saveAnnotation` → `AnnotationService.create` → `AnnotationModel.create` (`@CrossMessage(AnnotationCreate)`) → `src/communication` `annotation.create` (`request$`, `apiBaseUrl`, `refreshHook`).
@@ -12,7 +12,7 @@ Standard annotation path, which the AI flow should mirror:
 
 The PR also rewrote the regular Save (`main-layout-edit-modal.handler.ts`). Every Save now goes through `aiHandler.getEditRequestPayload` (async), and the result is saved as an array with `saveAnnotationsSequentially`. The AI branch inside Save is unreachable: when the AI section is present, the modal shows Cancel / Generate / Save All (`AiAccept`) and never emits `Save`.
 
-Backend contract (`pundithomex` `AiAnnotateController`):
+Backend contract:
 - **Request:** `chunks[]{id,text}`, `prompt`, `annotation_type ∈ {highlight, comment, tags, semantic_annotation}`, `selected_text?`.
 - **Response:** `{ result, contiguous_chunks }`.
 - **Errors:** `400 { error }` when there is no active AI key; `500 { error, message }`.
@@ -59,7 +59,7 @@ Alternatives rejected:
 **Decision: Errors surface as errors.**
 - HTTP/network failures reject.
 - `onAiGenerate` catches them and closes the working toast.
-- Errors with a known backend `code` show the "AI annotation failed" toast with a short, code-specific i18n message, and are logged (`code` + backend `message`) instead of going through `handleError` (they are not auth errors; `handleError` would only log them as unhandled). Codes: `payload_too_large` (413; also any 413 without a known code, e.g. nginx's HTML page), `no_active_api_key` (400, to be added by the backend; until then the 400 falls back to the generic case), `structured_output_unsupported` (422), `model_unavailable` (422), `invalid_structured_output` (502).
+- Errors with a known backend `code` show the "AI annotation failed" toast with a short, code-specific i18n message, and are logged (`code` + backend `message`) instead of going through `handleError` (they are not auth errors; `handleError` would only log them as unhandled). Codes: `payload_too_large` (413; also any 413 without a known code, e.g. nginx's HTML page), `no_active_api_key` (400, to be added by the backend; until then the 400 falls back to the generic case), `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked` (422, the active key's provider is gone or its base URL is unusable), `structured_output_unsupported` (422), `model_unavailable` (422), `invalid_structured_output` (502). The codes the user fixes in the AI settings (all but `payload_too_large` and `invalid_structured_output`) keep the toast open with an "Open AI settings" button to `<userLink>settings/ai`; the link is built from `userLink` (the web app root, as the login's password-reset link) so no new environment key is needed.
 - Any other error calls `layoutEH.handleError(e)` (keeping 401/403 → logout) and shows a generic AI error toast.
 - Messages are client i18n keys (en_US; `it_IT` is empty) rather than the backend's Italian `error` text, which also embeds the model name the client does not receive separately.
 - "No results" is shown only for a successful but empty outcome.

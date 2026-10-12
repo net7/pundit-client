@@ -36,6 +36,9 @@ const toAiAnnotationType = (value?: string): AiAnnotationType =>
 const AI_ERROR_CODES: AiAnnotateErrorCode[] = [
   "payload_too_large",
   "no_active_api_key",
+  "provider_unavailable",
+  "provider_host_not_found",
+  "provider_url_blocked",
   "structured_output_unsupported",
   "model_unavailable",
   "invalid_structured_output",
@@ -54,9 +57,12 @@ const getAiSettingsLink = (): string => `${_c("userLink")}settings/ai`;
 
 const AI_SETTINGS_ACTION = "aisettings";
 
-/** Error codes the user fixes in the AI settings (API key, model). */
+/** Error codes the user fixes in the AI settings (API key, provider, model). */
 const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
   "no_active_api_key",
+  "provider_unavailable",
+  "provider_host_not_found",
+  "provider_url_blocked",
   "structured_output_unsupported",
   "model_unavailable",
 ];

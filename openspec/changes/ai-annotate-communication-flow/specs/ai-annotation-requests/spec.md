@@ -37,16 +37,21 @@ An `AiService` SHALL call `AiModel.annotate` and return `{ toolCalls, contiguous
 - **THEN** the service returns the parsed array, or an empty array when missing or invalid
 
 ### Requirement: AI generate flow and error handling
-The AI generate flow SHALL prepare the request from the DOM, call `AiService.annotate`, convert the response to preview payloads with the existing LLM processing, and render previews. Errors whose response carries a known `code` (`payload_too_large`, `no_active_api_key`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`), or an HTTP 413 from any layer (treated as `payload_too_large`), SHALL show an AI error toast with a code-specific message; any other HTTP or network error SHALL show the generic AI error toast and go through the layout error handler; a successful response with no usable annotations SHALL show the "no results" info toast. Accepting previews SHALL save them through the standard `layoutDS.saveAnnotation` flow.
+The AI generate flow SHALL prepare the request from the DOM, call `AiService.annotate`, convert the response to preview payloads with the existing LLM processing, and render previews. Errors whose response carries a known `code` (`payload_too_large`, `no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`), or an HTTP 413 from any layer (treated as `payload_too_large`), SHALL show an AI error toast with a code-specific message; for the codes the user fixes in the AI settings (`no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported`, `model_unavailable`) the toast SHALL stay open and offer a button that opens the AI settings page of the web app (`<userLink>settings/ai`) in a new tab; any other HTTP or network error SHALL show the generic AI error toast and go through the layout error handler; a successful response with no usable annotations SHALL show the "no results" info toast. Accepting previews SHALL save them through the standard `layoutDS.saveAnnotation` flow.
 
 #### Scenario: Successful generation
 - **WHEN** the backend returns annotations that map to the selected text
 - **THEN** preview annotations are rendered and the preview state is activated
 
 #### Scenario: Known backend error code
-- **WHEN** the AI request fails with a response body whose `code` is `payload_too_large`, `no_active_api_key`, `structured_output_unsupported`, `model_unavailable` or `invalid_structured_output`, or with HTTP 413 and no known code (e.g. a proxy's HTML 413)
+- **WHEN** the AI request fails with a response body whose `code` is `payload_too_large`, `no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported`, `model_unavailable` or `invalid_structured_output`, or with HTTP 413 and no known code (e.g. a proxy's HTML 413)
 - **THEN** the working toast is closed and the "AI annotation failed" toast is shown with the message for that code
 - **AND** the error is logged with its code and backend detail, without going through the layout error handler
+
+#### Scenario: Error fixed in the AI settings
+- **WHEN** the known `code` is `no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported` or `model_unavailable`
+- **THEN** the AI error toast does not close by itself and shows an "Open AI settings" button
+- **AND** clicking the button opens `<userLink>settings/ai` in a new tab and closes the toast
 
 #### Scenario: Other backend or network error
 - **WHEN** the AI request fails without a known `code` (e.g. HTTP 400 before the backend sends `no_active_api_key`, 500, network error)
