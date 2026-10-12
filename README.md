@@ -118,14 +118,43 @@ Options:
 
 The script uses the Chrome Web Store API V2 through Google's official client `@googleapis/chromewebstore`.
 
-1. In a Google Cloud project, enable the **Chrome Web Store API**.
-2. Configure the OAuth consent screen (External). **Publish it to "In production"**: in "Testing" status, refresh tokens expire after 7 days.
-3. Create an OAuth client of type _Web application_ with `https://developers.google.com/oauthplayground` as an authorized redirect URI. Put its ID and secret in `CWS_CLIENT_ID` and `CWS_CLIENT_SECRET`.
-4. In the [OAuth Playground](https://developers.google.com/oauthplayground):
-   - choose "Use your own OAuth credentials";
-   - authorize the scope `https://www.googleapis.com/auth/chromewebstore` **with the Google account that owns both store items** (2-step verification on);
-   - exchange the code and copy the refresh token into `CWS_REFRESH_TOKEN`.
-5. In the Developer Dashboard, copy the publisher ID from _Publisher > Settings_ into `CWS_PUBLISHER_ID`. Copy the two item IDs into `CWS_EXTENSION_ID_STAGE` and `CWS_EXTENSION_ID_PROD`.
+A plain API key cannot be used here. Uploading and publishing act on the publisher's private items, so every call needs an OAuth 2.0 access token with the `https://www.googleapis.com/auth/chromewebstore` scope. The script gets that token from an OAuth client plus a refresh token.
+
+**Google Cloud project.** The release OAuth client lives in the Google Cloud project `pundit-1058`. If the project also hosts the OAuth client used by Pundit's Google login, its consent screen is shared with real users. Add a new client, but do not change the consent screen's audience, branding or publishing status.
+
+1. **Enable the API**: in the project, open *APIs & Services > Library*, search for **Chrome Web Store API** and click **Enable**.
+2. **Consent screen** (*Google Auth Platform*, formerly "OAuth consent screen"). Only needed if the project has none yet.
+   - Choose audience **Internal** if the project and the account owning the store items belong to the same Google Workspace organization.
+   - Otherwise choose **External** and **publish it to "In production"**: in "Testing" status, refresh tokens expire after 7 days. Google verification is not needed for this use.
+3. **OAuth client**: open *Credentials > Create credentials > OAuth client ID*.
+   - Type: **Web application**.
+   - Leave **Authorized JavaScript origins** empty.
+   - Add `https://developers.google.com/oauthplayground` to **Authorized redirect URIs**.
+   - On creation, copy the client ID and the client secret right away (Google may not show the secret again) into `CWS_CLIENT_ID` and `CWS_CLIENT_SECRET`.
+4. **Refresh token**, in the [OAuth Playground](https://developers.google.com/oauthplayground):
+   1. Click the gear icon, tick **Use your own OAuth credentials**, and paste the client ID and secret.
+   2. In **Input your own scopes**, enter `https://www.googleapis.com/auth/chromewebstore`, then click **Authorize APIs**.
+   3. Sign in **with the Google account that owns both store items** (2-step verification on). An "unverified app" warning is expected: click *Advanced > Go to …*.
+   4. Click **Exchange authorization code for tokens** and copy the refresh token into `CWS_REFRESH_TOKEN`.
+5. **IDs**, in the [Developer Dashboard](https://chrome.google.com/webstore/devconsole):
+   - publisher ID from *Publisher > Settings* → `CWS_PUBLISHER_ID`;
+   - the 32-letter item ID shown on each item's page (also in its store URL) → `CWS_EXTENSION_ID_STAGE` and `CWS_EXTENSION_ID_PROD`.
+6. **Check** (optional): in the Playground, send a GET to `https://chromewebstore.googleapis.com/v2/publishers/<publisher ID>/items/<item ID>:fetchStatus`. The response shows the item's published `crxVersion`.
+
+Keep the client secret and the refresh token only in `scripts/.deploy.env` (and in 1Password). Together they allow publishing the extension to every user.
+
+#### The refresh token
+
+Access tokens last one hour. The refresh token is the long-lived credential the script exchanges for a fresh access token on every run, so nobody has to sign in during a release.
+
+It has no fixed expiry. It stops working when:
+- the consent screen is External and still in "Testing" (after 7 days);
+- it has not been used for 6 months;
+- access is revoked from https://myaccount.google.com/permissions by the owning account;
+- the client secret is reset or the OAuth client is deleted;
+- more than 100 refresh tokens are issued for the same client and account (the oldest are dropped).
+
+When that happens, the pre-flight stops before changing anything, with an error like `HTTP 400: invalid_grant (Token has been expired or revoked.)`. Repeat step 4 and replace `CWS_REFRESH_TOKEN`: the client ID and secret stay the same.
 
 Notes:
 
