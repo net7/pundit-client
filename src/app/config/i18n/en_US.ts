@@ -125,6 +125,7 @@ export default {
   "toast#ai_no_results_title": "AI annotation",
   "toast#ai_no_results_text": "No results generated. Try a different prompt.",
   "toast#ai_error_title": "AI annotation failed",
+  "toast#ai_unavailable_title": "AI annotation unavailable",
   "toast#ai_error_generic":
     "Something went wrong while generating AI annotations. Please try again.",
   "toast#ai_error_payload_too_large":

@@ -8,6 +8,7 @@ import { AnalyticsModel } from "src/common/models";
 import { AnalyticsAction } from "src/common/types";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
+import { getAiSettingsToastParams } from "./ai-settings-toast.util";
 
 export class MainLayoutTooltipHandler implements LayoutHandler {
   constructor(
@@ -49,6 +50,13 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
       .subscribe(([{ type, payload }]) => {
         switch (type) {
           case TooltipEvent.Click: {
+            if (
+              payload === "aiRequest" &&
+              this.layoutDS.state.hasActiveAiKey === false
+            ) {
+              this.onTooltipAiRequestWithoutKey();
+              break;
+            }
             // reset previous payload
             this.layoutDS.state.annotation.pendingPayload = null;
             this.layoutDS.state.annotation.updatePayload = null;
@@ -186,6 +194,15 @@ export class MainLayoutTooltipHandler implements LayoutHandler {
           },
         ],
       });
+    });
+  }
+
+  /** No active AI key: point to the AI settings instead of opening the AI modal. */
+  private onTooltipAiRequestWithoutKey() {
+    this.layoutDS.toastService.warn({
+      title: _t("toast#ai_unavailable_title"),
+      text: _t("toast#ai_error_no_active_api_key"),
+      ...getAiSettingsToastParams(),
     });
   }
 

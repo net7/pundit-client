@@ -7,4 +7,6 @@ export interface LoginUser {
     notifications?: {
         total?: number
     }
+    /** Whether the user has an active AI API key; older backends don't send it. */
+    has_active_ai_key?: boolean;
 }

@@ -44,6 +44,8 @@ type MainLayoutState = {
   anonymousSelectionRange: Range | null;
   emailVerifiedToast: ToastInstance | null;
   identitySyncLoading: boolean;
+  /** From the last SSO response; null when unknown (no user, or not sent by the backend). */
+  hasActiveAiKey: boolean | null;
 };
 
 export class MainLayoutDS extends LayoutDataSource {
@@ -88,6 +90,7 @@ export class MainLayoutDS extends LayoutDataSource {
     anonymousSelectionRange: null,
     emailVerifiedToast: null,
     identitySyncLoading: false,
+    hasActiveAiKey: null,
   };
 
   public usersList: any[] = [];

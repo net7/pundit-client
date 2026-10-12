@@ -1,6 +1,8 @@
 import { _t } from '@net7/core';
 import { LoginResponse, SuccessLoginResponse } from 'src/communication';
-import { delay, filter, first } from 'rxjs/operators';
+import {
+  delay, filter, first, tap
+} from 'rxjs/operators';
 import {
   AppEvent, getEventType, MainLayoutEvent
 } from 'src/app/event-types';
@@ -35,7 +37,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doInitRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user } = resp;
@@ -58,7 +60,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doLoginRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user } = resp;
@@ -109,7 +111,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doSyncRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       // eslint-disable-next-line complexity -- Existing identity sync branches predate the flat-config migration.
       .subscribe((resp: LoginResponse) => {
         const currentUser = this.layoutDS.userService.whoami();
@@ -168,6 +170,16 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           }
         }
       });
+  }
+
+  /** SSO request that also stores whether the user has an active AI key. */
+  private sso$() {
+    return this.layoutDS.punditLoginService.sso().pipe(
+      tap((resp: LoginResponse) => {
+        const hasKey = 'user' in resp ? resp.user?.has_active_ai_key : undefined;
+        this.layoutDS.state.hasActiveAiKey = typeof hasKey === 'boolean' ? hasKey : null;
+      })
+    );
   }
 
   private loginAlert() {

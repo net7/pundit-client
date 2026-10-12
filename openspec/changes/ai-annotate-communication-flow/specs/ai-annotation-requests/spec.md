@@ -36,6 +36,21 @@ An `AiService` SHALL call `AiModel.annotate` and return `{ toolCalls, contiguous
 - **WHEN** a field is a JSON-encoded string, missing, or not valid JSON
 - **THEN** the service returns the parsed array, or an empty array when missing or invalid
 
+### Requirement: AI annotation without an active key
+The client SHALL keep whether the logged user has an active AI API key, taken from `has_active_ai_key` in the SSO user info and refreshed on every SSO response (init, login, identity sync on window focus). When the user clicks the tooltip's AI annotation action and the flag is `false`, the client SHALL NOT open the AI modal and SHALL show a warning toast with the missing-key message and the "Open AI settings" button. When the flag is `true` or unknown (no flag in the response), the AI modal SHALL open as before.
+
+#### Scenario: No active key
+- **WHEN** the last SSO response has `has_active_ai_key: false` and the user clicks the AI annotation action
+- **THEN** the "AI annotation unavailable" toast with the "Open AI settings" button is shown and no modal or pending annotation is created
+
+#### Scenario: Key added in the web app
+- **WHEN** the user adds a key in the web app and comes back to the annotated page
+- **THEN** the identity sync on window focus updates the flag and the next click opens the AI modal
+
+#### Scenario: Flag not sent
+- **WHEN** the SSO response has no `has_active_ai_key`
+- **THEN** the AI modal opens as before and a missing key is reported by the AI request error
+
 ### Requirement: AI generate flow and error handling
 The AI generate flow SHALL prepare the request from the DOM, call `AiService.annotate`, convert the response to preview payloads with the existing LLM processing, and render previews. Errors whose response carries a known `code` (`payload_too_large`, `no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported`, `model_unavailable`, `invalid_structured_output`), or an HTTP 413 from any layer (treated as `payload_too_large`), SHALL show an AI error toast with a code-specific message; for the codes the user fixes in the AI settings (`no_active_api_key`, `provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`, `structured_output_unsupported`, `model_unavailable`) the toast SHALL stay open and offer a button that opens the AI settings page of the web app (`<userLink>settings/ai`) in a new tab; any other HTTP or network error SHALL show the generic AI error toast and go through the layout error handler; a successful response with no usable annotations SHALL show the "no results" info toast. Accepting previews SHALL save them through the standard `layoutDS.saveAnnotation` flow.
 
