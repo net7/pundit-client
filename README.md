@@ -1,53 +1,85 @@
 # Pundit Annotator
 
-Pundit is a tool useful for creating annotations on the web. repository hosts the code of
+Pundit is a tool for creating annotations on the web. This repository hosts the code of
 Pundit's client.
 
-The client is built upon Typescript, Angular, and N7's front-end framework. It can be used both as a
-Chrome Extension, or in an embedded environment.
+The client is built with TypeScript, Angular, and N7's front-end framework. It can be used both as a
+Chrome extension and in an embedded environment.
 
 The app is built using the shadow-root in order to maximize the compatibility with external websites and applications.
 
 ## Structure
 
-Pundit as a service is divided in a couple repositories:
+The client is self-contained:
+- **Networking**: the layer that talks to the Pundit back-end (annotations, notebooks, authentication, AI) lives in this repository, under `src/communication`. It used to be the separate `pundit-communication` library.
+- **Anchoring and highlighting**: provided by the `@net7/annotator` package.
 
-- Pundit Client (that you are currently viewing)
-- [Pundit Communication](https://github.com/net7/pundit-communication): this is where the networking is handled, and provides an api for the client to manage annotations, notebooks and authentication.
-- [Pundit Anchoring](https://github.com/net7/pundit-anchoring): this repo hosts the anchoring logic, this manages how each annotation is anchored to the web page
-
-In this repository you will find:
+In `src/` you will find:
 - **app**: the main folder where the majority of the client's code is located. For a detailed view of the app folder, [refer to the readme document in src/app](./src/app/README.md).
-- **chrome-ext**: files included only when building the client for the chrome extension / web-store.
-- **common**: this folder contains the shared files that are compiled both into the chrome extension and into the embedded versions.
-- **environments**: files with the parameters needed to build each of the various environments (chrome-ext prod/stage, embedded prod/stage, local)
-- **html-examples**: contains the html code for mockup web-pages where you can view the client locally for testing purposes.
-- **styles**: contains all of the css for the project, written in SCSS.
+- **chrome-ext**: files included only when building the client for the Chrome extension / Web Store (manifest, background and content scripts).
+- **common**: the shared files that are compiled both into the Chrome extension and into the embedded versions.
+- **communication**: the networking layer. It is consumed through `src/communication/index.ts`.
+- **environments**: the parameters needed to build each environment (chrome-ext prod/stage, embedded prod/stage, local).
+- **html-examples**: mockup web pages where you can view the client locally for testing purposes.
+- **styles**: all of the CSS for the project, written in SCSS.
+- **testing**: shared test doubles (e.g. the `src/communication` mock used by Jest).
+
+Outside `src/`:
+- **openspec/**: specifications (`openspec/specs`) and proposed or archived changes (`openspec/changes`).
+- **scripts/**: post-build steps for the embed and the Chrome extension.
 
 ## Development
 
-### Pre-requirements
+### Prerequisites
 
 - Git
-- NodeJS version v.12+
-- Angular CLI v.9+ (optional)
+- Node.js 22.22.3 (see `.node-version`) and npm 10.9.8. `engine-strict` is on: `npm install` fails with other versions.
 
-### Building the client
+The Angular CLI (Angular 22) is a dev dependency: use it through the npm scripts or `npx ng`.
 
-To build the client locally, clone this repository and cd into the cloned folder, then run `npm install`.
-You can then run the command `npm run start` to serve the application on http://localhost:4200/
+### Running the client locally
 
-## Production files update for WP plugin
+1. Run `npm install`.
+2. Create `src/environments/local.stage.ts`. Generate it with `pundit-deployment/scripts/render-env.sh`, or copy `src/environments/local.example.ts` and fill it in. The file is git-ignored, and every build that is not prod (including `npm run start`) imports it.
+3. Run `npm run start` to serve the application on http://localhost:4200/.
 
-Preface: this command is valid if before you have properly configure an AWS stack based on s3+cloudfront
-You also need aws-cli command line available on your laptop. You can find more info about it here:
-https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html
+The dev server proxies `/api`, `/ai` and `/sanctum` to `https://app.thepund.test`, a local Pundit back-end (see `proxy.conf.json`).
 
-Launch the command: `sh push-prod.sh`
-This commands needs three parameters:
+### Tests and linting
 
-- the first is the branch that you want to deploy on s3
-- the second and the third are the keys needed by AWS to authenticate the operations (you can find this infos on 1password, the card is named Pundit-AWS).
+- `npm test`: Jest unit tests (`src/**/*.spec.ts`).
+- `npm run lint`: ESLint on TypeScript and templates.
+- `npm run stylelint`: Stylelint on the SCSS.
 
-So, the command to be launched is something like this:
-./push-prod.sh <branch> <aws_key> <aws_secret>
+### Builds
+
+Each build writes to `dist/<configuration>/`.
+
+| Command | Output |
+|---|---|
+| `npm run build:embed-stage` / `build:embed-prod` | `pundit.embed.js` for the embedded version |
+| `npm run build:chrome-ext-stage` / `build:chrome-ext-prod` | the unpacked Chrome extension (it builds the embed first) |
+| `npm run build:pdf-standalone-stage` / `build:pdf-standalone-prod` | the standalone PDF viewer |
+
+Prod builds need `src/environments/local.prod.ts`, generated like `local.stage.ts`.
+
+Each `build:chrome-ext-stage` increments the stage version in `scripts/.stage.version`.
+
+## Deploy
+
+### Embed (S3 + CloudFront)
+
+```bash
+./deploy.sh stage   # → s3://static-pundit/releases/stage
+./deploy.sh prod    # → s3://static-pundit/releases
+```
+
+The script installs the dependencies, builds the embed, syncs it to S3 and invalidates CloudFront.
+
+It needs:
+- the [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html);
+- AWS credentials in the environment (`AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY`) or an `AWS_PROFILE`. You can find them in 1Password, card "Pundit-AWS".
+
+### Chrome extension
+
+Build it with `npm run build:chrome-ext-<stage|prod>`, zip the content of `dist/chrome-ext-<stage|prod>/`, and upload it from the Chrome Web Store Developer Dashboard. Stage and prod are two separate store items.
