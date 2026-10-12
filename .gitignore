@@ -71,3 +71,6 @@ src/environments/chrome-ext-urls.stage.js
 
 # Variabili d'ambiente locali (chiavi API, mai committare)
 .env
+
+# Credenziali release (npm run deploy:*), mai committare
+scripts/.deploy.env
