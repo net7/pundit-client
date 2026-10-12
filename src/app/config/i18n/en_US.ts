@@ -132,6 +132,14 @@ export default {
     "The selected text is too long for AI annotation. Select a shorter passage and try again.",
   "toast#ai_error_no_active_api_key":
     "No active AI API key found. Add one in your AI settings to use AI annotations.",
+  "toast#ai_error_invalid_api_key":
+    "Your AI provider rejected the API key. Check or replace the key in your AI settings.",
+  "toast#ai_error_provider_quota_exceeded":
+    "Your AI provider reports that the credit or quota of your key is used up. Top it up with the provider or choose another key in your AI settings.",
+  "toast#ai_error_provider_rate_limited":
+    "Too many AI requests right now. Wait a moment and try again.",
+  "toast#ai_error_provider_timeout":
+    "The AI model took too long to answer. Try again, possibly with a shorter selection.",
   "toast#ai_error_provider_unavailable":
     "The AI provider of your active key is no longer available. Edit the key or choose another one in your AI settings.",
   "toast#ai_error_provider_host_not_found":
@@ -144,7 +152,7 @@ export default {
   "toast#ai_error_model_unavailable":
     "The selected AI model isn't available or may have been retired. Check your AI settings.",
   "toast#ai_error_invalid_structured_output":
-    "The AI model returned an unexpected response. Try again or choose another model.",
+    "The AI model returned an unexpected response. Try again or choose another model in your AI settings.",
   // annotation
   "annotation#changenotebook": "Change notebook",
   "annotation#addcomment": "Add comment",

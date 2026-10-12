@@ -37,6 +37,10 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       'toast#ai_error_generic',
       'toast#ai_error_payload_too_large',
       'toast#ai_error_no_active_api_key',
+      'toast#ai_error_invalid_api_key',
+      'toast#ai_error_provider_quota_exceeded',
+      'toast#ai_error_provider_rate_limited',
+      'toast#ai_error_provider_timeout',
       'toast#ai_error_provider_unavailable',
       'toast#ai_error_provider_host_not_found',
       'toast#ai_error_provider_url_blocked',
@@ -114,17 +118,21 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     expect(processMock).not.toHaveBeenCalled();
   });
 
-  it('shows the payload-too-large message for a 413 without a JSON body (proxy)', async () => {
+  it.each([
+    [413, 'payload_too_large'],
+    [429, 'provider_rate_limited'],
+    [504, 'provider_timeout'],
+  ])('shows the "%s"-status message for a response without a JSON body (proxy)', async (status, code) => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
     prepareMock.mockReturnValue({ request, chunkMap });
-    const error = { response: { status: 413, data: '<html>413 Request Entity Too Large</html>' } };
+    const error = { response: { status, data: `<html>${status}</html>` } };
     layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
 
     await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
 
     expect(layoutEH.handleError).not.toHaveBeenCalled();
     expect(layoutDS.toastService.error).toHaveBeenCalledWith(expect.objectContaining({
-      text: 'toast#ai_error_payload_too_large',
+      text: `toast#ai_error_${code}`,
     }));
     consoleError.mockRestore();
   });
@@ -132,6 +140,10 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   it.each([
     ['payload_too_large', 413],
     ['no_active_api_key', 400],
+    ['invalid_api_key', 422],
+    ['provider_quota_exceeded', 402],
+    ['provider_rate_limited', 429],
+    ['provider_timeout', 504],
     ['provider_unavailable', 422],
     ['provider_host_not_found', 422],
     ['provider_url_blocked', 422],
@@ -181,11 +193,14 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     it.each([
       ['no_active_api_key', 400],
+      ['invalid_api_key', 422],
+      ['provider_quota_exceeded', 402],
       ['provider_unavailable', 422],
       ['provider_host_not_found', 422],
       ['provider_url_blocked', 422],
       ['structured_output_unsupported', 422],
       ['model_unavailable', 422],
+      ['invalid_structured_output', 502],
     ])('keeps the "%s" toast open with a button to the AI settings', async (code, status) => {
       const params = await failWith(code, status);
 
@@ -208,7 +223,8 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     it.each([
       ['payload_too_large', 413],
-      ['invalid_structured_output', 502],
+      ['provider_rate_limited', 429],
+      ['provider_timeout', 504],
       ['unknown_code', 500],
     ])('adds no button for "%s"', async (code, status) => {
       const params = await failWith(code, status);

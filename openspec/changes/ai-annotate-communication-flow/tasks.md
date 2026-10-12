@@ -51,6 +51,7 @@
 - [x] 8.5 "Open AI settings" button on the toasts of the codes fixed in the AI settings (`no_active_api_key`, `structured_output_unsupported`, `model_unavailable`): toast stays open, the button opens `<userLink>settings/ai` in a new tab and closes the toast; en_US key `toast#ai_error_open_settings`; covered by the handler spec
 - [x] 8.6 Add the provider codes sent by the backend (`provider_unavailable`, `provider_host_not_found`, `provider_url_blocked`) to `AiAnnotateErrorCode`, with en_US messages and the settings button; covered by the handler spec
 - [x] 8.7 Pre-check the AI key on the tooltip's AI action: `has_active_ai_key?` on `LoginUser`, `state.hasActiveAiKey` (`true`/`false`/`null`) set by every SSO response in the identity handler; `false` → warning toast "AI annotation unavailable" with the settings button, no modal; settings toast params shared in `ai-settings-toast.util.ts`; covered by the tooltip and identity handler specs
+- [x] 8.8 Codes for the provider failures that today come back as a generic 500: `invalid_api_key`, `provider_quota_exceeded` (settings button), `provider_rate_limited`, `provider_timeout` (no button), with en_US messages; any 429 / 504 without a known code maps to the last two, like 413; `invalid_structured_output` gets the settings button too (its message points to choosing another model); covered by the handler spec
 
 ## 9. Generate retry and dead preview code
 
