@@ -3,6 +3,7 @@ import { of, Subject, throwError } from 'rxjs';
 import { AppEvent } from 'src/app/event-types';
 import { aiPreviewState$ } from 'src/app/components/edit-modal/edit-modal';
 import en_US from 'src/app/config/i18n/en_US';
+import { _c } from 'src/app/models/config';
 import { MainLayoutEditModalAiHandler } from './main-layout-edit-modal-ai.handler';
 import { prepareAiRequest } from './annotation-range-selector.util';
 import { processLLMResponse } from './annotation-llm-processor';
@@ -39,6 +40,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       'toast#ai_error_structured_output_unsupported',
       'toast#ai_error_model_unavailable',
       'toast#ai_error_invalid_structured_output',
+      'toast#ai_error_open_settings',
       'toast#ai_no_results_title',
       'toast#ai_no_results_text',
     ].forEach((key) => translate.setLangTranslation('en', key, key));
@@ -147,6 +149,64 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     expect(consoleError).toHaveBeenCalledWith(expect.any(String), code, 'detail');
     expect(en_US).toHaveProperty([`toast#ai_error_${code}`]);
     consoleError.mockRestore();
+  });
+
+  describe('errors fixed in the AI settings', () => {
+    let consoleError: jest.SpyInstance;
+    let windowOpen: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
+      prepareMock.mockReturnValue({ request, chunkMap });
+    });
+
+    afterEach(() => {
+      consoleError.mockRestore();
+      windowOpen.mockRestore();
+    });
+
+    const failWith = async (code: string, status: number) => {
+      const error = { response: { status, data: { error: 'backend text', code } } };
+      layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+      return layoutDS.toastService.error.mock.calls[0][0];
+    };
+
+    it.each([
+      ['no_active_api_key', 400],
+      ['structured_output_unsupported', 422],
+      ['model_unavailable', 422],
+    ])('keeps the "%s" toast open with a button to the AI settings', async (code, status) => {
+      const params = await failWith(code, status);
+
+      expect(params.autoClose).toBe(false);
+      expect(params.actions).toEqual([
+        { text: 'toast#ai_error_open_settings', payload: expect.any(String) },
+      ]);
+      expect(en_US).toHaveProperty(['toast#ai_error_open_settings']);
+    });
+
+    it('opens the AI settings page of the web app in a new tab and closes the toast', async () => {
+      const params = await failWith('no_active_api_key', 400);
+      const toast = { close: jest.fn(), update: jest.fn() };
+
+      params.onAction(params.actions[0].payload, toast);
+
+      expect(windowOpen).toHaveBeenCalledWith(`${_c('userLink')}settings/ai`, '_blank', 'noopener');
+      expect(toast.close).toHaveBeenCalled();
+    });
+
+    it.each([
+      ['payload_too_large', 413],
+      ['invalid_structured_output', 502],
+      ['unknown_code', 500],
+    ])('adds no button for "%s"', async (code, status) => {
+      const params = await failWith(code, status);
+
+      expect(params.actions).toBeUndefined();
+      expect(params.autoClose).toBeUndefined();
+    });
   });
 
   it('shows the "no results" toast when the response yields no annotations', async () => {

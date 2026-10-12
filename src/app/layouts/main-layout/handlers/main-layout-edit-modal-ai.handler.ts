@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import { Observable, firstValueFrom, from } from "rxjs";
 import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
-import { ToastInstance } from "src/app/services/toast.service";
+import { ToastInstance, ToastParams } from "src/app/services/toast.service";
 import { AnalyticsModel } from "src/common/models";
 import {
   AiAnnotateErrorCode,
@@ -48,6 +48,18 @@ const getAiErrorCode = (error: any): AiAnnotateErrorCode | undefined => {
   // A 413 can also come from a proxy (e.g. nginx) with no JSON body.
   return known ?? (error?.response?.status === 413 ? "payload_too_large" : undefined);
 };
+
+/** Page of the Pundit web app where the user manages the AI API keys. */
+const getAiSettingsLink = (): string => `${_c("userLink")}settings/ai`;
+
+const AI_SETTINGS_ACTION = "aisettings";
+
+/** Error codes the user fixes in the AI settings (API key, model). */
+const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
+  "no_active_api_key",
+  "structured_output_unsupported",
+  "model_unavailable",
+];
 
 export class MainLayoutEditModalAiHandler {
   private aiPreviewPayloads: any[] = [];
@@ -128,7 +140,29 @@ export class MainLayoutEditModalAiHandler {
       title: _t("toast#ai_error_title"),
       text: _t(code ? `toast#ai_error_${code}` : "toast#ai_error_generic"),
       timer: _c("toastTimer"),
+      ...(code && AI_SETTINGS_ERROR_CODES.includes(code)
+        ? this.getAiSettingsToastParams()
+        : {}),
     });
+  }
+
+  /** Button to the AI settings; the toast stays open so the user has time to click it. */
+  private getAiSettingsToastParams(): ToastParams {
+    return {
+      autoClose: false,
+      actions: [
+        {
+          text: _t("toast#ai_error_open_settings"),
+          payload: AI_SETTINGS_ACTION,
+        },
+      ],
+      onAction: (payload, toast) => {
+        if (payload === AI_SETTINGS_ACTION) {
+          window.open(getAiSettingsLink(), "_blank", "noopener");
+          toast.close();
+        }
+      },
+    };
   }
 
   private async requestAiPayloads(

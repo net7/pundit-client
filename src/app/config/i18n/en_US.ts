@@ -131,6 +131,7 @@ export default {
     "The selected text is too long for AI annotation. Select a shorter passage and try again.",
   "toast#ai_error_no_active_api_key":
     "No active AI API key found. Add one in your AI settings to use AI annotations.",
+  "toast#ai_error_open_settings": "Open AI settings",
   "toast#ai_error_structured_output_unsupported":
     "The selected AI model can't generate structured annotations. Choose another model in your AI settings.",
   "toast#ai_error_model_unavailable":
