@@ -47,8 +47,8 @@ The script SHALL abort unless all available versions are equal.
 - **THEN** the script warns that the S3 version is unknown, excludes S3 from the agreement check, and asks for an explicit `[y/N]` confirmation before continuing
 
 #### Scenario: Submission already in review
-- **WHEN** `fetchStatus` reports a submitted revision in state `PENDING_REVIEW`
-- **THEN** the script aborts, telling the developer to wait for the review or cancel it from the Developer Dashboard
+- **WHEN** `fetchStatus` reports a submitted revision in state `PENDING_REVIEW` or `STAGED` (approved, not yet published)
+- **THEN** the script aborts, telling the developer to wait for the review, or to publish or cancel the submission from the Developer Dashboard
 
 ### Requirement: Next-version suggestion without jumps
 The script SHALL only accept, without forcing, an allowed successor of the current version:
@@ -96,11 +96,13 @@ The developer SHALL be able to force a version that breaks the no-jump or agreem
 Before reading remote versions, the script SHALL verify each of the following and abort on the first failure:
 - the git working tree is clean (no staged, unstaged or untracked files);
 - for prod, the current branch is `master` and `HEAD` equals `origin/master` after `git fetch`;
-- the target tag does not already exist locally (checked again once the version is chosen);
 - the `zip` and `aws` commands are available on `PATH`;
+- the environment's configuration files pass the domain check;
+- the required credentials are set;
 - `aws sts get-caller-identity` succeeds;
-- a Chrome Web Store access token can be obtained from the configured credentials;
-- the environment's configuration files pass the domain check.
+- a Chrome Web Store access token can be obtained from the configured credentials.
+
+Local checks run before network checks. Once the version is chosen, the script SHALL also abort if its tag already exists locally.
 
 #### Scenario: Dirty tree
 - **WHEN** the working tree has uncommitted changes
@@ -175,7 +177,7 @@ The store upload SHALL count as complete only when the package is processed:
 - an `uploadState` of `IN_PROGRESS` makes the script poll `fetchStatus` until `lastAsyncUploadState` is `SUCCEEDED`;
 - `FAILED`, or a 120-second timeout, aborts before confirmation 2.
 
-The `crxVersion` of the processed upload SHALL equal the chosen version.
+When the upload response reports a `crxVersion`, it SHALL equal the chosen version. The asynchronous path does not report one; the manifest version is verified before zipping.
 
 #### Scenario: Asynchronous upload
 - **WHEN** the upload returns `IN_PROGRESS` and a later `fetchStatus` reports `lastAsyncUploadState` `SUCCEEDED`

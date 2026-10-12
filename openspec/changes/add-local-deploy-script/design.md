@@ -96,7 +96,7 @@ This matches `deploy.sh`, reuses the developer's existing profile and credential
 ### D6. Order of operations
 
 ```
-preflight (clean tree, prod branch, zip + aws on PATH, aws whoami, CWS token, env domains)
+preflight, local checks first (clean tree, prod branch, zip + aws on PATH, env domains, credentials) then network (aws whoami, CWS token)
   → read versions (local, store, S3) → agreement check
   → choose version → summary → CONFIRM 1
   → write version files → npm ci → npm run build:chrome-ext-<env> → verify artifacts
