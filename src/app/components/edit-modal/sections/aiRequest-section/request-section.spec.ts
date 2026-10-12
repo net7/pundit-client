@@ -28,7 +28,6 @@ describe('AiRequestSectionComponent > i18n', () => {
       { value: 'comment', label: 'editmodal#ai_type_comment' },
       { value: 'highlight', label: 'editmodal#ai_type_highlight' },
       { value: 'tags', label: 'editmodal#ai_type_tags' },
-      { value: 'semantic_annotation', label: 'editmodal#ai_type_semantic' },
     ]);
     KEYS.forEach((key) => expect(en_US).toHaveProperty([key]));
   });

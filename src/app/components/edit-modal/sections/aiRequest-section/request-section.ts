@@ -64,7 +64,8 @@ export class AiRequestSectionComponent
     { value: "comment", label: _t("editmodal#ai_type_comment") },
     { value: "highlight", label: _t("editmodal#ai_type_highlight") },
     { value: "tags", label: _t("editmodal#ai_type_tags") },
-    { value: "semantic_annotation", label: _t("editmodal#ai_type_semantic") },
+    // "semantic_annotation" hidden for now; the AI flow still supports it.
+    // To show it again: { value: "semantic_annotation", label: _t("editmodal#ai_type_semantic") },
   ];
 
   private destroy$: Subject<void> = new Subject();
