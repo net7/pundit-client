@@ -43,6 +43,8 @@ export enum CrossMsgRequestId {
   TagGet = 'tag.get',
   // semantic
   SemanticPredicateGet = 'semanticpredicate.get',
+  // ai
+  AiAnnotate = 'ai.annotate',
 }
 
 export enum CommonEventType {

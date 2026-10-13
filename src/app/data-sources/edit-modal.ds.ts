@@ -1,8 +1,8 @@
-import { DataSource, _t } from '@net7/core';
-import { uniqueId } from 'lodash';
-import { Subject } from 'rxjs';
-import { EditModalData } from '../components/edit-modal/edit-modal';
-import { EditModalParams, FormSectionData } from '../types';
+import { DataSource, _t } from "@net7/core";
+import { uniqueId } from "lodash";
+import { Subject } from "rxjs";
+import { EditModalData } from "../components/edit-modal/edit-modal";
+import { EditModalParams, FormSectionData } from "../types";
 
 export class EditModalDS extends DataSource {
   private draggableInstance: any;
@@ -10,26 +10,19 @@ export class EditModalDS extends DataSource {
   private defaultPosition!: { x: number; y: number };
 
   transform(data: EditModalParams): EditModalData {
-    const {
-      textQuote,
-      saveButtonLabel,
-      sections,
-      validation
-    } = data;
+    const { textQuote, saveButtonLabel, sections, validation } = data;
 
     const formSections: {
       [id: string]: FormSectionData<unknown, unknown>;
     } = {};
 
-    sections.forEach(({
-      id, value, options, required, focus
-    }) => {
+    sections.forEach(({ id, value, options, required, focus }) => {
       formSections[id] = {
         changed$: new Subject(),
         initialValue: value || null,
         options: options || {},
         required: !!required,
-        focus: !!focus
+        focus: !!focus,
       };
     });
 
@@ -37,18 +30,25 @@ export class EditModalDS extends DataSource {
       textQuote,
       visible: true,
       header: {
-        label: _t('editmodal#label'),
+        label: _t("editmodal#label"),
       },
       sections: formSections,
       actions: {
         cancel: {
-          label: _t('editmodal#cancel')
+          label: _t("editmodal#cancel"),
         },
         save: {
-          label: saveButtonLabel || _t('editmodal#save'),
-          classes: 'pnd-btn-cta',
+          label: saveButtonLabel || _t("editmodal#save"),
+          classes: "pnd-btn-cta",
           disabled: true,
-        }
+        },
+        aiGenerate: {
+          label: _t("editmodal#ai_generate"),
+        },
+        aiSaveAll: {
+          label: _t("editmodal#ai_save_all"),
+          classes: "pnd-btn-cta",
+        },
       },
       _internalId: uniqueId(),
       _setDraggableInstance: (instance) => {
@@ -56,16 +56,16 @@ export class EditModalDS extends DataSource {
         const { x, y } = this.draggableInstance.get();
         this.defaultPosition = { x, y };
       },
-      validation
+      validation,
     };
   }
 
   public isVisible = () => this.output?.visible;
 
   public close() {
-    this.setOutput({ visible: false });
+    this.setOutput({ visible: false, aiPreviewActive: false });
     if (this.draggableInstance && this.defaultPosition) {
-      const { x, y } = this.defaultPosition;
+      const { x, y } = this.draggableInstance.get();
       this.draggableInstance.set(x, y);
     }
   }
@@ -77,7 +77,7 @@ export class EditModalDS extends DataSource {
   private setOutput(update: Partial<EditModalData>) {
     this.output = {
       ...this.output,
-      ...update
+      ...update,
     };
     this.out$.next(this.output);
   }

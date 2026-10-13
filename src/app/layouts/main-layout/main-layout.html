@@ -1,29 +1,41 @@
 <div class="pnd-main">
-    <!-- Sidebar -->
-    <sidebar-layout [appEvent$]="appEvent$"></sidebar-layout>
-    <!-- Tooltip template -->
-    <pnd-tooltip [data]="lb.widgets['tooltip'].ds.out$ | async"
-                 [emit]="lb.widgets['tooltip'].emit">
-    </pnd-tooltip>
-    <!-- Edit modal template -->
-    <pnd-edit-modal [data]="lb.widgets['edit-modal'].ds.out$ | async"
-                    [emit]="lb.widgets['edit-modal'].emit">
-    </pnd-edit-modal>
-    <!-- Delete annotation template -->
-    <pnd-delete-modal [data]="lb.widgets['delete-modal'].ds.out$ | async"
-                      [emit]="lb.widgets['delete-modal'].emit">
-    </pnd-delete-modal>
-    <!-- Pdf error modal -->
-    <pnd-pdf-error-modal [data]="lb.widgets['pdf-error-modal'].ds.out$ | async"
-                      [emit]="lb.widgets['pdf-error-modal'].emit">
-    </pnd-pdf-error-modal>
-    <!-- Notebook share modal -->
-    <pnd-notebook-share-modal [data]="lb.widgets['notebook-share-modal'].ds.out$ | async"
-                      [emit]="lb.widgets['notebook-share-modal'].emit">
-    </pnd-notebook-share-modal>
-    <!-- Toast template -->
-    <pnd-toast [data]="toastService.data$ | async"
-               [emit]="toastService.componentEmit.bind(toastService)">
-    </pnd-toast>
-    <lib-pundit-login></lib-pundit-login>
+  <!-- Sidebar -->
+  <sidebar-layout [appEvent$]="appEvent$"></sidebar-layout>
+  <!-- Tooltip template -->
+  <pnd-tooltip
+    [data]="lb.widgets['tooltip'].ds.out$ | async"
+    [emit]="lb.widgets['tooltip'].emit"
+  >
+  </pnd-tooltip>
+  <!-- Edit modal template -->
+  <pnd-edit-modal
+    [data]="lb.widgets['edit-modal'].ds.out$ | async"
+    [emit]="lb.widgets['edit-modal'].emit"
+  >
+  </pnd-edit-modal>
+  <!-- Delete annotation template -->
+  <pnd-delete-modal
+    [data]="lb.widgets['delete-modal'].ds.out$ | async"
+    [emit]="lb.widgets['delete-modal'].emit"
+  >
+  </pnd-delete-modal>
+  <!-- Pdf error modal -->
+  <pnd-pdf-error-modal
+    [data]="lb.widgets['pdf-error-modal'].ds.out$ | async"
+    [emit]="lb.widgets['pdf-error-modal'].emit"
+  >
+  </pnd-pdf-error-modal>
+  <!-- Notebook share modal -->
+  <pnd-notebook-share-modal
+    [data]="lb.widgets['notebook-share-modal'].ds.out$ | async"
+    [emit]="lb.widgets['notebook-share-modal'].emit"
+  >
+  </pnd-notebook-share-modal>
+  <!-- Toast template -->
+  <pnd-toast
+    [data]="toastService.data$ | async"
+    [emit]="toastService.componentEmit.bind(toastService)"
+  >
+  </pnd-toast>
+  <lib-pundit-login></lib-pundit-login>
 </div>

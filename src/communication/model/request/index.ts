@@ -3,3 +3,4 @@ export * from './search-annotation-params.interface';
 export * from './search-notebook-params.interface';
 export * from './login.interface';
 export * from './signup.interface';
+export * from './ai-annotate-request.interface';

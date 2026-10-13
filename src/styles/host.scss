@@ -26,6 +26,18 @@ pnd-mark.pnd-mark.is-hovered {
 }
 
 // ------------------------------------ //
+// #AI PREVIEW HIGHLIGHT
+// ------------------------------------ //
+pnd-mark.pnd-mark-preview {
+    background-color: rgba($color: #ff9800, $alpha: 0.4);
+    border-bottom: 2px solid #ff9800;
+}
+
+pnd-mark.pnd-mark-preview:hover {
+    cursor: default;
+}
+
+// ------------------------------------ //
 // #HOST BODY
 // ------------------------------------ //
 body.pnd-annotation-sidebar-expanded {
@@ -39,7 +51,7 @@ body.pnd-document-is-pdf {
     position: static;
     margin-right: 15px;
     width: auto;
-    
+
     &.pnd-annotation-sidebar-expanded {
         margin-right: 326px;
     }
