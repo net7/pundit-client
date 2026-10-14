@@ -1,5 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
-/* eslint-disable @typescript-eslint/no-var-requires */
 const path = require('path');
 const webpack = require('webpack');
 
@@ -21,6 +19,8 @@ const common = {
   },
   resolve: {
     extensions: ['.ts', '.js'],
+    // Mirror tsconfig `baseUrl: './'` so absolute imports like `src/communication` resolve.
+    modules: [path.resolve(__dirname), 'node_modules'],
   },
   plugins: [
     new webpack.DefinePlugin({

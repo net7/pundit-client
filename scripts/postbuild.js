@@ -1,7 +1,3 @@
-/* eslint-disable no-console */
-/* eslint-disable @typescript-eslint/no-var-requires */
-/* eslint-disable import/no-extraneous-dependencies */
-
 const argv = require('minimist')(process.argv.slice(2));
 const fs = require('fs-extra');
 const path = require('path');

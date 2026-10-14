@@ -1,23 +1,30 @@
 import {
   AfterContentChecked,
+  OnInit,
+  OnDestroy,
   Component,
   Input,
   ElementRef,
   ViewChild,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  inject
-} from '@angular/core';
-import { FormSectionData } from 'src/app/types';
-import Draggable from 'draggable';
-import { merge, Subject } from 'rxjs';
-import { isEmpty } from 'lodash';
-import { EditModalEvent, getEventType } from 'src/app/event-types';
-import { SvgIconComponent } from '../svg-icon/svg-icon';
-import { CommentSectionComponent } from './sections/comment-section/comment-section';
-import { SemanticSectionComponent } from './sections/semantic-section/semantic-section';
-import { TagsSectionComponent } from './sections/tags-section/tags-section';
-import { NotebookSectionComponent } from './sections/notebook-section/notebook-section';
+  inject,
+} from "@angular/core";
+import { FormSectionData } from "src/app/types";
+import Draggable from "draggable";
+import { merge, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { isEmpty } from "lodash";
+import { EditModalEvent, getEventType } from "src/app/event-types";
+import { SvgIconComponent } from "../svg-icon/svg-icon";
+import { CommentSectionComponent } from "./sections/comment-section/comment-section";
+import { SemanticSectionComponent } from "./sections/semantic-section/semantic-section";
+import { TagsSectionComponent } from "./sections/tags-section/tags-section";
+import { NotebookSectionComponent } from "./sections/notebook-section/notebook-section";
+import {
+  AiRequestSectionComponent,
+  AiRequestSectionValue,
+} from "./sections/aiRequest-section/request-section";
 
 /**
  * Interface for EditModal's "data"
@@ -34,13 +41,16 @@ export interface EditModalData {
   actions: {
     cancel: EditModalAction;
     save: EditModalAction;
+    aiGenerate: EditModalAction;
+    aiSaveAll: EditModalAction;
   };
   validation?: {
     required?: {
-      condition: 'AND' | 'OR';
+      condition: "AND" | "OR";
     };
   };
   hideActions?: boolean;
+  aiPreviewActive?: boolean;
   _setDraggableInstance: (instance: any) => void;
   _internalId: string;
 }
@@ -49,25 +59,37 @@ export type EditModalAction = {
   label: string;
   classes?: string;
   disabled?: boolean;
-}
+};
 
 export type EditModalFormState = {
   [id: string]: {
     value: unknown;
     errors?: string[];
   };
-}
+};
+
+// Subject condiviso per comunicare tra handler e componente
+export const aiPreviewState$ = new Subject<boolean>();
 
 @Component({
-    selector: 'pnd-edit-modal',
-    templateUrl: './edit-modal.html',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [SvgIconComponent, CommentSectionComponent, SemanticSectionComponent, TagsSectionComponent, NotebookSectionComponent]
+  selector: "pnd-edit-modal",
+  templateUrl: "./edit-modal.html",
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SvgIconComponent,
+    CommentSectionComponent,
+    SemanticSectionComponent,
+    TagsSectionComponent,
+    NotebookSectionComponent,
+    AiRequestSectionComponent,
+  ],
 })
-export class EditModalComponent implements AfterContentChecked {
+export class EditModalComponent
+  implements AfterContentChecked, OnInit, OnDestroy
+{
   private changeDetectorRef = inject(ChangeDetectorRef);
 
-  @ViewChild('saveButton') saveButton!: ElementRef;
+  @ViewChild("saveButton") saveButton!: ElementRef;
 
   @Input() public data!: EditModalData;
 
@@ -79,20 +101,59 @@ export class EditModalComponent implements AfterContentChecked {
 
   private formState: EditModalFormState = {};
 
-  public draggableTarget = 'pnd-modal-draggable-target';
+  private lastPrompt = "";
 
-  public draggableHandle = 'pnd-modal-draggable-handle';
+  private lastAnnotationType = "highlight";
+
+  public draggableTarget = "pnd-modal-draggable-target";
+
+  public draggableHandle = "pnd-modal-draggable-handle";
 
   public draggableInstance: any;
 
   public reset$: Subject<void> = new Subject();
 
+  private destroy$ = new Subject<void>();
+
+  public get aiPreviewActive(): boolean {
+    return this.data?.aiPreviewActive === true;
+  }
+
+  public get disableGenerate(): boolean {
+    const textValue = typeof this.value === "string" && this.value.trim();
+    if (!textValue || textValue.length < 3) {
+      return true;
+    }
+    return (
+      textValue === this.lastPrompt &&
+      this.annotationType === this.lastAnnotationType
+    );
+  }
+
   ngAfterContentChecked() {
     this.init();
   }
 
+  ngOnInit() {
+    // Ascolta lo stato della preview AI
+    aiPreviewState$.pipe(takeUntil(this.destroy$)).subscribe((active) => {
+      this.data = { ...this.data, aiPreviewActive: active as boolean };
+      if (!active) {
+        // generation ended without previews (error, no results): allow retrying the same prompt
+        this.lastPrompt = "";
+        this.lastAnnotationType = "highlight";
+      }
+      this.changeDetectorRef.markForCheck();
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
   onClose(target?: { className: string }) {
-    if (target && target.className !== 'pnd-comment-modal__overlay') {
+    if (target && target.className !== "pnd-comment-modal__overlay") {
       return;
     }
     this.emit(getEventType(EditModalEvent.Close));
@@ -102,14 +163,43 @@ export class EditModalComponent implements AfterContentChecked {
     this.emit(getEventType(EditModalEvent.Save), this.formState);
   }
 
+  onAiAccept() {
+    this.emit(getEventType(EditModalEvent.AiAccept));
+  }
+
+  private get aiRequestValue(): AiRequestSectionValue {
+    return (this.formState?.aiRequest?.value as AiRequestSectionValue) ?? null;
+  }
+
+  get value(): string {
+    return this.aiRequestValue?.prompt || "";
+  }
+
+  get annotationType(): string {
+    return this.aiRequestValue?.annotationType || "highlight";
+  }
+
+  onGenerate() {
+    const textValue = typeof this.value === "string" && this.value.trim();
+    if (textValue && textValue.length >= 3) {
+      this.lastPrompt = textValue;
+      this.lastAnnotationType = this.annotationType;
+      this.emit(getEventType(EditModalEvent.AiGenerate), {
+        prompt: textValue,
+        annotationType: this.annotationType,
+      });
+    }
+  }
+
   private init = () => {
-    // if modal is already loaded check for unique id
-    // generated by edit-modal.ds transform
-    if (this.data?._internalId && (this.data?._internalId !== this.lastInternalId)) {
+    if (
+      this.data?._internalId &&
+      this.data?._internalId !== this.lastInternalId
+    ) {
       this.lastInternalId = this.data?._internalId;
       this.loaded = false;
-      // symbolic timeout to wait
-      // for data refresh
+      this.lastPrompt = "";
+      this.lastAnnotationType = "highlight";
       setTimeout(() => {
         this.reset$.next();
         this.changeDetectorRef.markForCheck();
@@ -117,20 +207,15 @@ export class EditModalComponent implements AfterContentChecked {
     }
     if (!this.loaded && this.data?.visible) {
       this.loaded = true;
-
-      // init draggable
       this.initDraggableInstance();
-      // initial form state
       this.initFormState();
-      // init changed$ listener
       this.initChangedListener();
     }
   };
 
   private initDraggableInstance = () => {
-    // fix element dom loaded
     setTimeout(() => {
-      const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
+      const { shadowRoot } = document.getElementsByTagName("pnd-root")[0];
       const target = shadowRoot!.getElementById(this.draggableTarget);
       const handle = shadowRoot!.getElementById(this.draggableHandle);
       const limit = this.getDragLimit(target);
@@ -141,37 +226,31 @@ export class EditModalComponent implements AfterContentChecked {
   };
 
   private initFormState = () => {
-    // reset form state
     this.formState = {};
     const { sections } = this.data;
-    this.formState = Object.keys(sections).reduce<EditModalFormState>((state, key) => {
-      const { initialValue } = sections[key];
-      return {
-        ...state,
-        [key]: {
-          value: initialValue || null
-        }
-      };
-    }, {});
-
-    // update save button state
-    // with initial form state values
+    this.formState = Object.keys(sections).reduce<EditModalFormState>(
+      (state, key) => {
+        const { initialValue } = sections[key];
+        return {
+          ...state,
+          [key]: {
+            value: initialValue || null,
+          },
+        };
+      },
+      {},
+    );
     this.updateSaveButtonState();
   };
 
   private initChangedListener = () => {
     const { sections } = this.data;
-    const sources$ = Object.keys(sections)
-      .map((key) => sections[key].changed$);
-
-    // listen to sections changed$
+    const sources$ = Object.keys(sections).map((key) => sections[key].changed$);
     merge(...sources$).subscribe(({ id, value, errors }) => {
       this.formState = {
         ...this.formState,
-        [id]: { value, errors }
+        [id]: { value, errors },
       };
-
-      // update save button state
       this.updateSaveButtonState();
     });
   };
@@ -179,13 +258,13 @@ export class EditModalComponent implements AfterContentChecked {
   private updateSaveButtonState() {
     const { sections, validation } = this.data;
     const sectionErrors = Object.keys(sections).map((key) => {
-      // check for errors
       const currentSectionErrors = this.formState[key]?.errors;
-      return !!(Array.isArray(currentSectionErrors) && currentSectionErrors.length);
+      return !!(
+        Array.isArray(currentSectionErrors) && currentSectionErrors.length
+      );
     });
 
     const requiredErrors = Object.keys(sections).map((key) => {
-      // check required
       const sectionValue = this.formState[key]?.value;
       return !!(sections[key].required && isEmpty(sectionValue));
     });
@@ -197,19 +276,20 @@ export class EditModalComponent implements AfterContentChecked {
       disabled = true;
     } else if (hasRequiredErrors) {
       const numOfErrors = requiredErrors.filter((value) => !!value).length;
-      const isOrCondition = validation?.required?.condition === 'OR';
-      disabled = !!(isOrCondition ? numOfErrors === (requiredErrors.length - 1) : numOfErrors);
+      const isOrCondition = validation?.required?.condition === "OR";
+      disabled = !!(isOrCondition
+        ? numOfErrors === requiredErrors.length - 1
+        : numOfErrors);
     }
-    // update save button
     this.data = {
       ...this.data,
       actions: {
         ...this.data.actions,
         save: {
           ...this.data.actions.save,
-          disabled
-        }
-      }
+          disabled,
+        },
+      },
     };
     this.changeDetectorRef.markForCheck();
   }
@@ -218,8 +298,14 @@ export class EditModalComponent implements AfterContentChecked {
     if (!target) {
       return null;
     }
-    const vw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-    const vh = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+    const vw = Math.max(
+      document.documentElement.clientWidth || 0,
+      window.innerWidth || 0,
+    );
+    const vh = Math.max(
+      document.documentElement.clientHeight || 0,
+      window.innerHeight || 0,
+    );
     const tw = Math.max(target.clientWidth || 200);
     const th = Math.max(target.clientHeight || 200);
     return { x: [0, vw - tw], y: [0, vh - th] };

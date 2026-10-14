@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Annotation, SemanticTripleType } from '@pundit/communication';
+import { Annotation, SemanticTripleType } from 'src/communication';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ImageDataService } from 'src/app/services/image-data.service';

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
 import { _t } from '@net7/core';
-import { Reply, ReplyAttributes, SocialType } from '@pundit/communication';
+import { Reply, ReplyAttributes, SocialType } from 'src/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { AnnotationEvent, getEventType } from 'src/app/event-types';

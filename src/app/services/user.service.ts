@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { User } from '@pundit/communication';
+import { User } from 'src/communication';
 import { BehaviorSubject } from 'rxjs';
 import { AnalyticsModel } from 'src/common/models';
 import { _c } from '../models/config';

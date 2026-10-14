@@ -4,7 +4,7 @@ import { tooltipModel } from 'src/app/models/tooltip-model';
 import { AppEvent, getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { EditModalParams, LayoutHandler } from 'src/app/types';
 import { _t } from '@net7/core';
-import { Annotation, SemanticTripleType } from '@pundit/communication';
+import { Annotation, SemanticTripleType } from 'src/communication';
 import { cloneDeep } from 'lodash';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -226,9 +226,6 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.tagService.clear();
     this.layoutDS.semanticPredicateService.clear();
     this.layoutDS.userService.logout();
-
-    // close verify toast
-    this.layoutDS.closeEmailVerifiedToast();
 
     // emit signals
     this.layoutDS.annotationService.totalChanged$.next(0);

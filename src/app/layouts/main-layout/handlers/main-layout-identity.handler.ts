@@ -1,6 +1,8 @@
 import { _t } from '@net7/core';
-import { LoginResponse, SuccessLoginResponse } from '@pundit/communication';
-import { delay, filter, first } from 'rxjs/operators';
+import { LoginResponse, SuccessLoginResponse } from 'src/communication';
+import {
+  delay, filter, first, tap
+} from 'rxjs/operators';
 import {
   AppEvent, getEventType, MainLayoutEvent
 } from 'src/app/event-types';
@@ -35,7 +37,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doInitRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user } = resp;
@@ -47,8 +49,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           this.layoutDS.notebookService.setSelected(user.current_notebook);
           // emit signal
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
-          // check user verify
-          this.layoutDS.checkUserVerified(user);
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           this.loginAlert();
           // emit signal
@@ -58,7 +58,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doLoginRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       .subscribe((resp: LoginResponse) => {
         if ('user' in resp) {
           const { user } = resp;
@@ -87,13 +87,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
             // waiting for elastic-search index update
             this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
           }, _c('indexUpdateDelay'));
-
-          // user verified check
-          setTimeout(() => {
-            this.layoutDS.checkUserVerified(user);
-            // trigger change detector
-            this.layoutEH.detectChanges();
-          });
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           // error toast
           console.warn('Identity login response error', resp);
@@ -109,7 +102,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
   }
 
   private doSyncRequest() {
-    this.layoutDS.punditLoginService.sso()
+    this.sso$()
       // eslint-disable-next-line complexity -- Existing identity sync branches predate the flat-config migration.
       .subscribe((resp: LoginResponse) => {
         const currentUser = this.layoutDS.userService.whoami();
@@ -135,6 +128,8 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
                   callback: () => {
                   // clear toasts
                     this.layoutDS.toastService.clear();
+                    // close the login modal (e.g. still on "Check your inbox")
+                    this.layoutDS.punditLoginService.stop();
                     // trigger auto-login
                     this.layoutDS.userService.iam(user);
                     // set notifications
@@ -149,9 +144,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
               });
             }
           }
-
-          // check user verify
-          this.layoutDS.checkUserVerified(user);
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           // check user on client
           if (currentUser) {
@@ -168,6 +160,16 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           }
         }
       });
+  }
+
+  /** SSO request that also stores whether the user has an active AI key. */
+  private sso$() {
+    return this.layoutDS.punditLoginService.sso().pipe(
+      tap((resp: LoginResponse) => {
+        const hasKey = 'user' in resp ? resp.user?.has_active_ai_key : undefined;
+        this.layoutDS.state.hasActiveAiKey = typeof hasKey === 'boolean' ? hasKey : null;
+      })
+    );
   }
 
   private loginAlert() {

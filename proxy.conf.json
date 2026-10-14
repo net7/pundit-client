@@ -1,0 +1,23 @@
+{
+  "/ai": {
+    "target": "https://app.thepund.test",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "cookieDomainRewrite": {"*": "localhost"}
+  },
+  "/api": {
+    "target": "https://app.thepund.test",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "cookieDomainRewrite": {"*": "localhost"}
+  },
+  "/sanctum": {
+    "target": "https://app.thepund.test",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "cookieDomainRewrite": {"*": "localhost"}
+  }
+}

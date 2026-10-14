@@ -15,8 +15,19 @@ describe('EditModalDS', () => {
     [
       'editmodal#label',
       'editmodal#cancel',
-      'editmodal#save'
+      'editmodal#save',
+      'editmodal#ai_generate',
+      'editmodal#ai_save_all'
     ].forEach((key) => translate.setLangTranslation('en', key, key));
+  });
+
+  it('takes the AI action labels from i18n', () => {
+    const dataSource = new EditModalDS();
+
+    dataSource.run(params);
+
+    expect(dataSource.out$.value.actions.aiGenerate.label).toBe('editmodal#ai_generate');
+    expect(dataSource.out$.value.actions.aiSaveAll.label).toBe('editmodal#ai_save_all');
   });
 
   it('emits a new hidden output when closed', () => {

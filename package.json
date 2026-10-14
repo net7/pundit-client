@@ -3,11 +3,14 @@
   "version": "1.13.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --proxy-config proxy.conf.json",
     "build": "ng build",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:mocha": "mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts",
+    "deploy:stage": "node scripts/deploy.js stage",
+    "deploy:prod": "node scripts/deploy.js prod",
+    "test:scripts":"node --test \"scripts/**/*.test.js\"",
+    "test:mocha":"mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts",
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.html\"",
     "e2e": "ng e2e",
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
@@ -40,11 +43,10 @@
     "@net7/annotator": "^1.1.0",
     "@net7/core": "^4.1.0",
     "@popperjs/core": "^2.6.0",
-    "@pundit/common": "git+ssh://git@github.com/net7/pundit-common.git#develop",
-    "@pundit/communication": "git+ssh://git@github.com/net7/pundit-communication.git#develop",
     "@pundit/icon-font": "git+ssh://git@github.com/net7/pundit-icon-font.git#v1.1.0",
+    "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@yaireo/tagify": "^4.3.0",
-    "axios": "^0.21.0",
+    "axios": "^0.26.1",
     "document-register-element": "^1.7.2",
     "draggable": "^4.2.0",
     "faker": "^5.1.0",
@@ -80,6 +82,7 @@
     "@angular/language-service": "^22.0.1",
     "@eslint/js": "^10.0.1",
     "@fission-ai/openspec": "^1.4.1",
+    "@googleapis/chromewebstore": "7.0.0",
     "@types/chrome": "0.0.235",
     "@types/faker": "^5.1.5",
     "@types/jest": "^30.0.0",
@@ -110,8 +113,10 @@
     "webpack": "^5.0.0",
     "webpack-cli": "^4.0.0"
   },
+  "packageManager": "npm@10.9.8",
   "engines": {
-    "node": "^22.22.3 || ^24.15.0 || >=26.0.0"
+    "node": "^22.22.3 || ^24.15.0 || >=26.0.0",
+    "npm": "^10.9.8"
   },
   "overrides": {
     "rxjs": "~7.8.0"

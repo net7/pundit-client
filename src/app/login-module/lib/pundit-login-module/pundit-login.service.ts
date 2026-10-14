@@ -1,10 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { from, Observable, of } from 'rxjs';
-import { LoginResponse } from '@pundit/communication';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { LoginResponse } from 'src/communication';
 import { ModalService, AuthEventService } from '../services';
 import { AuthModel } from '../../../../common/models';
-import { responseTransformer, transformFromHttpError } from '../helpers/transformer.helper';
+import { responseTransformer } from '../helpers/transformer.helper';
 
 @Injectable({
   providedIn: 'root'
@@ -26,13 +25,6 @@ export class PunditLoginService {
 
   logout() {
     return AuthModel.logout();
-  }
-
-  verifyEmail() {
-    return from(AuthModel.verifyEmail()).pipe(
-      map((resp) => resp.data),
-      catchError((err) => of(transformFromHttpError(err, 'verify')))
-    );
   }
 
   sso() {

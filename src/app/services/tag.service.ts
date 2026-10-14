@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Tag } from '@pundit/communication';
+import { Tag } from 'src/communication';
 import { BehaviorSubject, Subject } from 'rxjs';
 
 @Injectable({

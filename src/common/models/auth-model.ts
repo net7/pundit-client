@@ -1,4 +1,4 @@
-import { auth, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
+import { auth, UserLoginRequestParams, UserSignupRequestParams } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 
@@ -18,9 +18,9 @@ export class AuthModel {
     return auth.logout();
   }
 
-  @CrossMessage(CrossMsgRequestId.AuthVerifyMail)
-  public static verifyEmail() {
-    return auth.verifyMail();
+  @CrossMessage(CrossMsgRequestId.AuthResendVerificationMail)
+  static resendVerificationMail(requestPayload: UserLoginRequestParams) {
+    return auth.resendVerificationMail(requestPayload);
   }
 
   @CrossMessage(CrossMsgRequestId.AuthSso)

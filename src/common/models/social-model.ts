@@ -1,4 +1,4 @@
-import { social, SocialAttributes } from '@pundit/communication';
+import { social, SocialAttributes } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 

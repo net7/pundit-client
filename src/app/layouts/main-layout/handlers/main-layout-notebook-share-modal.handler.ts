@@ -11,7 +11,7 @@ import {
 import {
   AppEvent, getEventType, MainLayoutEvent, NotebookShareModalEvent
 } from 'src/app/event-types';
-import { NotebookPermissions } from '@pundit/communication';
+import { NotebookPermissions } from 'src/communication';
 import { NotebookShareModalDS } from 'src/app/data-sources';
 import { LayoutHandler } from 'src/app/types';
 import { MainLayoutDS } from '../main-layout.ds';

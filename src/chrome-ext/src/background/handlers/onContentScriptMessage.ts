@@ -1,4 +1,4 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from 'src/communication';
 // import mixpanel from 'mixpanel-browser';
 import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '.';
@@ -46,7 +46,7 @@ export const onContentScriptMessage = (
       break;
     case CommonEventType.DocumentInfoResponse:
       CommunicationSettings.apiBaseUrl = CommunicationSettings.apiBaseUrl || API_BASE_URL;
-      CommunicationSettings.token = null as any;
+      CommunicationSettings.token = null;
       helpers.doPageAnnotationsRequest(tab.id!, payload).then(({ tabId, total }) => {
         if (tabId === tab.id && total !== null) {
           helpers.updateBadgeText(tab.id!, total);

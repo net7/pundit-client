@@ -1,16 +1,22 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import {
+  Component, ChangeDetectionStrategy, ChangeDetectorRef, EventEmitter, OnDestroy, Output, inject
+} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { first, switchMap } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import { first, switchMap, takeUntil } from 'rxjs/operators';
+import { UserLoginRequestParams } from 'src/communication';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
-import { EmailAuthProvider, OAuthProvider, TermsParameters } from '../../interfaces';
+import {
+  EmailAuthProvider, OAuthProvider, TermsParameters
+} from '../../interfaces';
 import { LoginConfigurationService } from '../../services/configuration.service';
 import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
 import { environment as env } from '../../../../../environments/environment';
 import { SvgIconComponent } from '../svg-icon/svg-icon';
+import { VerifyEmailComponent } from '../verify-email/verify-email.component';
 import { NgClass } from '@angular/common';
 
 @Component({
@@ -18,9 +24,9 @@ import { NgClass } from '@angular/common';
     templateUrl: './signin.component.html',
     styleUrls: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [SvgIconComponent, FormsModule, ReactiveFormsModule, NgClass]
+    imports: [SvgIconComponent, FormsModule, ReactiveFormsModule, NgClass, VerifyEmailComponent]
 })
-export class SignInComponent {
+export class SignInComponent implements OnDestroy {
   private configService = inject(LoginConfigurationService);
   private emailProviderService = inject(EmailProviderService);
   private oauthProviderService = inject(OauthProviderService);
@@ -45,6 +51,17 @@ export class SignInComponent {
 
   lostPasswordLink = `${env.userLink}password/reset`;
 
+  /** Set while the email is not confirmed: the credentials "Check your inbox" uses. */
+  verifyCredentials: UserLoginRequestParams | null = null;
+
+  /** Whether "Check your inbox" replaces the form. */
+  @Output() verifyingChange = new EventEmitter<boolean>();
+
+  /** Credentials of the login in flight, kept only until its response. */
+  private submitted: UserLoginRequestParams | null = null;
+
+  private destroyed$ = new Subject<void>();
+
   constructor() {
     const oauth = this.configService.getOAuthProviders();
     const email = this.configService.getEmailProvider();
@@ -52,8 +69,29 @@ export class SignInComponent {
     this.initProviders(oauth, email);
     this.emailProviderService.isLoading$.subscribe((val) => {
       this.isLoading = !!val;
+      if (!val) {
+        // request settled: drop its credentials
+        this.submitted = null;
+      }
       this.changeDetectorRef.markForCheck();
     });
+    this.emailProviderService.mustVerifyEmail$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+        if (this.submitted) {
+          this.setVerifyCredentials(this.submitted);
+          this.submitted = null;
+        }
+        this.changeDetectorRef.markForCheck();
+      });
+  }
+
+  ngOnDestroy(): void {
+    // drop the credentials
+    this.verifyCredentials = null;
+    this.submitted = null;
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private initProviders(oauthProviders: OAuthProvider[], emailProvider: EmailAuthProvider) {
@@ -119,12 +157,26 @@ export class SignInComponent {
       this.serviceErrorMessage = errorMessage;
       this.changeDetectorRef.markForCheck();
     });
+    const { email, password } = this.loginForm.value;
+    this.submitted = { email, password };
     this.emailProviderService.login(this.loginForm.value, this.terms);
 
     // analytics
     AnalyticsModel.track({
       action: AnalyticsAction.LoginEmailClick
     });
+  }
+
+  /** Back to the form after "Sign out", without the password. */
+  onSignedOut() {
+    this.setVerifyCredentials(null);
+    this.loginForm.patchValue({ password: '' });
+    this.loginForm.get('password')!.markAsUntouched();
+  }
+
+  private setVerifyCredentials(credentials: UserLoginRequestParams | null) {
+    this.verifyCredentials = credentials;
+    this.verifyingChange.emit(!!credentials);
   }
 
   getErrorMessage = (input: string) => {

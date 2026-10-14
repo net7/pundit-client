@@ -23,6 +23,9 @@ export class ModalComponent implements OnDestroy {
 
   status: modalStateType = 'SIGNIN';
 
+  /** "Check your inbox" replaces the screen: no link to the other screen. */
+  isVerifying = false;
+
   private destroyed$ = new Subject<void>();
 
   constructor() {
@@ -32,6 +35,7 @@ export class ModalComponent implements OnDestroy {
       .pipe(takeUntil(this.destroyed$))
       .subscribe((value) => {
         this.status = this.modalService.isRegister ? 'SIGNUP' : 'SIGNIN';
+        this.isVerifying = false;
         this.show = value;
         this.changeDetectorRef.markForCheck();
       });
@@ -42,9 +46,15 @@ export class ModalComponent implements OnDestroy {
     this.destroyed$.complete();
   }
 
-  signin(event: Event) {
-    event.preventDefault();
+  signin(event?: Event) {
+    event?.preventDefault();
     this.status = 'SIGNIN';
+    this.isVerifying = false;
+  }
+
+  onVerifyingChange(isVerifying: boolean) {
+    this.isVerifying = isVerifying;
+    this.changeDetectorRef.markForCheck();
   }
 
   signup(event: Event) {

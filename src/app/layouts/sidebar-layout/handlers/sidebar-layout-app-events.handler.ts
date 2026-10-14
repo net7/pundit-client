@@ -1,7 +1,7 @@
 import { _t } from '@net7/core';
 import {
   Annotation, CommentAnnotation, HighlightAnnotation, LinkAnnotation
-} from '@pundit/communication';
+} from 'src/communication';
 import { catchError, debounceTime, takeUntil } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
 import { AppEvent, getEventType, SidebarLayoutEvent } from 'src/app/event-types';
@@ -122,6 +122,12 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
       },
       [AppEvent.PdfViewerLoaded]: () => {
         this.pdfViewerChanged$.next();
+      },
+      [AppEvent.AiPreviewReady]: () => {
+        this.layoutDS.updateAnnotations(true);
+      },
+      [AppEvent.AiPreviewClear]: () => {
+        this.layoutDS.updateAnnotations(true);
       }
     };
   }

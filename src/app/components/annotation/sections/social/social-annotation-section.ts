@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { Reply, SocialType } from '@pundit/communication';
+import { Reply, SocialType } from 'src/communication';
 import { Observable } from 'rxjs';
 import { ReplyType, ReplyComponent } from './reply/reply';
 import { SocialActionBarComponent } from './social-action-bar/social-action-bar';

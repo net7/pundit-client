@@ -1,17 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable, OnDestroy, inject } from '@angular/core';
-import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from '@pundit/communication';
+import { LoginResponse, UserLoginRequestParams, UserSignupRequestParams } from 'src/communication';
 import {
   EMPTY, from, Observable, of, Subject
 } from 'rxjs';
 import {
-  catchError, map, take, takeUntil
+  catchError, map, take, takeUntil, tap
 } from 'rxjs/operators';
 import { AnalyticsAction } from 'src/common/types';
 import { AnalyticsModel, AuthModel } from '../../../../common/models';
+import { mustVerifyEmail, toResendOutcome } from '../helpers/auth-error.helper';
 import { fromEvent, transformFromHttpError, transformFromHttpSuccess } from '../helpers/transformer.helper';
 import { TermsParameters } from '../interfaces/terms.interface';
+import { ResendOutcome } from '../interfaces/verify-email.interface';
 import { AuthEventService } from './auth-event.service';
+import { LoginConfigurationService } from './configuration.service';
 import { PopupService } from './popup.service';
 
 @Injectable({
@@ -20,10 +23,14 @@ import { PopupService } from './popup.service';
 export class EmailProviderService implements OnDestroy {
   private authEventService = inject(AuthEventService);
   private popupService = inject(PopupService);
+  private configService = inject(LoginConfigurationService);
 
   error$: Subject<object> = new Subject();
 
   isLoading$: Subject<boolean> = new Subject<boolean>();
+
+  /** The server asks to confirm the email address before the account can sign in. */
+  mustVerifyEmail$: Subject<void> = new Subject<void>();
 
   private destroy$: Subject<boolean> = new Subject<boolean>();
 
@@ -45,6 +52,10 @@ export class EmailProviderService implements OnDestroy {
         catchError((err) => {
           if (this.mustAcceptTerms(err)) {
             this.openTermsPopup(terms!);
+            return EMPTY;
+          }
+          if (mustVerifyEmail(err)) {
+            this.onMustVerifyEmail();
             return EMPTY;
           }
           this.error$.next(err?.response);
@@ -87,6 +98,11 @@ export class EmailProviderService implements OnDestroy {
         takeUntil(this.destroy$),
         map((res) => transformFromHttpSuccess(res.data, 'login')),
         catchError((err) => {
+          // registration accepted: the account is created from the emailed link
+          if (mustVerifyEmail(err)) {
+            this.onMustVerifyEmail();
+            return EMPTY;
+          }
           this.error$.next(err?.response);
           return of(transformFromHttpError(err, 'login'));
         })
@@ -102,6 +118,41 @@ export class EmailProviderService implements OnDestroy {
         }
         this.isLoading$.next(false);
       });
+  }
+
+  /**
+   * Asks for a new email confirmation link. The credentials are only used for this
+   * request and, when the address is already confirmed, for the login that follows.
+   */
+  resendVerificationMail(credentials: UserLoginRequestParams): Observable<ResendOutcome> {
+    return from(AuthModel.resendVerificationMail(credentials)).pipe(
+      take(1),
+      takeUntil(this.destroy$),
+      map((): ResendOutcome => ({ kind: 'sent' })),
+      catchError((err) => of(toResendOutcome(err))),
+      tap((outcome) => {
+        if (outcome.kind === 'already_verified') {
+          this.login(credentials, this.configService.getTermsParams());
+        }
+      })
+    );
+  }
+
+  /**
+   * Closes the web session that a sign-up or sign-in with an unconfirmed email
+   * leaves open on the auth server. Completes when the request settles.
+   */
+  signOut(): Observable<void> {
+    return from(AuthModel.logout()).pipe(
+      take(1),
+      map(() => undefined),
+      catchError(() => of(undefined))
+    );
+  }
+
+  private onMustVerifyEmail() {
+    this.mustVerifyEmail$.next();
+    this.isLoading$.next(false);
   }
 
   private mustAcceptTerms(err: HttpErrorResponse) {

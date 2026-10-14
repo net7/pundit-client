@@ -3,7 +3,7 @@ import {
   AnnotationAttributes,
   SearchAnnotationParams,
   SearchAnnotationParamsBuilder
-} from '@pundit/communication';
+} from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 

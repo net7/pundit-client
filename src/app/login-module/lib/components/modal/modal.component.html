@@ -18,19 +18,24 @@
           }
           <!-- Success -->
           @case ('SIGNIN') {
-            <lib-pundit-login-signin></lib-pundit-login-signin>
-            <section class="pnd-login-modal__footer">
-              <p class="pnd-login-modal__footer-text">Don't have a Pundit account yet?</p>
-              <a class="pnd-login-modal__footer-link" href="#" (click)="signup($event)">Register here</a>
-            </section>
+            <lib-pundit-login-signin (verifyingChange)="onVerifyingChange($event)"></lib-pundit-login-signin>
+            @if (!isVerifying) {
+              <section class="pnd-login-modal__footer">
+                <p class="pnd-login-modal__footer-text">Don't have a Pundit account yet?</p>
+                <a class="pnd-login-modal__footer-link" href="#" (click)="signup($event)">Register here</a>
+              </section>
+            }
           }
           <!-- success -->
           @case ('SIGNUP') {
-            <lib-pundit-login-signup></lib-pundit-login-signup>
-            <section class="pnd-login-modal__footer">
-              <p class="pnd-login-modal__footer-text">Already have a Pundit account?</p>
-              <a class="pnd-login-modal__footer-link" href="#" (click)="signin($event)">Log in here</a>
-            </section>
+            <lib-pundit-login-signup (verifyingChange)="onVerifyingChange($event)"
+              (signedOut)="signin()"></lib-pundit-login-signup>
+            @if (!isVerifying) {
+              <section class="pnd-login-modal__footer">
+                <p class="pnd-login-modal__footer-text">Already have a Pundit account?</p>
+                <a class="pnd-login-modal__footer-link" href="#" (click)="signin($event)">Log in here</a>
+              </section>
+            }
           }
         }
       </div>

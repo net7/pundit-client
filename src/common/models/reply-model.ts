@@ -1,4 +1,4 @@
-import { ReplyAttributes, comment } from '@pundit/communication';
+import { ReplyAttributes, comment } from 'src/communication';
 import { CrossMsgRequestId } from '../types';
 import { CrossMessage } from '../cross-message';
 

@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import {
   Reply, ReplyAttributes
-} from '@pundit/communication';
+} from 'src/communication';
 import { BehaviorSubject, from } from 'rxjs';
 import { take, tap } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';

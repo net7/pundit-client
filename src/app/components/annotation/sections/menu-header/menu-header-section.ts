@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
-import { Annotation } from '@pundit/communication';
+import { Annotation } from 'src/communication';
 import {
   BehaviorSubject, Observable, Subject
 } from 'rxjs';

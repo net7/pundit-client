@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Social, SocialAttributes } from '@pundit/communication';
+import { Social, SocialAttributes } from 'src/communication';
 import {
   BehaviorSubject, EMPTY, from, Observable
 } from 'rxjs';

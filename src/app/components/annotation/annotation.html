@@ -4,7 +4,8 @@
         'is-collapsed': state?.isCollapsed,
         'is-expanded': !state?.isCollapsed,
         'has-comment': (data$ | async)?.subject?.selected && (data$ | async)?.type === 'Commenting',
-        'is-fullpage': !(data$ | async)?.subject?.selected
+        'is-fullpage': !(data$ | async)?.subject?.selected,
+        'is-preview': annotationId?.startsWith('ai-preview-') || (data$ | async)?.id?.startsWith('ai-preview-')
     }"
     (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
     @if (!state.isCollapsed) {

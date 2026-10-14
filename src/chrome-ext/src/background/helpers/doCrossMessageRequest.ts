@@ -1,4 +1,4 @@
-import { CommunicationSettings } from '@pundit/communication';
+import { CommunicationSettings } from 'src/communication';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -8,7 +8,8 @@ import {
   TagModel,
   SemanticPredicateModel,
   SocialModel,
-  ReplyModel
+  ReplyModel,
+  AiModel
 } from '../../../../common/models';
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
@@ -56,7 +57,8 @@ const requestHandlers: {
   [CrossMsgRequestId.AuthSignup]: (args) => AuthModel.signup.apply(null, args),
   [CrossMsgRequestId.AuthLogin]: (args) => AuthModel.login.apply(null, args),
   [CrossMsgRequestId.AuthLogout]: (args) => AuthModel.logout.apply(null, args),
-  [CrossMsgRequestId.AuthVerifyMail]: (args) => AuthModel.verifyEmail.apply(null, args),
+  [CrossMsgRequestId.AuthResendVerificationMail]:
+    (args) => AuthModel.resendVerificationMail.apply(null, args),
   [CrossMsgRequestId.AuthSso]: (args) => AuthModel.sso.apply(null, args),
   // ANALYTICS REQUEST
   // --------------------------------------------------->
@@ -67,6 +69,9 @@ const requestHandlers: {
   // SEMANTIC PREDICATE REQUEST
   // --------------------------------------------------->
   [CrossMsgRequestId.SemanticPredicateGet]: (args) => SemanticPredicateModel.get.apply(null, args),
+  // AI REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.AiAnnotate]: (args) => AiModel.annotate.apply(null, args),
 };
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {

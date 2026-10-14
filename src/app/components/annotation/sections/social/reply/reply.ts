@@ -2,7 +2,7 @@ import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angu
 import { _t } from '@net7/core';
 import {
   SocialType, Reply
-} from '@pundit/communication';
+} from 'src/communication';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 import { _c } from 'src/app/models/config';
