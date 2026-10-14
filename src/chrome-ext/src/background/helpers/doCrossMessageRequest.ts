@@ -57,7 +57,8 @@ const requestHandlers: {
   [CrossMsgRequestId.AuthSignup]: (args) => AuthModel.signup.apply(null, args),
   [CrossMsgRequestId.AuthLogin]: (args) => AuthModel.login.apply(null, args),
   [CrossMsgRequestId.AuthLogout]: (args) => AuthModel.logout.apply(null, args),
-  [CrossMsgRequestId.AuthVerifyMail]: (args) => AuthModel.verifyEmail.apply(null, args),
+  [CrossMsgRequestId.AuthResendVerificationMail]:
+    (args) => AuthModel.resendVerificationMail.apply(null, args),
   [CrossMsgRequestId.AuthSso]: (args) => AuthModel.sso.apply(null, args),
   // ANALYTICS REQUEST
   // --------------------------------------------------->

@@ -1,7 +1,12 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, inject } from '@angular/core';
+import {
+  Component, ChangeDetectionStrategy, ChangeDetectorRef, EventEmitter, OnDestroy, Output, inject
+} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { filter, first, switchMap } from 'rxjs/operators';
+import { of, Subject } from 'rxjs';
+import {
+  filter, first, switchMap, takeUntil
+} from 'rxjs/operators';
+import { UserLoginRequestParams } from 'src/communication';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
 import { EmailAuthProvider, OAuthProvider } from '../../interfaces';
@@ -10,15 +15,16 @@ import { EmailProviderService } from '../../services/email-provider.service';
 import { OauthProviderService } from '../../services/oauth-provider.service';
 import validationHelper from '../../helpers/validation.helper';
 import { NgClass } from '@angular/common';
+import { VerifyEmailComponent } from '../verify-email/verify-email.component';
 
 @Component({
     selector: 'lib-pundit-login-signup',
     templateUrl: './signup.component.html',
     styleUrls: [],
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [FormsModule, ReactiveFormsModule, NgClass]
+    imports: [FormsModule, ReactiveFormsModule, NgClass, VerifyEmailComponent]
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnDestroy {
   private configService = inject(LoginConfigurationService);
   private emailProvider = inject(EmailProviderService);
   private oauthProviders = inject(OauthProviderService);
@@ -39,6 +45,20 @@ export class SignUpComponent {
 
   serviceErrorMessage!: string | null;
 
+  /** Set once the registration is accepted: the credentials "Check your inbox" uses. */
+  verifyCredentials: UserLoginRequestParams | null = null;
+
+  /** Whether "Check your inbox" replaces the form. */
+  @Output() verifyingChange = new EventEmitter<boolean>();
+
+  /** "Sign out" from "Check your inbox": the modal goes back to the sign-in form. */
+  @Output() signedOut = new EventEmitter<void>();
+
+  /** Credentials of the registration in flight, kept only until its response. */
+  private submitted: UserLoginRequestParams | null = null;
+
+  private destroyed$ = new Subject<void>();
+
   private inputTextValues: {
     [key: string]: string | null;
   } = {
@@ -54,8 +74,30 @@ export class SignUpComponent {
     this.initProviders(oauth, email);
     this.emailProvider.isLoading$.subscribe((val) => {
       this.isLoading = !!val;
+      if (!val) {
+        // request settled: drop its credentials
+        this.submitted = null;
+      }
       this.changeDetectorRef.markForCheck();
     });
+    this.emailProvider.mustVerifyEmail$
+      .pipe(takeUntil(this.destroyed$))
+      .subscribe(() => {
+        if (this.submitted) {
+          this.verifyCredentials = this.submitted;
+          this.submitted = null;
+          this.verifyingChange.emit(true);
+        }
+        this.changeDetectorRef.markForCheck();
+      });
+  }
+
+  ngOnDestroy(): void {
+    // drop the credentials
+    this.verifyCredentials = null;
+    this.submitted = null;
+    this.destroyed$.next();
+    this.destroyed$.complete();
   }
 
   private initProviders(oauthProviders: OAuthProvider[], emailProvider: EmailAuthProvider) {
@@ -160,12 +202,20 @@ export class SignUpComponent {
       this.serviceErrorMessage = errorMessage;
       this.changeDetectorRef.markForCheck();
     });
+    const { email, password } = this.registerForm.value;
+    this.submitted = { email, password };
     this.emailProvider.register(this.registerForm.value);
 
     // analytics
     AnalyticsModel.track({
       action: AnalyticsAction.RegisterEmailClick
     });
+  }
+
+  onSignedOut() {
+    this.verifyCredentials = null;
+    this.verifyingChange.emit(false);
+    this.signedOut.emit();
   }
 
   getErrorMessage = (input: string) => {

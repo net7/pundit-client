@@ -34,7 +34,7 @@ export enum CrossMsgRequestId {
   // auth
   AuthLogin = 'auth.login',
   AuthLogout = 'auth.logout',
-  AuthVerifyMail = 'auth.verifyMail',
+  AuthResendVerificationMail = 'auth.resendVerificationMail',
   AuthSso = 'auth.sso',
   AuthSignup = 'auth.signup',
   // analytics

@@ -2,8 +2,8 @@ import login from './login';
 import logout from './logout';
 import signup from './signup';
 import sso from './sso';
-import verifyMail from './verify-email';
+import resendVerificationMail from './resend-verification-mail';
 
 export {
-  login, logout, signup, sso, verifyMail
+  login, logout, signup, sso, resendVerificationMail
 };

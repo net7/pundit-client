@@ -1,0 +1,32 @@
+<div class="pnd-login-modal__header">
+  <div class="pnd-login-modal__header-logo">
+    <lib-svg-icon [data]="{ id: 'pundit' }"></lib-svg-icon>
+  </div>
+  <h1 class="pnd-login-modal__header-small-title">{{ labels.title }}</h1>
+</div>
+
+<div class="pnd-login-modal__form">
+  <div class="pnd-login-modal__form-row">
+    <p class="pnd-login-modal__verify-email-text">
+      {{ labels.sentTo }} <strong>{{ credentials.email }}</strong>.<br>{{ labels.openLink }}
+    </p>
+    @if (resendMessage) {
+      <p class="pnd-login-modal__verify-email-text"
+        [class.pnd-login-modal__form-error]="resendMessage.isError"
+        [attr.role]="resendMessage.isError ? 'alert' : 'status'">
+        {{ resendMessage.text }}
+      </p>
+    }
+  </div>
+  <div class="pnd-login-modal__form-row">
+    <button type="button" [disabled]="isSending || isSigningOut || disabled" (click)="resend()"
+      class="pnd-login-modal__form-button pnd-btn pnd-btn-cta pnd-btn-l">
+      {{ labels.resend }}
+    </button>
+  </div>
+  <div class="pnd-login-modal__form-secondary-link">
+    <p class="pnd-login-modal__form-secondary-link-text">
+      <a href="#" (click)="signOut($event)">{{ labels.signOut }}</a>
+    </p>
+  </div>
+</div>

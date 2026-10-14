@@ -59,6 +59,18 @@ describe('auth sso', () => {
     expect(CommunicationSettings.token).toBeNull();
   });
 
+  it('treats a 401 Unauthorized as logged out, with a single request', async () => {
+    CommunicationSettings.token = staleToken;
+    const error = { response: { status: 401, data: { error: 'Unauthorized' } } };
+    axiosMock.mockRejectedValue(error);
+
+    await expect(sso()).rejects.toBe(error);
+    await flush();
+
+    expect(CommunicationSettings.token).toBeNull();
+    expect(axiosMock).toHaveBeenCalledTimes(1);
+  });
+
   it('holds the ssoLoading$ gate until the request succeeds', async () => {
     const http = deferred<unknown>();
     axiosMock.mockReturnValue(http.promise);

@@ -1,10 +1,11 @@
 import { BehaviorSubject, of, Subject } from 'rxjs';
-import { MainLayoutEvent } from 'src/app/event-types';
+import { getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { MainLayoutIdentityHandler } from './main-layout-identity.handler';
 
 describe('MainLayoutIdentityHandler > active AI key flag', () => {
   let innerEvents$: Subject<{ type: string; payload?: any }>;
   let layoutDS: any;
+  let layoutEH: any;
 
   const userResponse = (extra: object = {}) => ({
     user: {
@@ -17,16 +18,16 @@ describe('MainLayoutIdentityHandler > active AI key flag', () => {
     layoutDS = {
       state: { hasActiveAiKey: null },
       hasLoaded$: new BehaviorSubject(false),
-      punditLoginService: { sso: jest.fn(() => of(initResponse)) },
+      punditLoginService: { sso: jest.fn(() => of(initResponse)), stop: jest.fn() },
       userService: {
         iam: jest.fn(),
         whoami: jest.fn(() => ({ id: '1' })),
         dashboardNotifications$: new Subject(),
       },
       notebookService: { setSelected: jest.fn() },
-      checkUserVerified: jest.fn(),
+      toastService: { warn: jest.fn(), success: jest.fn(), error: jest.fn(), clear: jest.fn() },
     };
-    const layoutEH: any = { innerEvents$, appEvent$: new Subject(), emitInner: jest.fn() };
+    layoutEH = { innerEvents$, appEvent$: new Subject(), emitInner: jest.fn() };
     new MainLayoutIdentityHandler(layoutDS, layoutEH).listen();
   };
 
@@ -55,5 +56,35 @@ describe('MainLayoutIdentityHandler > active AI key flag', () => {
     innerEvents$.next({ type: MainLayoutEvent.IdentitySync });
 
     expect(layoutDS.state.hasActiveAiKey).toBe(true);
+  });
+
+  it('treats an SSO 401 Unauthorized as logged out, with a single request', () => {
+    listen({ error: 'Unauthorized' });
+
+    expect(layoutDS.punditLoginService.sso).toHaveBeenCalledTimes(1);
+    expect(layoutDS.userService.iam).not.toHaveBeenCalled();
+    expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
+  });
+
+  it('opens no email verification toast, whatever is_verified says', () => {
+    listen(userResponse({ is_verified: false }));
+    innerEvents$.next({ type: MainLayoutEvent.IdentitySync });
+
+    expect(layoutDS.userService.iam).toHaveBeenCalled();
+    expect(layoutDS.toastService.warn).not.toHaveBeenCalled();
+  });
+
+  it('closes the login modal when a sync finds a user the client does not have', () => {
+    listen({ error: 'Unauthorized' });
+    layoutDS.userService.whoami.mockReturnValue(null);
+    layoutDS.punditLoginService.sso.mockReturnValue(of(userResponse()));
+    const logout = jest.fn();
+    layoutEH.appEvent$.subscribe(({ payload }: any) => logout(payload));
+
+    innerEvents$.next({ type: MainLayoutEvent.IdentitySync });
+    logout.mock.calls[0][0].callback();
+
+    expect(layoutDS.punditLoginService.stop).toHaveBeenCalled();
+    expect(layoutDS.userService.iam).toHaveBeenCalled();
   });
 });

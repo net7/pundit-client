@@ -31,8 +31,8 @@ const ERRORS_MAP = {
 };
 
 const SERVICE_ERRORS_MAP = {
-  401: 'Incorrect email or password.',
-  409: 'The email address you entered already exists.',
+  401: 'These credentials do not match our records.',
+  409: 'The email has already been taken.',
   500: 'We are unable to process your request at this time. Please try again later.',
   fallback: 'We are unable to process your request at this time. Please try again later.'
 };
@@ -55,7 +55,7 @@ export default {
     });
     return error;
   },
-  getServiceErrorMessage(status: number): string {
+  getServiceErrorMessage(status?: number): string {
     return SERVICE_ERRORS_MAP[status as keyof typeof SERVICE_ERRORS_MAP] || SERVICE_ERRORS_MAP.fallback;
   }
 };

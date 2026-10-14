@@ -64,6 +64,17 @@ describe('auth refreshHook', () => {
     expect(CommunicationSettings.token).toBeNull();
   });
 
+  it('stops after one refresh when the refresh also answers 401', async () => {
+    const refreshError = { response: { status: 401, data: { error: 'Unauthorized' } } };
+    axiosMock.mockRejectedValue(refreshError);
+
+    await expect(refreshHook(rejectWith(httpError(401)))).rejects.toBe(refreshError);
+
+    expect(axiosMock).toHaveBeenCalledTimes(1);
+    expect(axiosMock).toHaveBeenCalledWith(expect.objectContaining({ url: 'api/auth/refresh' }));
+    expect(CommunicationSettings.token).toBeNull();
+  });
+
   it('rethrows errors with any other status unchanged', async () => {
     const error = httpError(500);
 
