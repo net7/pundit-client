@@ -43,6 +43,7 @@ describe('OnPush leaf component smoke tests', () => {
           useValue: {
             isLoading$,
             error$,
+            mustVerifyEmail$: new Subject(),
             login: jest.fn(),
             register: jest.fn()
           }

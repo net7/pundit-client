@@ -18,9 +18,9 @@ export class AuthModel {
     return auth.logout();
   }
 
-  @CrossMessage(CrossMsgRequestId.AuthVerifyMail)
-  public static verifyEmail() {
-    return auth.verifyMail();
+  @CrossMessage(CrossMsgRequestId.AuthResendVerificationMail)
+  static resendVerificationMail(requestPayload: UserLoginRequestParams) {
+    return auth.resendVerificationMail(requestPayload);
   }
 
   @CrossMessage(CrossMsgRequestId.AuthSso)

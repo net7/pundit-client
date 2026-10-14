@@ -49,8 +49,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           this.layoutDS.notebookService.setSelected(user.current_notebook);
           // emit signal
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
-          // check user verify
-          this.layoutDS.checkUserVerified(user);
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           this.loginAlert();
           // emit signal
@@ -89,13 +87,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
             // waiting for elastic-search index update
             this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetUserData));
           }, _c('indexUpdateDelay'));
-
-          // user verified check
-          setTimeout(() => {
-            this.layoutDS.checkUserVerified(user);
-            // trigger change detector
-            this.layoutEH.detectChanges();
-          });
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           // error toast
           console.warn('Identity login response error', resp);
@@ -137,6 +128,8 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
                   callback: () => {
                   // clear toasts
                     this.layoutDS.toastService.clear();
+                    // close the login modal (e.g. still on "Check your inbox")
+                    this.layoutDS.punditLoginService.stop();
                     // trigger auto-login
                     this.layoutDS.userService.iam(user);
                     // set notifications
@@ -151,9 +144,6 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
               });
             }
           }
-
-          // check user verify
-          this.layoutDS.checkUserVerified(user);
         } else if ('error' in resp && resp.error === 'Unauthorized') {
           // check user on client
           if (currentUser) {

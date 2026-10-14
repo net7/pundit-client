@@ -40,6 +40,18 @@ export default {
     "To annotate a local file, you need to grant Pundit the access by turning on <b>Allow access to file URLs</b> in extension settings.",
   "pdferrormodal#cancel": "Cancel",
   "pdferrormodal#ok": "Go to setting",
+  // login modal
+  "loginmodal#verify_email_title": "Check your inbox",
+  "loginmodal#verify_email_sent_to": "We sent a confirmation link to",
+  "loginmodal#verify_email_open_link": "Open it to start using Pundit.",
+  "loginmodal#verify_email_resend_action": "Send a new link",
+  "loginmodal#verify_email_resend_sent": "We sent a new link to { email }.",
+  "loginmodal#verify_email_resend_throttled":
+    "We already sent a link to { email }: check your inbox, also the spam folder. You can ask for a new one in { minutes } { unit }.",
+  "loginmodal#verify_email_resend_too_many_attempts": "Too many attempts: try again in a few minutes.",
+  "loginmodal#verify_email_sign_out": "Sign out",
+  "loginmodal#minute": "minute",
+  "loginmodal#minutes": "minutes",
   // toast
   "toast#login_retry_action": "RETRY",
   "toast#login_warn_title": "Please log in or register",
@@ -96,13 +108,6 @@ export default {
     "There is a version of pundit already loaded on this website.",
   "toast#loadingdata_title": "Loading",
   "toast#loadingdata_text": "Loading your annotations...",
-  "toast#verify_email_title": "Please verify your email",
-  "toast#verify_email_text":
-    "Verifying your email address will ensure continued access to your account",
-  "toast#verify_email_action": "RESEND",
-  "toast#verify_email_success_title": "Email sent!",
-  "toast#verify_email_success_text":
-    "We have sent a verification email to { mail }",
   "toast#annotation_reply_save_success_title": "Reply created",
   "toast#annotation_reply_save_success_text": "Your reply was correctly saved.",
   "toast#annotation_reply_edit_success_title": "Reply edited",

@@ -165,6 +165,11 @@
     &__form-secondary-link-text {
         margin: 0;
     }
+
+    &__verify-email-text {
+        margin: variables.$space*0.5 0;
+        font-size: variables.$font-size-s;
+    }
 }
 
 

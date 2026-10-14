@@ -1,5 +1,4 @@
-/* eslint-disable max-lines -- Layout data source wires every layout service (now including AiService); split pending. */
-import { LayoutDataSource, _t } from "@net7/core";
+import { LayoutDataSource } from "@net7/core";
 import { from, of, BehaviorSubject, Observable } from "rxjs";
 import { switchMap, tap } from "rxjs/operators";
 import { difference } from "lodash";
@@ -17,7 +16,7 @@ import {
   NotebookService,
 } from "src/app/services/notebook.service";
 import { UserService } from "src/app/services/user.service";
-import { ToastInstance, ToastService } from "src/app/services/toast.service";
+import { ToastService } from "src/app/services/toast.service";
 import { selectionModel } from "src/app/models/selection/selection-model";
 import { tooltipModel } from "src/app/models/tooltip-model";
 import { TagModel } from "src/common/models/tag-model";
@@ -42,7 +41,6 @@ type MainLayoutState = {
     deleteId: string | null;
   };
   anonymousSelectionRange: Range | null;
-  emailVerifiedToast: ToastInstance | null;
   identitySyncLoading: boolean;
   /** From the last SSO response; null when unknown (no user, or not sent by the backend). */
   hasActiveAiKey: boolean | null;
@@ -88,7 +86,6 @@ export class MainLayoutDS extends LayoutDataSource {
       deleteId: null,
     },
     anonymousSelectionRange: null,
-    emailVerifiedToast: null,
     identitySyncLoading: false,
     hasActiveAiKey: null,
   };
@@ -231,69 +228,6 @@ export class MainLayoutDS extends LayoutDataSource {
       const firstNotebook = this.notebookService.getByUserId(userId)[0];
       this.notebookService.setSelected(firstNotebook.id);
     }
-  }
-
-  public checkUserVerified(user: any) {
-    if (!user.is_verified) {
-      this.openEmailVerifiedToast();
-    } else {
-      this.closeEmailVerifiedToast();
-    }
-  }
-
-  public closeEmailVerifiedToast() {
-    if (this.state.emailVerifiedToast) {
-      this.state.emailVerifiedToast.close();
-      this.state.emailVerifiedToast = null;
-    }
-  }
-
-  private openEmailVerifiedToast() {
-    if (!this.state.emailVerifiedToast) {
-      this.state.emailVerifiedToast = this.toastService.warn({
-        title: _t("toast#verify_email_title"),
-        text: _t("toast#verify_email_text"),
-        autoClose: false,
-        hasDismiss: false,
-        actions: [
-          {
-            text: _t("toast#verify_email_action"),
-            payload: "mailverify",
-          },
-        ],
-        onAction: (payload) => {
-          if (payload === "mailverify") {
-            this.doEmailVerifyRequest();
-          }
-        },
-      });
-    }
-  }
-
-  private doEmailVerifyRequest() {
-    this.state.emailVerifiedToast?.close();
-    // working toast
-    const workingToast = this.toastService.working();
-    // TODO Vedere verify
-    this.punditLoginService.verifyEmail().subscribe((response: any) => {
-      workingToast.close();
-      if ("mail" in response) {
-        this.toastService.success({
-          title: _t("toast#verify_email_success_title"),
-          text: _t("toast#verify_email_success_text", {
-            mail: response.mail,
-          }),
-          autoClose: false,
-        });
-      } else {
-        console.warn("Email verify response error", response);
-        this.toastService.error({
-          title: _t("toast#genericerror_title"),
-          text: _t("toast#genericerror_text"),
-          autoClose: false,
-        });
-      }
-    });
   }
 
   private handleSearchResponse(searchData: any) {
