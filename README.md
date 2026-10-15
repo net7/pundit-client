@@ -69,7 +69,7 @@ Prod builds need `src/environments/local.prod.ts`, generated like `local.stage.t
 
 #### Building with Docker
 
-`scripts/build.sh <target>[,<target>...] stage|prod <outdir>` runs the builds in a `node` container (version from `.node-version`), so Node and npm are not needed on the host, only Docker. Targets: `ext` (`build:chrome-ext-<env>`), `embed` (`build:embed-<env>`), `pdf` (`build:pdf-standalone-<env>`). It copies the matching `dist/<configuration>/` folders into `<outdir>`, e.g. `scripts/build.sh ext,pdf stage ../out` produces `../out/chrome-ext-stage/` and `../out/pdf-standalone-stage/`. `node_modules` and the npm cache live in Docker volumes (`pundit-client-node-modules`, `pundit-client-npm-cache`), so the host `node_modules` is left untouched.
+`scripts/build.sh <target>[,<target>...] stage|prod [<outdir>]` runs the builds in a `node` container (version from `.node-version`), so Node and npm are not needed on the host, only Docker. Targets: `ext` (`build:chrome-ext-<env>`), `embed` (`build:embed-<env>`), `pdf` (`build:pdf-standalone-<env>`). The builds land in `dist/<configuration>/` as usual; when `<outdir>` is given (default: the repo `dist/`), the matching folders are copied there too, e.g. `scripts/build.sh ext,pdf stage ../out` produces `../out/chrome-ext-stage/` and `../out/pdf-standalone-stage/`. `node_modules` and the npm cache live in Docker volumes (`pundit-client-node-modules`, `pundit-client-npm-cache`), so the host `node_modules` is left untouched.
 
 ## Releasing (stage / prod)
 

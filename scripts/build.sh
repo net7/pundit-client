@@ -3,7 +3,7 @@ set -euo pipefail
 
 # Build dentro Docker, senza node/npm sull'host.
 #
-# Uso: scripts/build.sh <target>[,<target>...] stage|prod <outdir>
+# Uso: scripts/build.sh <target>[,<target>...] stage|prod [<outdir>]
 #
 #   ext    estensione Chrome (build:chrome-ext-<env>, compila anche l'embed)
 #   embed  embed (build:embed-<env>)
@@ -11,19 +11,20 @@ set -euo pipefail
 #
 # Esempio: scripts/build.sh ext,pdf stage ../out
 #
-# Esegue `npm ci` + i build richiesti e copia le cartelle dist/<config>
-# corrispondenti in <outdir>. node_modules e cache npm stanno in volumi Docker:
-# quelli dell'host non vengono toccati.
+# Esegue `npm ci` + i build richiesti, che finiscono in dist/<config>. Se
+# <outdir> e' indicata (default: dist del repo) ci copia quelle cartelle.
+# node_modules e cache npm stanno in volumi Docker: quelli dell'host non
+# vengono toccati.
 
 usage() {
-  echo "Uso: $0 ext|embed|pdf[,...] stage|prod <outdir>" >&2
+  echo "Uso: $0 ext|embed|pdf[,...] stage|prod [<outdir>]" >&2
   exit 1
 }
 
-[ $# -eq 3 ] || usage
+[ $# -eq 2 ] || [ $# -eq 3 ] || usage
 TARGETS="$1"
 ENV="$2"
-OUTDIR="$3"
+OUTDIR="${3:-}"
 
 case "$ENV" in
   stage|prod) ;;
@@ -57,6 +58,7 @@ fi
 [ -n "$DIRS" ] || usage
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+OUTDIR="${OUTDIR:-$ROOT/dist}"
 
 if [ ! -f "$ROOT/src/environments/local.$ENV.ts" ]; then
   echo "Manca src/environments/local.$ENV.ts (vedi README, generalo con pundit-deployment/scripts/render-env.sh)" >&2
@@ -67,8 +69,15 @@ command -v docker >/dev/null 2>&1 || { echo "docker non trovato" >&2; exit 1; }
 
 NODE_VERSION="$(tr -d 'v[:space:]' < "$ROOT/.node-version")"
 
-mkdir -p "$OUTDIR"
-OUTDIR="$(cd "$OUTDIR" && pwd)"
+# Creati qui per averli dell'utente host: se li creasse Docker (node_modules e'
+# il mountpoint del volume) sarebbero di root.
+mkdir -p "$OUTDIR" "$ROOT/dist" "$ROOT/node_modules"
+OUTDIR="$(cd "$OUTDIR" && pwd -P)"
+
+# Se <outdir> e' la dist del repo i build sono gia' li': copiarli li
+# cancellerebbe (rm -rf /out/<dir> == rm -rf dist/<dir>).
+COPY=1
+[ "$OUTDIR" = "$(cd "$ROOT/dist" && pwd -P)" ] && COPY=0
 
 # Il container gira come root: fix_owner riassegna i file prodotti all'utente
 # host anche se il build fallisce.
@@ -87,16 +96,19 @@ git config --global --add url."https://github.com/".insteadOf "git@github.com:"
 npm install -g --no-fund --no-audit "$(node -p "require(\"./package.json\").packageManager")"
 npm ci --no-fund --no-audit
 for s in $SCRIPTS; do npm run "$s"; done
-for d in $DIRS; do
-  rm -rf "/out/$d"
-  cp -R "dist/$d" /out/
-done
+if [ "$COPY" = 1 ]; then
+  for d in $DIRS; do
+    rm -rf "/out/$d"
+    cp -R "dist/$d" /out/
+  done
+fi
 '
 
 docker run -t --rm \
   -u 0 \
   -e SCRIPTS="$SCRIPTS" \
   -e DIRS="$DIRS" \
+  -e COPY="$COPY" \
   -e HOST_UID="$(id -u)" \
   -e HOST_GID="$(id -g)" \
   -v "$ROOT":/app \
