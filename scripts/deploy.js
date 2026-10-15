@@ -35,9 +35,9 @@ const section = (title) => console.log(`\n── ${title}`);
 
 const readPkgVersion = () => JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).version;
 
-const readLocalVersion = () => (env === 'prod'
-  ? readPkgVersion()
-  : fs.readFileSync(STAGE_VERSION_FILE, 'utf8').split(/\r?\n/)[0].trim());
+const readStageVersion = () => fs.readFileSync(STAGE_VERSION_FILE, 'utf8').split(/\r?\n/)[0].trim();
+
+const readLocalVersion = () => (env === 'prod' ? readPkgVersion() : readStageVersion());
 
 const restoreVersionFiles = () => {
   spawnSync('git', ['checkout', 'HEAD', '--', ...cfg.versionFiles], { cwd: ROOT });
@@ -93,6 +93,7 @@ const preflight = async () => {
 const readVersions = async (store) => {
   section('Versions');
   const pkgVersion = readPkgVersion();
+  const stageVersion = readStageVersion();
   const local = readLocalVersion();
   parse(local, env);
   const status = await store.getStatus();
@@ -113,26 +114,28 @@ const readVersions = async (store) => {
     throw new Error(`Local and remote versions disagree (highest seen: ${agreement.highest}). Align them, or use --force-version`);
   }
   return {
-    local, pkgVersion, agreed: agreement.agreed, remotes: [status.version, s3Version],
+    local, pkgVersion, stageVersion, agreed: agreement.agreed, remotes: [status.version, s3Version],
   };
 };
 
-const chooseVersion = async ({ local, pkgVersion, agreed, remotes }) => {
+const chooseVersion = async ({
+  local, pkgVersion, stageVersion, agreed, remotes,
+}) => {
   section('Version');
-  let allowed;
+  let options;
   try {
-    allowed = nextVersions(env, local, pkgVersion);
+    options = nextVersions(env, { pkgVersion, stageVersion });
   } catch (err) {
     if (!forceVersion) throw err;
-    allowed = [];
+    options = [];
   }
-  const labels = env === 'prod' ? ['patch', 'minor', 'major'] : ['next stage'];
+  const allowed = options.map((o) => o.version);
   for (;;) {
     let candidate = forceVersion;
     if (!candidate) {
       candidate = await prompt.choose(
         `Current ${env} version ${local}. Next version:`,
-        allowed.map((v, i) => ({ label: `${v} (${labels[i]})`, value: v })),
+        options.map((o) => ({ label: `${o.version} (${o.label})`, value: o.version })),
       );
       if (candidate === null) candidate = await prompt.ask('Version: ');
     }
@@ -171,7 +174,7 @@ const verifyArtifacts = (version) => {
 };
 
 const goLive = async (store, version, commit) => {
-  const tag = cfg.tag(version);
+  const tag = cfg.tag && cfg.tag(version);
   const message = cfg.commitMessage(version);
   const versionJson = { version, releasedAt: new Date().toISOString(), commit };
   const sh = (args) => args.map((a) => (/[\s*"']/.test(a) ? `'${a}'` : a)).join(' ');
@@ -197,9 +200,9 @@ const goLive = async (store, version, commit) => {
       manual: `aws ${sh(s3.invalidateCommand(cfg.invalidationPath))}`,
     },
     {
-      name: `Git commit + tag ${tag}`,
+      name: tag ? `Git commit + tag ${tag}` : 'Git commit',
       run: () => git.commitAndTag(cfg.versionFiles, message, tag),
-      manual: `git commit -m '${message}' -- ${cfg.versionFiles.join(' ')} && git tag -a ${tag} -m '${message}'`,
+      manual: `git commit -m '${message}' -- ${cfg.versionFiles.join(' ')}${tag ? ` && git tag -a ${tag} -m '${message}'` : ''}`,
     },
   ].map((s) => ({ ...s, status: 'pending' }));
 
@@ -228,7 +231,8 @@ const main = async () => {
   const store = await preflight();
   const versions = await readVersions(store);
   const { version, forced } = await chooseVersion(versions);
-  if (await git.tagExists(cfg.tag(version))) throw new Error(`Tag ${cfg.tag(version)} already exists`);
+  const tag = cfg.tag && cfg.tag(version);
+  if (tag && await git.tagExists(tag)) throw new Error(`Tag ${tag} already exists`);
 
   const branch = await run('git', ['rev-parse', '--abbrev-ref', 'HEAD'], { capture: true });
   const commit = await git.headCommit();
@@ -238,7 +242,7 @@ const main = async () => {
   console.log(`  embed        ${cfg.embedDist} → ${cfg.s3Prefix} (invalidate ${cfg.invalidationPath})`);
   console.log(`  extension    ${cfg.extDist} → Chrome Web Store item ${process.env[cfg.extensionIdVar]}`);
   console.log(`  source       ${branch} @ ${commit}`);
-  console.log(`  git          commit "${cfg.commitMessage(version)}" + tag ${cfg.tag(version)} (not pushed)`);
+  console.log(`  git          commit "${cfg.commitMessage(version)}"${tag ? ` + tag ${tag}` : ''} (not pushed)`);
   if (!(await prompt.confirm('Build this release?'))) {
     console.log('Nothing changed.');
     return;
@@ -263,7 +267,7 @@ const main = async () => {
     await store.upload(zipPath, version);
     console.log('Draft uploaded and validated by the store (not published yet).');
 
-    if (!(await prompt.confirm(`Go live with ${env} ${version}? (store publish, S3 sync, CloudFront invalidation, git commit + tag)`))) {
+    if (!(await prompt.confirm(`Go live with ${env} ${version}? (store publish, S3 sync, CloudFront invalidation, git commit${tag ? ' + tag' : ''})`))) {
       restoreVersionFiles();
       console.log(`Not published. A ${version} draft stays on the store: discard it from the Developer Dashboard or publish it later. Version files restored.`);
       return;
@@ -278,7 +282,7 @@ const main = async () => {
   section('Go live');
   await goLive(store, version, commit);
   console.log(`\n✓ Released ${env} ${version}. The extension is now in store review.`);
-  console.log('  Push the release commit and tag with: git push --follow-tags');
+  console.log(`  Push the release commit${tag ? ' and tag' : ''} with: git push${tag ? ' --follow-tags' : ''}`);
 };
 
 main()

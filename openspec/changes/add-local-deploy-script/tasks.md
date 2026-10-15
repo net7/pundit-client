@@ -35,7 +35,7 @@
 - [x] 5.2 Read versions (local, store, S3) → agreement check / S3 bootstrap confirm / pending-review abort
 - [x] 5.3 Version selection: prod numbered menu + manual entry; stage single proposal; jump → force path with re-type; summary + confirmation 1; tag-exists check
 - [x] 5.4 Write version files (`npm version <v> --no-git-tag-version` for prod, `.stage.version` for stage), `npm ci`, `npm run build:chrome-ext-<env>`, artifact verification; restore on failure; `--dry-run` exit point
-- [x] 5.5 Zip (tmp dir, cleaned up at the end) → store upload with polling → confirmation 2 (decline → restore + report the draft) → store publish → S3 sync → `version.json` → invalidation → commit + annotated tag → push reminder
+- [x] 5.5 Zip (tmp dir, cleaned up at the end) → store upload with polling → confirmation 2 (decline → restore + report the draft) → store publish → S3 sync → `version.json` → invalidation → commit (+ annotated tag for prod) → push reminder
 - [x] 5.6 Step tracker + failure report after going live (done/failed/pending + literal remaining commands, exit 1)
 - [x] 5.7 Add `deploy:stage` / `deploy:prod` to `package.json`; remove `deploy.sh`
 
@@ -48,4 +48,4 @@
 - [x] 7.1 `npm run test:scripts` green; `npm run lint` and `npm test` still green
 - [x] 7.2 Negative paths by hand: dirty tree, prod on a feature branch, `.test` hosts in `local.stage.ts`, missing `CWS_*` var, `zip` missing from `PATH`, mismatching `--force-version` re-type, decline at confirmation 1 → each aborts with a clear message and `git status` stays clean
 - [ ] 7.3 With the real stage config + credentials: `npm run deploy:stage -- --dry-run` → build ok, nothing uploaded, tree clean
-- [ ] 7.4 Guided first stage release with the user (S3 bootstrap, store upload + publish, tag `stage-…`); the user pushes
+- [ ] 7.4 Guided first stage release with the user (S3 bootstrap, store upload + publish, release commit); the user pushes

@@ -26,21 +26,40 @@ test('compare orders numerically and pads missing parts with zero', () => {
   assert.equal(compare('1.13.0', '1.13.0.1'), -1);
 });
 
-test('prod next versions are patch, minor and major', () => {
-  assert.deepEqual(nextVersions('prod', '1.13.0', '1.13.0'), ['1.13.1', '1.14.0', '2.0.0']);
-  assert.deepEqual(nextVersions('prod', '1.13.4', '1.13.4'), ['1.13.5', '1.14.0', '2.0.0']);
+const next = (env, pkgVersion, stageVersion) => nextVersions(env, { pkgVersion, stageVersion })
+  .map((o) => o.version);
+
+test('prod next versions are patch, minor and major when stage has no newer base', () => {
+  assert.deepEqual(next('prod', '1.13.0', '1.13.0.2'), ['1.13.1', '1.14.0', '2.0.0']);
+  assert.deepEqual(next('prod', '1.13.4', '1.12.0.0'), ['1.13.5', '1.14.0', '2.0.0']);
 });
 
-test('stage next version increments N when package.json equals the base', () => {
-  assert.deepEqual(nextVersions('stage', '1.13.0.2', '1.13.0'), ['1.13.0.3']);
+test('prod proposes the version tested on stage first', () => {
+  assert.deepEqual(nextVersions('prod', { pkgVersion: '1.13.0', stageVersion: '1.14.0.3' }), [
+    { version: '1.14.0', label: 'tested on stage as 1.14.0.3' },
+    { version: '1.13.1', label: 'patch' },
+    { version: '2.0.0', label: 'major' },
+  ]);
 });
 
-test('stage next version resets to .0 after a prod release', () => {
-  assert.deepEqual(nextVersions('stage', '1.13.0.7', '1.14.0'), ['1.14.0.0']);
+test('prod keeps a stage base that is not a plain bump', () => {
+  assert.deepEqual(next('prod', '1.13.0', '1.15.0.0'), ['1.15.0', '1.13.1', '1.14.0', '2.0.0']);
 });
 
-test('stage next version aborts when package.json is below the base', () => {
-  assert.throws(() => nextVersions('stage', '1.14.0.1', '1.13.0'), /package\.json version 1\.13\.0 is lower/);
+test('stage next version increments N while its base is not released in prod', () => {
+  assert.deepEqual(next('stage', '1.13.0', '1.14.0.0'), ['1.14.0.1']);
+  assert.deepEqual(next('stage', '1.13.1', '1.14.0.2'), ['1.14.0.3']);
+});
+
+test('stage next version starts a new base once its base is released in prod', () => {
+  assert.deepEqual(next('stage', '1.14.0', '1.14.0.3'), ['1.14.1.0', '1.15.0.0', '2.0.0.0']);
+  assert.deepEqual(next('stage', '1.13.0', '1.13.0.1'), ['1.13.1.0', '1.14.0.0', '2.0.0.0']);
+  assert.deepEqual(next('stage', '1.14.1', '1.14.0.3'), ['1.14.2.0', '1.15.0.0', '2.0.0.0']);
+});
+
+test('next versions reject malformed inputs', () => {
+  assert.throws(() => next('stage', '1.13.0', '1.13.0'), /Invalid stage version/);
+  assert.throws(() => next('prod', '1.13.0.1', '1.13.0.1'), /Invalid prod version/);
 });
 
 test('checkAgreement passes when all sources match', () => {

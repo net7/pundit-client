@@ -24,7 +24,7 @@ const restore = (files) => git('checkout', 'HEAD', '--', ...files);
 const commitAndTag = async (files, message, tag) => {
   await git('add', '--', ...files);
   await git('commit', '-m', message, '--', ...files);
-  await git('tag', '-a', tag, '-m', message);
+  if (tag) await git('tag', '-a', tag, '-m', message);
 };
 
 module.exports = {
