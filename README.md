@@ -29,7 +29,7 @@ In `src/` you will find:
 Outside `src/`:
 
 - **openspec/**: specifications (`openspec/specs`) and proposed or archived changes (`openspec/changes`).
-- **scripts/**: post-build steps for the embed and the Chrome extension, and the local release script (`deploy.js`, see [Releasing](#releasing-stage--prod)).
+- **scripts/**: post-build steps for the embed and the Chrome extension, the local release script (`deploy.js`, see [Releasing](#releasing-stage--prod)), and the Docker build script (`build.sh`, see [Building with Docker](#building-with-docker)).
 
 ## Development
 
@@ -66,6 +66,10 @@ Each build writes to `dist/<configuration>/`.
 | `npm run build:pdf-standalone-stage` / `build:pdf-standalone-prod` | the standalone PDF viewer                                 |
 
 Prod builds need `src/environments/local.prod.ts`, generated like `local.stage.ts`.
+
+#### Building with Docker
+
+`scripts/build.sh <target>[,<target>...] stage|prod [<outdir>]` runs the builds in a `node` container (version from `.node-version`), so Node and npm are not needed on the host, only Docker. Targets: `ext` (`build:chrome-ext-<env>`), `embed` (`build:embed-<env>`), `pdf` (`build:pdf-standalone-<env>`). The builds land in `dist/<configuration>/` as usual; when `<outdir>` is given (default: the repo `dist/`), the matching folders are copied there too, e.g. `scripts/build.sh ext,pdf stage ../out` produces `../out/chrome-ext-stage/` and `../out/pdf-standalone-stage/`. `node_modules` and the npm cache live in Docker volumes (`pundit-client-node-modules`, `pundit-client-npm-cache`), so the host `node_modules` is left untouched.
 
 ## Releasing (stage / prod)
 
