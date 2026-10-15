@@ -1,6 +1,6 @@
 {
   "name": "pundit",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --proxy-config proxy.conf.json",
@@ -9,8 +9,8 @@
     "test:watch": "jest --watch",
     "deploy:stage": "node scripts/deploy.js stage",
     "deploy:prod": "node scripts/deploy.js prod",
-    "test:scripts":"node --test \"scripts/**/*.test.js\"",
-    "test:mocha":"mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts",
+    "test:scripts": "node --test \"scripts/**/*.test.js\"",
+    "test:mocha": "mocha -r ts-node/register --watch --watch-files src, src/**/*.spec.ts",
     "lint": "eslint \"src/**/*.ts\" \"src/**/*.html\"",
     "e2e": "ng e2e",
     "stylelint": "stylelint \"src/styles/**/*.scss\"; exit 0",
