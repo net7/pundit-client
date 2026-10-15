@@ -52,27 +52,32 @@ The script SHALL abort unless all available versions are equal.
 
 ### Requirement: Next-version suggestion without jumps
 The script SHALL only accept, without forcing, an allowed successor of the current version:
-- **Prod `X.Y.Z`**: exactly `X.Y.(Z+1)`, `X.(Y+1).0` and `(X+1).0.0`. The script SHALL offer these three as a choice and accept a manually typed version only if it is one of them.
-- **Stage `B.N`**, with `P` the 3-part `package.json` version:
-  - if `P` equals `B`, the only allowed successor is `B.(N+1)`;
-  - if `P` is greater than `B`, the only allowed successor is `P.0`;
-  - if `P` is lower than `B`, the script SHALL abort.
+
+Stage `B.N` is the N-th candidate of the upcoming prod `B`. With `P` the 3-part `package.json` version (the last prod release) and `B.N` the content of `scripts/.stage.version`:
+- **Prod**: `P` patch, minor and major (`X.Y.(Z+1)`, `X.(Y+1).0`, `(X+1).0.0`). If `B` is greater than `P`, `B` SHALL also be allowed and offered first. The script SHALL offer these as a choice and accept a manually typed version only if it is one of them.
+- **Stage**:
+  - if `B` is greater than `P` (prod `B` not released yet), the only allowed successor is `B.(N+1)`;
+  - otherwise (prod `B` released), the allowed successors are `P` patch, minor and major followed by `.0`.
 
 #### Scenario: Prod patch suggested
-- **WHEN** the current prod version is `1.13.0`
+- **WHEN** the current prod version is `1.13.0` and the stage version is `1.13.0.2`
 - **THEN** the choices offered are `1.13.1`, `1.14.0` and `2.0.0`
+
+#### Scenario: Prod releases the version tested on stage
+- **WHEN** the current prod version is `1.13.0` and the stage version is `1.14.0.3`
+- **THEN** the choices offered are `1.14.0` first, then `1.13.1` and `2.0.0`
 
 #### Scenario: Prod jump rejected
 - **WHEN** the current prod version is `1.13.0` and the developer types `1.13.2`, `1.15.0` or `2.1.0`
 - **THEN** the script rejects it as a jump and asks again
 
 #### Scenario: Stage increment
-- **WHEN** `package.json` is `1.13.0` and the current stage version is `1.13.0.2`
-- **THEN** the proposed stage version is `1.13.0.3`
+- **WHEN** `package.json` is `1.13.0` and the current stage version is `1.14.0.0`
+- **THEN** the proposed stage version is `1.14.0.1`
 
-#### Scenario: Stage reset after a prod release
-- **WHEN** `package.json` is `1.14.0` and the current stage version is `1.13.0.7`
-- **THEN** the proposed stage version is `1.14.0.0`
+#### Scenario: Stage new base after a prod release
+- **WHEN** `package.json` is `1.14.0` and the current stage version is `1.14.0.3`
+- **THEN** the choices offered are `1.14.1.0`, `1.15.0.0` and `2.0.0.0`
 
 ### Requirement: Forced version
 The developer SHALL be able to force a version that breaks the no-jump or agreement rules, either with `--force-version <v>` or by typing a non-successor at the prompt and accepting the warning. A forced version SHALL:
@@ -170,7 +175,7 @@ After confirmation 2 it SHALL perform, in order:
 2. S3 sync of `dist/embed-<env>/` with `--acl public-read` and no `--delete`;
 3. upload of `version.json` (`version`, `releasedAt`, `commit`);
 4. CloudFront invalidation;
-5. git commit of the version files and creation of the annotated tag.
+5. git commit of the version files and, for prod, creation of the annotated tag.
 
 The store upload SHALL count as complete only when the package is processed:
 - an `uploadState` of `SUCCEEDED` completes it immediately;
@@ -203,9 +208,9 @@ If a step after confirmation 2 fails, the script SHALL NOT roll back the steps a
 - **THEN** the script prints that the extension is submitted, the S3 sync/`version.json`/invalidation/commit/tag commands still to run, and exits non-zero
 
 ### Requirement: Git record of the release
-After all publish steps succeed, the script SHALL commit only the version files and create an annotated tag:
-- prod: commit message `chore(release): v<version>`, tag `v<version>`;
-- stage: commit message `chore(release): stage <version>`, tag `stage-<version>`.
+After all publish steps succeed, the script SHALL commit only the version files:
+- prod: commit message `chore(release): v<version>`, plus an annotated tag `v<version>`;
+- stage: commit message `chore(release): stage <version>`, no tag.
 
 The script SHALL NOT push.
 

@@ -29,7 +29,7 @@ In `src/` you will find:
 Outside `src/`:
 
 - **openspec/**: specifications (`openspec/specs`) and proposed or archived changes (`openspec/changes`).
-- **scripts/**: post-build steps for the embed and the Chrome extension, and the local release script (`deploy.js`, see [Releasing](#releasing-stage--prod)).
+- **scripts/**: post-build steps for the embed and the Chrome extension, the local release script (`deploy.js`, see [Releasing](#releasing-stage--prod)), and the Docker build script (`build.sh`, see [Building with Docker](#building-with-docker)).
 
 ## Development
 
@@ -67,6 +67,10 @@ Each build writes to `dist/<configuration>/`.
 
 Prod builds need `src/environments/local.prod.ts`, generated like `local.stage.ts`.
 
+#### Building with Docker
+
+`scripts/build.sh <target>[,<target>...] stage|prod [<outdir>]` runs the builds in a `node` container (version from `.node-version`), so Node and npm are not needed on the host, only Docker. Targets: `ext` (`build:chrome-ext-<env>`), `embed` (`build:embed-<env>`), `pdf` (`build:pdf-standalone-<env>`). The builds land in `dist/<configuration>/` as usual; when `<outdir>` is given (default: the repo `dist/`), the matching folders are copied there too, e.g. `scripts/build.sh ext,pdf stage ../out` produces `../out/chrome-ext-stage/` and `../out/pdf-standalone-stage/`. `node_modules` and the npm cache live in Docker volumes (`pundit-client-node-modules`, `pundit-client-npm-cache`), so the host `node_modules` is left untouched.
+
 ## Releasing (stage / prod)
 
 Releases run **from a developer machine only** (never in CI) with:
@@ -83,17 +87,19 @@ One run releases the same version to both targets of the environment:
 | Embed (`pundit.embed.js`, used by the feed) | `s3://static-pundit/releases/stage`   | `s3://static-pundit/releases` |
 | Chrome extension                            | store item "Pundit Annotator (STAGE)" | store item "Pundit Annotator" |
 | Version                                     | `scripts/.stage.version` (`X.Y.Z.N`)  | `package.json` (`X.Y.Z`)      |
-| Git tag                                     | `stage-X.Y.Z.N`                       | `vX.Y.Z`                      |
+| Git record                                  | commit only                           | commit + tag `vX.Y.Z`         |
+
+Stage `X.Y.Z.N` is the N-th candidate of the upcoming prod `X.Y.Z`: `package.json` holds the last prod version and is only changed by prod releases.
 
 Building (`npm run build:chrome-ext-stage`) never changes the version: only a release does.
 
 ### What the script does
 
 1. **Pre-flight**: clean working tree; for prod, branch `master` in sync with `origin/master`; `zip` and `aws` on `PATH`; environment config pointing at the right domains (no `*.test`/`localhost`); credentials; AWS identity; Chrome Web Store token.
-2. **Version gate**: reads the local version, the store version (published or last submitted) and `version.json` on S3. They must match. It then proposes the next version (prod: patch/minor/major; stage: `.N+1`, or `X.Y.Z.0` after a prod bump). Jumps are refused unless forced.
+2. **Version gate**: reads the local version, the store version (published or last submitted) and `version.json` on S3. They must match. It then proposes the next version. Stage: `X.Y.Z.(N+1)` while prod `X.Y.Z` is not released, then a new base (`.0` of the next patch/minor/major of `package.json`). Prod: the base tested on stage, if newer than `package.json`, then patch/minor/major. Jumps are refused unless forced.
 3. **Confirmation 1** on a summary, then `npm ci` + build, and verification of the built artifacts (manifest version included).
 4. **Store upload** of the zip as a draft (validated by Google, not published), then **confirmation 2**.
-5. **Go live**: store publish (goes to review), S3 sync, `version.json`, CloudFront invalidation, commit of the version files + annotated tag. **Pushing is up to you**: `git push --follow-tags`.
+5. **Go live**: store publish (goes to review), S3 sync, `version.json`, CloudFront invalidation, commit of the version files (+ annotated tag for prod). **Pushing is up to you**: `git push` (`git push --follow-tags` for prod).
 
 If something fails before confirmation 2, the version files are restored and nothing is live. If a step fails after it, nothing is rolled back: the script prints what was done and the exact commands that finish the release by hand.
 

@@ -33,24 +33,28 @@ const max = (versions) => versions
   .filter(Boolean)
   .reduce((acc, v) => (acc === null || compare(v, acc) > 0 ? v : acc), null);
 
-// The only versions accepted without forcing.
-const nextVersions = (env, current, pkgVersion) => {
+// The only versions accepted without forcing, as [{ version, label }].
+// Stage X.Y.Z.N tests the upcoming prod X.Y.Z: its base stays until prod
+// X.Y.Z is released (package.json >= base), then a new base is chosen.
+const nextVersions = (env, { pkgVersion, stageVersion }) => {
+  const [major, minor, patch] = parse(pkgVersion, 'prod');
+  const bumps = [
+    { version: `${major}.${minor}.${patch + 1}`, label: 'patch' },
+    { version: `${major}.${minor + 1}.0`, label: 'minor' },
+    { version: `${major + 1}.0.0`, label: 'major' },
+  ];
+  const [sMajor, sMinor, sPatch, n] = parse(stageVersion, 'stage');
+  const base = `${sMajor}.${sMinor}.${sPatch}`;
+  const baseReleased = compare(base, pkgVersion) <= 0;
   if (env === 'prod') {
-    const [major, minor, patch] = parse(current, 'prod');
+    if (baseReleased) return bumps;
     return [
-      [major, minor, patch + 1],
-      [major, minor + 1, 0],
-      [major + 1, 0, 0],
-    ].map((p) => p.join('.'));
+      { version: base, label: `tested on stage as ${stageVersion}` },
+      ...bumps.filter((b) => b.version !== base),
+    ];
   }
-  const [major, minor, patch, n] = parse(current, 'stage');
-  const base = [major, minor, patch].join('.');
-  parse(pkgVersion, 'prod');
-  const cmp = compare(pkgVersion, base);
-  if (cmp < 0) {
-    throw new Error(`package.json version ${pkgVersion} is lower than the stage base ${base}`);
-  }
-  return [cmp === 0 ? `${base}.${n + 1}` : `${pkgVersion}.0`];
+  if (!baseReleased) return [{ version: `${base}.${n + 1}`, label: 'next stage' }];
+  return bumps.map((b) => ({ version: `${b.version}.0`, label: `new ${b.label} stage base` }));
 };
 
 // local must equal every available remote; a null remote (e.g. no S3 version.json yet) is skipped.

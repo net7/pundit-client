@@ -20,7 +20,7 @@ Releases are done by hand today. `deploy.sh` covers only the embed upload to S3,
   - environment files point at the target environment's domains (no `.test`, `localhost` or loopback hosts).
 - Build verification after `npm ci` + `npm run build:chrome-ext-<env>`: artifacts exist and the manifest carries the new version.
 - Two confirmations: one on the version, one before going live (after the store upload has validated the package).
-- After a successful release, commit the version bump and create a tag (`v<x.y.z>` for prod, `stage-<x.y.z.n>` for stage). Pushing stays manual.
+- After a successful release, commit the version bump and create a tag (`v<x.y.z>`, prod only). Pushing stays manual.
 - `--dry-run` runs the pre-flight checks, the version gate and the build, then stops before any upload.
 - **BREAKING (dev workflow)**: `build:chrome-ext-stage` no longer bumps `scripts/.stage.version`; only the stage deploy does. `getStageVersion()` becomes a read-only `readStageVersion()` that throws instead of returning `null`.
 - **BREAKING (dev workflow)**: `deploy.sh` is removed and replaced by the npm scripts.

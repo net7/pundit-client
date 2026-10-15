@@ -19,7 +19,7 @@ const ENVIRONMENTS = {
     buildScript: 'build:chrome-ext-stage',
     extDist: 'dist/chrome-ext-stage',
     embedDist: 'dist/embed-stage',
-    tag: (v) => `stage-${v}`,
+    // no tag: stage releases are recorded by their commit only
     commitMessage: (v) => `chore(release): stage ${v}`,
   },
   prod: {

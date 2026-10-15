@@ -89,7 +89,7 @@ This matches `deploy.sh`, reuses the developer's existing profile and credential
 ### D5. Version rules (pure, in `version.js`)
 - Parse strictly with `/^(0|[1-9]\d*)(\.(0|[1-9]\d*)){2,3}$/`. The part count is 3 for prod and 4 for stage, each part ≤ 65535.
 - Prod successors: patch, minor and major. The prompt is a numbered choice (default: patch) plus an option to type one by hand.
-- Stage successor: a single value, derived from `package.json` against the base of `.stage.version` (see spec). A `package.json` version below the stage base aborts, because it means someone lowered `package.json`.
+- Stage successor: `B.(N+1)` while the stage base `B` is above `package.json` (prod `B` not released), otherwise a new base from `package.json` patch/minor/major + `.0` (see spec). Prod also offers `B` first when it is above `package.json`.
 - Anything else is a jump. The script then shows the allowed successors and asks `Force <v>? [y/N]`, followed by the re-type confirmation. `--force-version <v>` takes the same path without the menu.
 - Forced versions are still checked for format and for being strictly greater than every remote version. Those two are hard rules: the store rejects non-increasing uploads, and S3 going backwards would hide what is live.
 
@@ -104,7 +104,7 @@ preflight, local checks first (clean tree, prod branch, zip + aws on PATH, env d
   → zip dist/chrome-ext-<env> → store upload (draft, validated by Google; poll while IN_PROGRESS)
   → CONFIRM 2 ── no → restore files, report draft left on store, exit 0
   → store publish → s3 sync → version.json → CloudFront invalidation
-  → git commit (version files only) + annotated tag
+  → git commit (version files only) + annotated tag (prod only)
   → print "push with: git push --follow-tags"
 ```
 
@@ -168,8 +168,8 @@ Built-in `node:test` + `node:assert`. Files are `scripts/deploy/*.test.js`, run 
   → Accepted: it is reproducible and never rewrites the lockfile, which would dirty the tree.
 - **[Trade-off] Embed and extension are always released together.** A hotfix to one also releases the other with a new version.
   → Accepted (user decision): one version = one release, no drift.
-- **[Trade-off] Stage versions follow `package.json` + `.N`.** A stage build that previews the next prod release still carries the previous prod base until `package.json` is bumped.
-  → Accepted: matches the current convention.
+- **[Trade-off] Stage versions carry the upcoming prod base (`X.Y.Z.N` = candidates of prod `X.Y.Z`).** The base is chosen at the first stage release after a prod release, before knowing for sure what the next prod will be; changing it later needs `--force-version`.
+  → Accepted (user decision, after stage 1.14.0.0 was released on top of prod 1.13.0): `package.json` stays prod-only, stage releases get no tag.
 - **[Risk] The existing tag `v1.9.2` and the live versions do not match the repo today.**
   → First run per environment: bootstrap S3 (`version.json` missing). If the store disagrees with the local file, align the local file by hand or use `--force-version`.
 
