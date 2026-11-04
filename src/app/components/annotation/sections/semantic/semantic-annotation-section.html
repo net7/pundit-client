@@ -14,12 +14,14 @@
           }
           @case ('uri') {
             @if (triple.object?.source === 'search') {
-              <div class="pnd-annotation__semantic-item-object ">
-                <div class="pnd-annotation__header">
-                  <span class="pnd-annotation__header-thumb-wrapper">
-                    <img [src]="(imageDataService.images[triple.object?.depiction]?.data | async) || triple.object?.depiction"
-                      onerror="this.style.display='none'" class="pnd-annotation__header-thumb-image" >
-                  </span>
+              <div class="pnd-annotation__semantic-item-object">
+                <div class="pnd-annotation__header" [class.has-thumb]="!!triple.object?.depiction">
+                  @if (triple.object?.depiction) {
+                    <span class="pnd-annotation__header-thumb-wrapper">
+                      <img [src]="(imageDataService.images[triple.object?.depiction]?.data | async) || triple.object?.depiction"
+                        onerror="this.style.display='none'" class="pnd-annotation__header-thumb-image" >
+                    </span>
+                  }
                   <div class="pnd-annotation__header-info">
                     <div>
                       <a [href]="triple.object?.uri" target="_blank">
@@ -39,9 +41,11 @@
                     }
                   </div>
                 </div>
-                <div class="pnd-annotation__semantic-item-object__description">
-                  {{triple.object?.description}}
-                </div>
+                @if (triple.object?.description) {
+                  <div class="pnd-annotation__semantic-item-object__description">
+                    {{triple.object?.description}}
+                  </div>
+                }
               </div>
             } @else {
               <div class="pnd-annotation__semantic-item-object">
