@@ -4,7 +4,6 @@ import { ReplaySubject } from 'rxjs';
 import { AnnotationService } from 'src/app/services/annotation.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { AppEventData } from 'src/app/types';
-import { SafeResourceUrl } from '@angular/platform-browser';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserService } from 'src/app/services/user.service';
 import { AnchorService } from 'src/app/services/anchor.service';
@@ -44,12 +43,8 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
 
   @Input() appEvent$!: ReplaySubject<AppEventData>;
 
-  public logo: SafeResourceUrl;
-
   constructor() {
     super(config);
-
-    this.logo = 'https://static.thepund.it/assets/mocks/pundit-icon-48-light.png';
   }
 
   protected initPayload() {
