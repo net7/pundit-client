@@ -6,3 +6,4 @@ export * from './auth.interface';
 export * from './auth-token.interface';
 export * from './auth-user.interface';
 export * from './ai-annotate-response.interface';
+export * from './ontology-response.interface';

@@ -26,6 +26,7 @@ export const auth = apiNamespace();
 export const tag = apiNamespace();
 export const comment = apiNamespace();
 export const ai = apiNamespace();
+export const ontology = apiNamespace();
 
 // Mutable settings object (real export is assigned to at runtime in app code).
 export const CommunicationSettings: Record<string, unknown> = {};

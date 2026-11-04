@@ -20,7 +20,8 @@ export type RequestHooks = {
 }
 
 export interface GetRequestOptions extends RequestOptions {
-  method?: 'get'
+  method?: 'get',
+  params?: { [key: string]: string | number | boolean };
 }
 
 export interface DeleteRequestOptions extends RequestOptions {

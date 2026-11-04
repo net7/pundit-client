@@ -4,3 +4,4 @@ export * from './search-notebook-params.interface';
 export * from './login.interface';
 export * from './signup.interface';
 export * from './ai-annotate-request.interface';
+export * from './ontology-request.interface';

@@ -9,3 +9,4 @@ export * from './triple';
 export * from './entity';
 export * from './tag';
 export * from './shareNotification';
+export * from './ontology';
