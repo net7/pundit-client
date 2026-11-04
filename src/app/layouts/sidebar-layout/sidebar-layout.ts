@@ -12,17 +12,22 @@ import { ToastService } from 'src/app/services/toast.service';
 import { PunditLoginService } from 'src/app/login-module/public-api';
 import { TagService } from 'src/app/services/tag.service';
 import { PdfService } from 'src/app/services/pdf.service';
+import { OntologyService } from 'src/app/services/ontology.service';
 import { SidebarLayoutConfig as config } from './sidebar-layout.config';
 import { NgClass, NgTemplateOutlet, AsyncPipe } from '@angular/common';
 import { SvgIconComponent } from '../../components/svg-icon/svg-icon';
 import { AnnotationComponent } from '../../components/annotation/annotation';
 import { NotebookPanelComponent } from '../../components/notebook-panel/notebook-panel';
+import { OntologiesPanelComponent } from '../../components/ontologies-panel/ontologies-panel';
 
 @Component({
     selector: 'sidebar-layout',
     templateUrl: './sidebar-layout.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgClass, SvgIconComponent, NgTemplateOutlet, AnnotationComponent, NotebookPanelComponent, AsyncPipe]
+    imports: [
+      NgClass, SvgIconComponent, NgTemplateOutlet, AnnotationComponent,
+      NotebookPanelComponent, OntologiesPanelComponent, AsyncPipe
+    ]
 })
 export class SidebarLayoutComponent extends AbstractLayout implements OnInit, OnDestroy {
   private annotationPositionService = inject(AnnotationPositionService);
@@ -34,6 +39,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
   private toastService = inject(ToastService);
   private tagService = inject(TagService);
   private pdfService = inject(PdfService);
+  private ontologyService = inject(OntologyService);
   private changeDetectorRef = inject(ChangeDetectorRef);
 
   @Input() appEvent$!: ReplaySubject<AppEventData>;
@@ -58,6 +64,7 @@ export class SidebarLayoutComponent extends AbstractLayout implements OnInit, On
       toastService: this.toastService,
       tagService: this.tagService,
       pdfService: this.pdfService,
+      ontologyService: this.ontologyService,
       changeDetectorRef: this.changeDetectorRef,
     };
   }

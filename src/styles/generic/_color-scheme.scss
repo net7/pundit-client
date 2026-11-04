@@ -41,3 +41,11 @@ $color-object: #0084c8;
 $color-subject-text: color.adjust($color-subject, $lightness: 27%);
 $color-predicate-text: color.adjust($color-predicate, $lightness: 25%);
 $color-object-text: color.adjust(color.adjust($color-object, $lightness: 27%), $saturation: -30%);
+
+// Ontology element types (badges)
+$color-type-class: #949400;
+$bgcolor-type-class: #ffffb8;
+$color-type-entity: #1f67ff;
+$bgcolor-type-entity: #ccddff;
+$color-type-predicate: #a224d6;
+$bgcolor-type-predicate: #efd6fa;

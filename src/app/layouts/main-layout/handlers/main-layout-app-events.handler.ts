@@ -225,6 +225,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     this.layoutDS.notebookService.clear();
     this.layoutDS.tagService.clear();
     this.layoutDS.semanticPredicateService.clear();
+    this.layoutDS.ontologyService.clear();
     this.layoutDS.userService.logout();
 
     // emit signals

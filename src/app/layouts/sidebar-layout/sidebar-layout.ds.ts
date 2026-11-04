@@ -8,6 +8,8 @@ import { UserService } from 'src/app/services/user.service';
 import { AnnotationPositionService } from 'src/app/services/annotation-position.service';
 import { getDocumentHref } from 'src/app/models/annotation/html-util';
 import { TagService } from 'src/app/services/tag.service';
+import { OntologyListStatus, OntologyService } from 'src/app/services/ontology.service';
+import { OntologySummary } from 'src/communication';
 import { NotebookService } from '../../services/notebook.service';
 
 const REPORT_LINK = 'https://docs.google.com/forms/d/e/1FAIpQLSfC-bkKWVOa52BP05FWwyZW446KlVnEv2w5gmZhs1BMvZn0Rg/viewform?usp=pp_url&entry.1925380618';
@@ -23,11 +25,16 @@ export class SidebarLayoutDS extends LayoutDataSource {
 
   public userService!: UserService;
 
+  public ontologyService!: OntologyService;
+
   /** open/close the sidebar */
   public isCollapsed = new BehaviorSubject(false);
 
   /** open/close the notebook editor panel */
   public notebookEditor = new BehaviorSubject(false);
+
+  /** open/close the ontologies panel */
+  public ontologiesPanel = new BehaviorSubject(false);
 
   /** dynamically update the document height on scroll */
   public height$: Subject<string> = new Subject();
@@ -81,6 +88,10 @@ export class SidebarLayoutDS extends LayoutDataSource {
       show: _t('sidebaractions#notebookpanel_show'),
       hide: _t('sidebaractions#notebookpanel_hide')
     },
+    ontologiespanel: {
+      show: _t('sidebaractions#ontologiespanel_show'),
+      hide: _t('sidebaractions#ontologiespanel_hide')
+    },
     notifications: {
       show: _t('sidebaractions#notifications_show')
     },
@@ -95,6 +106,7 @@ export class SidebarLayoutDS extends LayoutDataSource {
     this.notebookService = payload.notebookService;
     this.userService = payload.userService;
     this.tagService = payload.tagService;
+    this.ontologyService = payload.ontologyService;
 
     // add annotation service to event handler
     // to identify the single annotation
@@ -111,6 +123,15 @@ export class SidebarLayoutDS extends LayoutDataSource {
         usersList: this.usersList
       });
     }
+  }
+
+  updateOntologiesPanel(ontologies: OntologySummary[], status: OntologyListStatus, savingIds: string[]) {
+    this.one('ontologies-panel').update({
+      ontologies,
+      status,
+      savingIds,
+      ontologiesLink: _c('ontologiesLink') || undefined,
+    });
   }
 
   updateAnnotations(load = false) {

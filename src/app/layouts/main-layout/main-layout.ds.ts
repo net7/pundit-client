@@ -28,6 +28,7 @@ import { ReplyService } from "src/app/services/reply.service";
 import { PdfService } from "src/app/services/pdf.service";
 import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
 import { AiService } from "src/app/services/ai.service";
+import { OntologyService } from "src/app/services/ontology.service";
 import {
   AnnotationModel,
   SemanticPredicateModel,
@@ -73,6 +74,8 @@ export class MainLayoutDS extends LayoutDataSource {
 
   public aiService!: AiService;
 
+  public ontologyService!: OntologyService;
+
   /** Let other layouts know that all services are ready */
   public hasLoaded$ = new BehaviorSubject(false);
 
@@ -106,6 +109,7 @@ export class MainLayoutDS extends LayoutDataSource {
     this.pdfService = payload.pdfService;
     this.documentInfoService = payload.documentInfoService;
     this.aiService = payload.aiService;
+    this.ontologyService = payload.ontologyService;
   }
 
   isUserLogged = () => this.state.isLogged;
@@ -156,6 +160,11 @@ export class MainLayoutDS extends LayoutDataSource {
         this.semanticPredicateService.load(data);
       }),
     );
+  }
+
+  /** Never fails: a list error only disables the ontology features. */
+  getUserOntologies() {
+    return this.ontologyService.load();
   }
 
   getUserNotebooks() {

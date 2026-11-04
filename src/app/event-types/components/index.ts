@@ -5,3 +5,4 @@ export * from "./notebook-panel.events";
 export * from "./annotation.events";
 export * from "./pdf-error-modal.events";
 export * from "./notebook-share-modal.events";
+export * from "./ontologies-panel.events";

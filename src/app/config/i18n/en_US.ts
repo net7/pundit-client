@@ -226,6 +226,8 @@ export default {
   "sidebaractions#fullpage_hide": "Hide full page annotations",
   "sidebaractions#notebookpanel_show": "Open notebook settings",
   "sidebaractions#notebookpanel_hide": "Close notebook settings",
+  "sidebaractions#ontologiespanel_show": "Open ontologies settings",
+  "sidebaractions#ontologiespanel_hide": "Close ontologies settings",
   "sidebaractions#notifications_show": "View user notifications",
   "sidebaractions#collapse": "Close sidebar",
   // notebook share
@@ -254,4 +256,21 @@ export default {
   "notebookpanel#button_label": "Share",
   "notebookpanel#share_description":
     "Invite Pundit users to your notebook and allow them to add annotations.",
+  // ontologies panel
+  "ontologiespanel#title": "Ontologies",
+  "ontologiespanel#description":
+    "Select the ontologies you want to use as objects and predicates for your semantic annotations",
+  "ontologiespanel#types": "Types",
+  "ontologiespanel#saving": "Saving…",
+  "ontologiespanel#use_entity": "Use entities from {ontology}",
+  "ontologiespanel#use_class": "Use classes from {ontology}",
+  "ontologiespanel#use_predicate": "Use predicates from {ontology}",
+  "ontologiespanel#no_entity": "No entities in this ontology",
+  "ontologiespanel#no_class": "No classes in this ontology",
+  "ontologiespanel#no_predicate": "No predicates in this ontology",
+  "ontologiespanel#empty": "You have no ontologies yet.",
+  "ontologiespanel#empty_link": "Import an ontology",
+  "ontologiespanel#error": "Your ontologies could not be loaded, please try again later.",
+  "toast#ontologies_save_error_title": "Oops! Something went wrong",
+  "toast#ontologies_save_error_text": "Pundit couldn't save your ontologies, please try again later.",
 };
