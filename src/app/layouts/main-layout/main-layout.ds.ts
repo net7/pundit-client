@@ -29,6 +29,7 @@ import { PdfService } from "src/app/services/pdf.service";
 import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
 import { AiService } from "src/app/services/ai.service";
 import { OntologyService } from "src/app/services/ontology.service";
+import { warnIfNoOntologyPredicates } from "./handlers/ontologies-warning-toast.util";
 import {
   AnnotationModel,
   SemanticPredicateModel,
@@ -217,6 +218,11 @@ export class MainLayoutDS extends LayoutDataSource {
       sections,
       validation,
     });
+
+    // semantic annotations need predicates from the user's ontologies
+    if (sections?.some(({ id }) => id === "semantic")) {
+      warnIfNoOntologyPredicates(this.ontologyService, this.toastService);
+    }
   }
 
   public setAnonymousSelectionRange() {

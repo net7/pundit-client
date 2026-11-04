@@ -181,9 +181,13 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         objectType = 'uri';
         // uri
       } else if ('uri' in triple.object && triple.object.source === 'search') {
+        const { label, uri, elementType, rdfTypes } = triple.object;
         object = {
-          label: triple.object.label,
-          uri: triple.object.uri,
+          label,
+          uri,
+          source: 'search',
+          ...(elementType ? { elementType } : {}),
+          ...(rdfTypes?.length ? { rdfTypes } : {}),
         };
         objectType = 'uri';
         // web page

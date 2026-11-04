@@ -1,0 +1,41 @@
+@use "../generic/color-scheme";
+@use "../generic/variables";
+
+/**
+ * TYPE BADGE
+ *
+ * Small uppercase badge for the type of a semantic term
+ * (entity, class, predicate, literal, uri)
+ */
+
+/* ------------------------------------ *\
+   #TYPE-BADGE
+\* ------------------------------------ */
+.pnd-type-badge {
+    display: inline-block;
+    padding: 3px 6px;
+    background-color: variables.$color-background-light;
+    color: variables.$color-text-light;
+    text-transform: uppercase;
+    font-size: variables.$font-size-xxs;
+    font-weight: variables.$font-weight-bold;
+    line-height: 1;
+    border-radius: variables.$border-radius;
+    white-space: nowrap;
+
+    &--class {
+        color: color-scheme.$color-type-class;
+        background-color: color-scheme.$bgcolor-type-class;
+    }
+
+    &--entity {
+        color: color-scheme.$color-type-entity;
+        background-color: color-scheme.$bgcolor-type-entity;
+    }
+
+    &--predicate {
+        color: color-scheme.$color-type-predicate;
+        background-color: color-scheme.$bgcolor-type-predicate;
+    }
+}
+
