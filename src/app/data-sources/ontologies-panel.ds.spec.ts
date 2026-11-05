@@ -7,8 +7,10 @@ describe('OntologiesPanelDS', () => {
     translate.setCurrentLang('en');
     [
       'ontologiespanel#title', 'ontologiespanel#description', 'ontologiespanel#saving',
-      'ontologiespanel#shared', 'ontologiespanel#shared_title',
-      'ontologiespanel#empty', 'ontologiespanel#empty_link', 'ontologiespanel#error',
+      'ontologiespanel#list_title', 'ontologiespanel#own_empty',
+      'ontologiespanel#shared_badge', 'ontologiespanel#shared_title',
+      'ontologiespanel#import_title', 'ontologiespanel#import', 'ontologiespanel#import_description',
+      'ontologiespanel#error',
       'semantic#type_entity', 'semantic#type_class', 'semantic#type_predicate',
       'ontologiespanel#use_entity', 'ontologiespanel#use_class', 'ontologiespanel#use_predicate',
       'ontologiespanel#no_entity', 'ontologiespanel#no_class', 'ontologiespanel#no_predicate',
@@ -61,7 +63,7 @@ describe('OntologiesPanelDS', () => {
     expect(output.items.map(({ sourceLabel }: any) => sourceLabel)).toEqual(['foaf', undefined, undefined]);
   });
 
-  it('marks only the shared ontologies', () => {
+  it('lists the user ontologies first and the built-in ones last, marked as shared', () => {
     const output = run({
       status: 'loaded',
       ontologies: [
@@ -70,9 +72,21 @@ describe('OntologiesPanelDS', () => {
         { id: '2', name: 'Mine', selected: false, selectedCategories: [], counts: { predicate: 1, class: 0, entity: 0 } },
       ],
     });
-    expect(output.items.map(({ shared }: any) => shared)).toEqual([true, false, false]);
-    expect(output.labels.shared).toBe('ontologiespanel#shared');
-    expect(output.labels.sharedTitle).toBe('ontologiespanel#shared_title');
+    expect(output.items.map(({ id, shared }: any) => [id, shared])).toEqual([['1', false], ['2', false], ['p', true]]);
+    expect(output.hasOwn).toBe(true);
+    expect(output.labels.sharedBadge).toBe('ontologiespanel#shared_badge');
+  });
+
+  it('knows when the user imported no ontology', () => {
+    const output = run({
+      status: 'loaded',
+      ontologies: [
+        { id: 'p', name: 'Pundit predicates', shared: true, selected: true, selectedCategories: ['predicate'], counts: { predicate: 9, class: 0, entity: 0 } },
+        { id: '1', name: 'Empty', selected: false, selectedCategories: [], counts: { predicate: 0, class: 0, entity: 0 } },
+      ],
+    });
+    expect(output.items.map(({ id }: any) => id)).toEqual(['p']);
+    expect(output.hasOwn).toBe(false);
   });
 
   it('does not list an ontology without elements', () => {
@@ -90,6 +104,7 @@ describe('OntologiesPanelDS', () => {
     const output = run({ status: 'error', ontologies: [], ontologiesLink: 'https://x/ontologies' });
     expect(output.status).toBe('error');
     expect(output.items).toEqual([]);
+    expect(output.hasOwn).toBe(false);
     expect(output.ontologiesLink).toBe('https://x/ontologies');
   });
 });

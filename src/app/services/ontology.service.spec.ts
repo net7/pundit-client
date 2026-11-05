@@ -114,22 +114,6 @@ describe('OntologyService', () => {
     expect(saveMock).toHaveBeenLastCalledWith({ ontologies: [{ id: '2', categories: ALL }] });
   });
 
-  it('does not count shared ontologies as imported', async () => {
-    expect(service.hasImportedOntologies()).toBe(true);
-    listMock.mockResolvedValue({
-      data: {
-        data: [{
-          id: 'pundit', name: 'Pundit predicates', shared: true,
-          counts: { predicate: 9, class: 0, entity: 0 },
-          selected: true, selectedCategories: ['predicate'],
-        }],
-      },
-    });
-    await firstValueFrom(service.load());
-    expect(service.hasImportedOntologies()).toBe(false);
-    expect(service.hasSelection(['predicate'])).toBe(true);
-  });
-
   it('shows the ids kept by the server', async () => {
     saveMock.mockResolvedValue({ data: { data: { ontologies: [{ id: '1', categories: ALL }] } } });
     service.toggle('2');

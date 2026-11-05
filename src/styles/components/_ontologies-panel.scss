@@ -38,6 +38,50 @@
         margin-bottom: variables.$space * 2;
     }
 
+    // sections as in the notebook panel: label on top, separated by a border
+    &__section:not(:last-child) {
+        margin-bottom: variables.$space * 1.5;
+        padding-bottom: variables.$space * 2;
+        border-bottom: 1px solid variables.$color-border-normal;
+    }
+
+    &__label.pnd-text {
+        margin-bottom: variables.$space;
+    }
+
+    .pnd-text-small {
+        margin-bottom: 0;
+    }
+
+    &__own-empty.pnd-text-small {
+        margin-bottom: variables.$space;
+    }
+
+    &__builtin {
+        margin-left: variables.$space * 0.5;
+        vertical-align: middle;
+    }
+
+    // import button, as the notebook panel's share button
+    &__import-button {
+        padding: 0 variables.$space 0 variables.$space * 0.5;
+
+        span.button-label {
+            margin-left: variables.$space;
+            flex-grow: 1;
+        }
+
+        span.button-icon {
+            display: block;
+            width: variables.$font-size-s;
+
+            .pnd-svg-icon-plus svg {
+                width: variables.$font-size-s;
+                height: variables.$font-size-s;
+            }
+        }
+    }
+
     &__message {
         font-size: variables.$font-size-s;
         color: variables.$color-text-light;
@@ -99,11 +143,6 @@
         color: variables.$color-text-light;
         font-size: variables.$font-size-xs;
         font-weight: variables.$font-weight-normal;
-    }
-
-    &__shared {
-        margin-left: variables.$space * 0.5;
-        vertical-align: middle;
     }
 
     &__types {

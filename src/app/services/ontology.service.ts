@@ -91,16 +91,6 @@ export class OntologyService {
     );
   }
 
-  /**
-   * Whether the user imported an ontology with elements. Shared ontologies
-   * provided by Pundit do not count.
-   */
-  hasImportedOntologies(): boolean {
-    return this.ontologies$.value.some((ontology) => (
-      !ontology.shared && getAvailableCategories(ontology).length > 0
-    ));
-  }
-
   /** Whether some ontology is used for at least one of the categories (any category by default). */
   hasSelection(categories: OntologyElementCategory[] = ONTOLOGY_CATEGORIES): boolean {
     return this.ontologies$.value.some(({ selectedCategories }) => (
