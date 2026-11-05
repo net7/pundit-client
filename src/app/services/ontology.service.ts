@@ -91,11 +91,6 @@ export class OntologyService {
     );
   }
 
-  /** Whether the user has an ontology with elements (the ones the panel lists). */
-  hasUsableOntologies(): boolean {
-    return this.ontologies$.value.some((ontology) => getAvailableCategories(ontology).length > 0);
-  }
-
   /** Whether some ontology is used for at least one of the categories (any category by default). */
   hasSelection(categories: OntologyElementCategory[] = ONTOLOGY_CATEGORIES): boolean {
     return this.ontologies$.value.some(({ selectedCategories }) => (

@@ -4,66 +4,86 @@
     <div class="pnd-ontologies-panel__description">{{ data.labels.description }}</div>
     @if (data.status === 'error') {
       <p class="pnd-ontologies-panel__message">{{ data.labels.error }}</p>
-    } @else if (data.status === 'loaded' && !data.items.length) {
-      <!-- no ontology, or none with elements -->
-      <p class="pnd-ontologies-panel__message">
-        {{ data.labels.empty }}
-        @if (data.ontologiesLink) {
-          <a [href]="data.ontologiesLink" target="_blank" rel="noopener">{{ data.labels.emptyLink }}</a>
+    } @else if (data.status === 'loaded') {
+      @if (data.ontologiesLink) {
+        <section class="pnd-ontologies-panel__section pnd-ontologies-panel__section--import">
+          <div class="pnd-ontologies-panel__label pnd-text">{{ data.labels.importSection }}</div>
+          <a class="pnd-btn pnd-ontologies-panel__import-button" [href]="data.ontologiesLink"
+            target="_blank" rel="noopener">
+            <span class="button-icon">
+              <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
+            </span>
+            <span class="button-label">{{ data.labels.importButton }}</span>
+          </a>
+          <p class="pnd-text-small">{{ data.labels.importDescription }}</p>
+        </section>
+      }
+      <section class="pnd-ontologies-panel__section pnd-ontologies-panel__section--list">
+        <div class="pnd-ontologies-panel__label pnd-text">{{ data.labels.listSection }}</div>
+        @if (!data.hasOwn) {
+          <p class="pnd-text-small pnd-ontologies-panel__own-empty">{{ data.labels.ownEmpty }}</p>
         }
-      </p>
-    } @else {
-      <div class="pnd-ontologies-panel__items">
-        @for (item of data.items; track item.id) {
-          <div class="pnd-ontologies-panel__item" [class.is-saving]="item.isSaving"
-            [attr.aria-busy]="item.isSaving">
-            @if (item.isSaving) {
-              <span class="pnd-ontologies-panel__saving" [title]="data.labels.saving">
-                <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-              </span>
-            } @else {
-              <button type="button" class="pnd-ontologies-panel__checkbox"
-                role="checkbox"
-                [attr.aria-checked]="item.selected"
-                [attr.aria-label]="item.name"
-                (click)="onToggle(item)">
-                @if (item.selected) {
-                  <pnd-svg-icon [data]="{ id: 'checked' }"></pnd-svg-icon>
-                }
+        @if (data.items.length) {
+          <div class="pnd-ontologies-panel__items">
+            @for (item of data.items; track item.id) {
+              <ng-container *ngTemplateOutlet="ontologyItem; context: { $implicit: item }"></ng-container>
+            }
+          </div>
+        }
+      </section>
+    }
+  </div>
+
+  <ng-template #ontologyItem let-item>
+    <div class="pnd-ontologies-panel__item" [class.is-saving]="item.isSaving"
+      [attr.aria-busy]="item.isSaving">
+      @if (item.isSaving) {
+        <span class="pnd-ontologies-panel__saving" [title]="data.labels.saving">
+          <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+        </span>
+      } @else {
+        <button type="button" class="pnd-ontologies-panel__checkbox"
+          role="checkbox"
+          [attr.aria-checked]="item.selected"
+          [attr.aria-label]="item.name"
+          (click)="onToggle(item)">
+          @if (item.selected) {
+            <pnd-svg-icon [data]="{ id: 'checked' }"></pnd-svg-icon>
+          }
+        </button>
+      }
+      <div class="pnd-ontologies-panel__info">
+        <div class="pnd-ontologies-panel__name" (click)="onToggle(item)">
+          {{ item.name }}
+          @if (item.sourceLabel) {
+            <span class="pnd-ontologies-panel__source">{{ item.sourceLabel }}</span>
+          }
+          @if (item.shared) {
+            <span class="pnd-type-badge pnd-ontologies-panel__builtin" [title]="data.labels.sharedTitle">{{ data.labels.sharedBadge }}</span>
+          }
+        </div>
+        @if (item.types.length) {
+          <div class="pnd-ontologies-panel__types">
+            @for (type of item.types; track type.type) {
+              <button type="button" role="checkbox"
+                class="pnd-ontologies-panel__category pnd-ontologies-panel__category--{{ type.type }}"
+                [attr.aria-checked]="type.active"
+                [disabled]="item.isSaving || type.disabled"
+                [class.is-disabled]="type.disabled"
+                [title]="type.title"
+                (click)="onToggleCategory(item, type)">
+                <span class="pnd-ontologies-panel__category-box">
+                  @if (type.active) {
+                    <pnd-svg-icon [data]="{ id: 'checked' }"></pnd-svg-icon>
+                  }
+                </span>
+                <span class="pnd-ontologies-panel__category-label">{{ data.labels.typeNames[type.type] }}</span>
+                <span class="pnd-ontologies-panel__category-count">{{ type.count }}</span>
               </button>
             }
-            <div class="pnd-ontologies-panel__info">
-              <div class="pnd-ontologies-panel__name" (click)="onToggle(item)">
-                {{ item.name }}
-                @if (item.sourceLabel) {
-                  <span class="pnd-ontologies-panel__source">{{ item.sourceLabel }}</span>
-                }
-              </div>
-              @if (item.types.length) {
-                <div class="pnd-ontologies-panel__types">
-                  @for (type of item.types; track type.type) {
-                    <button type="button" role="checkbox"
-                      class="pnd-ontologies-panel__category pnd-ontologies-panel__category--{{ type.type }}"
-                      [attr.aria-checked]="type.active"
-                      [disabled]="item.isSaving || type.disabled"
-                      [class.is-disabled]="type.disabled"
-                      [title]="type.title"
-                      (click)="onToggleCategory(item, type)">
-                      <span class="pnd-ontologies-panel__category-box">
-                        @if (type.active) {
-                          <pnd-svg-icon [data]="{ id: 'checked' }"></pnd-svg-icon>
-                        }
-                      </span>
-                      <span class="pnd-ontologies-panel__category-label">{{ data.labels.typeNames[type.type] }}</span>
-                      <span class="pnd-ontologies-panel__category-count">{{ type.count }}</span>
-                    </button>
-                  }
-                </div>
-              }
-            </div>
           </div>
         }
       </div>
-    }
-  </div>
+    </div>
+  </ng-template>
 }

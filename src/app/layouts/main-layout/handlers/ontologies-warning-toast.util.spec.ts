@@ -1,9 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { translate } from '@net7/core';
-import { _c } from 'src/app/models/config';
+import { OntologyService } from 'src/app/services/ontology.service';
 import { warnIfNoOntologyPredicates } from './ontologies-warning-toast.util';
-
-jest.mock('src/app/models/config', () => ({ _c: jest.fn() }));
 
 describe('warnIfNoOntologyPredicates', () => {
   let toastService: { warn: jest.Mock };
@@ -13,53 +11,55 @@ describe('warnIfNoOntologyPredicates', () => {
     translate.setDefaultLang('en');
     translate.setCurrentLang('en');
     [
-      'toast#ontologies_missing_title', 'toast#ontologies_missing_text', 'toast#ontologies_missing_action',
       'toast#ontologies_no_predicates_title', 'toast#ontologies_no_predicates_text',
       'toast#ontologies_no_predicates_action',
     ].forEach((key) => translate.setLangTranslation('en', key, key));
   });
 
   beforeEach(() => {
-    (_c as jest.Mock).mockReturnValue('https://app/ontologies');
     toastService = { warn: jest.fn() };
     ontologyService = {
       status$: new BehaviorSubject('loaded'),
       openPanel$: new Subject<void>(),
       hasSelection: jest.fn(() => false),
-      hasUsableOntologies: jest.fn(() => false),
     };
   });
 
-  const action = () => {
-    const params = toastService.warn.mock.calls[0][0];
+  const params = () => toastService.warn.mock.calls[0][0];
+
+  const action = (index: number) => {
     const toast = { close: jest.fn() };
-    params.onAction(params.actions[0].payload, toast);
+    params().onAction(params().actions[index].payload, toast);
     return toast;
   };
 
-  it('invites to import ontologies when the user has none', () => {
-    const open = jest.spyOn(window, 'open').mockImplementation(() => null);
-    warnIfNoOntologyPredicates(ontologyService, toastService as any);
-    expect(toastService.warn.mock.calls[0][0].title).toBe('toast#ontologies_missing_title');
-    const toast = action();
-    expect(open).toHaveBeenCalledWith('https://app/ontologies', '_blank', 'noopener');
-    expect(toast.close).toHaveBeenCalled();
-    open.mockRestore();
-  });
-
-  it('opens the Ontologies panel when no ontology is used for predicates', () => {
-    ontologyService.hasUsableOntologies.mockReturnValue(true);
+  it('warns with a single button that opens the Ontologies panel', () => {
     const opened = jest.fn();
     ontologyService.openPanel$.subscribe(opened);
     warnIfNoOntologyPredicates(ontologyService, toastService as any);
-    expect(toastService.warn.mock.calls[0][0].title).toBe('toast#ontologies_no_predicates_title');
-    action();
+    expect(toastService.warn).toHaveBeenCalledTimes(1);
+    expect(params().title).toBe('toast#ontologies_no_predicates_title');
+    expect(params().actions.map(({ text }: any) => text)).toEqual(['toast#ontologies_no_predicates_action']);
+    const toast = action(0);
     expect(opened).toHaveBeenCalled();
+    expect(toast.close).toHaveBeenCalled();
   });
 
   it('says nothing when some ontology is used for predicates', () => {
     ontologyService.hasSelection.mockReturnValue(true);
     warnIfNoOntologyPredicates(ontologyService, toastService as any);
+    expect(toastService.warn).not.toHaveBeenCalled();
+  });
+
+  it('says nothing when only the shared ontology is selected, as by default', () => {
+    const service = new OntologyService();
+    service.ontologies$.next([{
+      id: 'pundit', name: 'Pundit predicates', shared: true,
+      counts: { predicate: 9, class: 0, entity: 0 },
+      selected: true, selectedCategories: ['predicate'],
+    }]);
+    service.status$.next('loaded');
+    warnIfNoOntologyPredicates(service, toastService as any);
     expect(toastService.warn).not.toHaveBeenCalled();
   });
 

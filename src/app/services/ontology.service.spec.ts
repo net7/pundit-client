@@ -90,6 +90,30 @@ describe('OntologyService', () => {
     expect(errors).toHaveBeenCalledTimes(1);
   });
 
+  it('sends the shared ontology in the selection while it is checked', async () => {
+    const shared: OntologySummary = {
+      id: 'pundit', name: 'Pundit predicates', shared: true,
+      counts: { predicate: 9, class: 0, entity: 0 },
+      selected: true, selectedCategories: ['predicate'],
+    };
+    listMock.mockResolvedValue({ data: { data: [shared, ontology('2', false)] } });
+    await firstValueFrom(service.load());
+    // the server keeps what it receives
+    saveMock.mockImplementation(async ({ ontologies }) => ({ data: { data: { ontologies } } }));
+
+    service.toggle('2');
+    jest.advanceTimersByTime(SELECTION_SAVE_DELAY);
+    await flushPromises();
+    expect(saveMock).toHaveBeenLastCalledWith({
+      ontologies: [{ id: 'pundit', categories: ['predicate'] }, { id: '2', categories: ALL }],
+    });
+
+    service.toggle('pundit');
+    jest.advanceTimersByTime(SELECTION_SAVE_DELAY);
+    await flushPromises();
+    expect(saveMock).toHaveBeenLastCalledWith({ ontologies: [{ id: '2', categories: ALL }] });
+  });
+
   it('shows the ids kept by the server', async () => {
     saveMock.mockResolvedValue({ data: { data: { ontologies: [{ id: '1', categories: ALL }] } } });
     service.toggle('2');
