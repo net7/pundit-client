@@ -24,6 +24,7 @@ export class OntologiesPanelDS extends DataSource {
         id: ontology.id,
         name: ontology.name,
         sourceLabel: ontology.prefix && ontology.prefix !== ontology.name ? ontology.prefix : undefined,
+        shared: !!ontology.shared,
         types: ONTOLOGY_CATEGORIES.map((type) => {
           const count = ontology.counts?.[type] || 0;
           return {
@@ -47,6 +48,8 @@ export class OntologiesPanelDS extends DataSource {
         emptyLink: _t('ontologiespanel#empty_link'),
         error: _t('ontologiespanel#error'),
         saving: _t('ontologiespanel#saving'),
+        shared: _t('ontologiespanel#shared'),
+        sharedTitle: _t('ontologiespanel#shared_title'),
         typeNames: {
           entity: _t('semantic#type_entity'),
           class: _t('semantic#type_class'),

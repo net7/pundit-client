@@ -91,9 +91,14 @@ export class OntologyService {
     );
   }
 
-  /** Whether the user has an ontology with elements (the ones the panel lists). */
-  hasUsableOntologies(): boolean {
-    return this.ontologies$.value.some((ontology) => getAvailableCategories(ontology).length > 0);
+  /**
+   * Whether the user imported an ontology with elements. Shared ontologies
+   * provided by Pundit do not count.
+   */
+  hasImportedOntologies(): boolean {
+    return this.ontologies$.value.some((ontology) => (
+      !ontology.shared && getAvailableCategories(ontology).length > 0
+    ));
   }
 
   /** Whether some ontology is used for at least one of the categories (any category by default). */

@@ -1,6 +1,7 @@
 import { BehaviorSubject, Subject } from 'rxjs';
 import { translate } from '@net7/core';
 import { _c } from 'src/app/models/config';
+import { OntologyService } from 'src/app/services/ontology.service';
 import { warnIfNoOntologyPredicates } from './ontologies-warning-toast.util';
 
 jest.mock('src/app/models/config', () => ({ _c: jest.fn() }));
@@ -26,7 +27,7 @@ describe('warnIfNoOntologyPredicates', () => {
       status$: new BehaviorSubject('loaded'),
       openPanel$: new Subject<void>(),
       hasSelection: jest.fn(() => false),
-      hasUsableOntologies: jest.fn(() => false),
+      hasImportedOntologies: jest.fn(() => false),
     };
   });
 
@@ -48,7 +49,7 @@ describe('warnIfNoOntologyPredicates', () => {
   });
 
   it('opens the Ontologies panel when no ontology is used for predicates', () => {
-    ontologyService.hasUsableOntologies.mockReturnValue(true);
+    ontologyService.hasImportedOntologies.mockReturnValue(true);
     const opened = jest.fn();
     ontologyService.openPanel$.subscribe(opened);
     warnIfNoOntologyPredicates(ontologyService, toastService as any);
@@ -61,6 +62,36 @@ describe('warnIfNoOntologyPredicates', () => {
     ontologyService.hasSelection.mockReturnValue(true);
     warnIfNoOntologyPredicates(ontologyService, toastService as any);
     expect(toastService.warn).not.toHaveBeenCalled();
+  });
+
+  it('says nothing when only the shared ontology is selected, as by default', () => {
+    const service = new OntologyService();
+    service.ontologies$.next([
+      {
+        id: 'pundit', name: 'Pundit predicates', shared: true,
+        counts: { predicate: 9, class: 0, entity: 0 },
+        selected: true, selectedCategories: ['predicate'],
+      },
+      {
+        id: '1', name: 'FOAF', counts: { predicate: 4, class: 2, entity: 0 },
+        selected: false, selectedCategories: [],
+      },
+    ]);
+    service.status$.next('loaded');
+    warnIfNoOntologyPredicates(service, toastService as any);
+    expect(toastService.warn).not.toHaveBeenCalled();
+  });
+
+  it('invites to import ontologies when only the shared one exists and it is not selected', () => {
+    const service = new OntologyService();
+    service.ontologies$.next([{
+      id: 'pundit', name: 'Pundit predicates', shared: true,
+      counts: { predicate: 9, class: 0, entity: 0 },
+      selected: false, selectedCategories: [],
+    }]);
+    service.status$.next('loaded');
+    warnIfNoOntologyPredicates(service, toastService as any);
+    expect(toastService.warn.mock.calls[0][0].title).toBe('toast#ontologies_missing_title');
   });
 
   it('says nothing while the list is not loaded', () => {

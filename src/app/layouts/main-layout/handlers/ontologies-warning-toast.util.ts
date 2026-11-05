@@ -7,9 +7,11 @@ const IMPORT_ACTION = 'importontologies';
 const SELECT_ACTION = 'selectontologies';
 
 /**
- * Semantic annotations need predicates from the user's ontologies. When the
- * semantic section opens, warn the user who has no ontology (button to the
- * ontologies page) or no ontology used for predicates (button to the panel).
+ * Semantic annotations need predicates from the selected ontologies. When the
+ * semantic section opens and no ontology is used for predicates, warn the user
+ * who imported no ontology of their own (button to the ontologies page) or who
+ * has some but none used for predicates (button to the panel). Shared ontologies
+ * provided by Pundit count as selected, not as imported.
  * Nothing is shown while the list is not loaded or failed to load.
  */
 export const warnIfNoOntologyPredicates = (
@@ -19,7 +21,7 @@ export const warnIfNoOntologyPredicates = (
   if (ontologyService.status$.value !== 'loaded' || ontologyService.hasSelection(['predicate'])) {
     return;
   }
-  if (!ontologyService.hasUsableOntologies()) {
+  if (!ontologyService.hasImportedOntologies()) {
     const link = _c('ontologiesLink');
     toastService.warn({
       title: _t('toast#ontologies_missing_title'),

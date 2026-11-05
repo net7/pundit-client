@@ -20,6 +20,8 @@ export type OntologiesPanelItem = {
   name: string;
   /** Prefix shown under the name, when different from the name. */
   sourceLabel?: string;
+  /** Shared ontology provided by Pundit: marked with a badge. */
+  shared: boolean;
   types: OntologiesPanelType[];
   selected: boolean;
   /** The change of this ontology is being saved: its controls wait. */
@@ -37,6 +39,9 @@ export type OntologiesPanelData = {
     emptyLink: string;
     error: string;
     saving: string;
+    /** Badge of a shared ontology, and its tooltip. */
+    shared: string;
+    sharedTitle: string;
     typeNames: Record<OntologyElementCategory, string>;
   };
 };

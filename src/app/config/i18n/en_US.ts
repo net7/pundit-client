@@ -272,6 +272,8 @@ export default {
     "Select the ontologies you want to use as objects and predicates for your semantic annotations",
   "ontologiespanel#types": "Types",
   "ontologiespanel#saving": "Saving…",
+  "ontologiespanel#shared": "Pundit",
+  "ontologiespanel#shared_title": "Shared ontology provided by Pundit",
   "ontologiespanel#use_entity": "Use entities from {ontology}",
   "ontologiespanel#use_class": "Use classes from {ontology}",
   "ontologiespanel#use_predicate": "Use predicates from {ontology}",

@@ -38,6 +38,9 @@
                 @if (item.sourceLabel) {
                   <span class="pnd-ontologies-panel__source">{{ item.sourceLabel }}</span>
                 }
+                @if (item.shared) {
+                  <span class="pnd-type-badge pnd-ontologies-panel__shared" [title]="data.labels.sharedTitle">{{ data.labels.shared }}</span>
+                }
               </div>
               @if (item.types.length) {
                 <div class="pnd-ontologies-panel__types">

@@ -8,6 +8,8 @@ export interface OntologySummary {
   name: string;
   /** Preferred namespace prefix (e.g. "foaf"), when the ontology declares one. */
   prefix?: string;
+  /** Shared ontology provided by Pundit: owned by no user, cannot be deleted or edited. */
+  shared?: boolean;
   counts: Record<OntologyElementCategory, number>;
   /** Whether the ontology is active in the annotator (= selectedCategories is not empty). */
   selected: boolean;

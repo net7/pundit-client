@@ -101,6 +101,11 @@
         font-weight: variables.$font-weight-normal;
     }
 
+    &__shared {
+        margin-left: variables.$space * 0.5;
+        vertical-align: middle;
+    }
+
     &__types {
         display: flex;
         flex-wrap: wrap;

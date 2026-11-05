@@ -7,6 +7,7 @@ describe('OntologiesPanelDS', () => {
     translate.setCurrentLang('en');
     [
       'ontologiespanel#title', 'ontologiespanel#description', 'ontologiespanel#saving',
+      'ontologiespanel#shared', 'ontologiespanel#shared_title',
       'ontologiespanel#empty', 'ontologiespanel#empty_link', 'ontologiespanel#error',
       'semantic#type_entity', 'semantic#type_class', 'semantic#type_predicate',
       'ontologiespanel#use_entity', 'ontologiespanel#use_class', 'ontologiespanel#use_predicate',
@@ -58,6 +59,20 @@ describe('OntologiesPanelDS', () => {
       ],
     });
     expect(output.items.map(({ sourceLabel }: any) => sourceLabel)).toEqual(['foaf', undefined, undefined]);
+  });
+
+  it('marks only the shared ontologies', () => {
+    const output = run({
+      status: 'loaded',
+      ontologies: [
+        { id: 'p', name: 'Pundit predicates', shared: true, selected: true, selectedCategories: ['predicate'], counts: { predicate: 9, class: 0, entity: 0 } },
+        { id: '1', name: 'FOAF', shared: false, selected: false, selectedCategories: [], counts: { predicate: 1, class: 0, entity: 0 } },
+        { id: '2', name: 'Mine', selected: false, selectedCategories: [], counts: { predicate: 1, class: 0, entity: 0 } },
+      ],
+    });
+    expect(output.items.map(({ shared }: any) => shared)).toEqual([true, false, false]);
+    expect(output.labels.shared).toBe('ontologiespanel#shared');
+    expect(output.labels.sharedTitle).toBe('ontologiespanel#shared_title');
   });
 
   it('does not list an ontology without elements', () => {
