@@ -8,6 +8,7 @@ export enum SidebarLayoutEvent {
   ClickShowHypothesis = 'sidebar-layout.clickshowhypo',
   ClickHideHypothesis = 'sidebar-layout.clickhidehypo',
   ClickNotebookPanel = 'sidebar-layout.notebookpanel',
+  ClickOntologiesPanel = 'sidebar-layout.ontologiespanel',
   ClickPageAnnotationPanel = 'sidebar-layout.pageannotationpanel',
   ClickNewFullPageAnnotation = 'sidebar-layout.newfullpage',
   ClickUsername = 'sidebar-layout.clickusername',

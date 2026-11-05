@@ -45,6 +45,10 @@ export enum CrossMsgRequestId {
   SemanticPredicateGet = 'semanticpredicate.get',
   // ai
   AiAnnotate = 'ai.annotate',
+  // ontology
+  OntologyList = 'ontology.list',
+  OntologySaveSelection = 'ontology.saveSelection',
+  OntologySearchElements = 'ontology.searchElements',
 }
 
 export enum CommonEventType {

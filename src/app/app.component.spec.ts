@@ -22,7 +22,8 @@ describe('AppComponent', () => {
         add: { imports: [MainLayoutStubComponent] }
       })
       .compileComponents();
-  }));
+  // compiling the component compiles the whole stylesheet: slow under a full parallel run
+  }), 30000);
 
   it('should create the app', () => {
     const fixture = TestBed.createComponent(AppComponent);

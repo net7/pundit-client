@@ -7,3 +7,4 @@ export * from './tag-model';
 export * from './semantic-predicate-model';
 export * from './reply-model';
 export * from './ai-model';
+export * from './ontology-model';

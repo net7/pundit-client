@@ -296,8 +296,29 @@
         .pnd-dropdown {
             width: 150px;
         }
+        .pnd-dropdown__list-wrapper {
+            width: 280px;
+        }
         .pnd-dropdown__list-items {
             max-height: 250px;
+        }
+        // the selected predicate is an autocomplete field styled as the dropdown label
+        .pnd-dropdown__selected {
+            cursor: text;
+
+            &.is-disabled {
+                cursor: not-allowed;
+            }
+        }
+
+        .pnd-dropdown__selected-right-icon {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            cursor: pointer;
         }
         .pnd-dropdown__selected:disabled {
             cursor: not-allowed;
@@ -313,13 +334,77 @@
         z-index: 2;
     }
 
+    &__semantic-predicate-input[type="text"] {
+        flex-grow: 1;
+        min-width: 0;
+        height: 100%;
+        margin: 0 variables.$space * 0.5 0 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$color-text;
+        text-overflow: ellipsis;
+
+        &:focus {
+            outline: none;
+            font-weight: variables.$font-weight-normal;
+        }
+
+        &:disabled {
+            color: variables.$color-text-light;
+            cursor: not-allowed;
+        }
+    }
+
     &__semantic-object {
         position: relative;
         flex-grow: 2;
         margin: 0 variables.$space;
     }
 
+    &__semantic-object-dropdown {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+
+        .pnd-dropdown__list-items {
+            max-height: 300px;
+        }
+
+        .pnd-dropdown__default-option {
+            border-top: 2px solid variables.$color-border-normal;
+        }
+    }
+
+    &__semantic-hint {
+        margin: 0;
+        padding: variables.$space;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
+    }
+
+    &__semantic-object-loader {
+        display: flex;
+        justify-content: center;
+        padding: variables.$space * 2;
+    }
+
     &__semantic-object-type {
+        &.pnd-type-badge--class {
+            color: color-scheme.$color-type-class;
+            background-color: color-scheme.$bgcolor-type-class;
+        }
+
+        &.pnd-type-badge--entity {
+            color: color-scheme.$color-type-entity;
+            background-color: color-scheme.$bgcolor-type-entity;
+        }
+
         position: absolute;
         top: 50%;
         transform: translateY(-50%);
@@ -408,4 +493,55 @@
 
 /* Retina */
 @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+}
+
+
+/* ------------------------------------ *\
+   #SEMANTIC-OPTION
+\* ------------------------------------ */
+// Option of the predicate and object dropdowns: label, source link, type badge
+.pnd-semantic-option {
+    display: flex;
+    align-items: center;
+    gap: variables.$space * 0.5;
+
+    &__label {
+        flex-grow: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &.is-default {
+            font-weight: variables.$font-weight-normal;
+        }
+    }
+
+    &__link {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: variables.$space * 0.25;
+        font-weight: variables.$font-weight-normal;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
+        text-decoration: none;
+
+        &:hover {
+            color: variables.$color-text-link;
+        }
+
+        .pnd-svg-icon,
+        .pnd-svg-icon svg {
+            width: 12px;
+            height: 12px;
+        }
+    }
+
+    &__link-label {
+        text-decoration: underline;
+    }
+
+    .pnd-type-badge {
+        flex-shrink: 0;
+    }
 }

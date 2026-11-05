@@ -81,8 +81,6 @@ COPY=1
 
 # Il container gira come root: fix_owner riassegna i file prodotti all'utente
 # host anche se il build fallisce.
-# La dipendenza git+ssh (@pundit/icon-font) e' un repo pubblico: nel container
-# la si scarica via https, cosi' non servono chiavi SSH.
 BUILD_CMD='
 set -e
 fix_owner() {
@@ -91,8 +89,6 @@ fix_owner() {
 }
 trap fix_owner EXIT
 export NG_CLI_ANALYTICS=false
-git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
-git config --global --add url."https://github.com/".insteadOf "git@github.com:"
 npm install -g --no-fund --no-audit "$(node -p "require(\"./package.json\").packageManager")"
 npm ci --no-fund --no-audit
 for s in $SCRIPTS; do npm run "$s"; done

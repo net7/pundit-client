@@ -27,7 +27,7 @@
     "postbuild:pdf-standalone-stage": "node ./scripts/postbuild.js -c pdf-standalone-stage",
     "build:pdf-standalone-prod": "ng build -c pdf-standalone-prod",
     "postbuild:pdf-standalone-prod": "node ./scripts/postbuild.js -c pdf-standalone-prod",
-    "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @net7/core @n7-frontend/icon-font"
+    "update:framework": "npm update @n7-frontend/components @n7-frontend/boilerplate @net7/core"
   },
   "private": true,
   "dependencies": {
@@ -43,7 +43,6 @@
     "@net7/annotator": "^1.1.0",
     "@net7/core": "^4.1.0",
     "@popperjs/core": "^2.6.0",
-    "@pundit/icon-font": "git+ssh://git@github.com/net7/pundit-icon-font.git#v1.1.0",
     "@vespaiach/axios-fetch-adapter": "^0.3.1",
     "@yaireo/tagify": "^4.3.0",
     "axios": "^0.26.1",
