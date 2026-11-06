@@ -20,6 +20,7 @@ import { switchMap, tap } from 'rxjs/operators';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { HttpClient } from '@angular/common/http';
 import { _c } from '../models/config';
+import { isAiPreviewId } from '../models/ai-preview';
 import { NotebookService } from './notebook.service';
 import { UserService } from './user.service';
 import { AnnotationModel } from '../../common/models';
@@ -109,7 +110,7 @@ export class AnnotationService {
     } else {
       const { id } = rawAnnotation;
       const data$ = new BehaviorSubject<Annotation>(rawAnnotation);
-      const isPreview = id?.startsWith('ai-preview-');
+      const isPreview = isAiPreviewId(id);
       const state$ = new BehaviorSubject<any>({
         id: rawAnnotation.id,
         activeMenu: undefined,

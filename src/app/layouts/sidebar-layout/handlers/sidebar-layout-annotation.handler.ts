@@ -31,6 +31,13 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         this.handleAnnotationDelete(payload);
       },
 
+      [AnnotationEvent.DiscardPreview]: () => { // discard an AI preview (not saved)
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AiPreviewDiscard,
+          payload,
+        });
+      },
+
       [AnnotationEvent.UpdateNotebook]: () => { // move an annotation to another notebook
         this.updateAnnotationNotebook(payload.annotation, payload.notebook);
         this.layoutEH.appEvent$.next({

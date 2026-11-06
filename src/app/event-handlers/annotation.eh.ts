@@ -67,6 +67,9 @@ export class AnnotationEH extends EventHandler {
         this.annotationService.updateAnnotationState(id, { isCollapsed: true });
         this.emitOuter(getEventType(AnnotationEvent.ToggleCollapsed), { collapsed: true });
       },
+      'discard-preview': () => { // click on the "discard" button of an AI preview
+        this.emitOuter(getEventType(AnnotationEvent.DiscardPreview), id);
+      },
       'action-delete': () => { // click on the "delete" button
         this.closeAnnotationMenu(id);
         this.emitOuter(getEventType(AnnotationEvent.Delete), id);

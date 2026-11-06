@@ -177,6 +177,7 @@ export default {
   "annotation#addtags": "Add tags",
   "annotation#edittags": "Edit tags",
   "annotation#delete": "Delete",
+  "annotation#discard_preview_title": "Discard this suggestion: it will not be saved",
   // share
   "share#twitter": "Twitter",
   "share#facebook": "Facebook",

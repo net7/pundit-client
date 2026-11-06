@@ -20,8 +20,7 @@ import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { isValidAnnotationPayload } from "./edit-modal-validation";
 import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
 import { aiPreviewState$ } from "src/app/components/edit-modal/edit-modal";
-
-const AI_PREVIEW_ID_PREFIX = "ai-preview-";
+import { AI_PREVIEW_ID_PREFIX } from "src/app/models/ai-preview";
 
 const AI_ANNOTATION_TYPES: AiAnnotationType[] = [
   "highlight",
@@ -83,7 +82,8 @@ const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
 ];
 
 export class MainLayoutEditModalAiHandler {
-  private aiPreviewPayloads: any[] = [];
+  /** Payloads of the previews shown, by preview id, in generation order. */
+  private aiPreviews = new Map<string, any>();
 
   constructor(
     private layoutDS: MainLayoutDS,
@@ -193,12 +193,12 @@ export class MainLayoutEditModalAiHandler {
   }
 
   private async renderAiPreviews(aiPayloads: any[]): Promise<void> {
-    this.aiPreviewPayloads = aiPayloads;
     this.layoutDS.removePendingAnnotation();
 
     for (let i = 0; i < aiPayloads.length; i++) {
       const aiPayload = aiPayloads[i];
       const previewId = `${AI_PREVIEW_ID_PREFIX}${i}`;
+      this.aiPreviews.set(previewId, aiPayload);
       const previewAnnotation =
         this.layoutDS.annotationService.getAnnotationFromPayload(
           previewId,
@@ -213,12 +213,12 @@ export class MainLayoutEditModalAiHandler {
   }
 
   onAiAccept() {
-    if (!this.aiPreviewPayloads.length) {
+    if (!this.aiPreviews.size) {
       return;
     }
 
     const workingToast = this.layoutDS.toastService.working();
-    const payloadsToSave = this.aiPreviewPayloads;
+    const payloadsToSave = Array.from(this.aiPreviews.values());
 
     this.removeAiPreviews();
     aiPreviewState$.next(false);
@@ -256,13 +256,30 @@ export class MainLayoutEditModalAiHandler {
 
   removeAiPreviews() {
     this.layoutDS.anchorService.removeByPrefix(AI_PREVIEW_ID_PREFIX);
-    if (this.aiPreviewPayloads.length > 0) {
-      for (let i = 0; i < this.aiPreviewPayloads.length; i++) {
-        const previewId = `${AI_PREVIEW_ID_PREFIX}${i}`;
-        this.layoutDS.annotationService.removeCached(previewId);
-      }
+    this.aiPreviews.forEach((_payload, previewId) => {
+      this.layoutDS.annotationService.removeCached(previewId);
+    });
+    this.aiPreviews.clear();
+    this.layoutEH.appEvent$.next({
+      type: AppEvent.AiPreviewClear,
+    });
+  }
+
+  /**
+   * Discard one preview: its highlight, its sidebar card and its payload.
+   * "Save all" is disabled when none is left.
+   */
+  discardAiPreview(previewId: string) {
+    if (!this.aiPreviews.has(previewId)) {
+      return;
     }
-    this.aiPreviewPayloads = [];
+    this.layoutDS.anchorService.remove(previewId);
+    this.layoutDS.annotationService.removeCached(previewId);
+    this.aiPreviews.delete(previewId);
+    if (!this.aiPreviews.size) {
+      aiPreviewState$.next(false);
+    }
+    // refreshes the sidebar list
     this.layoutEH.appEvent$.next({
       type: AppEvent.AiPreviewClear,
     });

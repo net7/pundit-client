@@ -2,6 +2,7 @@ export enum AnnotationEvent {
   Click = 'annotation.click',
   CreateNotebook = 'annotation.createnotebook',
   Delete = 'annotation.delete',
+  DiscardPreview = 'annotation.discardpreview',
   EditComment = 'annotation.editcomment',
   EditTags = 'annotation.edittags',
   EditSemantic = 'annotation.editsemantic',

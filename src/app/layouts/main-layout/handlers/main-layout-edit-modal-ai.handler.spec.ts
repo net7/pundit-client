@@ -78,7 +78,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
         add: jest.fn(),
         removeCached: jest.fn(),
       },
-      anchorService: { add: jest.fn(), removeByPrefix: jest.fn() },
+      anchorService: { add: jest.fn(), remove: jest.fn(), removeByPrefix: jest.fn() },
       notebookService: { getSelected: () => ({ id: 'nb' }) },
       aiService: { annotate: jest.fn() },
       removePendingAnnotation: jest.fn(),
@@ -295,6 +295,82 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     expect(layoutDS.aiService.annotate).not.toHaveBeenCalled();
     expect(layoutDS.toastService.info).toHaveBeenCalled();
+  });
+
+  describe('discarding a preview', () => {
+    const preview = (quote: string) => ({
+      subject: {
+        selected: {
+          rangeSelector: { startContainer: '/p[1]', endContainer: '/p[1]', startOffset: 0, endOffset: 1 },
+          textQuoteSelector: { exact: quote },
+        },
+      },
+    });
+    let states: boolean[];
+    let subscription: { unsubscribe: () => void };
+
+    beforeEach(async () => {
+      states = [];
+      subscription = aiPreviewState$.subscribe((active) => states.push(active));
+      prepareMock.mockReturnValue({ request, chunkMap });
+      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [], contiguousCalls: [] }));
+      processMock.mockResolvedValue([preview('one'), preview('two'), preview('three')]);
+      layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: `saved-${p.subject.selected.textQuoteSelector.exact}` }));
+      layoutDS.tagService = { addMany: jest.fn() };
+      layoutDS.state.annotation.updatePayload = null;
+      layoutEH.emitOuter = jest.fn();
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+      appEvents = [];
+      states = [];
+    });
+
+    afterEach(() => subscription.unsubscribe());
+
+    it('removes only that preview: highlight, card and payload', () => {
+      handler.discardAiPreview('ai-preview-1');
+
+      expect(layoutDS.anchorService.remove).toHaveBeenCalledWith('ai-preview-1');
+      expect(layoutDS.annotationService.removeCached).toHaveBeenCalledWith('ai-preview-1');
+      expect(appEvents.map(({ type }) => type)).toEqual([AppEvent.AiPreviewClear]);
+      expect(states).toEqual([]);
+    });
+
+    it('saves only the previews left', async () => {
+      handler.discardAiPreview('ai-preview-1');
+      handler.onAiAccept();
+      await new Promise(jest.requireActual('timers').setImmediate);
+
+      expect(layoutDS.saveAnnotation.mock.calls.map(([p]: any) => p.subject.selected.textQuoteSelector.exact))
+        .toEqual(['one', 'three']);
+    });
+
+    it('disables "Save all" when the last preview is discarded', () => {
+      handler.discardAiPreview('ai-preview-0');
+      handler.discardAiPreview('ai-preview-1');
+      expect(states).toEqual([]);
+      handler.discardAiPreview('ai-preview-2');
+      expect(states).toEqual([false]);
+
+      handler.onAiAccept();
+      expect(layoutDS.saveAnnotation).not.toHaveBeenCalled();
+    });
+
+    it('ignores an unknown or already discarded preview', () => {
+      handler.discardAiPreview('ai-preview-1');
+      layoutDS.anchorService.remove.mockClear();
+      handler.discardAiPreview('ai-preview-1');
+      handler.discardAiPreview('64f1a2b3c4d5e6f7a8b9c0d1');
+      expect(layoutDS.anchorService.remove).not.toHaveBeenCalled();
+    });
+
+    it('removes the previews left when the modal is cancelled', () => {
+      handler.discardAiPreview('ai-preview-1');
+      layoutDS.annotationService.removeCached.mockClear();
+      handler.removeAiPreviews();
+      expect(layoutDS.annotationService.removeCached.mock.calls.map(([id]: any) => id))
+        .toEqual(['ai-preview-0', 'ai-preview-2']);
+      expect(layoutDS.anchorService.removeByPrefix).toHaveBeenCalledWith('ai-preview-');
+    });
   });
 
   describe('preview state signal (re-enables Generate when no previews are shown)', () => {
