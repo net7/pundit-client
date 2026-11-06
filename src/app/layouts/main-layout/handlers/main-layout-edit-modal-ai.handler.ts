@@ -66,6 +66,9 @@ const getAiErrorCode = (error: any): AiAnnotateErrorCode | undefined => {
   return known ?? AI_ERROR_CODE_BY_STATUS[error?.response?.status];
 };
 
+/** AI error toasts stay 2 s longer than the default (3 s), to give time to read them. */
+const AI_ERROR_TOAST_DELAY = 5000;
+
 /** Error codes the user fixes in the AI settings (API key, provider, model). */
 const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
   "no_active_api_key",
@@ -119,12 +122,13 @@ export class MainLayoutEditModalAiHandler {
         annotationType,
       );
       if (aiPayloads.length === 0) {
-        workingToast.close();
         aiPreviewState$.next(false);
+        // the working toast stays until this one shows (after `timer`): no empty gap
         this.layoutDS.toastService.info({
           title: _t("toast#ai_no_results_title"),
           text: _t("toast#ai_no_results_text"),
           timer: _c("toastTimer"),
+          onLoad: () => workingToast.close(),
         });
         return;
       }
@@ -137,13 +141,12 @@ export class MainLayoutEditModalAiHandler {
         type: AppEvent.AiPreviewReady,
       });
     } catch (error) {
-      workingToast.close();
       aiPreviewState$.next(false);
-      this.onAiGenerateError(error);
+      this.onAiGenerateError(error, workingToast);
     }
   }
 
-  private onAiGenerateError(error: any) {
+  private onAiGenerateError(error: any, workingToast: ToastInstance) {
     const code = getAiErrorCode(error);
     if (code) {
       console.error(
@@ -158,6 +161,9 @@ export class MainLayoutEditModalAiHandler {
       title: _t("toast#ai_error_title"),
       text: _t(code ? `toast#ai_error_${code}` : "toast#ai_error_generic"),
       timer: _c("toastTimer"),
+      autoCloseDelay: AI_ERROR_TOAST_DELAY,
+      // the working toast stays until this one shows (after `timer`): no empty gap
+      onLoad: () => workingToast.close(),
       ...(code && AI_SETTINGS_ERROR_CODES.includes(code)
         ? getAiSettingsToastParams()
         : {}),

@@ -28,6 +28,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     selected_text: 'some text',
   };
   const chunkMap = new Map();
+  const showToast = (params: any) => params?.onLoad?.({ close: jest.fn(), update: jest.fn() });
 
   beforeAll(() => {
     translate.setDefaultLang('en');
@@ -68,8 +69,9 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       pendingAnnotationId: 'pending-id',
       toastService: {
         working: jest.fn(() => workingToast),
-        info: jest.fn(),
-        error: jest.fn(),
+        // as the real service: onLoad runs when the toast shows
+        info: jest.fn(showToast),
+        error: jest.fn(showToast),
       },
       annotationService: {
         getAnnotationFromPayload: jest.fn((id: string) => ({ id })),
@@ -167,6 +169,36 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     expect(consoleError).toHaveBeenCalledWith(expect.any(String), code, 'detail');
     expect(en_US).toHaveProperty([`toast#ai_error_${code}`]);
     consoleError.mockRestore();
+  });
+
+  it.each([
+    ['an error', () => throwError(() => ({ response: { status: 413, data: { error: 'x', code: 'payload_too_large' } } })), 'error'],
+    ['no results', () => of({ toolCalls: [], contiguousCalls: [] }), 'info'],
+  ])('keeps the working toast until the %s toast shows', async (_case, answer, kind) => {
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    prepareMock.mockReturnValue({ request, chunkMap });
+    layoutDS.aiService.annotate.mockReturnValue(answer());
+    processMock.mockResolvedValue([]);
+    const toast = layoutDS.toastService[kind as 'error' | 'info'];
+    toast.mockImplementation(() => undefined);
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+    expect(workingToast.close).not.toHaveBeenCalled();
+    toast.mock.calls[0][0].onLoad();
+    expect(workingToast.close).toHaveBeenCalledTimes(1);
+    (console.error as jest.Mock).mockRestore();
+  });
+
+  it('keeps the AI error toast 5 s', async () => {
+    jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    prepareMock.mockReturnValue({ request, chunkMap });
+    layoutDS.aiService.annotate.mockReturnValue(
+      throwError(() => ({ response: { status: 413, data: { error: 'x', code: 'payload_too_large' } } }))
+    );
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+    expect(layoutDS.toastService.error.mock.calls[0][0].autoCloseDelay).toBe(5000);
+    (console.error as jest.Mock).mockRestore();
   });
 
   describe('errors fixed in the AI settings', () => {
