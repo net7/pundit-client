@@ -1,39 +1,32 @@
-function toTextNode(node: Node): Node {
-  if (node.nodeType === Node.TEXT_NODE) return node;
-  const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
-  const firstText = walker.nextNode();
-  return firstText ?? node;
-}
+import { wholeTextNodesInRange } from "@net7/annotator";
 
+/**
+ * The chunks of an AI request: one per non-empty text node inside the range,
+ * the boundary nodes split at the range's start and end, so the text sent is
+ * exactly the selection. The map gives the node of each chunk id.
+ */
 function buildChunkProjection(range: Range): {
   chunks: { id: string; text: string }[];
   chunkMap: Map<string, Text>;
 } {
   const chunks: { id: string; text: string }[] = [];
   const chunkMap = new Map<string, Text>();
-  const root =
-    range.commonAncestorContainer.nodeType === Node.TEXT_NODE
-      ? (range.commonAncestorContainer.parentNode as Element)
-      : (range.commonAncestorContainer as Element);
-
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-    acceptNode: (node) =>
-      range.intersectsNode(node)
-        ? NodeFilter.FILTER_ACCEPT
-        : NodeFilter.FILTER_REJECT,
-  });
-
   let i = 0;
-  while (walker.nextNode()) {
-    const node = walker.currentNode as Text;
+  wholeTextNodesInRange(range).forEach((node) => {
     const text = node.textContent ?? "";
-    if (typeof text !== "string" || text.trim().length === 0) continue;
+    if (text.trim().length === 0) return;
     const id = `c${++i}`;
     chunks.push({ id, text });
     chunkMap.set(id, node);
-  }
-
+  });
   return { chunks, chunkMap };
+}
+
+/** Start positions of `subQuote` as a whole word (case-insensitive) in `quote`. */
+function positionsSameWords(quote: string, subQuote: string): number[] {
+  const secureSubQuote = subQuote.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`\\b${secureSubQuote}\\b`, "gi");
+  return [...quote.matchAll(regex)].map((match) => match.index);
 }
 
 function getXPathForNode(node: Node): string {
@@ -96,8 +89,8 @@ function serializeRangeToSelector(range: Range): any {
 }
 
 export {
-  toTextNode,
   buildChunkProjection,
+  positionsSameWords,
   getXPathForNode,
   getTextOffsetInBody,
   serializeRangeToSelector,

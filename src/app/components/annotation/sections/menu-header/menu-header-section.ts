@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import { _t } from '@net7/core';
 import { Annotation } from 'src/communication';
 import {
   BehaviorSubject, Observable, Subject
@@ -8,6 +9,7 @@ import {
 } from 'rxjs/operators';
 import { NotebookSelectorData } from 'src/app/components/notebook-selector/notebook-selector';
 import { AnnotationState } from 'src/app/services/annotation.service';
+import { isAiPreviewId } from 'src/app/models/ai-preview';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { NotebookService } from 'src/app/services/notebook.service';
 import { UserData, UserService } from 'src/app/services/user.service';
@@ -44,6 +46,13 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
   @Input() public state$!: BehaviorSubject<AnnotationState>;
 
   @Input() public annotationId!: string;
+
+  public discardTitle = _t('annotation#discard_preview_title');
+
+  /** AI preview, not saved: a discard button instead of the actions menu. */
+  get isPreview(): boolean {
+    return isAiPreviewId(this.annotationId);
+  }
 
   @Input() public serializedBy!: string;
 
@@ -129,6 +138,10 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getMenuData(annotation: Annotation) {
     const { id } = annotation;
+    // an AI preview is not saved: no action on the backend
+    if (isAiPreviewId(id)) {
+      return null;
+    }
     const user = this.userService.getUserById(annotation.userId)!;
     const buttonConfig: ActionButtonConfig = {
       id,
@@ -151,6 +164,9 @@ export class MenuHeaderSectionComponent implements OnInit, OnDestroy {
 
   private getShareData(annotation: Annotation) {
     const { id } = annotation;
+    if (isAiPreviewId(id)) {
+      return null;
+    }
     const actionsConfig = {
       id,
     };

@@ -1,7 +1,7 @@
 import { _t } from "@net7/core";
 import { cloneDeep } from "lodash";
 import { EMPTY, Observable, of } from "rxjs";
-import { catchError, filter } from "rxjs/operators";
+import { catchError, filter, takeUntil } from "rxjs/operators";
 import { EditModalFormState } from "src/app/components/edit-modal/edit-modal";
 import { _c } from "src/app/models/config";
 import {
@@ -59,6 +59,14 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
           break;
       }
     });
+
+    // a preview card asks to discard its AI preview
+    this.layoutEH.appEvent$
+      .pipe(
+        filter(({ type }) => type === AppEvent.AiPreviewDiscard),
+        takeUntil(this.layoutEH.destroy$),
+      )
+      .subscribe(({ payload }) => this.aiHandler.discardAiPreview(payload));
   }
 
   private onEditModalSaveEvent(payload: any) {

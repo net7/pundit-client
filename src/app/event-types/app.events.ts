@@ -32,4 +32,5 @@ export enum AppEvent {
   NotebookOpenShareModal = "app.notebookopensharemodal",
   AiPreviewReady = "app.aipreviewready",
   AiPreviewClear = "app.aipreviewclear",
+  AiPreviewDiscard = "app.aipreviewdiscard",
 }
