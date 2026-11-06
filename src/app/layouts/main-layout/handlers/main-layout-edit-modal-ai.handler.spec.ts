@@ -171,6 +171,16 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     consoleError.mockRestore();
   });
 
+  it('draws the pending highlight before building the request', async () => {
+    const order: string[] = [];
+    layoutDS.anchorService.add.mockImplementation(async () => { order.push('highlight'); });
+    prepareMock.mockImplementation(async () => { order.push('request'); return null; });
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+    expect(order).toEqual(['highlight', 'request']);
+  });
+
   it.each([
     ['an error', () => throwError(() => ({ response: { status: 413, data: { error: 'x', code: 'payload_too_large' } } })), 'error'],
     ['no results', () => of({ toolCalls: [], contiguousCalls: [] }), 'info'],

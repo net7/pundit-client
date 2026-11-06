@@ -106,7 +106,8 @@ export class MainLayoutEditModalAiHandler {
         this.layoutDS.pendingAnnotationId,
         pendingPayload,
       );
-    this.layoutDS.anchorService.add(pendingAnnotation);
+    // highlight first: the request then works on the text nodes the highlight split
+    await this.layoutDS.anchorService.add(pendingAnnotation);
 
     const annotationPayload = cloneDeep(pendingPayload);
     EditModalPayloadBuilder.applyFormValuesToPayload(annotationPayload, {
@@ -175,7 +176,7 @@ export class MainLayoutEditModalAiHandler {
     prompt: string,
     annotationType: AiAnnotationType,
   ): Promise<any[]> {
-    const prepared = prepareAiRequest(annotationPayload, prompt, annotationType);
+    const prepared = await prepareAiRequest(annotationPayload, prompt, annotationType);
     if (!prepared) {
       return [];
     }
