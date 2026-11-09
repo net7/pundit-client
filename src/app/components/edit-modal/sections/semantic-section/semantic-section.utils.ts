@@ -7,6 +7,9 @@ export const DEFAULT_PROVIDER_ID = 'pundit-basic';
 /** Minimum length of the text that triggers a predicate search. */
 export const PREDICATE_SEARCH_MIN_LENGTH = 1;
 
+/** Predicates listed when the predicate field opens empty. */
+export const PREDICATE_DEFAULT_LIMIT = 10;
+
 /** Minimum length of the text that triggers an object search. */
 export const OBJECT_SEARCH_MIN_LENGTH = 1;
 
@@ -87,11 +90,16 @@ export const toPredicateOption = (element: OntologyElement): SemanticPredicateOp
 
 /**
  * Options shown in the predicate dropdown: only the predicates of the selected
- * ontologies found for the text typed, the selected one marked.
+ * ontologies found for the text typed (or the first ones when nothing is typed),
+ * the selected one marked.
  */
-export const getPredicateOptions = (row: SemanticFormRow): SemanticPredicateOption[] => {
-  const { remote, picked } = row.predicate;
-  return remote.map((option) => ({ ...option, selected: option.value === picked?.uri }));
+export const getPredicateOptions = (
+  row: SemanticFormRow, defaults: SemanticPredicateOption[] = []
+): SemanticPredicateOption[] => {
+  const { query, remote, picked } = row.predicate;
+  // an empty field lists the first predicates, shared by all rows
+  const options = query.trim() ? remote : defaults;
+  return options.map((option) => ({ ...option, selected: option.value === picked?.uri }));
 };
 
 /** Predicate currently selected in the row, or null. */

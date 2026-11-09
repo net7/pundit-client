@@ -154,6 +154,24 @@ describe('OntologyService', () => {
     expect(result).toEqual([element]);
   });
 
+  it('forwards a limit, for the first elements of an empty query', async () => {
+    searchMock.mockResolvedValue({ data: { data: [] } });
+    await firstValueFrom(service.search('', ['predicate'], 10));
+    expect(searchMock).toHaveBeenCalledWith({ query: '', categories: ['predicate'], limit: 10 });
+  });
+
+  it('counts the elements of the ontologies used for a category', () => {
+    service.ontologies$.next([
+      { ...ontology('1', true), counts: { predicate: 12, class: 3, entity: 0 } },
+      { ...ontology('2', true), counts: { predicate: 5, class: 4, entity: 0 }, selectedCategories: ['class'] },
+      { ...ontology('3', true), counts: { predicate: 7, class: 0, entity: 0 }, selectedCategories: ['predicate'] },
+      { ...ontology('4', false), counts: { predicate: 100, class: 0, entity: 0 } },
+    ]);
+    expect(service.getElementCount('predicate')).toBe(19);
+    expect(service.getElementCount('class')).toBe(7);
+    expect(service.getElementCount('entity')).toBe(0);
+  });
+
   it('selects an ontology with only the categories it has', () => {
     service.toggle('2');
     expect(service.ontologies$.value[1].selectedCategories).toEqual(ALL);

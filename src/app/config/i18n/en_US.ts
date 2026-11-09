@@ -22,6 +22,7 @@ export default {
   "editmodal#semantic_predicate_filter": "Search a relation",
   "editmodal#semantic_predicate_hint": "Type to search the predicates of your ontologies",
   "editmodal#semantic_predicate_no_results": "No predicate found in your ontologies",
+  "editmodal#semantic_predicate_total": "Type to search among {total} predicates",
   "editmodal#semantic_default_option": "Use \"{value}\" as",
   "editmodal#semantic_open_uri": "Open in a new tab",
   "semantic#type_entity": "Entity",

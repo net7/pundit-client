@@ -3,9 +3,9 @@ import {
   AfterViewInit, Component, Input, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject
 } from '@angular/core';
 import { _t } from '@net7/core';
-import { of, Subject } from 'rxjs';
+import { of, Subject, Subscription } from 'rxjs';
 import {
-  catchError, debounceTime, map, switchMap, takeUntil
+  catchError, debounceTime, distinctUntilChanged, map, skip, switchMap, takeUntil
 } from 'rxjs/operators';
 import { SemanticTextProvider } from 'src/app/models/semantic';
 import { OntologyService, getOntologySourceLabel } from 'src/app/services/ontology.service';
@@ -17,6 +17,7 @@ import { SvgIconComponent } from '../../../svg-icon/svg-icon';
 import {
   DEFAULT_PROVIDER_ID,
   OBJECT_SEARCH_MIN_LENGTH,
+  PREDICATE_DEFAULT_LIMIT,
   PREDICATE_SEARCH_MIN_LENGTH,
   SemanticFormRow,
   SemanticPickedObject,
@@ -54,6 +55,23 @@ export type SemanticSectionOptions = {
 };
 
 type SearchRequest = { rowId: number; query: string };
+
+/** First predicates, listed by every empty predicate field. */
+type DefaultPredicates = {
+  status: 'idle' | 'loading' | 'loaded' | 'failed';
+  options: SemanticPredicateOption[];
+  /** Predicates of the ontologies used for predicates, for the footer. */
+  total: number;
+};
+
+const NO_DEFAULT_PREDICATES: DefaultPredicates = { status: 'idle', options: [], total: 0 };
+
+/** Ontologies used for predicates, as a key that changes with that selection. */
+const getPredicateSelectionKey = (ontologies: { id: string; selectedCategories: string[] }[]) => ontologies
+  .filter(({ selectedCategories }) => selectedCategories.includes('predicate'))
+  .map(({ id }) => id)
+  .sort()
+  .join(',');
 
 @Component({
     selector: 'pnd-semantic-section',
@@ -112,8 +130,12 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   public rows: SemanticFormRow[] = [];
 
+  public defaultPredicates: DefaultPredicates = NO_DEFAULT_PREDICATES;
+
+  private defaultPredicatesSub: Subscription | null = null;
+
   /** Template helpers. */
-  public getPredicateOptions = getPredicateOptions;
+  public getPredicateOptions = (row: SemanticFormRow) => getPredicateOptions(row, this.defaultPredicates.options);
 
   public getObjectIndicator = getObjectIndicator;
 
@@ -132,6 +154,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.init();
     this.checkFocus();
     this.listenSearches();
+    this.listenPredicateSelection();
     this.reset$.pipe(
       takeUntil(this.destroy$)
     ).subscribe(this.onReset);
@@ -139,6 +162,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   ngOnDestroy() {
     this.clearBlurTimer();
+    this.clearDefaultPredicates();
     this.destroy$.next();
   }
 
@@ -231,6 +255,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       }
     });
     this.predicateSearch$.next({ rowId: currentRow.id, query: query.trim() });
+    if (!query.trim()) {
+      this.loadDefaultPredicates();
+    }
   }
 
   /** Focus opens the list, with an empty search (a hint until the user types). */
@@ -396,6 +423,20 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     return this.labels.types[type] || type;
   }
 
+  /** The empty field is waiting for the first predicates. */
+  isDefaultPredicatesLoading(row: SemanticFormRow) {
+    return !row.predicate.query.trim() && this.defaultPredicates.status === 'loading';
+  }
+
+  /** Footer under the first predicates when more can be found by typing. */
+  getPredicateTotalLabel(row: SemanticFormRow): string | null {
+    const { status, options, total } = this.defaultPredicates;
+    if (row.predicate.query.trim() || status !== 'loaded' || !options.length || total <= options.length) {
+      return null;
+    }
+    return _t('editmodal#semantic_predicate_total', { total: String(total) });
+  }
+
   // ------------------------------------ //
   // # PRIVATE
   // ------------------------------------ //
@@ -508,6 +549,50 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     });
   }
 
+  /**
+   * Request the first predicates once for all rows. A failure is kept until the
+   * selection changes or the modal is reset, so a server refusing empty queries
+   * is not asked again on every focus.
+   */
+  private loadDefaultPredicates() {
+    if (this.defaultPredicates.status !== 'idle' || !this.ontologyService.hasSelection(['predicate'])) return;
+    this.defaultPredicates = { ...NO_DEFAULT_PREDICATES, status: 'loading' };
+    this.defaultPredicatesSub = this.ontologyService.search('', ['predicate'], PREDICATE_DEFAULT_LIMIT).pipe(
+      catchError(() => of(null as OntologyElement[] | null)),
+    ).subscribe((results) => {
+      this.defaultPredicates = results
+        ? {
+          status: 'loaded',
+          options: results.map(toPredicateOption),
+          total: this.ontologyService.getElementCount('predicate'),
+        }
+        : { ...NO_DEFAULT_PREDICATES, status: 'failed' };
+      this.changeDetectorRef.markForCheck();
+    });
+  }
+
+  private clearDefaultPredicates() {
+    this.defaultPredicatesSub?.unsubscribe();
+    this.defaultPredicatesSub = null;
+    this.defaultPredicates = NO_DEFAULT_PREDICATES;
+  }
+
+  /** A new selection of ontologies for predicates makes the first predicates stale. */
+  private listenPredicateSelection() {
+    this.ontologyService.ontologies$.pipe(
+      map(getPredicateSelectionKey),
+      distinctUntilChanged(),
+      skip(1),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      this.clearDefaultPredicates();
+      if (this.rows.some(({ predicate }) => predicate.isExpanded && !predicate.query.trim())) {
+        this.loadDefaultPredicates();
+      }
+      this.changeDetectorRef.markForCheck();
+    });
+  }
+
   private closeObjectDropdown(rowIndex: number) {
     const row = this.rows[rowIndex];
     if (!row || (!row.object.isExpanded && !row.object.isLoading)) return;
@@ -551,6 +636,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   }
 
   private onReset = () => {
+    this.clearDefaultPredicates();
     this.rows = [];
     this.init();
     this.checkFocus();
@@ -586,6 +672,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   };
 
   private setPredicateExpanded(rowIndex: number, expand: boolean) {
+    if (expand) {
+      this.loadDefaultPredicates();
+    }
     this.rows = this.rows.map((row, index) => {
       const isExpanded = index === rowIndex ? expand : false;
       if (row.predicate.isExpanded === isExpanded && !row.predicate.query) return row;

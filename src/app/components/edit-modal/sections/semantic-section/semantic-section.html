@@ -58,14 +58,16 @@
                   </div>
                 }
               </div>
-              @if (row.predicate.isLoading) {
+              @if (row.predicate.isLoading || isDefaultPredicatesLoading(row)) {
                 <div class="pnd-edit-modal__semantic-object-loader">
                   <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
                 </div>
               } @else if (row.predicate.searched && !row.predicate.remote.length) {
                 <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateNoResults }}</p>
-              } @else if (!row.predicate.remote.length) {
+              } @else if (!getPredicateOptions(row).length) {
                 <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateHint }}</p>
+              } @else if (getPredicateTotalLabel(row)) {
+                <p class="pnd-edit-modal__semantic-hint pnd-edit-modal__semantic-hint--footer">{{ getPredicateTotalLabel(row) }}</p>
               }
             </div>
             <!-- END // Dropdown items -->
