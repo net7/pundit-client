@@ -34,8 +34,21 @@ describe('getPredicateOptions', () => {
     expect(options.map(({ label, selected }) => [label, selected])).toEqual([['knows', true], ['knownFor', false]]);
   });
 
-  it('is empty without a search', () => {
+  it('is empty without a search nor first predicates', () => {
     expect(getPredicateOptions(row())).toEqual([]);
+  });
+
+  it('lists the first predicates when nothing is typed, the selected one marked', () => {
+    const current = row();
+    const defaults = [
+      { label: 'abstract', value: 'http://dc/abstract', sourceLabel: 'dc' },
+      { label: 'knows', value: 'http://foaf/knows', sourceLabel: 'foaf' },
+    ];
+    const options = getPredicateOptions({
+      ...current,
+      predicate: { ...current.predicate, query: '  ', picked: knows, remote: [defaults[0]] },
+    }, defaults);
+    expect(options.map(({ label, selected }) => [label, selected])).toEqual([['abstract', false], ['knows', true]]);
   });
 });
 

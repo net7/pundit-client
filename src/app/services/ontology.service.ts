@@ -112,17 +112,27 @@ export class OntologyService {
     ));
   }
 
+  /** Total elements of a category in the ontologies used for it. */
+  getElementCount(category: OntologyElementCategory): number {
+    return this.ontologies$.value.reduce((total, { counts, selectedCategories }) => (
+      selectedCategories.includes(category) ? total + (counts?.[category] || 0) : total
+    ), 0);
+  }
+
   /**
    * Search the elements of the selected ontologies. Waits for a pending selection
-   * save, so the server already knows the selection the user sees.
+   * save, so the server already knows the selection the user sees. An empty query
+   * asks for the first elements; `limit` overrides the default page size.
    */
-  search(query: string, categories: OntologyElementCategory[]): Observable<OntologyElement[]> {
+  search(
+    query: string, categories: OntologyElementCategory[], limit?: number
+  ): Observable<OntologyElement[]> {
     return defer(() => from(this.flush())).pipe(
       switchMap(() => {
         if (!this.hasSelection(categories)) {
           return of([]);
         }
-        return from(OntologyModel.searchElements({ query, categories })).pipe(
+        return from(OntologyModel.searchElements({ query, categories, ...(limit ? { limit } : {}) })).pipe(
           map((response) => response?.data?.data || [])
         );
       })

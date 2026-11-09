@@ -386,6 +386,10 @@
         padding: variables.$space;
         font-size: variables.$font-size-xs;
         color: variables.$color-text-light;
+
+        &--footer {
+            border-top: 2px solid variables.$color-border-normal;
+        }
     }
 
     &__semantic-object-loader {
