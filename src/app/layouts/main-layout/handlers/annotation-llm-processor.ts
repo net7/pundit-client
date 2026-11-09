@@ -1,4 +1,4 @@
-import { positionsSameWords } from "./annotation-range-restore";
+import { positionsSameWords } from "./annotation-range-utils";
 import { mergeContiguousToolCalls } from "./annotation-llm-merge.util";
 import { addPayloadForRange } from "./annotation-llm-helpers.util";
 

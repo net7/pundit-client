@@ -7,6 +7,8 @@ export type LocalConfig = {
     userLink: string;
     notebookLink: string;
     notificationsLink: string;
+    /** Ontologies page of the Pundit dashboard, linked from the empty Ontologies panel. */
+    ontologiesLink?: string;
     userDefaultThumb: string;
     baseDereferenceURL: string;
     hypothesisLogo: string;

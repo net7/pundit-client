@@ -20,6 +20,7 @@ const config: LocalConfig = {
   userLink: 'https://pundit.work/',
   notebookLink: 'https://pundit.work/notebook',
   notificationsLink: 'https://pundit.work/notifications',
+  ontologiesLink: 'https://pundit.work/ontologies',
   userDefaultThumb: 'https://static.pundit.work/user-thumb-default.png',
   hypothesisLogo: '',
   unregisteredUserThumb: '',

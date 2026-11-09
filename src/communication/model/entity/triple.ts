@@ -30,7 +30,11 @@ export interface ObjectUri {
     depiction?: string,
     source: 'search' // da valutare attentamente,
     rdfTypes?: UriRdfTypes[],
+    /** Kind of ontology element the object was picked as (display only). */
+    elementType?: ObjectUriElementType,
 }
+
+export type ObjectUriElementType = 'class' | 'entity';
 
 export type LiteralUri = {
     uri: string,

@@ -92,7 +92,8 @@
         }
     }
 
-    &.has-notebook-panel-open {
+    &.has-notebook-panel-open,
+    &.has-ontologies-panel-open {
         .pnd-sidebar__header {
             box-shadow: none;
             border-bottom-color: variables.$color-border-light;
@@ -250,6 +251,13 @@
         .pnd-sidebar__content {
             width: variables.$sidebar-collapsed-width;
             overflow: hidden;
+        }
+    }
+
+    // the Ontologies panel is a card shorter than the sidebar: hide what is under it
+    &.has-ontologies-panel-open {
+        .pnd-sidebar__content > * {
+            visibility: hidden;
         }
     }
 }

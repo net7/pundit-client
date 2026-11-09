@@ -82,6 +82,8 @@ export type SemanticItem = {
   uri: string;
   description?: string;
   providerId?: string;
+  /** Short source shown next to the link (ontology prefix or name). */
+  sourceLabel?: string;
 }
 
 export interface SemanticProvider {

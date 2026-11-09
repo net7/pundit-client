@@ -104,6 +104,13 @@ export class SidebarLayoutEH extends EventHandler {
       [SidebarLayoutEvent.ClickNotebookPanel]: () => {
         const state = this.dataSource.notebookEditor.getValue();
         this.dataSource.notebookEditor.next(!state);
+        // the two panels are never open together
+        this.dataSource.ontologiesPanel.next(false);
+      },
+      [SidebarLayoutEvent.ClickOntologiesPanel]: () => {
+        const state = this.dataSource.ontologiesPanel.getValue();
+        this.dataSource.ontologiesPanel.next(!state);
+        this.dataSource.notebookEditor.next(false);
       },
       [SidebarLayoutEvent.ClickPageAnnotationPanel]: () => {
         const state = this.annotationService.showPageAnnotations$.getValue();
@@ -204,6 +211,9 @@ export class SidebarLayoutEH extends EventHandler {
       .subscribe(([isCollapsed, notebookOpen]) => {
         if (isCollapsed && notebookOpen) {
           this.dataSource.notebookEditor.next(false);
+        }
+        if (isCollapsed) {
+          this.dataSource.ontologiesPanel.next(false);
         }
         this.dataSource.updateAnnotations();
 

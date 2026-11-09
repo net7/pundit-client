@@ -5,6 +5,7 @@
         'is-collapsed': (ds.isCollapsed | async),
         'is-expanded': (ds.isCollapsed | async) === false,
         'has-notebook-panel-open': (lb.dataSource.notebookEditor | async),
+        'has-ontologies-panel-open': (lb.dataSource.ontologiesPanel | async),
         'has-fullpage-open': (ds.annotationService.showPageAnnotations$ | async)
     }">
     <!-- Pundit Logo toggle -->
@@ -83,6 +84,14 @@
           (click)="lb.eventHandler.emitInner('notebookpanel')">
           <pnd-svg-icon [data]="{ id: 'book' }"></pnd-svg-icon>
         </a>
+        <a class="pnd-sidebar__action pnd-sidebar__ontologies-panel"
+          [title]="(ds.ontologiesPanel | async) ? ds.labels.ontologiespanel.hide : ds.labels.ontologiespanel.show"
+                [ngClass]="{
+                    'is-active': ds.ontologiesPanel | async
+                }"
+          (click)="lb.eventHandler.emitInner('ontologiespanel')">
+          <pnd-svg-icon [data]="{ id: 'ontologies' }"></pnd-svg-icon>
+        </a>
         <a class="pnd-sidebar__action pnd-sidebar__close-button"
           [title]="ds.labels.collapse"
           (click)="lb.eventHandler.emitInner('sidebarclose')">
@@ -100,6 +109,15 @@
     <ng-container *ngTemplateOutlet="notebookpanel"></ng-container>
   }
   <!-- END // Notebook popover -->
+  <!-- Ontologies popover -->
+  @if (
+    (ds.userService.logged$ | async) &&
+    (lb.dataSource.ontologiesPanel | async)
+    ) {
+    <ontologies-panel [data]="lb.widgets['ontologies-panel'].ds.out$ | async"
+      [emit]="lb.widgets['ontologies-panel'].emit"></ontologies-panel>
+  }
+  <!-- END // Ontologies popover -->
   <!-- Sidebar content -->
   <div class="pnd-sidebar__content"
     [style.height]="ds.height$ | async">

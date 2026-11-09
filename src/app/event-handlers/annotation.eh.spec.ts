@@ -68,4 +68,25 @@ describe('AnnotationEH', () => {
       && event.payload === 'annotation-id'
     ))).toBe(true);
   });
+
+  it('emits discard-preview when the discard button of an AI preview is clicked', () => {
+    const emitted: any[] = [];
+    annotationService.getAnnotationById.mockReturnValue({
+      id: 'ai-preview-0',
+      state$: new BehaviorSubject({})
+    });
+    handler.out$.subscribe((event) => emitted.push(event));
+
+    handler.listen();
+    handler.emitInner(getEventType(AnnotationEvent.Click), {
+      id: 'ai-preview-0',
+      source: 'discard-preview'
+    });
+
+    expect(emitted.some((event) => (
+      event.type.endsWith(`.${getEventType(AnnotationEvent.DiscardPreview)}`)
+      && event.payload === 'ai-preview-0'
+    ))).toBe(true);
+    expect(annotationService.updateAnnotationState).not.toHaveBeenCalled();
+  });
 });

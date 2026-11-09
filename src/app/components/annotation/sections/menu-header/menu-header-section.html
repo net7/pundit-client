@@ -1,6 +1,13 @@
 <div class="pnd-annotation__header-menu">
   @if (serializedBy !== 'hypothesis') {
     <div>
+      @if (isPreview) {
+        <!-- AI preview: discard it instead of the actions menu -->
+        <button class="pnd-annotation__header-menu-button" [title]="discardTitle"
+          (click)="onClick($event, { id: annotationId, source: 'discard-preview' })">
+          <pnd-svg-icon [data]="{ id: 'times' }"></pnd-svg-icon>
+        </button>
+      }
       @if ((menu$ | async)?.menuData; as menuData) {
         <button class="pnd-annotation__header-menu-button {{ menuData.classes || '' }}" [ngClass]="menuData.icon['id']"
           (click)="onClick($event, menuData.icon['payload'])">

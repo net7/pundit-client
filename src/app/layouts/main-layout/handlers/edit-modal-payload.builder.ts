@@ -53,9 +53,9 @@ export class EditModalPayloadBuilder {
 
   private static getSemanticContentRow(row: any) {
     const { predicate, object, objectType } = row;
-    // old semantic annotation check
-    if (object?.rdfTypes?.length) {
-      return row;
+    // a row the user did not edit is saved exactly as it was stored
+    if (row?._raw) {
+      return row._raw;
     }
     const objectPayload = this.getObjectPayload(object, objectType);
     return {
@@ -70,6 +70,19 @@ export class EditModalPayloadBuilder {
   private static getObjectPayload = (object: any, objectType: string) => {
     if (objectType === "literal") {
       return { objectType, object: { text: object.label } };
+    }
+    if (objectType === "uri" && object?.source === "search") {
+      const { uri, label, elementType, rdfTypes } = object;
+      return {
+        objectType,
+        object: {
+          uri,
+          label,
+          source: "search",
+          ...(elementType ? { elementType } : {}),
+          ...(rdfTypes?.length ? { rdfTypes } : {}),
+        },
+      };
     }
     if (objectType === "uri") {
       return {

@@ -9,7 +9,8 @@ import {
   SemanticPredicateModel,
   SocialModel,
   ReplyModel,
-  AiModel
+  AiModel,
+  OntologyModel
 } from '../../../../common/models';
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
@@ -72,6 +73,13 @@ const requestHandlers: {
   // AI REQUEST
   // --------------------------------------------------->
   [CrossMsgRequestId.AiAnnotate]: (args) => AiModel.annotate.apply(null, args),
+  // ONTOLOGY REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.OntologyList]: (args) => OntologyModel.list.apply(null, args),
+  [CrossMsgRequestId.OntologySaveSelection]:
+    (args) => OntologyModel.saveSelection.apply(null, args),
+  [CrossMsgRequestId.OntologySearchElements]:
+    (args) => OntologyModel.searchElements.apply(null, args),
 };
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {

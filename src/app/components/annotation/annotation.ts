@@ -8,6 +8,7 @@ import {
 } from 'src/communication';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { getTagColor } from 'src/app/helpers/tag-color.helper';
+import { isAiPreviewId } from 'src/app/models/ai-preview';
 import { AnnotationState } from 'src/app/services/annotation.service';
 import { ReplyService } from 'src/app/services/reply.service';
 import { ImageDataService } from 'src/app/services/image-data.service';
@@ -131,6 +132,11 @@ export class AnnotationComponent implements OnInit {
   public socials$!: Observable<any>;
 
   public replies$!: Observable<Reply[]>;
+
+  /** AI preview, not saved yet: no social section. */
+  isPreview(id?: string): boolean {
+    return isAiPreviewId(this.annotationId) || isAiPreviewId(id);
+  }
 
   ngOnInit() {
     this.socials$ = this.socialService.getStatsByAnnotationId$(this.annotationId);

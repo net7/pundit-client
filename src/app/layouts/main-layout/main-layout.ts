@@ -24,6 +24,7 @@ import { UserService } from "src/app/services/user.service";
 import { PdfService } from "src/app/services/pdf.service";
 import { DocumentInfoService } from "src/app/services/document-info/document-info.service";
 import { AiService } from "src/app/services/ai.service";
+import { OntologyService } from "src/app/services/ontology.service";
 import { AppEventData } from "src/app/types";
 import { MainLayoutConfig as config } from "./main-layout.config";
 import { SidebarLayoutComponent } from "../sidebar-layout/sidebar-layout";
@@ -71,6 +72,7 @@ export class MainLayoutComponent
   private pdfService = inject(PdfService);
   private documentInfoService = inject(DocumentInfoService);
   private aiService = inject(AiService);
+  private ontologyService = inject(OntologyService);
   private ngZone = inject(NgZone);
 
   @HostListener("document:keyup", ["$event"])
@@ -106,6 +108,7 @@ export class MainLayoutComponent
       pdfService: this.pdfService,
       documentInfoService: this.documentInfoService,
       aiService: this.aiService,
+      ontologyService: this.ontologyService,
       ngZone: this.ngZone,
     };
   }

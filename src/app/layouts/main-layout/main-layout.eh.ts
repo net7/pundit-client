@@ -70,6 +70,7 @@ export class MainLayoutEH extends EventHandler {
             }),
             switchMap(() => this.dataSource.getUserTags()),
             switchMap(() => this.dataSource.getUserSemanticPredicates()),
+            switchMap(() => this.dataSource.getUserOntologies()),
             catchError((e) => {
               this.dataSource.state.identitySyncLoading = false;
               this.handleError(e);

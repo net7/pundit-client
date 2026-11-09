@@ -403,6 +403,22 @@ annotation {
             padding: 0px variables.$space;
             align-items: initial;
             border-bottom: 0;
+
+            // without a thumbnail (e.g. ontology terms) the label lines up with literal objects
+            &:not(.has-thumb) {
+                padding: 0;
+
+                .pnd-annotation__header-info {
+                    padding-right: 0;
+                }
+
+                a .pnd-annotation__header-name,
+                .pnd-annotation__header-name {
+                    margin: 0;
+                    font-size: variables.$font-size-xs;
+                    line-height: inherit;
+                }
+            }
         }
 
         .pnd-annotation__header-thumb-wrapper,

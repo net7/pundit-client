@@ -18,6 +18,7 @@ import {
 import { AnchorEvent } from "../event-types";
 import { _c } from "../models/config";
 import { AnnotationService } from "./annotation.service";
+import { getAnnotationSelectors } from "../models/annotation/annotation-selectors";
 
 const HOVER_CLASS = "is-hovered";
 
@@ -168,26 +169,7 @@ export class AnchorService {
   }
 
   private createSelectors(annotation: Annotation): SelectorWithType[] {
-    if (!annotation || !annotation.subject?.selected)
-      return [{ start: 0, end: 0, type: "TextPositionSelector" }];
-    const target = annotation.subject.selected;
-    const selectors: SelectorWithType[] = [];
-    if (target.rangeSelector) {
-      selectors.push({ type: "RangeSelector", ...target.rangeSelector });
-    }
-    if (target.textPositionSelector) {
-      selectors.push({
-        type: "TextPositionSelector",
-        ...target.textPositionSelector,
-      });
-    }
-    if (target.textQuoteSelector) {
-      selectors.push({
-        type: "TextQuoteSelector",
-        ...target.textQuoteSelector,
-      });
-    }
-    return selectors;
+    return getAnnotationSelectors(annotation?.subject?.selected);
   }
 
   private attachEvents(highlights: HighlightElement[], annotationId: string) {

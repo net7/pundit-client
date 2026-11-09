@@ -5,7 +5,7 @@
         'is-expanded': !state?.isCollapsed,
         'has-comment': (data$ | async)?.subject?.selected && (data$ | async)?.type === 'Commenting',
         'is-fullpage': !(data$ | async)?.subject?.selected,
-        'is-preview': annotationId?.startsWith('ai-preview-') || (data$ | async)?.id?.startsWith('ai-preview-')
+        'is-preview': isPreview((data$ | async)?.id)
     }"
     (click)="onContainerClick(state)" (mouseenter)="onEnter(state)" (mouseleave)="onLeave(state)">
     @if (!state.isCollapsed) {
@@ -28,7 +28,7 @@
   <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
   <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
   <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
-  @if (serializedBy !== 'hypothesis') {
+  @if (serializedBy !== 'hypothesis' && !isPreview((data$ | async)?.id)) {
     <pnd-social-annotation-section
       [emit]="emit"
       [socials$]="socials$"
