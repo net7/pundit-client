@@ -1,258 +1,198 @@
-import { positionsSameWords } from "./annotation-range-utils";
-import { mergeContiguousToolCalls } from "./annotation-llm-merge.util";
+import {
+  AiAnnotation,
+  AiAnnotationTarget,
+  AiAnnotationType,
+} from "src/communication";
 import { addPayloadForRange } from "./annotation-llm-helpers.util";
 
-function findQuoteIndex(
-  nodeText: string,
-  quote: string,
-): { index: number; length: number } {
-  let index = nodeText.indexOf(quote);
-  let effectiveQuote = quote;
-  if (index === -1 && quote.trim()) {
-    effectiveQuote = quote.trim();
-    index = nodeText.indexOf(effectiveQuote);
-  }
-  return { index, length: effectiveQuote.length };
-}
+type SegmentSpan = {
+  id: string;
+  node: Text;
+  /** Offset of the segment in the joined text of all segments. */
+  offset: number;
+  length: number;
+};
 
-async function processToolCall(
-  node: Text,
-  quote: string,
-  call: any,
-  annotationPayload: any,
-  newPayloads: any[],
-  defaultAnnotationType?: string,
-): Promise<void> {
-  const nodeText = node.textContent ?? "";
-  const wordCount = call.words_counter ?? 1;
-  const annotationType = call.annotation_type || defaultAnnotationType;
-
-  if (wordCount > 1) {
-    const starterPositions = positionsSameWords(nodeText, quote);
-    if (starterPositions.length === 0) {
-      return;
-    }
-    for (let i = 0; i < starterPositions.length; i++) {
-      const startIndex = starterPositions[i];
-      const endIndex = startIndex + quote.length;
-      addPayloadForRange(
-        node,
-        startIndex,
-        endIndex,
-        annotationPayload,
-        newPayloads,
-        annotationType,
-        call.comment,
-        call.tags,
-        call.triple,
-        node,
-      );
-    }
-  } else {
-    const match = findQuoteIndex(nodeText, quote);
-    if (match.index === -1) {
-      return;
-    }
-    addPayloadForRange(
-      node,
-      match.index,
-      match.index + match.length,
-      annotationPayload,
-      newPayloads,
-      annotationType,
-      call.comment,
-      call.tags,
-      call.triple,
-      node,
-    );
-  }
-}
-
-function getField(call: any, camel: string, snake: string): string {
-  return String(call[camel] ?? call[snake] ?? "");
-}
-
-function extractQuoteBounds(
-  call: any,
-): {
-  startChunkId: string;
-  endChunkId: string;
-  startQuote: string;
-  endQuote: string;
-} | null {
-  const startChunkId = getField(call, "startChunkId", "start_chunk_id");
-  const endChunkId = getField(call, "endChunkId", "end_chunk_id");
-  const startQuote = getField(call, "startQuote", "start_quote");
-  const endQuote = getField(call, "endQuote", "end_quote");
-
-  if (startChunkId && endChunkId && startQuote && endQuote) {
-    return { startChunkId, endChunkId, startQuote, endQuote };
-  }
-  return null;
-}
-
-function resolveMatchRange(
+/** A Range from the offsets (UTF-16, as received); null when they are out of bounds. */
+function rangeFromOffsets(
   startNode: Text,
-  startQuote: string,
+  start: number,
   endNode: Text,
-  endQuote: string,
-): { startIndex: number; endIndex: number } | null {
-  const startMatch = findQuoteIndex(startNode.textContent ?? "", startQuote);
-  if (startMatch.index === -1) {
+  end: number,
+): Range | null {
+  try {
+    const range = document.createRange();
+    range.setStart(startNode, start);
+    range.setEnd(endNode, end);
+    return range;
+  } catch {
     return null;
   }
-  const endMatch = findQuoteIndex(endNode.textContent ?? "", endQuote);
-  if (endMatch.index === -1) {
+}
+
+/** The segments in reading order (Map order) with their offset in the joined text. */
+function joinSegments(segmentMap: Map<string, Text>): { spans: SegmentSpan[]; joined: string } {
+  const spans: SegmentSpan[] = [];
+  let joined = "";
+  segmentMap.forEach((node, id) => {
+    const text = node.textContent ?? "";
+    spans.push({ id, node, offset: joined.length, length: text.length });
+    joined += text;
+  });
+  return { spans, joined };
+}
+
+/** First and last segment of the target; null when unknown or out of order. */
+function getTargetSpans(
+  target: AiAnnotationTarget,
+  spans: SegmentSpan[],
+): { startSpan: SegmentSpan; endSpan: SegmentSpan } | null {
+  const first = spans.findIndex(({ id }) => id === target.segment);
+  const last = target.end_segment
+    ? spans.findIndex(({ id }) => id === target.end_segment)
+    : first;
+  if (first === -1 || last < first) {
     return null;
   }
-  return {
-    startIndex: startMatch.index,
-    endIndex: endMatch.index + endMatch.length,
-  };
+  return { startSpan: spans[first], endSpan: spans[last] };
 }
 
-async function processContiguousToolCall(
-  call: any,
-  chunkMap: Map<string, Text>,
-  annotationPayload: any,
-  newPayloads: any[],
-  defaultAnnotationType?: string,
-): Promise<void> {
-  const bounds = extractQuoteBounds(call);
-  if (!bounds) {
-    return;
+/** How many of prefix and suffix match the text around the occurrence. */
+function contextScore(
+  joined: string,
+  index: number,
+  target: AiAnnotationTarget,
+): number {
+  const { exact, prefix, suffix } = target;
+  const end = index + exact.length;
+  const prefixMatch =
+    !!prefix && index >= prefix.length && joined.slice(index - prefix.length, index) === prefix;
+  const suffixMatch = !!suffix && joined.slice(end, end + suffix.length) === suffix;
+  return Number(prefixMatch) + Number(suffixMatch);
+}
+
+/**
+ * Anchors `exact` with its context in the segments from `segment` to
+ * `end_segment`: among the occurrences starting in the first segment and
+ * ending in the last, the one whose prefix and suffix match the text around it
+ * (read on the whole selection), the first one on equal match.
+ */
+function anchorQuote(
+  target: AiAnnotationTarget,
+  segmentMap: Map<string, Text>,
+): Range | null {
+  const { exact } = target;
+  const { spans, joined } = joinSegments(segmentMap);
+  const targetSpans = exact ? getTargetSpans(target, spans) : null;
+  if (!targetSpans) {
+    return null;
+  }
+  const { startSpan, endSpan } = targetSpans;
+  const endsInLastSegment = (end: number) =>
+    end > endSpan.offset && end <= endSpan.offset + endSpan.length;
+
+  let best: { index: number; score: number } | null = null;
+  let index = joined.indexOf(exact, startSpan.offset);
+  while (index !== -1 && index < startSpan.offset + startSpan.length) {
+    if (endsInLastSegment(index + exact.length)) {
+      const score = contextScore(joined, index, target);
+      if (!best || score > best.score) {
+        best = { index, score };
+      }
+    }
+    index = joined.indexOf(exact, index + 1);
+  }
+  if (!best) {
+    return null;
   }
 
-  const startNode = chunkMap.get(bounds.startChunkId);
-  const endNode = chunkMap.get(bounds.endChunkId);
-  if (!startNode || !endNode) {
-    return;
-  }
-
-  const range = resolveMatchRange(
-    startNode,
-    bounds.startQuote,
-    endNode,
-    bounds.endQuote,
-  );
-  if (!range) {
-    return;
-  }
-
-  const annotationType = call.annotation_type || defaultAnnotationType;
-  addPayloadForRange(
-    startNode,
-    range.startIndex,
-    range.endIndex,
-    annotationPayload,
-    newPayloads,
-    annotationType,
-    call.comment,
-    call.tags,
-    call.triple,
-    endNode,
+  return rangeFromOffsets(
+    startSpan.node,
+    best.index - startSpan.offset,
+    endSpan.node,
+    best.index + exact.length - endSpan.offset,
   );
 }
 
-async function executeSingleToolCalls(
-  toolCalls: any[],
-  chunkMap: Map<string, Text>,
+/** The nodes of the target's segments; null when unknown or no longer in the page. */
+function getTargetNodes(
+  target: AiAnnotationTarget,
+  segmentMap: Map<string, Text>,
+): { startNode: Text; endNode: Text } | null {
+  const startNode = segmentMap.get(target.segment);
+  const endNode = target.end_segment
+    ? segmentMap.get(target.end_segment)
+    : startNode;
+  if (!startNode?.isConnected || !endNode?.isConnected) {
+    return null;
+  }
+  return { startNode, endNode };
+}
+
+const hasText = (range: Range | null, text: string): range is Range =>
+  !!range && range.toString() === text;
+
+/**
+ * The Range of an AI annotation: from its offsets when their text is `exact`,
+ * otherwise anchored with `exact`, `prefix` and `suffix` (null offsets, or a
+ * page changed meanwhile). Null when the segments are unknown or no longer in
+ * the page, or when `exact` cannot be found.
+ */
+function locateTarget(
+  target: AiAnnotationTarget,
+  segmentMap: Map<string, Text>,
+): Range | null {
+  const nodes = getTargetNodes(target, segmentMap);
+  if (!nodes) {
+    return null;
+  }
+  const { start, end, exact } = target;
+  if (typeof start === "number" && typeof end === "number") {
+    const range = rangeFromOffsets(nodes.startNode, start, nodes.endNode, end);
+    if (hasText(range, exact)) {
+      return range;
+    }
+  }
+  const range = anchorQuote(target, segmentMap);
+  return hasText(range, exact) ? range : null;
+}
+
+/**
+ * Preview payloads of the AI annotations, in the order received; the
+ * annotations that cannot be placed or lack the content of their type are skipped.
+ */
+function processLLMResponse(
+  annotations: AiAnnotation[],
+  segmentMap: Map<string, Text>,
   annotationPayload: any,
-  newPayloads: any[],
-  defaultAnnotationType?: string,
-): Promise<void> {
-  for (const call of toolCalls) {
+  requestedType: AiAnnotationType,
+): any[] {
+  const payloads: any[] = [];
+  for (const annotation of annotations) {
     try {
-      const node = chunkMap.get(call.chunkId);
-      const quote = call.quote ?? "";
-      if (!node || !quote) {
+      const range = annotation?.target
+        ? locateTarget(annotation.target, segmentMap)
+        : null;
+      if (!range) {
         continue;
       }
-      await processToolCall(
-        node,
-        quote,
-        call,
+      const payload = addPayloadForRange(
+        range,
+        annotation,
         annotationPayload,
-        newPayloads,
-        defaultAnnotationType,
+        requestedType,
       );
+      if (payload) {
+        payloads.push(payload);
+      }
     } catch (error) {
-      console.error(
-        "[processLLMResponse] Errore durante l'elaborazione di un elemento:",
-        {
-          call,
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-      );
+      console.error("[processLLMResponse] AI annotation not placed:", {
+        annotation,
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
-}
-
-async function executeContiguousToolCalls(
-  contiguousCalls: any[],
-  chunkMap: Map<string, Text>,
-  annotationPayload: any,
-  newPayloads: any[],
-  defaultAnnotationType?: string,
-): Promise<void> {
-  for (const call of contiguousCalls) {
-    try {
-      await processContiguousToolCall(
-        call,
-        chunkMap,
-        annotationPayload,
-        newPayloads,
-        defaultAnnotationType,
-      );
-    } catch (error) {
-      console.error(
-        "[processLLMResponse] Errore durante l'elaborazione di un elemento contiguo:",
-        {
-          call,
-          error: error instanceof Error ? error.message : String(error),
-          stack: error instanceof Error ? error.stack : undefined,
-        },
-      );
-    }
-  }
-}
-
-async function processLLMResponse(
-  toolCalls: any[],
-  contiguousCalls: any[],
-  chunkMap: Map<string, Text>,
-  annotationPayload: any,
-  defaultAnnotationType?: string,
-): Promise<any[]> {
-  let singleCalls = toolCalls || [];
-  let allContiguousCalls = Array.isArray(contiguousCalls)
-    ? contiguousCalls
-    : [];
-
-  if (singleCalls.length > 0 && chunkMap) {
-    const merged = mergeContiguousToolCalls(singleCalls, chunkMap);
-    singleCalls = merged.singleCalls;
-    allContiguousCalls = [...allContiguousCalls, ...merged.contiguousCalls];
-  }
-
-  const newPayloads: any[] = [];
-  await executeSingleToolCalls(
-    singleCalls,
-    chunkMap,
-    annotationPayload,
-    newPayloads,
-    defaultAnnotationType,
-  );
-  await executeContiguousToolCalls(
-    allContiguousCalls,
-    chunkMap,
-    annotationPayload,
-    newPayloads,
-    defaultAnnotationType,
-  );
-
-  return newPayloads;
+  return payloads;
 }
 
 export { processLLMResponse };

@@ -22,12 +22,11 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   let handler: MainLayoutEditModalAiHandler;
 
   const request = {
-    chunks: [{ id: 'c0', text: 'some text' }],
+    segments: [{ id: 'c1', text: 'some text' }],
     prompt: 'find names',
     annotation_type: 'comment',
-    selected_text: 'some text',
   };
-  const chunkMap = new Map();
+  const segmentMap = new Map();
   const showToast = (params: any) => params?.onLoad?.({ close: jest.fn(), update: jest.fn() });
 
   beforeAll(() => {
@@ -48,7 +47,11 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       'toast#ai_error_structured_output_unsupported',
       'toast#ai_error_model_unavailable',
       'toast#ai_error_invalid_structured_output',
+      'toast#ai_error_no_predicates',
+      'toast#ai_error_no_elements',
+      'toast#ai_error_ontology_too_large',
       'toast#ai_error_open_settings',
+      'toast#ontologies_no_predicates_action',
       'toast#ai_no_results_title',
       'toast#ai_no_results_text',
     ].forEach((key) => translate.setLangTranslation('en', key, key));
@@ -81,6 +84,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       anchorService: { add: jest.fn(), remove: jest.fn(), removeByPrefix: jest.fn() },
       notebookService: { getSelected: () => ({ id: 'nb' }) },
       aiService: { annotate: jest.fn() },
+      ontologyService: { openPanel$: new Subject<void>() },
       removePendingAnnotation: jest.fn(),
     };
 
@@ -88,23 +92,23 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   });
 
   it('requests the AI annotations through AiService and renders the previews', async () => {
-    prepareMock.mockReturnValue({ request, chunkMap });
-    const toolCalls = [{ chunkId: 'c0' }];
-    layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls, contiguousCalls: [] }));
-    processMock.mockResolvedValue([{ type: 'Commenting' }, { type: 'Commenting' }]);
+    prepareMock.mockReturnValue({ request, segmentMap });
+    const annotations = [{ type: 'comment', target: { segment: 'c1' }, comment: 'a name' }];
+    layoutDS.aiService.annotate.mockReturnValue(of(annotations));
+    processMock.mockReturnValue([{ type: 'Commenting' }, { type: 'Commenting' }]);
 
     await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
 
     expect(prepareMock).toHaveBeenCalledWith(expect.anything(), 'find names', 'comment');
     expect(layoutDS.aiService.annotate).toHaveBeenCalledWith(request);
-    expect(processMock).toHaveBeenCalledWith(toolCalls, [], chunkMap, expect.anything(), 'comment');
+    expect(processMock).toHaveBeenCalledWith(annotations, segmentMap, expect.anything(), 'comment');
     expect(layoutDS.annotationService.add).toHaveBeenCalledTimes(2);
     expect(workingToast.close).toHaveBeenCalled();
     expect(appEvents.some((e) => e.type === AppEvent.AiPreviewReady)).toBe(true);
   });
 
   it('shows the generic AI error toast and routes the error to handleError without a known code', async () => {
-    prepareMock.mockReturnValue({ request, chunkMap });
+    prepareMock.mockReturnValue({ request, segmentMap });
     const error = { response: { status: 400, data: { error: 'no active key' } } };
     layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
 
@@ -126,7 +130,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     [504, 'provider_timeout'],
   ])('shows the "%s"-status message for a response without a JSON body (proxy)', async (status, code) => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    prepareMock.mockReturnValue({ request, chunkMap });
+    prepareMock.mockReturnValue({ request, segmentMap });
     const error = { response: { status, data: `<html>${status}</html>` } };
     layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
 
@@ -152,9 +156,12 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     ['structured_output_unsupported', 422],
     ['model_unavailable', 422],
     ['invalid_structured_output', 502],
+    ['no_predicates', 422],
+    ['no_elements', 422],
+    ['ontology_too_large', 422],
   ])('shows the "%s" message for a known backend error code', async (code, status) => {
     const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    prepareMock.mockReturnValue({ request, chunkMap });
+    prepareMock.mockReturnValue({ request, segmentMap });
     const error = { response: { status, data: { error: 'backend text', code, message: 'detail' } } };
     layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
 
@@ -183,12 +190,12 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
   it.each([
     ['an error', () => throwError(() => ({ response: { status: 413, data: { error: 'x', code: 'payload_too_large' } } })), 'error'],
-    ['no results', () => of({ toolCalls: [], contiguousCalls: [] }), 'info'],
+    ['no results', () => of([]), 'info'],
   ])('keeps the working toast until the %s toast shows', async (_case, answer, kind) => {
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    prepareMock.mockReturnValue({ request, chunkMap });
+    prepareMock.mockReturnValue({ request, segmentMap });
     layoutDS.aiService.annotate.mockReturnValue(answer());
-    processMock.mockResolvedValue([]);
+    processMock.mockReturnValue([]);
     const toast = layoutDS.toastService[kind as 'error' | 'info'];
     toast.mockImplementation(() => undefined);
 
@@ -202,7 +209,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
   it('keeps the AI error toast 5 s', async () => {
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
-    prepareMock.mockReturnValue({ request, chunkMap });
+    prepareMock.mockReturnValue({ request, segmentMap });
     layoutDS.aiService.annotate.mockReturnValue(
       throwError(() => ({ response: { status: 413, data: { error: 'x', code: 'payload_too_large' } } }))
     );
@@ -218,7 +225,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     beforeEach(() => {
       consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
       windowOpen = jest.spyOn(window, 'open').mockImplementation(() => null);
-      prepareMock.mockReturnValue({ request, chunkMap });
+      prepareMock.mockReturnValue({ request, segmentMap });
     });
 
     afterEach(() => {
@@ -276,10 +283,53 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     });
   });
 
+  describe('errors fixed in the Ontologies panel', () => {
+    let consoleError: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      prepareMock.mockReturnValue({ request, segmentMap });
+    });
+
+    afterEach(() => {
+      consoleError.mockRestore();
+    });
+
+    const failWith = async (code: string) => {
+      const error = { response: { status: 422, data: { error: 'backend text', code } } };
+      layoutDS.aiService.annotate.mockReturnValue(throwError(() => error));
+      await handler.onAiGenerate({ prompt: 'find people', annotationType: 'semantic_annotation' });
+      return layoutDS.toastService.error.mock.calls[0][0];
+    };
+
+    it.each(['no_predicates', 'no_elements', 'ontology_too_large'])(
+      'keeps the "%s" toast open with a button that opens the Ontologies panel',
+      async (code) => {
+        const opened = jest.fn();
+        layoutDS.ontologyService.openPanel$.subscribe(opened);
+        const params = await failWith(code);
+        const toast = { close: jest.fn(), update: jest.fn() };
+
+        expect(params.text).toBe(`toast#ai_error_${code}`);
+        expect(params.autoClose).toBe(false);
+        expect(params.actions).toEqual([
+          { text: 'toast#ontologies_no_predicates_action', payload: expect.any(String) },
+        ]);
+        expect(layoutEH.handleError).not.toHaveBeenCalled();
+
+        params.onAction(params.actions[0].payload, toast);
+
+        expect(opened).toHaveBeenCalledTimes(1);
+        expect(toast.close).toHaveBeenCalled();
+        expect(en_US).toHaveProperty([`toast#ai_error_${code}`]);
+      },
+    );
+  });
+
   it('shows the "no results" toast when the response yields no annotations', async () => {
-    prepareMock.mockReturnValue({ request, chunkMap });
-    layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [], contiguousCalls: [] }));
-    processMock.mockResolvedValue([]);
+    prepareMock.mockReturnValue({ request, segmentMap });
+    layoutDS.aiService.annotate.mockReturnValue(of([]));
+    processMock.mockReturnValue([]);
 
     await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
 
@@ -312,9 +362,9 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     beforeEach(async () => {
       states = [];
       subscription = aiPreviewState$.subscribe((active) => states.push(active));
-      prepareMock.mockReturnValue({ request, chunkMap });
-      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [], contiguousCalls: [] }));
-      processMock.mockResolvedValue([preview('one'), preview('two'), preview('three')]);
+      prepareMock.mockReturnValue({ request, segmentMap });
+      layoutDS.aiService.annotate.mockReturnValue(of([]));
+      processMock.mockReturnValue([preview('one'), preview('two'), preview('three')]);
       layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: `saved-${p.subject.selected.textQuoteSelector.exact}` }));
       layoutDS.tagService = { addMany: jest.fn() };
       layoutDS.state.annotation.updatePayload = null;
@@ -380,7 +430,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     beforeEach(() => {
       states = [];
       subscription = aiPreviewState$.subscribe((active) => states.push(active));
-      prepareMock.mockReturnValue({ request, chunkMap });
+      prepareMock.mockReturnValue({ request, segmentMap });
     });
 
     afterEach(() => subscription.unsubscribe());
@@ -394,8 +444,8 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     });
 
     it('emits false when no previews can be built', async () => {
-      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [], contiguousCalls: [] }));
-      processMock.mockResolvedValue([]);
+      layoutDS.aiService.annotate.mockReturnValue(of([]));
+      processMock.mockReturnValue([]);
 
       await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
 
@@ -403,8 +453,8 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     });
 
     it('emits true when previews are rendered', async () => {
-      layoutDS.aiService.annotate.mockReturnValue(of({ toolCalls: [{ chunkId: 'c0' }], contiguousCalls: [] }));
-      processMock.mockResolvedValue([{ type: 'Commenting' }]);
+      layoutDS.aiService.annotate.mockReturnValue(of([{ type: 'comment', target: { segment: 'c1' }, comment: 'a name' }]));
+      processMock.mockReturnValue([{ type: 'Commenting' }]);
 
       await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
 

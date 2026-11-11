@@ -1,32 +1,28 @@
 import { wholeTextNodesInRange } from "@net7/annotator";
+import { AiAnnotateSegment } from "src/communication";
 
 /**
- * The chunks of an AI request: one per non-empty text node inside the range,
- * the boundary nodes split at the range's start and end, so the text sent is
- * exactly the selection. The map gives the node of each chunk id.
+ * The segments of an AI request: one per text node inside the range, in
+ * reading order, the boundary nodes split at the range's start and end.
+ * Whitespace-only nodes are kept and texts are not trimmed, so the segments
+ * joined are exactly the selection (the server computes offsets on them);
+ * only empty nodes are skipped. The map gives the node of each segment id.
  */
-function buildChunkProjection(range: Range): {
-  chunks: { id: string; text: string }[];
-  chunkMap: Map<string, Text>;
+function buildSegmentProjection(range: Range): {
+  segments: AiAnnotateSegment[];
+  segmentMap: Map<string, Text>;
 } {
-  const chunks: { id: string; text: string }[] = [];
-  const chunkMap = new Map<string, Text>();
+  const segments: AiAnnotateSegment[] = [];
+  const segmentMap = new Map<string, Text>();
   let i = 0;
   wholeTextNodesInRange(range).forEach((node) => {
     const text = node.textContent ?? "";
-    if (text.trim().length === 0) return;
+    if (text === "") return;
     const id = `c${++i}`;
-    chunks.push({ id, text });
-    chunkMap.set(id, node);
+    segments.push({ id, text });
+    segmentMap.set(id, node);
   });
-  return { chunks, chunkMap };
-}
-
-/** Start positions of `subQuote` as a whole word (case-insensitive) in `quote`. */
-function positionsSameWords(quote: string, subQuote: string): number[] {
-  const secureSubQuote = subQuote.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  const regex = new RegExp(`\\b${secureSubQuote}\\b`, "gi");
-  return [...quote.matchAll(regex)].map((match) => match.index);
+  return { segments, segmentMap };
 }
 
 function getXPathForNode(node: Node): string {
@@ -89,8 +85,7 @@ function serializeRangeToSelector(range: Range): any {
 }
 
 export {
-  buildChunkProjection,
-  positionsSameWords,
+  buildSegmentProjection,
   getXPathForNode,
   getTextOffsetInBody,
   serializeRangeToSelector,

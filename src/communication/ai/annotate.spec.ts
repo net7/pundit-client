@@ -15,13 +15,12 @@ describe('ai annotate', () => {
   });
 
   it('posts the request to /ai/annotate on the api base url with the refresh hook', () => {
-    const response = Promise.resolve({ data: { result: [], contiguous_chunks: [] } });
+    const response = Promise.resolve({ data: { annotations: [] } });
     requestMock.mockReturnValue(response);
     const data: AiAnnotateRequest = {
-      chunks: [{ id: 'c0', text: 'some text' }],
+      segments: [{ id: 'c1', text: 'some text' }, { id: 'c2', text: '\n  ' }],
       prompt: 'find names',
       annotation_type: 'highlight',
-      selected_text: 'some text',
     };
 
     const result = annotate(data);

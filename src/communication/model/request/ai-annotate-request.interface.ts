@@ -1,17 +1,17 @@
 export type AiAnnotationType = 'highlight' | 'comment' | 'tags' | 'semantic_annotation';
 
 /**
- * A text chunk of the selected range, identified so that the LLM
- * response can be mapped back to the DOM.
+ * A text node of the selection, sent untrimmed (whitespace-only nodes
+ * included): the server computes the positions of the response on `text`.
  */
-export type AiAnnotateChunk = {
+export type AiAnnotateSegment = {
   id: string;
   text: string;
 }
 
 export type AiAnnotateRequest = {
-  chunks: AiAnnotateChunk[];
+  /** Text nodes of the selection in reading order: joined, exactly the selection. */
+  segments: AiAnnotateSegment[];
   prompt: string;
   annotation_type: AiAnnotationType;
-  selected_text?: string | null;
 }
