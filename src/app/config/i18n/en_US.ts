@@ -169,6 +169,12 @@ export default {
     "The selected AI model isn't available or may have been retired. Check your AI settings.",
   "toast#ai_error_invalid_structured_output":
     "The AI model returned an unexpected response. Try again or choose another model in your AI settings.",
+  "toast#ai_error_no_predicates":
+    "Semantic AI annotations need predicates. Select an ontology for predicates in the Ontologies panel.",
+  "toast#ai_error_no_elements":
+    "Semantic AI annotations need classes or entities to link to. Select an ontology for classes or entities in the Ontologies panel.",
+  "toast#ai_error_ontology_too_large":
+    "The selected ontologies are too large for the AI model. Select fewer ontologies in the Ontologies panel and try again.",
   // annotation
   "annotation#changenotebook": "Change notebook",
   "annotation#addcomment": "Add comment",

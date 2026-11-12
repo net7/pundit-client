@@ -1,15 +1,65 @@
-/**
- * An annotation proposed by the LLM. The shape comes from the model's
- * tool calls (keys may be camelCase or snake_case), so it is left open.
- */
-export type AiAnnotateCall = Record<string, any>;
+import { ObjectUriElementType } from '../entity/triple';
+import { AiAnnotationType } from '../request/ai-annotate-request.interface';
 
 /**
- * Each field is either an array or its JSON-encoded string.
+ * Where an annotation sits in the segments of the request.
+ * `start` is an offset in the `segment` node, `end` (exclusive) in the
+ * `end_segment` node or, when null, in `segment`; both in UTF-16 code units,
+ * i.e. DOM Range offsets on the text nodes. Both are null when the passage
+ * occurs more than once in the segment and the server could not tell which:
+ * the client then anchors with `exact`, `prefix` and `suffix`.
  */
+export type AiAnnotationTarget = {
+  segment: string;
+  end_segment: string | null;
+  exact: string;
+  prefix: string;
+  suffix: string;
+  start: number | null;
+  end: number | null;
+};
+
+/** An object of a triple that is an element of the user's ontologies. */
+export type AiAnnotationElementObject = {
+  uri: string;
+  label: string;
+  description?: string;
+  elementType: ObjectUriElementType;
+};
+
+/**
+ * An object of a triple that is a literal value read from the text (a date,
+ * a number, a measure). Dates come as YYYY-MM-DD, YYYY-MM or YYYY.
+ */
+export type AiAnnotationLiteralObject = {
+  text: string;
+};
+
+/**
+ * A triple whose predicate is an element of the user's ontologies and whose
+ * object is either an element of those ontologies or a literal value.
+ */
+export type AiAnnotationTriple = {
+  predicate: { uri: string; label: string };
+  object: AiAnnotationElementObject | AiAnnotationLiteralObject;
+};
+
+/**
+ * An annotation proposed by the AI, one per position. `comment` (already
+ * HTML-escaped), `tags` (already normalized) and `triples` come with their
+ * type. `triples` is a non-empty list: all the triples whose subject is the
+ * passage of `target`, in the order the model proposed them.
+ */
+export type AiAnnotation = {
+  type: AiAnnotationType;
+  target: AiAnnotationTarget;
+  comment?: string;
+  tags?: string[];
+  triples?: AiAnnotationTriple[];
+};
+
 export interface AiAnnotateResponse {
-  result?: AiAnnotateCall[] | string;
-  contiguous_chunks?: AiAnnotateCall[] | string;
+  annotations: AiAnnotation[];
 }
 
 /**
@@ -27,7 +77,10 @@ export type AiAnnotateErrorCode =
   | 'provider_url_blocked'
   | 'structured_output_unsupported'
   | 'model_unavailable'
-  | 'invalid_structured_output';
+  | 'invalid_structured_output'
+  | 'no_predicates'
+  | 'no_elements'
+  | 'ontology_too_large';
 
 /**
  * Error body: `error` is a human-readable (Italian) message,

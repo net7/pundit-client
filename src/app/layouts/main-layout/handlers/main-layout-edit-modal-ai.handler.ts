@@ -16,6 +16,7 @@ import { MainLayoutEH } from "../main-layout.eh";
 import { prepareAiRequest } from "./annotation-range-selector.util";
 import { processLLMResponse } from "./annotation-llm-processor";
 import { getAiSettingsToastParams } from "./ai-settings-toast.util";
+import { getOntologiesToastParams } from "./ontologies-warning-toast.util";
 import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { isValidAnnotationPayload } from "./edit-modal-validation";
 import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
@@ -46,6 +47,9 @@ const AI_ERROR_CODES: AiAnnotateErrorCode[] = [
   "structured_output_unsupported",
   "model_unavailable",
   "invalid_structured_output",
+  "no_predicates",
+  "no_elements",
+  "ontology_too_large",
 ];
 
 /**
@@ -79,6 +83,13 @@ const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
   "structured_output_unsupported",
   "model_unavailable",
   "invalid_structured_output",
+];
+
+/** Error codes of semantic annotations the user fixes in the Ontologies panel. */
+const AI_ONTOLOGY_ERROR_CODES: AiAnnotateErrorCode[] = [
+  "no_predicates",
+  "no_elements",
+  "ontology_too_large",
 ];
 
 export class MainLayoutEditModalAiHandler {
@@ -165,10 +176,19 @@ export class MainLayoutEditModalAiHandler {
       autoCloseDelay: AI_ERROR_TOAST_DELAY,
       // the working toast stays until this one shows (after `timer`): no empty gap
       onLoad: () => workingToast.close(),
-      ...(code && AI_SETTINGS_ERROR_CODES.includes(code)
-        ? getAiSettingsToastParams()
-        : {}),
+      ...this.getAiErrorActionParams(code),
     });
+  }
+
+  /** The button that leads where the user fixes the error, if any. */
+  private getAiErrorActionParams(code?: AiAnnotateErrorCode) {
+    if (code && AI_SETTINGS_ERROR_CODES.includes(code)) {
+      return getAiSettingsToastParams();
+    }
+    if (code && AI_ONTOLOGY_ERROR_CODES.includes(code)) {
+      return getOntologiesToastParams(this.layoutDS.ontologyService);
+    }
+    return {};
   }
 
   private async requestAiPayloads(
@@ -180,13 +200,12 @@ export class MainLayoutEditModalAiHandler {
     if (!prepared) {
       return [];
     }
-    const { toolCalls, contiguousCalls } = await firstValueFrom(
+    const annotations = await firstValueFrom(
       this.layoutDS.aiService.annotate(prepared.request),
     );
     return processLLMResponse(
-      toolCalls,
-      contiguousCalls,
-      prepared.chunkMap,
+      annotations,
+      prepared.segmentMap,
       annotationPayload,
       annotationType,
     );

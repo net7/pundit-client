@@ -30,9 +30,9 @@ const select = (startText: string, startOffset: number, endText: string, endOffs
   return range;
 };
 
-const chunkTexts = async (payload: any) => {
+const segmentTexts = async (payload: any) => {
   const prepared = await prepareAiRequest(payload, 'task', 'comment');
-  return prepared?.request.chunks.map(({ text }) => text);
+  return prepared?.request.segments.map(({ text }) => text);
 };
 
 describe('prepareAiRequest', () => {
@@ -44,7 +44,7 @@ describe('prepareAiRequest', () => {
     // "si trova vicino" in " si trova vicino al lago"
     const payload = payloadFor(select(' si trova vicino al lago', 1, ' si trova vicino al lago', 16));
     document.body.innerHTML = PAGE; // fresh DOM: the request anchors from the stored selectors only
-    expect(await chunkTexts(payload)).toEqual(['si trova vicino']);
+    expect(await segmentTexts(payload)).toEqual(['si trova vicino']);
   });
 
   it('sends exactly the selection across formatting', async () => {
@@ -52,22 +52,45 @@ describe('prepareAiRequest', () => {
     const payload = payloadFor(select('Comune di ', 7, ' si trova vicino al lago', 9));
     document.body.innerHTML = PAGE;
     const prepared = await prepareAiRequest(payload, 'task', 'comment');
-    expect(prepared?.request.chunks).toEqual([
-      { id: 'c1', text: 'di ' }, { id: 'c2', text: 'Viterbo' }, { id: 'c3', text: ' si trova' },
-    ]);
-    expect(prepared?.request.selected_text).toBe('di Viterbo si trova');
-    expect(prepared?.chunkMap.get('c2')?.textContent).toBe('Viterbo');
+    expect(prepared?.request).toEqual({
+      segments: [
+        { id: 'c1', text: 'di ' }, { id: 'c2', text: 'Viterbo' }, { id: 'c3', text: ' si trova' },
+      ],
+      prompt: 'task',
+      annotation_type: 'comment',
+    });
+    expect(prepared?.segmentMap.get('c2')?.textContent).toBe('Viterbo');
   });
 
   it('sends only the selected part of each paragraph across paragraphs', async () => {
     // "vicino al lago" ... "Il lago"
     const payload = payloadFor(select(' si trova vicino al lago', 10, 'lago', 4));
     document.body.innerHTML = PAGE;
-    const texts = await chunkTexts(payload);
-    expect(texts?.[0]).toBe('vicino al lago');
-    expect(texts?.slice(-2)).toEqual(['Il ', 'lago']);
+    const texts = await segmentTexts(payload);
+    expect(texts).toEqual(['vicino al lago', '\n  ', 'Il ', 'lago']);
+    expect(texts?.join('')).toBe('vicino al lago\n  Il lago');
     expect(texts?.join('')).not.toContain('Comune');
     expect(texts?.join('')).not.toContain('Bolsena');
+  });
+
+  it('sends a whitespace-only node between two nodes, untrimmed and mapped to its node', async () => {
+    document.body.innerHTML = '<p><span>Her name is Portia, </span>\n      <span> To Cato\'s daughter</span></p>';
+    const payload = payloadFor(select('Her name is Portia, ', 12, ' To Cato\'s daughter', 8));
+    document.body.innerHTML = '<p><span>Her name is Portia, </span>\n      <span> To Cato\'s daughter</span></p>';
+    const prepared = await prepareAiRequest(payload, 'task', 'highlight');
+
+    expect(prepared?.request).toEqual({
+      segments: [
+        { id: 'c1', text: 'Portia, ' },
+        { id: 'c2', text: '\n      ' },
+        { id: 'c3', text: ' To Cato' },
+      ],
+      prompt: 'task',
+      annotation_type: 'highlight',
+    });
+    expect(prepared?.request).not.toHaveProperty('selected_text');
+    expect(prepared?.segmentMap.get('c2')?.textContent).toBe('\n      ');
+    expect(prepared?.segmentMap.get('c2')?.isConnected).toBe(true);
   });
 
   it('sends no request when the selection is not in the page', async () => {
