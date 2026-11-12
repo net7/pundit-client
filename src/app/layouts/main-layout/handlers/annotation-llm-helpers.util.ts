@@ -51,25 +51,41 @@ function buildLiteralTriple(
   return text ? { predicate, objectType: "literal", object: { text } } : undefined;
 }
 
+type SemanticContentTriple = SemanticTripleWithUri | SemanticTripleWithLiteral;
+
 /**
- * Semantic content of an AI triple. An element object is saved like an object
- * picked from the element search; a literal object (a date, a number, a
- * measure) is saved as a literal, with its text trimmed.
- * Undefined when the predicate has no URI, or the object has neither a URI
- * nor a non-empty text.
+ * Semantic triple of an AI triple, undefined when the predicate has no URI,
+ * or the object has neither a URI nor a non-empty text.
  */
-export function buildSemanticContent(
+function buildSemanticTriple(
   triple?: AiAnnotationTriple,
-): (SemanticTripleWithUri | SemanticTripleWithLiteral)[] | undefined {
+): SemanticContentTriple | undefined {
   const { predicate, object } = triple ?? {};
   if (!predicate?.uri || !object) {
     return undefined;
   }
   const semanticPredicate = { label: predicate.label, uri: predicate.uri };
-  const content =
+  return (
     buildElementTriple(semanticPredicate, object) ??
-    buildLiteralTriple(semanticPredicate, object);
-  return content ? [content] : undefined;
+    buildLiteralTriple(semanticPredicate, object)
+  );
+}
+
+/**
+ * Semantic content of the AI triples of one place of the text, in their
+ * order. An element object is saved like an object picked from the element
+ * search; a literal object (a date, a number, a measure) is saved as a
+ * literal, with its text trimmed.
+ * A triple whose predicate has no URI, or whose object has neither a URI nor
+ * a non-empty text, is left out; undefined when no triple is left.
+ */
+export function buildSemanticContent(
+  triples?: AiAnnotationTriple[],
+): SemanticContentTriple[] | undefined {
+  const content = (Array.isArray(triples) ? triples : [])
+    .map((triple) => buildSemanticTriple(triple))
+    .filter((triple): triple is SemanticContentTriple => !!triple);
+  return content.length ? content : undefined;
 }
 
 /**
@@ -108,7 +124,7 @@ export function applyAnnotationType(
       return true;
     }
     case "semantic_annotation": {
-      const content = buildSemanticContent(annotation.triple);
+      const content = buildSemanticContent(annotation.triples);
       if (!content) {
         return false;
       }

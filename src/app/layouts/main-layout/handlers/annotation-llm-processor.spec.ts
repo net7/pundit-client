@@ -174,7 +174,7 @@ describe('processLLMResponse > content', () => {
     const { payloads } = place(PORTIA, [{
       type: 'semantic_annotation',
       target: portia,
-      triple: {
+      triples: [{
         predicate: { uri: 'http://www.w3.org/2000/01/rdf-schema#isDefinedBy', label: 'identifies' },
         object: {
           uri: 'http://example.org/shakespeare#Portia',
@@ -182,7 +182,7 @@ describe('processLLMResponse > content', () => {
           description: 'Heiress of Belmont',
           elementType: 'entity',
         },
-      },
+      }],
     }], 'semantic_annotation');
 
     expect(payloads[0].type).toBe('Linking');
@@ -203,10 +203,10 @@ describe('processLLMResponse > content', () => {
     const { payloads } = place(PORTIA, [{
       type: 'semantic_annotation',
       target: portia,
-      triple: {
+      triples: [{
         predicate: { uri: 'http://example.org/p#names', label: 'names' },
         object: { uri: 'http://example.org/c#Person', label: 'Person', elementType: 'class' },
-      },
+      }],
     }], 'semantic_annotation');
 
     expect(payloads[0].content[0].object).toEqual({
@@ -218,10 +218,10 @@ describe('processLLMResponse > content', () => {
     const { payloads } = place(PORTIA, [{
       type: 'semantic_annotation',
       target: portia,
-      triple: {
+      triples: [{
         predicate: { uri: 'http://purl.org/dc/terms/date', label: 'represents the date' },
         object: { text: '1776-07-04' },
-      },
+      }],
     }], 'semantic_annotation');
 
     expect(payloads[0].type).toBe('Linking');
@@ -236,17 +236,95 @@ describe('processLLMResponse > content', () => {
     const { payloads } = place(PORTIA, [{
       type: 'semantic_annotation',
       target: portia,
-      triple: {
+      triples: [{
         predicate: { uri: 'http://purl.org/dc/terms/date', label: 'represents the date' },
         object: { text: '  1776  ' },
-      },
+      }],
     }], 'semantic_annotation');
 
     expect(payloads[0].content[0].object).toEqual({ text: '1776' });
   });
 
+  const identifiesPortia = {
+    predicate: { uri: 'http://www.w3.org/2000/01/rdf-schema#isDefinedBy', label: 'identifies' },
+    object: { uri: 'http://example.org/shakespeare#Portia', label: 'Portia', elementType: 'entity' as const },
+  };
+  const livesInBelmont = {
+    predicate: { uri: 'http://example.org/shakespeare#livesIn', label: 'lives in' },
+    object: { uri: 'http://example.org/shakespeare#Belmont', label: 'Belmont', elementType: 'entity' as const },
+  };
+  const representsTheDate = {
+    predicate: { uri: 'http://purl.org/dc/terms/date', label: 'represents the date' },
+    object: { text: '1596' },
+  };
+
+  it('builds one annotation with all the triples of the place, in their order', () => {
+    const { payloads } = place(PORTIA, [{
+      type: 'semantic_annotation',
+      target: portia,
+      triples: [identifiesPortia, livesInBelmont, representsTheDate],
+    }], 'semantic_annotation');
+
+    expect(payloads).toHaveLength(1);
+    expect(payloads[0].type).toBe('Linking');
+    expect(payloads[0].subject.selected.text).toBe('Portia');
+    expect(payloads[0].content).toEqual([
+      {
+        predicate: { label: 'identifies', uri: 'http://www.w3.org/2000/01/rdf-schema#isDefinedBy' },
+        objectType: 'uri',
+        object: { uri: 'http://example.org/shakespeare#Portia', label: 'Portia', source: 'search', elementType: 'entity' },
+      },
+      {
+        predicate: { label: 'lives in', uri: 'http://example.org/shakespeare#livesIn' },
+        objectType: 'uri',
+        object: { uri: 'http://example.org/shakespeare#Belmont', label: 'Belmont', source: 'search', elementType: 'entity' },
+      },
+      {
+        predicate: { label: 'represents the date', uri: 'http://purl.org/dc/terms/date' },
+        objectType: 'literal',
+        object: { text: '1596' },
+      },
+    ]);
+  });
+
+  it('leaves out an incomplete triple and keeps the others of the place', () => {
+    const { payloads } = place(PORTIA, [{
+      type: 'semantic_annotation',
+      target: portia,
+      triples: [
+        identifiesPortia,
+        { predicate: { uri: '', label: 'lives in' }, object: livesInBelmont.object },
+        { predicate: representsTheDate.predicate, object: { text: '   ' } },
+        livesInBelmont,
+      ],
+    }], 'semantic_annotation');
+
+    expect(payloads).toHaveLength(1);
+    expect(payloads[0].content.map((triple: any) => triple.object.label)).toEqual(['Portia', 'Belmont']);
+  });
+
+  it('skips a semantic annotation whose triples are all incomplete', () => {
+    const { payloads } = place(PORTIA, [{
+      type: 'semantic_annotation',
+      target: portia,
+      triples: [
+        { predicate: { uri: '', label: 'lives in' }, object: livesInBelmont.object },
+        { predicate: representsTheDate.predicate, object: { text: '' } },
+      ],
+    }], 'semantic_annotation');
+
+    expect(payloads).toEqual([]);
+  });
+
   it.each([
-    ['no triple', undefined],
+    ['no triples', undefined],
+    ['an empty list of triples', []],
+  ])('skips a semantic annotation with %s', (_label, triples: any) => {
+    const { payloads } = place(PORTIA, [{ type: 'semantic_annotation', target: portia, triples }]);
+    expect(payloads).toEqual([]);
+  });
+
+  it.each([
     ['a predicate without uri', {
       predicate: { uri: '', label: 'names' },
       object: { uri: 'http://example.org/c#Person', label: 'Person', elementType: 'class' },
@@ -267,8 +345,8 @@ describe('processLLMResponse > content', () => {
       predicate: { uri: '', label: 'represents the date' },
       object: { text: '1776-07-04' },
     }],
-  ])('skips a semantic annotation with %s', (_label, triple: any) => {
-    const { payloads } = place(PORTIA, [{ type: 'semantic_annotation', target: portia, triple }]);
+  ])('skips a semantic annotation whose only triple has %s', (_label, triple: any) => {
+    const { payloads } = place(PORTIA, [{ type: 'semantic_annotation', target: portia, triples: [triple] }]);
     expect(payloads).toEqual([]);
   });
 

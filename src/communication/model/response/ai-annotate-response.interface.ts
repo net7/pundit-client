@@ -46,14 +46,16 @@ export type AiAnnotationTriple = {
 
 /**
  * An annotation proposed by the AI, one per position. `comment` (already
- * HTML-escaped), `tags` (already normalized) and `triple` come with their type.
+ * HTML-escaped), `tags` (already normalized) and `triples` come with their
+ * type. `triples` is a non-empty list: all the triples whose subject is the
+ * passage of `target`, in the order the model proposed them.
  */
 export type AiAnnotation = {
   type: AiAnnotationType;
   target: AiAnnotationTarget;
   comment?: string;
   tags?: string[];
-  triple?: AiAnnotationTriple;
+  triples?: AiAnnotationTriple[];
 };
 
 export interface AiAnnotateResponse {

@@ -4,6 +4,7 @@
 - [x] 1.2 `ai-annotate-response.interface.ts`: add `AiAnnotationTarget`, `AiAnnotationTriple`, `AiAnnotation`; `AiAnnotateResponse` = `{ annotations }`; remove `AiAnnotateCall`; add `no_predicates`, `no_elements`, `ontology_too_large` to `AiAnnotateErrorCode`
 - [x] 1.3 Update `src/communication/ai/annotate.spec.ts` to the new request/response shape
 - [x] 1.4 `AiAnnotationTriple.object`: union of the element object and the literal object `{ text }`
+- [x] 1.5 `AiAnnotation.triples`: list of `AiAnnotationTriple`, all the triples of the place in the order the model proposed them
 
 ## 2. Request
 
@@ -21,8 +22,8 @@
 - [x] 4.1 `annotation-llm-processor.ts`: `locateTarget` (offsets → Range, `exact` check, `isConnected`/unknown-id skip) and `anchorQuote` (joined segment text, window `segment`…`end_segment`, prefix/suffix scoring, first on tie, map back to node/offset, final check)
 - [x] 4.2 `annotation-llm-processor.ts`: `processLLMResponse(annotations, segmentMap, annotationPayload, requestedType)` loops in response order with a per-item `try/catch`; remove the single/contiguous/merge machinery
 - [x] 4.3 Delete `annotation-llm-merge.util.ts`
-- [x] 4.4 `annotation-llm-helpers.util.ts`: `addPayloadForRange(range, annotation, annotationPayload, requestedType)` returns the payload or null; `applyAnnotationType` on the four request values (fallback to the requested type) and returns false on missing content; `buildSemanticContent(triple)` → search-picked `uri` object (`description` only when present) or `literal` object `{ text }` (trimmed, skipped when empty); remove `buildLabelUri` and `SEMANTIC_TYPES`
-- [x] 4.5 New `annotation-llm-processor.spec.ts` (jsdom): one-segment offsets; cross-segment through a whitespace-only segment; emoji before the passage (offsets applied as received); null offsets with prefix choosing the second occurrence; null offsets without context → first occurrence; `exact` mismatch → quote fallback; mismatch and quote not found → skipped; unknown segment → skipped, others kept; semantic content with `source: 'search'` with and without `description`; literal object `{ text: '1776-07-04' }` → `objectType: 'literal'`, text trimmed, empty/blank text skipped; comment as received; tags; incomplete triple skipped; unknown `type` → requested type
+- [x] 4.4 `annotation-llm-helpers.util.ts`: `addPayloadForRange(range, annotation, annotationPayload, requestedType)` returns the payload or null; `applyAnnotationType` on the four request values (fallback to the requested type) and returns false on missing content; `buildSemanticContent(triples)` → one content triple per AI triple, in order: search-picked `uri` object (`description` only when present) or `literal` object `{ text }` (trimmed); an incomplete triple is left out, undefined when none is left; remove `buildLabelUri` and `SEMANTIC_TYPES`
+- [x] 4.5 New `annotation-llm-processor.spec.ts` (jsdom): one-segment offsets; cross-segment through a whitespace-only segment; emoji before the passage (offsets applied as received); null offsets with prefix choosing the second occurrence; null offsets without context → first occurrence; `exact` mismatch → quote fallback; mismatch and quote not found → skipped; unknown segment → skipped, others kept; semantic content with `source: 'search'` with and without `description`; literal object `{ text: '1776-07-04' }` → `objectType: 'literal'`, text trimmed, empty/blank text skipped; several triples of one place → one payload with all of them, in order; an incomplete triple among complete ones left out, the others kept; all triples incomplete, empty or missing `triples` → skipped; comment as received; tags; unknown `type` → requested type
 
 ## 5. Generate flow and errors
 
