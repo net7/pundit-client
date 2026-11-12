@@ -43,21 +43,25 @@ Every placed annotation SHALL produce one preview payload, cloned from the pendi
 - `highlight`: type `Highlighting`, no content, no tags;
 - `comment`: type `Commenting`, content `{ comment }` with the comment as received (already HTML-escaped by the server, not escaped again); skipped when the comment is missing or empty;
 - `tags`: type `Highlighting` with the tags as received (already normalized by the server); skipped when there is no tag;
-- `semantic_annotation`: type `Linking`, content from `triple`. When the object is an ontology element (it has a `uri`): `[{ predicate: { label, uri }, objectType: 'uri', object: { uri, label, description?, source: 'search', elementType } }]`, `description` only when present. When the object is a literal value (`{ text }`, e.g. a date as `YYYY-MM-DD`, `YYYY-MM` or `YYYY`, a number, a measure): `[{ predicate: { label, uri }, objectType: 'literal', object: { text } }]` with the text trimmed. Skipped when the predicate has no `uri`, or the object has neither a `uri` nor a non-empty text.
+- `semantic_annotation`: type `Linking`, content from `triples`, the list of all the triples whose subject is the annotation's passage: one payload per place of the text, with one content item per triple, in the order of `triples`. When the object is an ontology element (it has a `uri`): `{ predicate: { label, uri }, objectType: 'uri', object: { uri, label, description?, source: 'search', elementType } }`, `description` only when present. When the object is a literal value (`{ text }`, e.g. a date as `YYYY-MM-DD`, `YYYY-MM` or `YYYY`, a number, a measure): `{ predicate: { label, uri }, objectType: 'literal', object: { text } }` with the text trimmed. A triple whose predicate has no `uri`, or whose object has neither a `uri` nor a non-empty text, is left out and the other triples are kept; the annotation is skipped when no triple is left.
 
 No predicate URI SHALL be derived from a label: the client SHALL use the URIs of the response.
 
 #### Scenario: Semantic triple from ontology elements
-- **WHEN** the annotation is `semantic_annotation` with `triple.predicate` `{ uri: "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", label: "identifies" }` and `triple.object` `{ uri: "http://example.org/shakespeare#Portia", label: "Portia", description: "Heiress of Belmont", elementType: "entity" }`
+- **WHEN** the annotation is `semantic_annotation` whose only triple has `predicate` `{ uri: "http://www.w3.org/2000/01/rdf-schema#isDefinedBy", label: "identifies" }` and `object` `{ uri: "http://example.org/shakespeare#Portia", label: "Portia", description: "Heiress of Belmont", elementType: "entity" }`
 - **THEN** the payload type is `Linking` and its content is `[{ predicate: { label: "identifies", uri: "http://www.w3.org/2000/01/rdf-schema#isDefinedBy" }, objectType: "uri", object: { uri: "http://example.org/shakespeare#Portia", label: "Portia", description: "Heiress of Belmont", source: "search", elementType: "entity" } }]`
 
 #### Scenario: Object without description
-- **WHEN** `triple.object` has no `description`
+- **WHEN** a triple's `object` has no `description`
 - **THEN** the content's object has no `description` key
 
 #### Scenario: Semantic triple with a literal object
-- **WHEN** the annotation is `semantic_annotation` with `triple.predicate` `{ uri: "http://purl.org/dc/terms/date", label: "represents the date" }` and `triple.object` `{ text: "1776-07-04" }`
+- **WHEN** the annotation is `semantic_annotation` whose only triple has `predicate` `{ uri: "http://purl.org/dc/terms/date", label: "represents the date" }` and `object` `{ text: "1776-07-04" }`
 - **THEN** the payload type is `Linking` and its content is `[{ predicate: { label: "represents the date", uri: "http://purl.org/dc/terms/date" }, objectType: "literal", object: { text: "1776-07-04" } }]`
+
+#### Scenario: Several triples on one place
+- **WHEN** the annotation is `semantic_annotation` on "Portia" whose `triples` are, in this order, `identifies` → `{ uri: "http://example.org/shakespeare#Portia", label: "Portia", elementType: "entity" }` and `lives in` (`http://example.org/shakespeare#livesIn`) → `{ uri: "http://example.org/shakespeare#Belmont", label: "Belmont", elementType: "entity" }`
+- **THEN** one payload of type `Linking` is built on "Portia" and its content holds two triples, the `identifies` one first and the `lives in` one second
 
 #### Scenario: Comment
 - **WHEN** the annotation is `comment` with `comment` "Bassanio &amp; Porzia"
@@ -67,6 +71,10 @@ No predicate URI SHALL be derived from a label: the client SHALL use the URIs of
 - **WHEN** the annotation is `tags` with `tags` `["people", "heiress"]`
 - **THEN** the payload type is `Highlighting` and its tags are `["people", "heiress"]`
 
-#### Scenario: Incomplete semantic triple
-- **WHEN** a `semantic_annotation` has no `triple`, or its predicate has no `uri`, or its object has neither a `uri` nor a non-empty (after trim) `text`
+#### Scenario: Incomplete semantic triple among complete ones
+- **WHEN** a `semantic_annotation` has in `triples` a triple whose predicate has no `uri`, or whose object has neither a `uri` nor a non-empty (after trim) `text`, next to complete triples
+- **THEN** that triple is left out and the payload content holds the complete triples, in their order
+
+#### Scenario: No complete semantic triple
+- **WHEN** a `semantic_annotation` has no `triples`, an empty `triples`, or only incomplete triples
 - **THEN** the annotation is skipped

@@ -41,7 +41,7 @@ type AiAnnotationTriple = {
 };
 type AiAnnotation = {
   type: AiAnnotationType; target: AiAnnotationTarget;
-  comment?: string; tags?: string[]; triple?: AiAnnotationTriple;
+  comment?: string; tags?: string[]; triples?: AiAnnotationTriple[]; // all the triples of the place, in order
 };
 interface AiAnnotateResponse { annotations: AiAnnotation[] }
 ```
@@ -58,13 +58,15 @@ Context is read on the whole joined selection, so a `prefix` that reaches into t
 *Why not keep `findQuoteIndex` trimming:* `exact` is the segment text verbatim, an exact match is the right test; trimming could silently move the annotation.
 
 ### D4. `addPayloadForRange(range, annotation, annotationPayload, requestedType)` returns the payload or null
-It stays the single place where a payload is born: clone the pending payload, set `subject.selected = serializeRangeToSelector(range)`, then `applyAnnotationType(payload, annotation, requestedType)`, which returns `false` when the annotation lacks the content of its type (empty comment, no tags, incomplete triple) so the caller skips it. Type resolution: `annotation.type` if it is one of the four request values, else the requested type. The old loose aliases (`commenting`, `linking`, `semantic annotation`…) go away.
+It stays the single place where a payload is born: clone the pending payload, set `subject.selected = serializeRangeToSelector(range)`, then `applyAnnotationType(payload, annotation, requestedType)`, which returns `false` when the annotation lacks the content of its type (empty comment, no tags, no complete triple) so the caller skips it. Type resolution: `annotation.type` if it is one of the four request values, else the requested type. The old loose aliases (`commenting`, `linking`, `semantic annotation`…) go away.
 
 ### D5. Semantic content as a search-picked object or a literal
-`buildSemanticContent(triple)` returns, typed as `(SemanticTripleWithUri | SemanticTripleWithLiteral)[]`:
-- object with a `uri`: `[{ predicate: { label, uri }, objectType: 'uri', object: { uri, label, ...(description ? { description } : {}), source: 'search', elementType } }]` (`ObjectUri`);
-- object with a non-empty (after trim) `text`: `[{ predicate: { label, uri }, objectType: 'literal', object: { text } }]`, the `SemanticTripleWithLiteral` shape the annotation server already stores for literals;
-- predicate without `uri`, or object with neither: `undefined` (skipped).
+A semantic annotation carries in `triples` all the triples whose subject is its passage, so one place of the text gives one Linking annotation with all of them; the saved content is already an array of triples. `buildSemanticContent(triples)` returns, typed as `(SemanticTripleWithUri | SemanticTripleWithLiteral)[]`, one item per triple, in the order of `triples`:
+- object with a `uri`: `{ predicate: { label, uri }, objectType: 'uri', object: { uri, label, ...(description ? { description } : {}), source: 'search', elementType } }` (`ObjectUri`);
+- object with a non-empty (after trim) `text`: `{ predicate: { label, uri }, objectType: 'literal', object: { text } }`, the `SemanticTripleWithLiteral` shape the annotation server already stores for literals;
+- predicate without `uri`, or object with neither: left out, the other triples are kept.
+When no triple is left (or `triples` is missing or empty) it returns `undefined` and the annotation is skipped.
+*Why keep the complete triples:* one bad triple from the model should not cost the user the good ones on the same passage; only an annotation with nothing to save is dropped.
 `buildLabelUri` and its map are deleted.
 The rest of the flow already handles literals: `getSemanticData` (`'text' in triple.object`) feeds the edit modal, `EditModalPayloadBuilder.getObjectPayload` re-saves `objectType: 'literal'`, analytics report `object-type: 'literal'` with `object-lod: null`, and the saved annotation renders `object.text`.
 Note: `EditModalPayloadBuilder.getObjectPayload` drops `description` when an annotation is re-saved from the edit modal; the stored AI annotation keeps it until then. Accepted, consistent with the modal's own picks.
