@@ -342,6 +342,54 @@ annotation {
    #SEMANTIC ANNOTATIONS
 \* ------------------------------------ */
 .pnd-annotation {
+    // subject of the triples that follow (an ontology element, or the selection)
+    // triples about an ontology element or URI: the subject on top, its triples
+    // hanging from it on a vertical line; no box, only space between blocks
+    .pnd-annotation__semantic-group.has-subject {
+        padding: variables.$space * 1.5 variables.$space * 2 0;
+
+        .pnd-annotation__semantic {
+            margin-left: variables.$space * 0.5;
+            border-left: 2px solid variables.$annotation-border-color;
+        }
+    }
+
+    // a single line sets the first block apart from the relations about the selection
+    .pnd-annotation__semantic-group:not(.has-subject) + .pnd-annotation__semantic-group.has-subject {
+        margin-top: variables.$space;
+        border-top: variables.$annotation-border-size solid variables.$annotation-border-color;
+    }
+
+    // the subject reads as a title on white, unlike the grey objects above it
+    .pnd-annotation__semantic-subject {
+        display: flex;
+        align-items: center;
+        gap: variables.$space * 0.5;
+        padding-bottom: variables.$space;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
+    }
+
+    .pnd-annotation__semantic-subject-about {
+        flex-shrink: 0;
+        font-size: variables.$font-size-xs;
+        font-weight: variables.$font-weight-normal;
+        color: variables.$color-text-light;
+    }
+
+    .pnd-annotation__semantic-subject-label {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        color: variables.$color-text;
+        text-decoration: none;
+
+        &:hover {
+            color: variables.$color-text-link;
+        }
+    }
+
     .pnd-annotation__semantic {
         // border-bottom: 3px double $annotation-border-color;
     
@@ -387,6 +435,20 @@ annotation {
         &:after {
             top: 20px;
             border-top: 3px solid color-scheme.$color-predicate;
+        }
+    }
+
+    // the predicate label opens its URI: white text on the pill also on hover
+    // (the global link blue clashes with the orange), underline as the only cue
+    .pnd-annotation__semantic-item-predicate-link {
+        color: inherit;
+        text-decoration: none;
+
+        &:hover,
+        &:focus-visible {
+            color: inherit;
+            text-decoration: underline;
+            text-underline-offset: 2px;
         }
     }
 
