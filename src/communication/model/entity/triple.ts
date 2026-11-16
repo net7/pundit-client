@@ -5,6 +5,11 @@ export interface Predicate {
     uri: string
 }
 export interface SemanticTripleBase {
+    /**
+     * What the triple is about: an ontology element (class or entity) or a
+     * hand-typed URI. Absent: the subject is the annotated fragment.
+     */
+    subject?: ObjectUri | LiteralUri,
     predicate: Predicate,
 }
 export interface SemanticTripleWithPage extends SemanticTripleBase {
