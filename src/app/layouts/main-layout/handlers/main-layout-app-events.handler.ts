@@ -159,6 +159,7 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
     predicate: any;
     object: any;
     objectType: any;
+    subject?: any;
     _raw: SemanticTripleType;
   }> | undefined {
     return rawSemantic.length ? rawSemantic.map((triple) => {
@@ -202,9 +203,27 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
         console.warn('No handler for semantic object', triple.object);
       }
       return {
-        predicate, object, objectType, _raw: triple
+        predicate, object, objectType, subject: this.getSemanticSubject(triple), _raw: triple
       };
     }) : undefined;
+  }
+
+  /** Subject of a stored triple (element or typed URI); undefined when it is the fragment. */
+  private getSemanticSubject({ subject }: SemanticTripleType) {
+    if (!subject?.uri) {
+      return undefined;
+    }
+    if (subject.source === 'free-text') {
+      return { uri: subject.uri, label: subject.uri, source: 'free-text' as const };
+    }
+    const { uri, label, elementType, description } = subject;
+    return {
+      uri,
+      label: label || uri,
+      source: 'search' as const,
+      ...(elementType ? { elementType } : {}),
+      ...(description ? { description } : {}),
+    };
   }
 
   private onSidebarCollapse({ isCollapsed }: { isCollapsed: boolean }) {

@@ -53,17 +53,46 @@ export class EditModalPayloadBuilder {
 
   private static getSemanticContentRow(row: any) {
     const { predicate, object, objectType } = row;
+    const subjectPayload = this.getSubjectPayload(row.subject);
     // a row the user did not edit is saved exactly as it was stored
     if (row?._raw) {
-      return row._raw;
+      if (!row.subjectChanged) {
+        return row._raw;
+      }
+      // ...with only the subject of its new group
+      const stored = { ...row._raw };
+      delete stored.subject;
+      return { ...subjectPayload, ...stored };
     }
     const objectPayload = this.getObjectPayload(object, objectType);
     return {
+      ...subjectPayload,
       predicate: {
         label: predicate.label,
         uri: predicate.uri,
       },
       ...objectPayload,
+    };
+  }
+
+  /** Subject of a triple (element or typed URI); nothing for the annotated fragment. */
+  private static getSubjectPayload(subject: any) {
+    if (!subject?.uri) {
+      return {};
+    }
+    if (subject.source === "free-text") {
+      // same shape as an object URI typed by hand
+      return { subject: { uri: subject.uri, source: "free-text" } };
+    }
+    const { uri, label, elementType, description } = subject;
+    return {
+      subject: {
+        uri,
+        label,
+        source: "search",
+        ...(elementType ? { elementType } : {}),
+        ...(description ? { description } : {}),
+      },
     };
   }
 
