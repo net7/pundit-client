@@ -292,6 +292,131 @@
         margin-bottom: 0;
     }
 
+    // the same rows, about an entity, class or URI: the subject on top and its rows
+    // hanging from it on a vertical line (as in the annotation card); no box, only space
+    &__semantic-group {
+        margin-top: variables.$space * 1.5;
+
+        // no gaps between rows, so the line from the subject is continuous
+        .pnd-edit-modal__semantic-row {
+            margin: 0 0 0 variables.$space * 0.5;
+            padding: 0 0 variables.$space variables.$space;
+            border-left: 2px solid variables.$color-border-normal;
+
+            &:last-child {
+                padding-bottom: 0;
+            }
+        }
+    }
+
+    // a single line sets the first block apart from the relations about the selection
+    &__semantic-row + &__semantic-group {
+        margin-top: variables.$space * 2;
+        padding-top: variables.$space * 1.5;
+        border-top: 1px solid variables.$color-border-normal;
+    }
+
+    &__semantic-subject {
+        display: flex;
+        align-items: center;
+        gap: variables.$space;
+        margin-bottom: variables.$space;
+        font-weight: variables.$font-weight-bold;
+
+        > pnd-semantic-subject-field {
+            flex-grow: 1;
+            min-width: 0;
+        }
+
+        .pnd-dropdown__selected {
+            display: flex;
+            align-items: center;
+            gap: variables.$space * 0.5;
+            cursor: text;
+        }
+
+        .pnd-dropdown__list-wrapper {
+            width: 100%;
+            min-width: 280px;
+        }
+
+        .pnd-dropdown__list-items {
+            max-height: 250px;
+        }
+
+        .pnd-dropdown__selected-right-icon {
+            display: flex;
+            align-items: center;
+            padding: 0;
+            border: 0;
+            background: none;
+            color: inherit;
+            cursor: pointer;
+        }
+    }
+
+    // "About" in front of the subject
+    &__semantic-subject-label {
+        flex-shrink: 0;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-normal;
+        color: variables.$color-text-light;
+    }
+
+    &__semantic-subject-input[type="text"] {
+        flex-grow: 1;
+        min-width: 0;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+        font-size: variables.$font-size-s;
+        font-weight: variables.$font-weight-bold;
+        color: variables.$color-text;
+        text-overflow: ellipsis;
+
+        &:focus {
+            outline: none;
+            font-weight: variables.$font-weight-normal;
+        }
+    }
+
+    // "add a block" row: quiet, full width, dashed like the block separators
+    &__semantic-add-subject {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: variables.$space * 0.5;
+        box-sizing: border-box;
+        width: 100%;
+        height: 28px;
+        margin-top: variables.$space;
+        padding: 0 variables.$space;
+        border: 1px dashed variables.$color-border-normal;
+        border-radius: variables.$border-radius;
+        background: transparent;
+        font-size: variables.$font-size-xs;
+        color: variables.$color-text-light;
+        cursor: pointer;
+        transition: color variables.$transition-durations, border-color variables.$transition-durations;
+
+        .pnd-svg-icon,
+        .pnd-svg-icon svg {
+            display: block;
+            width: variables.$font-size-xs;
+            height: variables.$font-size-xs;
+        }
+
+        &:hover,
+        &:focus-visible {
+            color: variables.$color-text-link;
+            border-color: variables.$color-text-link;
+            outline: none;
+        }
+    }
+
     &__semantic-predicate {
         .pnd-dropdown {
             width: 150px;

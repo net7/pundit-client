@@ -1,0 +1,74 @@
+<div class="pnd-dropdown pnd-edit-modal__semantic-subject-combobox {{ group.subject.isExpanded ? 'is-expanded' : '' }}">
+  <div class="pnd-dropdown__selected">
+    @if (!group.subject.isExpanded && subjectType) {
+      <span class="pnd-type-badge pnd-type-badge--{{ subjectType }}">
+        {{ getTypeLabel(subjectType) }}
+      </span>
+    }
+    <input type="text" class="pnd-edit-modal__semantic-subject-input"
+      autocomplete="off"
+      role="combobox"
+      [attr.aria-expanded]="group.subject.isExpanded"
+      [attr.id]="'subject-input-' + group.id"
+      [title]="subjectLabel"
+      [value]="group.subject.isExpanded ? group.subject.query : subjectLabel"
+      [placeholder]="group.subject.isExpanded ? subjectLabel : labels.subjectPlaceholder"
+      (focus)="emit('focus')"
+      (input)="emit('query', $any($event.target).value)"
+      (keydown)="emit('keydown', $event)"
+      (blur)="emit('blur')" />
+    <button type="button" class="pnd-dropdown__selected-right-icon"
+      tabindex="-1"
+      (mousedown)="$event.preventDefault()"
+      (click)="emit('toggle')">
+      @if (!group.subject.isExpanded) {
+        <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+      }
+      @if (group.subject.isExpanded) {
+        <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+      }
+    </button>
+  </div>
+  <div class="pnd-dropdown__list-wrapper">
+    <div class="pnd-dropdown__list-items">
+      @for (option of group.subject.options; track option.uri) {
+        <div (mousedown)="$event.preventDefault()"
+          (click)="emit('pick', option)"
+          class="pnd-dropdown__item pnd-semantic-option {{ group.subject.picked?.uri === option.uri ? 'is-current' : '' }}">
+          <span class="pnd-semantic-option__label">{{ option.label }}</span>
+          <a class="pnd-semantic-option__link"
+            [href]="option.uri" target="_blank" rel="noopener"
+            [title]="labels.openUri"
+            (click)="$event.stopPropagation()">
+            <span class="pnd-semantic-option__link-label">{{ getSourceLabel(option.ontology) }}</span>
+            <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
+          </a>
+          <span class="pnd-type-badge pnd-type-badge--{{ option.category }}">
+            {{ getTypeLabel(option.category) }}
+          </span>
+        </div>
+      }
+    </div>
+    @if (typedUri; as uri) {
+      <div class="pnd-dropdown__default-option">
+        <div class="pnd-dropdown__item pnd-semantic-option"
+          (mousedown)="$event.preventDefault()"
+          (click)="emit('pick-uri')">
+          <span class="pnd-semantic-option__label is-default">{{ getUseAsLabel(uri) }}</span>
+          <span class="pnd-type-badge pnd-type-badge--uri">{{ getTypeLabel('uri') }}</span>
+        </div>
+      </div>
+    }
+    @if (!canSearch && !typedUri) {
+      <p class="pnd-edit-modal__semantic-hint">{{ labels.subjectNoOntologies }}</p>
+    } @else if (group.subject.isLoading) {
+      <div class="pnd-edit-modal__semantic-object-loader">
+        <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+      </div>
+    } @else if (group.subject.searched && !group.subject.options.length) {
+      <p class="pnd-edit-modal__semantic-hint">{{ labels.subjectNoResults }}</p>
+    } @else if (!group.subject.query.trim()) {
+      <p class="pnd-edit-modal__semantic-hint">{{ labels.subjectHint }}</p>
+    }
+  </div>
+</div>

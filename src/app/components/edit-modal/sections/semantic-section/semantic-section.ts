@@ -2,6 +2,7 @@
 import {
   AfterViewInit, Component, Input, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef, inject
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { _t } from '@net7/core';
 import { of, Subject, Subscription } from 'rxjs';
 import {
@@ -14,6 +15,7 @@ import {
 } from 'src/app/types';
 import { OntologyElement } from 'src/communication';
 import { SvgIconComponent } from '../../../svg-icon/svg-icon';
+import { SemanticSubjectFieldComponent, SemanticSubjectFieldEvent } from './subject-field/subject-field';
 import {
   DEFAULT_PROVIDER_ID,
   OBJECT_SEARCH_MIN_LENGTH,
@@ -22,16 +24,20 @@ import {
   SemanticFormRow,
   SemanticPickedObject,
   SemanticPredicateOption,
-  SemanticRowValue,
+  SemanticSubject,
+  SemanticSubjectGroup,
+  getGroupsValue,
   getObjectIndicator,
   getObjectType,
   getPredicateOptions,
-  getRowValue,
+  getSubjectKey,
+  toSemanticSubject,
+  toSubjectRuns,
   toPredicateOption,
 } from './semantic-section.utils';
 
 export { DEFAULT_PROVIDER_ID, getObjectType } from './semantic-section.utils';
-export type { SemanticFormRow } from './semantic-section.utils';
+export type { SemanticFormRow, SemanticSubjectGroup } from './semantic-section.utils';
 
 /** Delay before a search is sent while the user types. */
 const SEARCH_DEBOUNCE = 300;
@@ -47,6 +53,10 @@ export type SemanticSectionValue = {
     rdfTypes?: { label: string; uri: string }[];
   };
   objectType?: string;
+  /** Subject of the triple (element or hand-typed URI); absent for the annotated fragment. */
+  subject?: SemanticSubject;
+  /** The group subject differs from the one the stored triple was loaded with. */
+  subjectChanged?: boolean;
   _raw?: any;
 }[];
 
@@ -55,6 +65,8 @@ export type SemanticSectionOptions = {
 };
 
 type SearchRequest = { rowId: number; query: string };
+
+type SubjectSearchRequest = { groupId: number; query: string };
 
 /** First predicates, listed by every empty predicate field. */
 type DefaultPredicates = {
@@ -77,7 +89,7 @@ const getPredicateSelectionKey = (ontologies: { id: string; selectedCategories: 
     selector: 'pnd-semantic-section',
     templateUrl: './semantic-section.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [SvgIconComponent]
+    imports: [NgTemplateOutlet, SvgIconComponent, SemanticSubjectFieldComponent]
 })
 export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormSection<
   SemanticSectionValue, SemanticSectionOptions
@@ -96,6 +108,12 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     openUri: _t('editmodal#semantic_open_uri'),
     predicateHint: _t('editmodal#semantic_predicate_hint'),
     predicateNoResults: _t('editmodal#semantic_predicate_no_results'),
+    subjectLabel: _t('editmodal#semantic_subject_label'),
+    subjectPlaceholder: _t('editmodal#semantic_subject_placeholder'),
+    subjectHint: _t('editmodal#semantic_subject_hint'),
+    subjectNoResults: _t('editmodal#semantic_subject_no_results'),
+    subjectNoOntologies: _t('editmodal#semantic_subject_no_ontologies'),
+    subjectAdd: _t('editmodal#semantic_subject_add'),
     types: {
       entity: _t('semantic#type_entity'),
       class: _t('semantic#type_class'),
@@ -124,11 +142,20 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
 
   private objectSearch$ = new Subject<SearchRequest>();
 
+  private subjectSearch$ = new Subject<SubjectSearchRequest>();
+
   private nextRowId = 0;
+
+  private nextGroupId = 0;
+
+  private subjectEmitters = new Map<number, (type: SemanticSubjectFieldEvent, payload?: any) => void>();
 
   private blurTimer: ReturnType<typeof setTimeout> | null = null;
 
   public rows: SemanticFormRow[] = [];
+
+  /** Subject groups, in display order; their rows are contiguous in `rows`. */
+  public groups: SemanticSubjectGroup[] = [];
 
   public defaultPredicates: DefaultPredicates = NO_DEFAULT_PREDICATES;
 
@@ -172,14 +199,35 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       this.labels.title = this.data.options.label;
     }
     // initial value check
-    const { initialValue } = this.data;
-    if (Array.isArray(initialValue) && initialValue.length) {
-      initialValue.forEach(({ predicate, object, _raw }) => {
-        this.addRow(predicate, object, undefined, _raw);
-      });
-    } else {
-      this.addRow();
+    const initialValue = Array.isArray(this.data.initialValue) ? this.data.initialValue : [];
+    // the relations about the selection come first, as they always did
+    const fragmentGroup = this.createGroup(null, true);
+    const fragmentRows = initialValue.filter(({ subject }) => !subject?.uri);
+    // then the other relations: consecutive triples with the same subject share a group
+    const elementRows = initialValue.filter(({ subject }) => !!subject?.uri);
+    const { runs, indexes } = toSubjectRuns(elementRows.map(({ subject }) => subject));
+    const subjectGroups = runs.map((subject) => this.createGroup(subject, true));
+    this.groups = [fragmentGroup, ...subjectGroups];
+
+    fragmentRows.forEach(({ predicate, object, _raw }) => {
+      this.addRow(predicate, object, undefined, _raw, fragmentGroup.id);
+    });
+    if (!fragmentRows.length) {
+      this.addRow(undefined, undefined, undefined, undefined, fragmentGroup.id);
     }
+    elementRows.forEach(({ predicate, object, _raw }, index) => {
+      this.addRow(predicate, object, undefined, _raw, subjectGroups[indexes[index]].id);
+    });
+  }
+
+  /** Group of the relations about the selection (always present, first). */
+  get fragmentGroup(): SemanticSubjectGroup | undefined {
+    return this.groups.find(({ subject }) => subject.isFragment);
+  }
+
+  /** Groups of the other relations, whose subject is an ontology element. */
+  get subjectGroups(): SemanticSubjectGroup[] {
+    return this.groups.filter(({ subject }) => !subject.isFragment);
   }
 
   addRow(
@@ -187,8 +235,9 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     object: SemanticSectionValue[number]['object'] = {} as SemanticItem,
     rowIndex?: number,
     _raw?: any,
+    groupId?: number,
   ) {
-    const rowData = this.createRow(predicate, object, _raw);
+    const rowData = this.createRow(predicate, object, this.getTargetGroupId(rowIndex, groupId), _raw);
 
     if (rowIndex || rowIndex === 0) {
       this.rows = [
@@ -202,14 +251,17 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   }
 
   removeRow(index: number) {
+    const { groupId } = this.rows[index];
     const rows = this.rows.filter((_, rowIndex) => rowIndex !== index);
+    const groupIsEmpty = !rows.some((row) => row.groupId === groupId);
+    this.rows = rows;
 
-    // if empty add first row
-    if (!rows.length) {
-      this.rows = [];
-      this.addRow();
-    } else {
-      this.rows = rows;
+    if (groupIsEmpty && groupId === this.fragmentGroup?.id) {
+      // the only row about the selection is cleared, as before
+      this.addRow(undefined, undefined, undefined, undefined, groupId);
+    } else if (groupIsEmpty) {
+      // the last row of an subject block takes its block away
+      this.groups = this.groups.filter(({ id }) => id !== groupId);
     }
 
     // trigger form change
@@ -411,8 +463,168 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.removeRow(rowIndex);
   }
 
-  getRemoveLabel() {
-    return this.rows.length === 1 ? this.labels.clear : this.labels.remove;
+  /** The only row about the selection is cleared, any other row is removed. */
+  getRemoveLabel(row: SemanticFormRow) {
+    const isOnlySelectionRow = row.groupId === this.fragmentGroup?.id
+      && this.rows.filter(({ groupId }) => groupId === row.groupId).length === 1;
+    return isOnlySelectionRow ? this.labels.clear : this.labels.remove;
+  }
+
+  /** Rows of a group, with their index in `rows` (used by the row handlers). */
+  getGroupRows(group: SemanticSubjectGroup): { row: SemanticFormRow; index: number }[] {
+    return this.rows
+      .map((row, index) => ({ row, index }))
+      .filter(({ row }) => row.groupId === group.id);
+  }
+
+  // ------------------------------------ //
+  // # SUBJECT
+  // ------------------------------------ //
+
+  /**
+   * Handler of the subject field of a group (one per group, kept so the field
+   * input does not change at every check).
+   */
+  getSubjectEmit(group: SemanticSubjectGroup) {
+    let emit = this.subjectEmitters.get(group.id);
+    if (!emit) {
+      emit = (type: SemanticSubjectFieldEvent, payload?: any) => {
+        const index = this.groups.findIndex(({ id }) => id === group.id);
+        if (index !== -1) this.onSubjectEvent(index, type, payload);
+      };
+      this.subjectEmitters.set(group.id, emit);
+    }
+    return emit;
+  }
+
+  private onSubjectEvent(groupIndex: number, type: SemanticSubjectFieldEvent, payload?: any) {
+    switch (type) {
+      case 'focus': this.onSubjectFocus(groupIndex); break;
+      case 'query': this.onSubjectQueryChange(groupIndex, payload); break;
+      case 'keydown': this.onSubjectKeydown(groupIndex, payload); break;
+      case 'blur': this.onSubjectBlur(groupIndex); break;
+      case 'toggle': this.onSubjectToggleExpand(groupIndex); break;
+      case 'pick': this.onSubjectPick(groupIndex, payload); break;
+      case 'pick-uri': this.onSubjectPickUri(groupIndex); break;
+      default: break;
+    }
+    this.changeDetectorRef.markForCheck();
+  }
+
+  /** The subject field can search classes and entities. */
+  canSearchSubjects(): boolean {
+    return this.ontologyService.hasSelection(['class', 'entity']);
+  }
+
+  onSubjectFocus(groupIndex: number) {
+    this.clearBlurTimer();
+    this.setSubjectExpanded(groupIndex, true);
+  }
+
+  onSubjectToggleExpand(groupIndex: number) {
+    const expand = !this.groups[groupIndex].subject.isExpanded;
+    this.setSubjectExpanded(groupIndex, expand);
+    if (expand) {
+      this.focusSubjectInput(groupIndex);
+    }
+  }
+
+  /** Typing in the subject field searches the classes and entities of the selected ontologies. */
+  onSubjectQueryChange(groupIndex: number, inputValue: string) {
+    const group = this.groups[groupIndex];
+    const query = typeof inputValue === 'string' ? inputValue : '';
+    const searchable = query.trim().length >= OBJECT_SEARCH_MIN_LENGTH && this.canSearchSubjects();
+    this.replaceGroup(groupIndex, {
+      ...group,
+      subject: {
+        ...group.subject, query, options: [], searched: false, isExpanded: true, isLoading: searchable
+      }
+    });
+    this.subjectSearch$.next({ groupId: group.id, query: searchable ? query.trim() : '' });
+  }
+
+  /** Picks an ontology element as subject of the group: it applies to all its triples. */
+  onSubjectPick(groupIndex: number, element: OntologyElement) {
+    const group = this.groups[groupIndex];
+    this.replaceGroup(groupIndex, {
+      ...group,
+      subject: {
+        ...this.closedSubject(group),
+        isFragment: false,
+        picked: {
+          uri: element.uri,
+          label: element.label,
+          elementType: element.category === 'class' ? 'class' : 'entity',
+          ...(element.description ? { description: element.description } : {}),
+        },
+      }
+    });
+    this.blurSubjectInput(groupIndex);
+    this.triggerChange();
+  }
+
+  /** Uses the typed text as subject, when it is a URI (a subject is never a literal). */
+  onSubjectPickUri(groupIndex: number) {
+    const group = this.groups[groupIndex];
+    const uri = group.subject.query.trim();
+    if (getObjectType(uri) !== 'uri') return;
+    this.replaceGroup(groupIndex, {
+      ...group,
+      subject: {
+        ...this.closedSubject(group),
+        isFragment: false,
+        picked: { uri, label: uri, source: 'free-text' },
+      }
+    });
+    this.blurSubjectInput(groupIndex);
+    this.triggerChange();
+  }
+
+  onSubjectKeydown(groupIndex: number, ev: KeyboardEvent) {
+    const group = this.groups[groupIndex];
+    if (!group?.subject.isExpanded) return;
+    if (ev.key === 'Escape') {
+      ev.stopPropagation();
+      this.setSubjectExpanded(groupIndex, false);
+      return;
+    }
+    if (ev.key === 'Enter') {
+      ev.preventDefault();
+      const [first] = group.subject.options;
+      if (group.subject.query.trim() && first) {
+        this.onSubjectPick(groupIndex, first);
+      } else {
+        this.onSubjectPickUri(groupIndex);
+      }
+    }
+  }
+
+  /**
+   * Leaving the field keeps a typed URI as subject; any other text is dropped and
+   * the previous subject restored (a subject is never a literal).
+   */
+  onSubjectBlur(groupIndex: number) {
+    const { id } = this.groups[groupIndex];
+    this.clearBlurTimer();
+    this.blurTimer = setTimeout(() => {
+      const index = this.groups.findIndex((group) => group.id === id);
+      if (index === -1) return;
+      if (getObjectType(this.groups[index].subject.query.trim()) === 'uri') {
+        this.onSubjectPickUri(index);
+      } else {
+        this.setSubjectExpanded(index, false);
+      }
+      this.changeDetectorRef.markForCheck();
+    }, BLUR_CLOSE_DELAY);
+  }
+
+  /** "Add relations about an entity or class": an subject block without subject and one empty row. */
+  onAddGroupClick() {
+    const group = this.createGroup(null, false, false);
+    this.groups = [...this.groups, group];
+    this.addRow(undefined, undefined, undefined, undefined, group.id);
+    this.focusSubjectInput(this.groups.length - 1);
+    this.triggerChange();
   }
 
   getUseAsLabel(value: string | null) {
@@ -445,6 +657,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   private createRow(
     rawPredicate: SemanticItem | null,
     rawObject: SemanticSectionValue[number]['object'] | null,
+    groupId: number,
     _raw?: any,
   ): SemanticFormRow {
     const predicate = rawPredicate || ({} as SemanticItem);
@@ -463,6 +676,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
     this.nextRowId += 1;
     return {
       id: this.nextRowId,
+      groupId,
       predicate: {
         // a new row has no predicate: it must be picked from the ontologies
         label: predicate.label || '',
@@ -547,6 +761,91 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
       });
       this.changeDetectorRef.markForCheck();
     });
+
+    this.subjectSearch$.pipe(
+      debounceTime(SEARCH_DEBOUNCE),
+      switchMap(({ groupId, query }) => {
+        if (!query) {
+          return of({ groupId, query, results: null as OntologyElement[] | null });
+        }
+        return this.ontologyService.search(query, ['class', 'entity']).pipe(
+          catchError(() => of([] as OntologyElement[])),
+          map((results) => ({ groupId, query, results: results as OntologyElement[] | null }))
+        );
+      }),
+      takeUntil(this.destroy$)
+    ).subscribe(({ groupId, query, results }) => {
+      const index = this.groups.findIndex((group) => group.id === groupId);
+      // only the answer to the text still in the field is shown
+      if (!query || index === -1 || this.groups[index].subject.query.trim() !== query) return;
+      const group = this.groups[index];
+      this.replaceGroup(index, {
+        ...group,
+        subject: {
+          ...group.subject, options: results || [], searched: results !== null, isLoading: false
+        }
+      });
+      this.changeDetectorRef.markForCheck();
+    });
+  }
+
+  /** Group of a new row: the given one, the one of the row it follows, or the last one. */
+  private getTargetGroupId(rowIndex?: number, groupId?: number): number {
+    if (groupId !== undefined) return groupId;
+    if (rowIndex !== undefined && this.rows[rowIndex]) return this.rows[rowIndex].groupId;
+    return this.groups[this.groups.length - 1]?.id;
+  }
+
+  private createGroup(
+    subject: SemanticSubject | null | undefined, stored: boolean, isFragment = !subject?.uri
+  ): SemanticSubjectGroup {
+    this.nextGroupId += 1;
+    const picked = toSemanticSubject(subject);
+    return {
+      id: this.nextGroupId,
+      subject: {
+        isFragment: isFragment && !picked,
+        picked,
+        query: '',
+        options: [],
+        searched: false,
+        isExpanded: false,
+        isLoading: false,
+      },
+      ...(stored ? { storedKey: getSubjectKey(picked) } : {}),
+    };
+  }
+
+  private closedSubject(group: SemanticSubjectGroup): SemanticSubjectGroup['subject'] {
+    return {
+      ...group.subject, query: '', options: [], searched: false, isExpanded: false, isLoading: false
+    };
+  }
+
+  private replaceGroup(groupIndex: number, group: SemanticSubjectGroup) {
+    this.groups = this.groups.map((currentGroup, index) => (index === groupIndex ? group : currentGroup));
+  }
+
+  private setSubjectExpanded(groupIndex: number, expand: boolean) {
+    this.groups = this.groups.map((group, index) => {
+      const isExpanded = index === groupIndex ? expand : false;
+      if (group.subject.isExpanded === isExpanded && !group.subject.query) return group;
+      return { ...group, subject: { ...this.closedSubject(group), isExpanded } };
+    });
+    this.changeDetectorRef.markForCheck();
+  }
+
+  private getSubjectInputEl(groupIndex: number) {
+    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0] || {};
+    return shadowRoot?.querySelector(`#subject-input-${this.groups[groupIndex]?.id}`) as HTMLInputElement | null;
+  }
+
+  private focusSubjectInput(groupIndex: number) {
+    setTimeout(() => this.getSubjectInputEl(groupIndex)?.focus());
+  }
+
+  private blurSubjectInput(groupIndex: number) {
+    this.getSubjectInputEl(groupIndex)?.blur();
   }
 
   /**
@@ -620,13 +919,7 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   }
 
   private triggerChange() {
-    const formValue: SemanticRowValue[] = [];
-    this.rows.forEach((row) => {
-      const value = getRowValue(row);
-      if (value) {
-        formValue.push(value);
-      }
-    });
+    const formValue = getGroupsValue(this.rows, this.groups);
 
     this.data.changed$.next({
       errors: [],
@@ -638,6 +931,8 @@ export class SemanticSectionComponent implements AfterViewInit, OnDestroy, FormS
   private onReset = () => {
     this.clearDefaultPredicates();
     this.rows = [];
+    this.groups = [];
+    this.subjectEmitters.clear();
     this.init();
     this.checkFocus();
     this.changeDetectorRef.markForCheck();

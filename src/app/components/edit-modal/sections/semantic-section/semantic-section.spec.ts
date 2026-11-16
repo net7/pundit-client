@@ -330,4 +330,144 @@ describe('SemanticSectionComponent > object autocomplete', () => {
       expect(labels()).toHaveLength(10);
     });
   });
+
+  describe('blocks of relations about an ontology element', () => {
+    const knows = { label: 'knows', uri: 'http://foaf/knows' };
+    const dante = { uri: 'http://onto/Dante', label: 'Dante Alighieri', elementType: 'entity', source: 'search' };
+    const beatrice = { uri: 'http://onto/Beatrice', label: 'Beatrice', elementType: 'entity', source: 'search' };
+    const stored = (text: string, subject?: any) => ({
+      ...(subject ? { subject } : {}), predicate: knows, objectType: 'literal', object: { text }
+    });
+    const reopen = (triple: any) => ({
+      predicate: knows, object: { label: triple.object.text, uri: null }, objectType: 'literal',
+      subject: triple.subject, _raw: triple,
+    });
+    const lastValue = (values: any[]) => values[values.length - 1];
+    const subjectIndex = (n: number) => component.groups.indexOf(component.subjectGroups[n]);
+
+    it('starts a new annotation with the rows about the selection only, as before', () => {
+      create();
+      expect(component.fragmentGroup?.subject.isFragment).toBe(true);
+      expect(component.subjectGroups).toEqual([]);
+      expect(component.rows.map(({ groupId }) => groupId)).toEqual([component.fragmentGroup?.id]);
+    });
+
+    it('emits only the complete block', () => {
+      create();
+      component.onAddGroupClick();
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      const describingRow = component.rows.length - 1;
+      // describing row filled, but no subject picked: nothing to save
+      component.onPredicateChange(describingRow, { label: 'knows', value: knows.uri });
+      component.onObjectChange(describingRow, 'Durante');
+      expect(lastValue(values)).toEqual([]);
+      // linking row complete: only it is saved
+      component.onPredicateChange(0, { label: 'knows', value: knows.uri });
+      component.onObjectChange(0, 'Dante');
+      expect(lastValue(values).map(({ object, subject }: any) => [object.label, subject])).toEqual([['Dante', undefined]]);
+    });
+
+    it('reopens the selection relations first, then the other subjects in stored order', () => {
+      const triples = [stored('a', dante), stored('b', dante), stored('c'), stored('d', beatrice), stored('e', dante)];
+      create(triples.map(reopen));
+      expect(component.getGroupRows(component.fragmentGroup!).map(({ row }) => row.object.value)).toEqual(['c']);
+      expect(component.subjectGroups.map(({ subject }) => subject.picked?.uri))
+        .toEqual([dante.uri, beatrice.uri, dante.uri]);
+
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      component.onSubjectPick(subjectIndex(1), element('Other'));
+      expect(lastValue(values).map(({ _raw }: any) => _raw.object.text)).toEqual(['c', 'a', 'b', 'd', 'e']);
+    });
+
+    it('keeps an empty row about the selection when every triple has an element subject', () => {
+      create([stored('a', dante)].map(reopen));
+      expect(component.getGroupRows(component.fragmentGroup!)).toHaveLength(1);
+      expect(component.getGroupRows(component.fragmentGroup!)[0].row.object.value).toBeNull();
+    });
+
+    it('applies a picked subject to all the triples of the group', () => {
+      create([stored('a', dante), stored('b', dante)].map(reopen));
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      ontologyService.search.mockReturnValue(of([{ ...element('Beatrice'), category: 'entity' }]));
+
+      component.onSubjectQueryChange(subjectIndex(0), 'bea');
+      jest.advanceTimersByTime(300);
+      expect(ontologyService.search).toHaveBeenLastCalledWith('bea', ['class', 'entity']);
+      component.onSubjectPick(subjectIndex(0), component.subjectGroups[0].subject.options[0]);
+
+      expect(lastValue(values).map(({ subject, subjectChanged }: any) => [subject?.uri, subjectChanged]))
+        .toEqual([['http://onto/Beatrice', true], ['http://onto/Beatrice', true]]);
+    });
+
+    it('takes a typed URI as subject, never other free text', () => {
+      create([stored('a', beatrice)].map(reopen));
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      const index = subjectIndex(0);
+
+      component.onSubjectQueryChange(index, 'Dante');
+      component.onSubjectPickUri(index);
+      expect(component.groups[index].subject.picked?.uri).toBe(beatrice.uri);
+
+      component.onSubjectQueryChange(index, ' https://example.org/vita-nova ');
+      component.onSubjectKeydown(index, { key: 'Enter', preventDefault: jest.fn() } as any);
+      expect(component.groups[index].subject.picked)
+        .toEqual({ uri: 'https://example.org/vita-nova', label: 'https://example.org/vita-nova', source: 'free-text' });
+      expect(lastValue(values)[0].subject)
+        .toEqual(expect.objectContaining({ uri: 'https://example.org/vita-nova', source: 'free-text' }));
+    });
+
+    it('keeps a typed URI when the field is left', () => {
+      create([stored('a', beatrice)].map(reopen));
+      const index = subjectIndex(0);
+      component.onSubjectFocus(index);
+      component.onSubjectQueryChange(index, 'urn:isbn:9788817');
+      component.onSubjectBlur(index);
+      jest.advanceTimersByTime(300);
+      expect(component.groups[index].subject.picked?.source).toBe('free-text');
+      expect(component.groups[index].subject.picked?.uri).toBe('urn:isbn:9788817');
+    });
+
+    it('keeps the subject when the field is left without a choice', () => {
+      create([stored('a', beatrice)].map(reopen));
+      const index = subjectIndex(0);
+      component.onSubjectFocus(index);
+      component.onSubjectQueryChange(index, 'free text');
+      component.onSubjectBlur(index);
+      jest.advanceTimersByTime(300);
+      expect(component.groups[index].subject.picked?.uri).toBe(beatrice.uri);
+      expect(component.groups[index].subject.query).toBe('');
+    });
+
+    it('adds a block without subject whose rows are not saved until one is picked', () => {
+      create();
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      component.onAddGroupClick();
+      expect(component.subjectGroups).toHaveLength(1);
+      const rowIndex = component.rows.length - 1;
+      component.onPredicateChange(rowIndex, { label: 'knows', value: knows.uri });
+      component.onObjectChange(rowIndex, 'Durante');
+      expect(lastValue(values)).toEqual([]);
+
+      component.onSubjectPick(subjectIndex(0), { ...element('Dante'), category: 'entity' });
+      expect(lastValue(values)).toEqual([expect.objectContaining({
+        subject: expect.objectContaining({ uri: 'http://onto/Dante', elementType: 'entity' }),
+      })]);
+    });
+
+    it('removes an subject block with its last row, and clears the last row about the selection', () => {
+      create([stored('a'), stored('b', dante), stored('c', beatrice)].map(reopen));
+      component.onRemoveClick(2);
+      expect(component.subjectGroups.map(({ subject }) => subject.picked?.uri)).toEqual([dante.uri]);
+      component.onRemoveClick(1);
+      expect(component.subjectGroups).toEqual([]);
+      component.onRemoveClick(0);
+      expect(component.rows).toHaveLength(1);
+      expect(component.rows[0].object.value).toBeNull();
+    });
+  });
 });
