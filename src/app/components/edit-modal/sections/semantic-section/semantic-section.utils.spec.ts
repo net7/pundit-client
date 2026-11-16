@@ -1,9 +1,11 @@
 import {
-  SemanticFormRow, getObjectIndicator, getPredicateOptions, getRowValue
+  SemanticFormRow, SemanticSubjectGroup, getGroupsValue, getObjectIndicator, getPredicateOptions, getRowValue,
+  toSubjectRuns,
 } from './semantic-section.utils';
 
 const row = (overrides: Partial<SemanticFormRow> = {}): SemanticFormRow => ({
   id: 1,
+  groupId: 1,
   predicate: {
     label: '', remote: [], picked: null, searched: false, query: '', isExpanded: false, isLoading: false
   },
@@ -114,5 +116,73 @@ describe('getObjectIndicator', () => {
       ...current, object: { ...current.object, picked: { uri: 'u', label: 'l' } }
     })).toBe('uri');
     expect(getObjectIndicator({ ...current, object: { ...current.object, type: 'uri' } })).toBe('uri');
+  });
+});
+
+describe('subject groups', () => {
+  const dante = { uri: 'http://onto/Dante', label: 'Dante Alighieri', elementType: 'entity' as const };
+  const beatrice = { uri: 'http://onto/Beatrice', label: 'Beatrice', elementType: 'entity' as const };
+
+  const group = (id: number, subject: typeof dante | null, storedKey?: string): SemanticSubjectGroup => ({
+    id,
+    subject: {
+      isFragment: !subject,
+      picked: subject,
+      query: '',
+      options: [],
+      searched: false,
+      isExpanded: false,
+      isLoading: false,
+    },
+    ...(storedKey ? { storedKey } : {}),
+  });
+
+  const filled = (id: number, groupId: number, text: string, _raw?: any): SemanticFormRow => {
+    const current = row();
+    return {
+      ...current,
+      id,
+      groupId,
+      predicate: { ...current.predicate, label: 'knows', picked: knows },
+      object: { ...current.object, value: text, type: 'literal' },
+      ...(_raw ? { _raw } : {}),
+    };
+  };
+
+  it('splits interleaved subjects into runs, keeping their order', () => {
+    const { runs, indexes } = toSubjectRuns([dante, dante, null, undefined, dante]);
+    expect(runs).toEqual([dante, null, dante]);
+    expect(indexes).toEqual([0, 0, 1, 1, 2]);
+  });
+
+  it('gives one fragment run when no triple has a subject', () => {
+    expect(toSubjectRuns([undefined, null]).runs).toEqual([null]);
+  });
+
+  it('flattens the groups in display order, each row with its group subject', () => {
+    const value = getGroupsValue(
+      [filled(1, 1, 'a'), filled(2, 2, 'b'), filled(3, 3, 'c')],
+      [group(1, null), group(2, dante), group(3, beatrice)],
+    );
+    expect(value.map(({ object, subject }) => [object.label, subject?.uri])).toEqual([
+      ['a', undefined],
+      ['b', dante.uri],
+      ['c', beatrice.uri],
+    ]);
+    expect(value[1].subject).toEqual({ ...dante, source: 'search' });
+  });
+
+  it('drops the rows of a group without subject', () => {
+    const noSubject = { ...group(2, null), subject: { ...group(2, null).subject, isFragment: false } };
+    const value = getGroupsValue([filled(1, 1, 'a'), filled(2, 2, 'b')], [group(1, dante), noSubject]);
+    expect(value.map(({ object }) => object.label)).toEqual(['a']);
+  });
+
+  it('marks an unedited row whose group subject changed', () => {
+    const stored = { predicate: knows, objectType: 'literal', object: { text: 'a' } };
+    const [unchanged] = getGroupsValue([filled(1, 1, 'a', stored)], [group(1, dante, dante.uri)]);
+    const [changed] = getGroupsValue([filled(1, 1, 'a', stored)], [group(1, beatrice, dante.uri)]);
+    expect(unchanged.subjectChanged).toBeUndefined();
+    expect(changed.subjectChanged).toBe(true);
   });
 });
