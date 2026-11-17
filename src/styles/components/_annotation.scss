@@ -191,6 +191,11 @@ annotation {
         position: relative;
     }
 
+    // the buttons hidden on Hypothesis annotations, on the same line as the others
+    &__header-menu-actions {
+        display: flex;
+    }
+
     &__header-menu-button {
         display: flex;
         align-items: center;

@@ -1,6 +1,6 @@
 <div class="pnd-annotation__header-menu">
   @if (serializedBy !== 'hypothesis') {
-    <div>
+    <div class="pnd-annotation__header-menu-actions">
       @if (isPreview) {
         <!-- AI preview: discard it instead of the actions menu -->
         <button class="pnd-annotation__header-menu-button" [title]="discardTitle"
