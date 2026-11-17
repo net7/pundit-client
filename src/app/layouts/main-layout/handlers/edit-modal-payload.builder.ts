@@ -59,10 +59,11 @@ export class EditModalPayloadBuilder {
       if (!row.subjectChanged) {
         return row._raw;
       }
-      // ...with only the subject of its new group
+      // ...with only the subject of its new group, which wins over the stored one
       const stored = { ...row._raw };
       delete stored.subject;
-      return { ...subjectPayload, ...stored };
+      delete stored.subjectType;
+      return { ...stored, ...subjectPayload };
     }
     const objectPayload = this.getObjectPayload(object, objectType);
     return {
@@ -75,17 +76,24 @@ export class EditModalPayloadBuilder {
     };
   }
 
-  /** Subject of a triple (element or typed URI); nothing for the annotated fragment. */
+  /**
+   * Subject of a triple: `subjectType: "uri"` with the element or typed URI, or
+   * `subjectType: "target"` (and no subject) for the annotated fragment.
+   */
   private static getSubjectPayload(subject: any) {
     if (!subject?.uri) {
-      return {};
+      return { subjectType: "target" };
     }
     if (subject.source === "free-text") {
       // same shape as an object URI typed by hand
-      return { subject: { uri: subject.uri, source: "free-text" } };
+      return {
+        subjectType: "uri",
+        subject: { uri: subject.uri, source: "free-text" },
+      };
     }
     const { uri, label, elementType, description } = subject;
     return {
+      subjectType: "uri",
       subject: {
         uri,
         label,

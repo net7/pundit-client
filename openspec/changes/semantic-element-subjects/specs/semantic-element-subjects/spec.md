@@ -1,16 +1,16 @@
 ## ADDED Requirements
 
 ### Requirement: Triple subject
-A triple of a `Linking` annotation SHALL have an optional `subject`. When present it SHALL be an ontology element `{ uri, label, description?, source: 'search', elementType: 'class' | 'entity' }` or a hand-typed URI `{ uri, source: 'free-text' }`; it SHALL never be a literal. A triple without `subject` SHALL mean that the annotated fragment is its subject. The annotation's `subject` (the fragment) SHALL stay unchanged for every triple. No triple linking the fragment to an element subject SHALL be added.
+A triple of a `Linking` annotation SHALL have an optional `subject`. When present it SHALL be an ontology element `{ uri, label, description?, source: 'search', elementType: 'class' | 'entity' }` or a hand-typed URI `{ uri, source: 'free-text' }`; it SHALL never be a literal. A triple without `subject` SHALL mean that the annotated fragment is its subject. Every saved triple SHALL carry `subjectType`: `'uri'` when it has a `subject`, `'target'` (and no `subject`) when it is about the fragment. A triple read without `subjectType` SHALL be treated as `'target'`. The annotation's `subject` (the fragment) SHALL stay unchanged for every triple. No triple linking the fragment to an element subject SHALL be added.
 
 #### Scenario: Element subject saved
 - **WHEN** the user saves the triple `Dante Alighieri (entity) bornIn Florence` on the selected word "Dante"
 - **THEN** the annotation subject is the fragment "Dante"
-- **AND** its content holds `{ subject: { uri, label: 'Dante Alighieri', source: 'search', elementType: 'entity' }, predicate: { label, uri }, objectType: 'uri', object: { … } }`
+- **AND** its content holds `{ subjectType: 'uri', subject: { uri, label: 'Dante Alighieri', source: 'search', elementType: 'entity' }, predicate: { label, uri }, objectType: 'uri', object: { … } }`
 
 #### Scenario: Relation about the selection saved
 - **WHEN** the user saves a triple among the relations about the selection
-- **THEN** the saved triple has no `subject` property
+- **THEN** the saved triple has `subjectType: 'target'` and no `subject` property
 
 #### Scenario: Existing annotation
 - **WHEN** an annotation saved before this change is shown or reopened
@@ -94,7 +94,7 @@ The triples SHALL be saved with the relations about the selection first, then th
 - **AND** saving without edits stores those triples in the same order
 
 ### Requirement: Rows inside a group
-Rows SHALL keep their current behaviour in both parts: predicate autocomplete, object as ontology element, literal or free-text URI, date rows read-only. A row the user did not edit SHALL be saved exactly as stored when its group keeps the subject it was loaded with; when the group subject changed, it SHALL be saved as stored with only its subject replaced.
+Rows SHALL keep their current behaviour in both parts: predicate autocomplete, object as ontology element, literal or free-text URI, date rows read-only. A row the user did not edit SHALL be saved exactly as stored when its group keeps the subject it was loaded with; when the group subject changed, it SHALL be saved as stored with only its `subject` and `subjectType` replaced.
 
 #### Scenario: Unedited row
 - **WHEN** the user reopens an annotation and saves it without edits
@@ -102,7 +102,11 @@ Rows SHALL keep their current behaviour in both parts: predicate autocomplete, o
 
 #### Scenario: Read-only date row moved to another subject
 - **WHEN** the user changes the subject of a group holding a date triple
-- **THEN** the date triple is saved unchanged except for its new subject
+- **THEN** the date triple is saved unchanged except for its new subject and `subjectType`
+
+#### Scenario: Unedited row moved back to the selection
+- **WHEN** a stored triple about `Dante Alighieri` is saved, unedited, among the relations about the selection
+- **THEN** it is saved with `subjectType: 'target'` and without `subject`
 
 ### Requirement: Card display
 The annotation card SHALL show the triples in the same subject groups. The triples with a subject SHALL be shown in one block per subject, headed "About ‹label›" and set apart from the object above it, the label linking to its URI (new tab), the URI shown as its tooltip, with no type badge, the triples hanging from it on a vertical line. Triples without subject SHALL have no header.

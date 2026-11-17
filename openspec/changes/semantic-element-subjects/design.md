@@ -24,13 +24,15 @@ The object field already searches the classes and entities of the selected ontol
 
 ```ts
 export interface SemanticTripleBase {
+    /** 'target' (or absent on old triples) = the fragment, no subject; 'uri' = about `subject`. */
+    subjectType?: 'target' | 'uri';
     /** Ontology element the triple is about; absent = the annotated fragment. */
     subject?: ObjectUri | LiteralUri;   // { uri, label, description?, source: 'search', elementType } or { uri, source: 'free-text' }
     predicate: Predicate,
 }
 ```
 
-Absent means "the fragment", so stored annotations need no migration and the existing switches on `annotation.type` (menu, tooltip, payload, card) keep working.
+Every saved triple carries `subjectType` (`'uri'` with `subject`, `'target'` without); the server rejects contradictory pairs and always returns it. Absent means "the fragment", so stored annotations need no migration and the existing switches on `annotation.type` (menu, tooltip, payload, card) keep working.
 
 Alternatives: a new annotation type (e.g. `Describing`) with full triples — clearer for consumers but it touches every switch on the type and forbids mixing the two kinds of triple in one annotation, which is required; a flag on the annotation (`mode`) — same drawbacks as a new type, plus a special case. An explicit `{ type: 'fragment' }` subject was dropped: readers must handle triples without `subject` anyway.
 
@@ -93,8 +95,8 @@ Same combobox look as the predicate, on the subject line of an element block:
 ### D4. Saving: `_raw` with the group's subject
 
 Each row value gets the subject of its group. `EditModalPayloadBuilder.getSemanticContentRow`:
-- edited row → built as today, then `subject` added when the group subject is an element;
-- unedited row (`_raw`) → `_raw` saved as stored when the group subject key equals the key it was loaded with; otherwise `_raw` with `subject` replaced. This also keeps read-only date rows saveable when their group changes subject.
+- edited row → built as today, then `subjectType: 'uri'` and `subject` added when the group has a subject, `subjectType: 'target'` otherwise;
+- unedited row (`_raw`) → `_raw` saved as stored when the group subject key equals the key it was loaded with; otherwise `_raw` with `subject` and `subjectType` replaced by those of the new group (a stored `'target'` must not survive a move to a concept, nor `'uri'` a move back to the fragment). This also keeps read-only date rows saveable when their group changes subject.
 
 Rows of a group without a chosen subject return `null` and are dropped.
 

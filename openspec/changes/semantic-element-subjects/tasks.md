@@ -19,6 +19,7 @@
 - [x] 4.1 `getSemanticData` copies `subject` (`uri`, `label`, `description?`, `elementType`, `source: 'search'`) into each row data
 - [x] 4.2 `EditModalPayloadBuilder`: add `subject` to edited rows of element groups; `_raw` saved as stored when the group key is unchanged, otherwise with `subject` replaced or removed (design D4)
 - [x] 4.3 Specs: `getSemanticData` with/without subject, typed URI subject; payload builder (edited row with element subject, typed URI subject, fragment row without `subject`, unedited row, unedited row after subject change, date row after subject change)
+- [x] 4.4 `subjectType` on every saved triple (`'uri'` with `subject`, `'target'` without), replaced together with `subject` on unedited rows that changed group; specs for both moves
 
 ## 5. Semantic section UI
 
