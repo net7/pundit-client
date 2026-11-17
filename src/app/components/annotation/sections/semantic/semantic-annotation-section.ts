@@ -28,11 +28,6 @@ export class SemanticAnnotationSectionComponent implements OnInit {
 
   public labels = {
     about: _t('annotation#semantic_subject_about'),
-    types: {
-      entity: _t('semantic#type_entity'),
-      class: _t('semantic#type_class'),
-      uri: _t('semantic#type_uri'),
-    } as Record<string, string>,
   };
 
   /**

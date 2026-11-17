@@ -12,7 +12,7 @@ A semantic annotation today states facts about the selected passage only: every 
 - Saving is possible when at least one block holds a complete triple; incomplete rows and blocks without subject are not saved.
 - Saved order: the relations about the selection first, then the groups in the order shown; reopening shows the element triples in their stored order.
 - Rows inside a group keep today's behaviour: predicate autocomplete, object as element, literal, free-text URI; date rows stay read-only. A row the user did not edit is saved as stored, with the subject of its group.
-- Annotation card: the triples are shown in the same subject groups; each subject heads its own block, "About ‹label›" (label linking to its URI, ENTITY/CLASS/URI badge) with its triples hanging from it on a vertical line; the relations about the selection have no header, as today.
+- Annotation card: the triples are shown in the same subject groups; each subject heads its own block, "About ‹label›" (label linking to its URI, no type badge) with its triples hanging from it on a vertical line; the relations about the selection have no header, as today.
 - Annotation card: the predicate label of every triple links to the predicate URI (new tab), as the subject and the element objects already do.
 - A comment typed with triples is still discarded, as today.
 

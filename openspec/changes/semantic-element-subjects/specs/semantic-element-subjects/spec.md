@@ -105,9 +105,11 @@ Rows SHALL keep their current behaviour in both parts: predicate autocomplete, o
 - **THEN** the date triple is saved unchanged except for its new subject
 
 ### Requirement: Card display
-The annotation card SHALL show the triples in the same subject groups. The triples with a subject SHALL be shown in one block per subject, headed "About ‹label›" and set apart from the object above it, the label linking to its URI (new tab), with its ENTITY/CLASS badge (URI badge for a typed URI), the triples hanging from it on a vertical line. Triples without subject SHALL have no header.
+The annotation card SHALL show the triples in the same subject groups. The triples with a subject SHALL be shown in one block per subject, headed "About ‹label›" and set apart from the object above it, the label linking to its URI (new tab), the URI shown as its tooltip, with no type badge, the triples hanging from it on a vertical line. Triples without subject SHALL have no header.
 
 In every triple of the card the predicate label SHALL link to the predicate URI (new tab), the URI shown as its tooltip; a predicate without URI SHALL be shown as plain text.
+
+Long texts SHALL stay inside the card: the subject label and the predicate label are cut with an ellipsis (full text in the tooltip), long URIs and literals wrap.
 
 #### Scenario: Predicate link
 - **WHEN** the user clicks the predicate `born in` of a triple in the card
@@ -119,4 +121,8 @@ In every triple of the card the predicate label SHALL link to the predicate URI 
 
 #### Scenario: Annotation with element subjects
 - **WHEN** the card shows an annotation with a relation about the selection and a `Dante Alighieri` group
-- **THEN** the first triple has no header and the `Dante Alighieri` group has a header with ENTITY badge
+- **THEN** the first triple has no header and the `Dante Alighieri` group has a header without type badge
+
+#### Scenario: Long texts
+- **WHEN** a triple in the card has a long subject label, predicate label or object URI
+- **THEN** nothing overflows the card: the labels are cut with an ellipsis and the URI wraps

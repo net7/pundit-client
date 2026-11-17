@@ -33,7 +33,7 @@
 ## 6. Annotation card
 
 - [x] 6.1 `semantic-annotation-section.ts`: group triples by consecutive subject, `{ groups: [{ subject?, triples }] }`
-- [x] 6.2 Template and `_annotation.scss`: one block per subject (no box; one line before the first, space between the others), header "About ‹label›" (label link + ENTITY/CLASS/URI badge), triples on a vertical line; no header for triples without subject
+- [x] 6.2 Template and `_annotation.scss`: one block per subject (no box; one line before the first, space between the others), header "About ‹label›" (label link, no type badge; long labels cut, long URIs wrap), triples on a vertical line; no header for triples without subject
 - [x] 6.3 Specs: predicate URI kept, fragment-only unchanged, mixed groups, interleaved order
 - [x] 6.4 Predicate label linked to the predicate URI in the card (all triples), `title` with the URI
 

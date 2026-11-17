@@ -6,8 +6,8 @@
   @if (group.subject) {
     <div class="pnd-annotation__semantic-subject">
       <span class="pnd-annotation__semantic-subject-about">{{ labels.about }}</span>
-      <a class="pnd-annotation__semantic-subject-label" [href]="group.subject.uri" target="_blank" rel="noopener">{{ group.subject.label || group.subject.uri }}</a>
-      <span class="pnd-type-badge pnd-type-badge--{{ group.subject.elementType || 'uri' }}">{{ labels.types[group.subject.elementType || 'uri'] }}</span>
+      <a class="pnd-annotation__semantic-subject-label" [href]="group.subject.uri" [title]="group.subject.uri"
+        target="_blank" rel="noopener">{{ group.subject.label || group.subject.uri }}</a>
     </div>
   }
   <div class="pnd-annotation__semantic">
@@ -15,11 +15,12 @@
       <div class="pnd-annotation__semantic-item">
         <div class="pnd-annotation__semantic-item-predicate">
           @if (triple?.predicate?.uri) {
-            <a class="pnd-annotation__semantic-item-predicate-link"
+            <a class="pnd-annotation__semantic-item-predicate-link pnd-annotation__semantic-item-predicate-text"
               [href]="triple.predicate.uri" [title]="triple.predicate.uri"
               target="_blank" rel="noopener">{{ triple.predicate.label }}</a>
           } @else {
-            {{ triple?.predicate?.label }}
+            <span class="pnd-annotation__semantic-item-predicate-text"
+              [title]="triple?.predicate?.label || ''">{{ triple?.predicate?.label }}</span>
           }
         </div>
         @switch (triple.object?.type) {

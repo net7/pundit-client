@@ -401,6 +401,11 @@ annotation {
     .pnd-annotation__semantic-item-predicate {
         display: inline-block;
         position: relative;
+        box-sizing: border-box;
+        // a long label stays in the card (cut by its text, not by the pill:
+        // the carets above and below are out of the pill box)
+        max-width: calc(100% - 10px);
+        vertical-align: top;
         height: 20px;
         margin-left: 10px;
         padding: 0 8px;
@@ -438,6 +443,13 @@ annotation {
         }
     }
 
+    .pnd-annotation__semantic-item-predicate-text {
+        display: block;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
     // the predicate label opens its URI: white text on the pill also on hover
     // (the global link blue clashes with the orange), underline as the only cue
     .pnd-annotation__semantic-item-predicate-link {
@@ -454,6 +466,8 @@ annotation {
 
     /* The Object in semantic annotations */
     .pnd-annotation__semantic-item-object {
+        // long URIs and literals without spaces wrap instead of leaving the card
+        overflow-wrap: anywhere;
         font-size: variables.$font-size-xs;
         color: variables.$color-text-light;
         padding: variables.$space*2 variables.$space variables.$space;
