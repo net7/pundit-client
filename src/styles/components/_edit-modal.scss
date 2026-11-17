@@ -645,8 +645,12 @@
         }
     }
 
+    // a long ontology name must not squeeze the label out: the link shrinks
+    // first, up to a cap, and its name is cut with an ellipsis
     &__link {
-        flex-shrink: 0;
+        flex: 0 1 auto;
+        min-width: 0;
+        max-width: 40%;
         display: inline-flex;
         align-items: center;
         gap: variables.$space * 0.25;
@@ -667,6 +671,10 @@
     }
 
     &__link-label {
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
         text-decoration: underline;
     }
 

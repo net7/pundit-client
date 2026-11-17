@@ -44,7 +44,7 @@ An element block SHALL be a run of consecutive triples with the same element sub
 - **THEN** both triples are saved with `Beatrice` as subject
 
 ### Requirement: Subject field
-While the user types at least 1 character in the subject field, the client SHALL search the classes and entities of the selected ontologies after a short debounce, show a loader, then one option per result with label, source label with external link and ENTITY/CLASS badge; only the answer to the latest query SHALL be shown. A typed URI (text starting with a URI scheme) SHALL be accepted as subject through a "Use “…” as URI" option, Enter, or leaving the field. Any other free text SHALL NOT be accepted: leaving the field or pressing Escape SHALL restore the previous subject. When no ontology is used for classes or entities, a hint inviting to select ontologies SHALL be shown.
+While the user types at least 1 character in the subject field, the client SHALL search the classes and entities of the selected ontologies after a short debounce, show a loader, then one option per result with label, source label with external link and ENTITY/CLASS badge; only the answer to the latest query SHALL be shown. A typed URI (text starting with a URI scheme) SHALL be accepted as subject through a "Use “…” as URI" option, Enter, or leaving the field. Any other free text SHALL NOT be accepted: leaving the field or pressing Escape SHALL restore the previous subject. When no ontology is used for classes or entities, a hint inviting to select ontologies SHALL be shown. In the subject and object options a long source label SHALL be cut with an ellipsis, so the option label stays visible and clickable.
 
 #### Scenario: Search a subject
 - **WHEN** the user types `dan` in the subject field
@@ -58,6 +58,10 @@ While the user types at least 1 character in the subject field, the client SHALL
 #### Scenario: Free text refused
 - **WHEN** the user types `Dante` and leaves the field without picking an option
 - **THEN** the field shows the subject selected before
+
+#### Scenario: Long ontology name
+- **WHEN** an option comes from an ontology with a long name
+- **THEN** the source label is cut with an ellipsis and the option label stays visible and clickable
 
 #### Scenario: Open subject URI
 - **WHEN** the user clicks the external-link icon of a subject option
