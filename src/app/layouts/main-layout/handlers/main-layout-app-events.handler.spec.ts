@@ -54,4 +54,26 @@ describe('MainLayoutAppEventsHandler', () => {
     expect(row.object.rdfTypes).toEqual(rdfTypes);
     expect(row.object.elementType).toBeUndefined();
   });
+
+  it('reopens a triple with its element subject', () => {
+    const { handler } = create();
+    const subject = {
+      uri: 'http://onto/Dante', label: 'Dante Alighieri', source: 'search', elementType: 'entity'
+    };
+    const [withSubject, withoutSubject] = handler.getSemanticData([
+      { subject, predicate, objectType: 'literal', object: { text: 'Durante' } },
+      { predicate, objectType: 'literal', object: { text: 'Dante' } },
+    ]);
+    expect(withSubject.subject).toEqual(subject);
+    expect(withoutSubject.subject).toBeUndefined();
+  });
+
+  it('reopens a typed URI subject', () => {
+    const { handler } = create();
+    const [row] = handler.getSemanticData([{
+      subject: { uri: 'urn:isbn:9788817', source: 'free-text' },
+      predicate, objectType: 'literal', object: { text: 'Vita nova' },
+    }]);
+    expect(row.subject).toEqual({ uri: 'urn:isbn:9788817', label: 'urn:isbn:9788817', source: 'free-text' });
+  });
 });

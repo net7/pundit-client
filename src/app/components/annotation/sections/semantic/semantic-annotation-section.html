@@ -1,10 +1,27 @@
 <!-- Semantic triple -->
-@if ((semantic$ | async)?.data; as data) {
+@if ((semantic$ | async); as semantic) {
+  @for (group of semantic.groups; track $index) {
+  <!-- triples about an ontology element or URI: a block of their own, the subject on top -->
+  <div class="pnd-annotation__semantic-group" [class.has-subject]="!!group.subject">
+  @if (group.subject) {
+    <div class="pnd-annotation__semantic-subject">
+      <span class="pnd-annotation__semantic-subject-about">{{ labels.about }}</span>
+      <a class="pnd-annotation__semantic-subject-label" [href]="group.subject.uri" [title]="group.subject.uri"
+        target="_blank" rel="noopener">{{ group.subject.label || group.subject.uri }}</a>
+    </div>
+  }
   <div class="pnd-annotation__semantic">
-    @for (triple of data; track triple) {
+    @for (triple of group.triples; track triple) {
       <div class="pnd-annotation__semantic-item">
         <div class="pnd-annotation__semantic-item-predicate">
-          {{ triple?.predicate?.label }}
+          @if (triple?.predicate?.uri) {
+            <a class="pnd-annotation__semantic-item-predicate-link pnd-annotation__semantic-item-predicate-text"
+              [href]="triple.predicate.uri" [title]="triple.predicate.uri"
+              target="_blank" rel="noopener">{{ triple.predicate.label }}</a>
+          } @else {
+            <span class="pnd-annotation__semantic-item-predicate-text"
+              [title]="triple?.predicate?.label || ''">{{ triple?.predicate?.label }}</span>
+          }
         </div>
         @switch (triple.object?.type) {
           @case ('literal') {
@@ -62,4 +79,6 @@
       </div>
     }
   </div>
+  </div>
+}
 }

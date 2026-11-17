@@ -3,171 +3,190 @@
     <div class="pnd-edit-modal__semantic-label">
       {{ labels.title }}
     </div>
-    @for (row of rows; track row.id; let $i = $index) {
-      <div class="pnd-edit-modal__semantic-row">
-        <!-- Predicate Input -->
-        <div class="pnd-edit-modal__semantic-predicate">
-          <div class="pnd-dropdown pnd-edit-modal__semantic-predicate-combobox {{ row.predicate.isExpanded ? 'is-expanded' : '' }}">
-            <!-- Selected element: an autocomplete field -->
-            <div class="pnd-dropdown__selected" [class.is-disabled]="row.disabled">
-              <input type="text" class="pnd-edit-modal__semantic-predicate-input"
-                autocomplete="off"
-                role="combobox"
-                [attr.aria-expanded]="row.predicate.isExpanded"
-                [attr.id]="'predicate-input-' + row.id"
-                [disabled]="row.disabled"
-                [title]="row.predicate.label"
-                [value]="row.predicate.isExpanded ? row.predicate.query : row.predicate.label"
-                [placeholder]="row.predicate.isExpanded ? row.predicate.label : labels.predicatePlaceholder"
-                (focus)="onPredicateFocus($i)"
-                (input)="onPredicateQueryChange($i, $any($event.target).value)"
-                (keydown)="onPredicateKeydown($i, $event)"
-                (blur)="onPredicateBlur($i)" />
-              <button type="button" class="pnd-dropdown__selected-right-icon"
-                tabindex="-1"
-                [disabled]="row.disabled"
-                (mousedown)="$event.preventDefault()"
-                (click)="onPredicateToggleExpand($i)">
-                @if (!row.predicate.isExpanded) {
-                  <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
-                }
-                @if (row.predicate.isExpanded) {
-                  <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
-                }
-              </button>
-            </div>
-            <!-- END // Selected element -->
-            <!-- Dropdown items -->
-            <div class="pnd-dropdown__list-wrapper">
-              <!-- list of predicate options -->
-              <div class="pnd-dropdown__list-items">
-                @for (option of getPredicateOptions(row); track option.value) {
-                  <div (mousedown)="$event.preventDefault()"
-                    (click)="onPredicateChange($i, option)"
-                    class="pnd-dropdown__item pnd-semantic-option {{ option.selected ? 'is-current' : '' }}">
-                    <span class="pnd-semantic-option__label">{{ option.label }}</span>
-                    <a class="pnd-semantic-option__link"
-                      [href]="option.value" target="_blank" rel="noopener"
-                      [title]="labels.openUri"
-                      (click)="onLinkClick($event)">
-                      @if (option.sourceLabel) {
-                        <span class="pnd-semantic-option__link-label">{{ option.sourceLabel }}</span>
-                      }
-                      <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
-                    </a>
-                  </div>
-                }
+    <!-- Relations about the selection: the rows of today -->
+    @if (fragmentGroup; as group) {
+      @for (item of getGroupRows(group); track item.row.id) {
+        <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item.row, index: item.index }"></ng-container>
+      }
+    }
+    <!-- The same rows, about an entity or class -->
+    @for (group of subjectGroups; track group.id) {
+      <div class="pnd-edit-modal__semantic-group">
+        <div class="pnd-edit-modal__semantic-subject">
+          <span class="pnd-edit-modal__semantic-subject-label">{{ labels.subjectLabel }}</span>
+          <pnd-semantic-subject-field
+            [group]="group"
+            [labels]="labels"
+            [canSearch]="canSearchSubjects()"
+            [emit]="getSubjectEmit(group)">
+          </pnd-semantic-subject-field>
+        </div>
+        @for (item of getGroupRows(group); track item.row.id) {
+          <ng-container *ngTemplateOutlet="rowTpl; context: { $implicit: item.row, index: item.index }"></ng-container>
+        }
+      </div>
+    }
+    <button type="button" class="pnd-edit-modal__semantic-add-subject"
+      (click)="onAddGroupClick()">
+      <pnd-svg-icon [data]="{ id: 'plus' }"></pnd-svg-icon>
+      <span>{{ labels.subjectAdd }}</span>
+    </button>
+  </div>
+}
+
+<!-- One semantic row: predicate, object, actions (`index` is the row index in `rows`) -->
+<ng-template #rowTpl let-row let-index="index">
+  <div class="pnd-edit-modal__semantic-row">
+    <!-- Predicate Input -->
+    <div class="pnd-edit-modal__semantic-predicate">
+      <div class="pnd-dropdown pnd-edit-modal__semantic-predicate-combobox {{ row.predicate.isExpanded ? 'is-expanded' : '' }}">
+        <!-- Selected element: an autocomplete field -->
+        <div class="pnd-dropdown__selected" [class.is-disabled]="row.disabled">
+          <input type="text" class="pnd-edit-modal__semantic-predicate-input"
+            autocomplete="off"
+            role="combobox"
+            [attr.aria-expanded]="row.predicate.isExpanded"
+            [attr.id]="'predicate-input-' + row.id"
+            [disabled]="row.disabled"
+            [title]="row.predicate.label"
+            [value]="row.predicate.isExpanded ? row.predicate.query : row.predicate.label"
+            [placeholder]="row.predicate.isExpanded ? row.predicate.label : labels.predicatePlaceholder"
+            (focus)="onPredicateFocus(index)"
+            (input)="onPredicateQueryChange(index, $any($event.target).value)"
+            (keydown)="onPredicateKeydown(index, $event)"
+            (blur)="onPredicateBlur(index)" />
+          <button type="button" class="pnd-dropdown__selected-right-icon"
+            tabindex="-1"
+            [disabled]="row.disabled"
+            (mousedown)="$event.preventDefault()"
+            (click)="onPredicateToggleExpand(index)">
+            @if (!row.predicate.isExpanded) {
+              <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
+            }
+            @if (row.predicate.isExpanded) {
+              <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
+            }
+          </button>
+        </div>
+        <!-- Dropdown items -->
+        <div class="pnd-dropdown__list-wrapper">
+          <div class="pnd-dropdown__list-items">
+            @for (option of getPredicateOptions(row); track option.value) {
+              <div (mousedown)="$event.preventDefault()"
+                (click)="onPredicateChange(index, option)"
+                class="pnd-dropdown__item pnd-semantic-option {{ option.selected ? 'is-current' : '' }}">
+                <span class="pnd-semantic-option__label">{{ option.label }}</span>
+                <a class="pnd-semantic-option__link"
+                  [href]="option.value" target="_blank" rel="noopener"
+                  [title]="labels.openUri"
+                  (click)="onLinkClick($event)">
+                  @if (option.sourceLabel) {
+                    <span class="pnd-semantic-option__link-label">{{ option.sourceLabel }}</span>
+                  }
+                  <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
+                </a>
               </div>
-              @if (row.predicate.isLoading || isDefaultPredicatesLoading(row)) {
+            }
+          </div>
+          @if (row.predicate.isLoading || isDefaultPredicatesLoading(row)) {
+            <div class="pnd-edit-modal__semantic-object-loader">
+              <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
+            </div>
+          } @else if (row.predicate.searched && !row.predicate.remote.length) {
+            <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateNoResults }}</p>
+          } @else if (!getPredicateOptions(row).length) {
+            <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateHint }}</p>
+          } @else if (getPredicateTotalLabel(row)) {
+            <p class="pnd-edit-modal__semantic-hint pnd-edit-modal__semantic-hint--footer">{{ getPredicateTotalLabel(row) }}</p>
+          }
+        </div>
+      </div>
+    </div>
+    <!-- Object Input -->
+    <div class="pnd-edit-modal__semantic-object">
+      @if (row.object.providerId === 'pundit-basic') {
+        <p class="pnd-edit-modal__semantic-object-type pnd-type-badge--{{ getObjectIndicator(row) }}">
+          {{ getTypeLabel(getObjectIndicator(row)) }}
+        </p>
+        <input [attr.id]="'object-input-' + index" type="text"
+          class="pnd-edit-modal__semantic-object-input small"
+          autocomplete="off"
+          (input)="onObjectChange(index, $any($event.target).value)"
+          (keydown)="onObjectKeydown(index, $event)"
+          (blur)="onObjectBlur(index)"
+          [value]="row.object.value"
+          [disabled]="row.disabled"
+          [placeholder]="row.object.placeholder" />
+        @if (row.object.isExpanded) {
+          <!-- Dropdown (object) items -->
+          <div class="pnd-dropdown is-expanded pnd-edit-modal__semantic-object-dropdown">
+            <div class="pnd-dropdown__list-wrapper">
+              @if (row.object.isLoading) {
                 <div class="pnd-edit-modal__semantic-object-loader">
                   <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
                 </div>
-              } @else if (row.predicate.searched && !row.predicate.remote.length) {
-                <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateNoResults }}</p>
-              } @else if (!getPredicateOptions(row).length) {
-                <p class="pnd-edit-modal__semantic-hint">{{ labels.predicateHint }}</p>
-              } @else if (getPredicateTotalLabel(row)) {
-                <p class="pnd-edit-modal__semantic-hint pnd-edit-modal__semantic-hint--footer">{{ getPredicateTotalLabel(row) }}</p>
-              }
-            </div>
-            <!-- END // Dropdown items -->
-          </div>
-        </div>
-        <!-- END // Predicate Select -->
-        <!-- Object Input -->
-        <div class="pnd-edit-modal__semantic-object">
-          @if (row.object.providerId === 'pundit-basic') {
-            <p class="pnd-edit-modal__semantic-object-type pnd-type-badge--{{ getObjectIndicator(row) }}">
-              {{ getTypeLabel(getObjectIndicator(row)) }}
-            </p>
-            <input [attr.id]="'object-input-' + $i" type="text"
-              class="pnd-edit-modal__semantic-object-input small"
-              autocomplete="off"
-              (input)="onObjectChange($i, $any($event.target).value)"
-              (keydown)="onObjectKeydown($i, $event)"
-              (blur)="onObjectBlur($i)"
-              [value]="row.object.value"
-              [disabled]="row.disabled"
-              [placeholder]="row.object.placeholder" />
-            @if (row.object.isExpanded) {
-              <!-- Dropdown (object) items -->
-              <div class="pnd-dropdown is-expanded pnd-edit-modal__semantic-object-dropdown">
-                <div class="pnd-dropdown__list-wrapper">
-                  @if (row.object.isLoading) {
-                    <div class="pnd-edit-modal__semantic-object-loader">
-                      <span class="pnd-loader"><span class="pnd-loader__content"></span></span>
-                    </div>
-                  } @else {
-                    <div class="pnd-dropdown__list-items">
-                      @for (option of row.object.options; track option.uri) {
-                        <div class="pnd-dropdown__item pnd-semantic-option"
-                          (mousedown)="$event.preventDefault()"
-                          (click)="onObjectPick($i, option)">
-                          <span class="pnd-semantic-option__label">{{ option.label }}</span>
-                          <a class="pnd-semantic-option__link"
-                            [href]="option.uri" target="_blank" rel="noopener"
-                            [title]="labels.openUri"
-                            (click)="onLinkClick($event)">
-                            <span class="pnd-semantic-option__link-label">{{ getSourceLabel(option.ontology) }}</span>
-                            <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
-                          </a>
-                          <span class="pnd-type-badge pnd-type-badge--{{ option.category }}">
-                            {{ getTypeLabel(option.category) }}
-                          </span>
-                        </div>
-                      }
-                    </div>
-                    <div class="pnd-dropdown__default-option">
-                      <div class="pnd-dropdown__item pnd-semantic-option"
-                        (mousedown)="$event.preventDefault()"
-                        (click)="onObjectKeepText($i)">
-                        <span class="pnd-semantic-option__label is-default">
-                          {{ getUseAsLabel(row.object.value) }}
-                        </span>
-                        <span class="pnd-type-badge pnd-type-badge--{{ row.object.type }}">
-                          {{ getTypeLabel(row.object.type || 'literal') }}
-                        </span>
-                      </div>
+              } @else {
+                <div class="pnd-dropdown__list-items">
+                  @for (option of row.object.options; track option.uri) {
+                    <div class="pnd-dropdown__item pnd-semantic-option"
+                      (mousedown)="$event.preventDefault()"
+                      (click)="onObjectPick(index, option)">
+                      <span class="pnd-semantic-option__label">{{ option.label }}</span>
+                      <a class="pnd-semantic-option__link"
+                        [href]="option.uri" target="_blank" rel="noopener"
+                        [title]="labels.openUri"
+                        (click)="onLinkClick($event)">
+                        <span class="pnd-semantic-option__link-label">{{ getSourceLabel(option.ontology) }}</span>
+                        <pnd-svg-icon [data]="{ id: 'external-link' }"></pnd-svg-icon>
+                      </a>
+                      <span class="pnd-type-badge pnd-type-badge--{{ option.category }}">
+                        {{ getTypeLabel(option.category) }}
+                      </span>
                     </div>
                   }
                 </div>
-              </div>
-              <!-- END // Dropdown (object) items -->
-            }
-          }
-        </div>
-        <!-- END // Object Input -->
-        <!-- Actions -->
-        <div class="pnd-edit-modal__semantic-actions">
-          <div class="pnd-dropdown {{ row.actions.isExpanded ? 'is-expanded' : '' }}">
-            <!-- Action menu button -->
-            <button class="pnd-dropdown__selected"
-              (click)="onActionsToggleExpand($i)">
-              <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
-            </button>
-            <!-- END // Action menu button -->
-            <!-- Dropdown items -->
-            <div class="pnd-dropdown__list-wrapper">
-              <!-- list of actions -->
-              <div class="pnd-dropdown__list-items">
-                <div (click)="onAddClick($i)"
-                  class="pnd-dropdown__item">
-                  {{ labels.add }}
+                <div class="pnd-dropdown__default-option">
+                  <div class="pnd-dropdown__item pnd-semantic-option"
+                    (mousedown)="$event.preventDefault()"
+                    (click)="onObjectKeepText(index)">
+                    <span class="pnd-semantic-option__label is-default">
+                      {{ getUseAsLabel(row.object.value) }}
+                    </span>
+                    <span class="pnd-type-badge pnd-type-badge--{{ row.object.type }}">
+                      {{ getTypeLabel(row.object.type || 'literal') }}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <!-- list of actions -->
-              <div class="pnd-dropdown__list-items">
-                <div (click)="onRemoveClick($i)"
-                  class="pnd-dropdown__item">
-                  {{ getRemoveLabel() }}
-                </div>
-              </div>
+              }
             </div>
-            <!-- END // Dropdown items -->
+          </div>
+        }
+      }
+    </div>
+    <!-- Actions -->
+    <div class="pnd-edit-modal__semantic-actions">
+      <div class="pnd-dropdown {{ row.actions.isExpanded ? 'is-expanded' : '' }}">
+        <!-- Action menu button -->
+        <button class="pnd-dropdown__selected"
+          (click)="onActionsToggleExpand(index)">
+          <pnd-svg-icon [data]="{ id: 'ellipsis-v' }"></pnd-svg-icon>
+        </button>
+        <!-- Dropdown items -->
+        <div class="pnd-dropdown__list-wrapper">
+          <div class="pnd-dropdown__list-items">
+            <div (click)="onAddClick(index)"
+              class="pnd-dropdown__item">
+              {{ labels.add }}
+            </div>
+          </div>
+          <div class="pnd-dropdown__list-items">
+            <div (click)="onRemoveClick(index)"
+              class="pnd-dropdown__item">
+              {{ getRemoveLabel(row) }}
+            </div>
           </div>
         </div>
-        <!-- END // Actions -->
       </div>
-    }
+    </div>
   </div>
-}
+</ng-template>
