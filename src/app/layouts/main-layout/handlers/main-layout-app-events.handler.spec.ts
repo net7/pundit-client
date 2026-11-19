@@ -1,5 +1,7 @@
 import { Subject, BehaviorSubject } from 'rxjs';
 import { MainLayoutAppEventsHandler } from './main-layout-app-events.handler';
+import { buildSemanticContent } from './annotation-llm-helpers.util';
+import { EditModalPayloadBuilder } from './edit-modal-payload.builder';
 
 describe('MainLayoutAppEventsHandler', () => {
   const create = () => {
@@ -66,6 +68,54 @@ describe('MainLayoutAppEventsHandler', () => {
     ]);
     expect(withSubject.subject).toEqual(subject);
     expect(withoutSubject.subject).toBeUndefined();
+  });
+
+  describe('an AI annotation with element subjects', () => {
+    const SH = 'http://example.org/shakespeare#';
+    const portia = {
+      uri: `${SH}Portia`, label: 'Portia', description: 'Heiress of Belmont', elementType: 'entity' as const
+    };
+    const element = (name: string) => ({ uri: `${SH}${name}`, label: name, elementType: 'entity' as const });
+    const content = buildSemanticContent([
+      { predicate: { uri: `${SH}identifies`, label: 'identifies' }, object: element('Portia') },
+      { subject: portia, predicate: { uri: `${SH}livesIn`, label: 'lives in' }, object: element('Belmont') },
+    ])!;
+    const save = (rows: any[]) => {
+      const payload: any = {};
+      EditModalPayloadBuilder.applyFormValuesToPayload(payload, { semantic: { value: rows } } as any);
+      return payload.content;
+    };
+
+    it('reopens like a triple saved by hand', () => {
+      const { handler } = create();
+      const [fragmentRow, subjectRow] = handler.getSemanticData(content);
+      expect(fragmentRow.subject).toBeUndefined();
+      expect(subjectRow.subject).toEqual({ ...portia, source: 'search' });
+      expect(subjectRow._raw).toBe(content[1]);
+    });
+
+    it('saves unedited rows exactly as stored', () => {
+      const { handler } = create();
+      expect(save(handler.getSemanticData(content))).toEqual(content);
+    });
+
+    it('keeps the subject of an edited row in its group', () => {
+      const { handler } = create();
+      const [, subjectRow] = handler.getSemanticData(content);
+      const edited = {
+        predicate: subjectRow.predicate,
+        objectType: 'literal',
+        object: { label: 'Belmont, Venice', uri: null },
+        subject: subjectRow.subject,
+      };
+      expect(save([edited])).toEqual([{
+        subjectType: 'uri',
+        subject: content[1].subject,
+        predicate: content[1].predicate,
+        objectType: 'literal',
+        object: { text: 'Belmont, Venice' },
+      }]);
+    });
   });
 
   it('reopens a typed URI subject', () => {

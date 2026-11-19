@@ -4,6 +4,7 @@ import { translate } from '@net7/core';
 import en from 'src/app/config/i18n/en_US';
 import { ImageDataService } from 'src/app/services/image-data.service';
 import { SemanticAnnotationSectionComponent } from './semantic-annotation-section';
+import { buildSemanticContent } from 'src/app/layouts/main-layout/handlers/annotation-llm-helpers.util';
 
 jest.mock('src/app/services/image-data.service', () => ({ ImageDataService: class {} }));
 
@@ -48,6 +49,25 @@ describe('SemanticAnnotationSectionComponent', () => {
         [undefined, ['a']],
         [dante.uri, ['b', 'c']],
         [undefined, ['d']],
+      ]);
+  });
+
+  it('shows an AI annotation with element subjects in the same "About" groups', () => {
+    const SH = 'http://example.org/shakespeare#';
+    const portia = { uri: `${SH}Portia`, label: 'Portia', elementType: 'entity' as const };
+    const bassanio = { uri: `${SH}Bassanio`, label: 'Bassanio', elementType: 'entity' as const };
+    const knowsAi = { uri: predicate.uri, label: predicate.label };
+    const { groups } = render(buildSemanticContent([
+      { predicate: knowsAi, object: { text: 'a' } },
+      { subject: portia, predicate: knowsAi, object: { text: 'b' } },
+      { subject: portia, predicate: knowsAi, object: { text: 'c' } },
+      { subject: bassanio, predicate: knowsAi, object: { text: 'd' } },
+    ])!);
+    expect(groups.map(({ subject, triples }: any) => [subject?.label, triples.map((t: any) => t.object.text)]))
+      .toEqual([
+        [undefined, ['a']],
+        ['Portia', ['b', 'c']],
+        ['Bassanio', ['d']],
       ]);
   });
 

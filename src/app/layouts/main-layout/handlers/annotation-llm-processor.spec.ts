@@ -350,6 +350,43 @@ describe('processLLMResponse > content', () => {
     expect(payloads).toEqual([]);
   });
 
+  it('places overlapping semantic annotations, each with its own triples', () => {
+    const portiaLivesInBelmont = {
+      subject: { uri: 'http://example.org/shakespeare#Portia', label: 'Portia', elementType: 'entity' as const },
+      ...livesInBelmont,
+    };
+    const sentence = 'Her name is Portia, nothing undervalued';
+    const { payloads } = place(PORTIA, [
+      {
+        type: 'semantic_annotation',
+        target: target({ exact: sentence, start: 0, end: 39 }),
+        triples: [representsTheDate, portiaLivesInBelmont],
+      },
+      {
+        type: 'semantic_annotation',
+        target: portia,
+        triples: [identifiesPortia, portiaLivesInBelmont],
+      },
+    ], 'semantic_annotation');
+
+    expect(payloads.map((p) => p.subject.selected.text)).toEqual([sentence, 'Portia']);
+    expect(payloads[0].subject.selected.rangeSelector).toEqual(
+      expect.objectContaining({ startOffset: 0, endOffset: 39 }),
+    );
+    expect(payloads[1].subject.selected.rangeSelector).toEqual(
+      expect.objectContaining({ startOffset: 12, endOffset: 18 }),
+    );
+    // the same triple about Portia is kept in both annotations
+    const livesIn = (payload: any) => payload.content.find(
+      (t: any) => t.predicate.uri === 'http://example.org/shakespeare#livesIn',
+    );
+    expect(livesIn(payloads[0])).toEqual(livesIn(payloads[1]));
+    expect(livesIn(payloads[0])).toEqual(expect.objectContaining({
+      subjectType: 'uri',
+      subject: expect.objectContaining({ uri: 'http://example.org/shakespeare#Portia', source: 'search' }),
+    }));
+  });
+
   it('keeps the comment as received', () => {
     const { payloads } = place(PORTIA, [{ type: 'comment', target: portia, comment: 'Bassanio &amp; Porzia' }]);
 
