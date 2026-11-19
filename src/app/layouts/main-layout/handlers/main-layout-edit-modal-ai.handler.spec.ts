@@ -75,6 +75,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
         // as the real service: onLoad runs when the toast shows
         info: jest.fn(showToast),
         error: jest.fn(showToast),
+        success: jest.fn(),
       },
       annotationService: {
         getAnnotationFromPayload: jest.fn((id: string) => ({ id })),
@@ -345,6 +346,42 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
 
     expect(layoutDS.aiService.annotate).not.toHaveBeenCalled();
     expect(layoutDS.toastService.info).toHaveBeenCalled();
+  });
+
+  it('previews and saves a semantic annotation with element subjects as built', async () => {
+    const SH = 'http://example.org/shakespeare#';
+    const portia = { uri: `${SH}Portia`, label: 'Portia', source: 'search', elementType: 'entity' };
+    const content = [
+      {
+        predicate: { label: 'identifies', uri: `${SH}identifies` },
+        objectType: 'uri', object: { ...portia },
+      },
+      {
+        subjectType: 'uri', subject: portia,
+        predicate: { label: 'lives in', uri: `${SH}livesIn` },
+        objectType: 'uri', object: { uri: `${SH}Belmont`, label: 'Belmont', source: 'search', elementType: 'entity' },
+      },
+    ];
+    const selected = {
+      rangeSelector: { startContainer: '/p[1]', endContainer: '/p[1]', startOffset: 12, endOffset: 18 },
+      textQuoteSelector: { exact: 'Portia' },
+    };
+    const aiPayload = { type: 'Linking', content, subject: { selected } };
+    prepareMock.mockReturnValue({ request, segmentMap });
+    layoutDS.aiService.annotate.mockReturnValue(of([]));
+    processMock.mockReturnValue([aiPayload]);
+    layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: 'saved', ...p }));
+    layoutDS.tagService = { addMany: jest.fn() };
+    layoutEH.emitOuter = jest.fn();
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'semantic_annotation' });
+    expect(layoutDS.annotationService.getAnnotationFromPayload)
+      .toHaveBeenCalledWith('ai-preview-0', expect.objectContaining({ type: 'Linking', content }));
+
+    handler.onAiAccept();
+    await new Promise(jest.requireActual('timers').setImmediate);
+    expect(layoutDS.saveAnnotation).toHaveBeenCalledTimes(1);
+    expect(layoutDS.saveAnnotation.mock.calls[0][0].content).toEqual(content);
   });
 
   describe('discarding a preview', () => {

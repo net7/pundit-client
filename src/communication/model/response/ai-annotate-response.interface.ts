@@ -19,7 +19,7 @@ export type AiAnnotationTarget = {
   end: number | null;
 };
 
-/** An object of a triple that is an element of the user's ontologies. */
+/** An element of the user's ontologies: object or subject of a triple. */
 export type AiAnnotationElementObject = {
   uri: string;
   label: string;
@@ -40,6 +40,11 @@ export type AiAnnotationLiteralObject = {
  * object is either an element of those ontologies or a literal value.
  */
 export type AiAnnotationTriple = {
+  /**
+   * Element of the user's ontologies (class or entity) the triple is about.
+   * Absent: the triple is about the passage of the annotation `target`.
+   */
+  subject?: AiAnnotationElementObject;
   predicate: { uri: string; label: string };
   object: AiAnnotationElementObject | AiAnnotationLiteralObject;
 };
@@ -47,8 +52,11 @@ export type AiAnnotationTriple = {
 /**
  * An annotation proposed by the AI, one per position. `comment` (already
  * HTML-escaped), `tags` (already normalized) and `triples` come with their
- * type. `triples` is a non-empty list: all the triples whose subject is the
- * passage of `target`, in the order the model proposed them.
+ * type. `triples` is a non-empty list: first the triples about the passage of
+ * `target` (no `subject`), then the triples about an ontology element linked
+ * to that passage, grouped by `subject.uri` in the order the subjects appear.
+ * The same element triple can come in several annotations, one per passage it
+ * belongs to, and `target`s may overlap (a sentence and a word inside it).
  */
 export type AiAnnotation = {
   type: AiAnnotationType;
