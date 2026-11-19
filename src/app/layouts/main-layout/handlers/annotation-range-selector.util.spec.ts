@@ -58,6 +58,7 @@ describe('prepareAiRequest', () => {
       ],
       prompt: 'task',
       annotation_type: 'comment',
+      context: expect.any(Object),
     });
     expect(prepared?.segmentMap.get('c2')?.textContent).toBe('Viterbo');
   });
@@ -87,10 +88,30 @@ describe('prepareAiRequest', () => {
       ],
       prompt: 'task',
       annotation_type: 'highlight',
+      context: expect.any(Object),
     });
     expect(prepared?.request).not.toHaveProperty('selected_text');
     expect(prepared?.segmentMap.get('c2')?.textContent).toBe('\n      ');
     expect(prepared?.segmentMap.get('c2')?.isConnected).toBe(true);
+  });
+
+  it('adds the page context around exactly the segments, for every annotation type', async () => {
+    document.title = 'Laghi del Lazio';
+    // "si trova vicino" in " si trova vicino al lago"
+    const payload = payloadFor(select(' si trova vicino al lago', 1, ' si trova vicino al lago', 16));
+    document.body.innerHTML = PAGE;
+    for (const type of ['highlight', 'comment', 'tags', 'semantic_annotation'] as const) {
+      document.body.innerHTML = PAGE;
+      const prepared = await prepareAiRequest(payload, 'task', type);
+      expect(prepared?.request.segments.map(({ text }) => text)).toEqual(['si trova vicino']);
+      expect(prepared?.request.context).toEqual({
+        title: 'Laghi del Lazio',
+        site: 'localhost',
+        before: 'Comune di Viterbo ',
+        after: ' al lago Il lago di Bolsena è vulcanico',
+      });
+    }
+    document.title = '';
   });
 
   it('sends no request when the selection is not in the page', async () => {
