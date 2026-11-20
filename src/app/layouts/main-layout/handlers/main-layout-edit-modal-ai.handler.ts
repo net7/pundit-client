@@ -5,17 +5,19 @@ import { AppEvent, MainLayoutEvent, getEventType } from "src/app/event-types";
 import { _c } from "src/app/models/config";
 import { ToastInstance } from "src/app/services/toast.service";
 import { AnalyticsModel } from "src/common/models";
-import {
-  AiAnnotateErrorCode,
-  AiAnnotateErrorResponse,
-  AiAnnotationType,
-} from "src/communication";
+import { AiAnnotateErrorCode, AiAnnotationType } from "src/communication";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
 import { prepareAiRequest } from "./annotation-range-selector.util";
 import { processLLMResponse } from "./annotation-llm-processor";
 import { getAiSettingsToastParams } from "./ai-settings-toast.util";
+import {
+  AI_ERROR_TOAST_DELAY,
+  AI_ONTOLOGY_ERROR_CODES,
+  AI_SETTINGS_ERROR_CODES,
+  getAiErrorCode,
+} from "./ai-error-codes.util";
 import { getOntologiesToastParams } from "./ontologies-warning-toast.util";
 import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { isValidAnnotationPayload } from "./edit-modal-validation";
@@ -32,65 +34,6 @@ const AI_ANNOTATION_TYPES: AiAnnotationType[] = [
 
 const toAiAnnotationType = (value?: string): AiAnnotationType =>
   AI_ANNOTATION_TYPES.find((type) => type === value) ?? "highlight";
-
-/** Backend error codes with a dedicated message (i18n key toast#ai_error_<code>). */
-const AI_ERROR_CODES: AiAnnotateErrorCode[] = [
-  "payload_too_large",
-  "no_active_api_key",
-  "invalid_api_key",
-  "provider_quota_exceeded",
-  "provider_rate_limited",
-  "provider_timeout",
-  "provider_unavailable",
-  "provider_host_not_found",
-  "provider_url_blocked",
-  "structured_output_unsupported",
-  "model_unavailable",
-  "invalid_structured_output",
-  "no_predicates",
-  "no_elements",
-  "ontology_too_large",
-];
-
-/**
- * Code for a response without a known code, from its HTTP status: these can also
- * come from a proxy (e.g. nginx) or the backend's own limits, with no JSON body.
- */
-const AI_ERROR_CODE_BY_STATUS: Record<number, AiAnnotateErrorCode> = {
-  413: "payload_too_large",
-  429: "provider_rate_limited",
-  504: "provider_timeout",
-};
-
-const getAiErrorCode = (error: any): AiAnnotateErrorCode | undefined => {
-  const code = (error?.response?.data as AiAnnotateErrorResponse | undefined)
-    ?.code;
-  const known = AI_ERROR_CODES.find((c) => c === code);
-  return known ?? AI_ERROR_CODE_BY_STATUS[error?.response?.status];
-};
-
-/** AI error toasts stay 2 s longer than the default (3 s), to give time to read them. */
-const AI_ERROR_TOAST_DELAY = 5000;
-
-/** Error codes the user fixes in the AI settings (API key, provider, model). */
-const AI_SETTINGS_ERROR_CODES: AiAnnotateErrorCode[] = [
-  "no_active_api_key",
-  "invalid_api_key",
-  "provider_quota_exceeded",
-  "provider_unavailable",
-  "provider_host_not_found",
-  "provider_url_blocked",
-  "structured_output_unsupported",
-  "model_unavailable",
-  "invalid_structured_output",
-];
-
-/** Error codes of semantic annotations the user fixes in the Ontologies panel. */
-const AI_ONTOLOGY_ERROR_CODES: AiAnnotateErrorCode[] = [
-  "no_predicates",
-  "no_elements",
-  "ontology_too_large",
-];
 
 export class MainLayoutEditModalAiHandler {
   /** Payloads of the previews shown, by preview id, in generation order. */
