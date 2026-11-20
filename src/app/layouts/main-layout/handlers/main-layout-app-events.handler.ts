@@ -8,6 +8,8 @@ import { Annotation, SemanticTripleType } from 'src/communication';
 import { cloneDeep } from 'lodash';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
+import { getAiKeyMissingToastParams } from './ai-settings-toast.util';
+import { getAiPageModalParams } from './ai-page-modal.util';
 
 export const SIDEBAR_EXPANDED_CLASS = 'pnd-annotation-sidebar-expanded';
 
@@ -279,11 +281,18 @@ export class MainLayoutAppEventsHandler implements LayoutHandler {
   }
 
   private onFullPageAnnotationCreate = (payload: any) => {
+    if (payload === 'ai' && this.layoutDS.state.hasActiveAiKey === false) {
+      // no active AI key: point to the AI settings instead of opening the AI modal
+      this.layoutDS.toastService.warn(getAiKeyMissingToastParams());
+      return;
+    }
     this.layoutDS.addPendingAnnotation$().subscribe((pendingAnnotation) => {
       this.layoutDS.removePendingAnnotation();
       this.layoutDS.anchorService.add(pendingAnnotation);
 
-      const openModalConfig = this.buildEditModalConf(pendingAnnotation, payload);
+      const openModalConfig = payload === 'ai'
+        ? getAiPageModalParams(pendingAnnotation)
+        : this.buildEditModalConf(pendingAnnotation, payload);
       this.layoutDS.openEditModal(openModalConfig);
     });
   };

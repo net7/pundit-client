@@ -147,7 +147,7 @@
         <div class="pnd-dropdown__list-wrapper">
           <!-- list of predicate options -->
           <div class="pnd-dropdown__list-items">
-            @for (type of ['tagging', 'commenting', 'linking']; track type) {
+            @for (type of ['tagging', 'commenting', 'linking', 'ai']; track type) {
               <div class="pnd-dropdown__item"
                 (click)="lb.eventHandler.emitInner('newfullpage', type)">
                 {{ ds.labels.fullpage.options[type] }}

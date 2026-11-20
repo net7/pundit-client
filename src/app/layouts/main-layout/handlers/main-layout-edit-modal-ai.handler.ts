@@ -9,8 +9,8 @@ import { AiAnnotateErrorCode, AiAnnotationType } from "src/communication";
 import { MainLayoutDS } from "../main-layout.ds";
 import { MainLayoutEH } from "../main-layout.eh";
 
-import { prepareAiRequest } from "./annotation-range-selector.util";
-import { processLLMResponse } from "./annotation-llm-processor";
+import { preparePageAiRequest, prepareAiRequest } from "./annotation-range-selector.util";
+import { processLLMResponse, processPageAiResponse } from "./annotation-llm-processor";
 import { getAiSettingsToastParams } from "./ai-settings-toast.util";
 import {
   AI_ERROR_TOAST_DELAY,
@@ -55,13 +55,8 @@ export class MainLayoutEditModalAiHandler {
 
     const workingToast = this.layoutDS.toastService.working();
 
-    const pendingAnnotation =
-      this.layoutDS.annotationService.getAnnotationFromPayload(
-        this.layoutDS.pendingAnnotationId,
-        pendingPayload,
-      );
     // highlight first: the request then works on the text nodes the highlight split
-    await this.layoutDS.anchorService.add(pendingAnnotation);
+    await this.drawPendingHighlight(pendingPayload);
 
     const annotationPayload = cloneDeep(pendingPayload);
     EditModalPayloadBuilder.applyFormValuesToPayload(annotationPayload, {
@@ -134,7 +129,31 @@ export class MainLayoutEditModalAiHandler {
     return {};
   }
 
-  private async requestAiPayloads(
+  /** The highlight of the pending selection; a page annotation has none. */
+  private async drawPendingHighlight(pendingPayload: any): Promise<void> {
+    if (!pendingPayload.subject?.selected) {
+      return;
+    }
+    const pendingAnnotation =
+      this.layoutDS.annotationService.getAnnotationFromPayload(
+        this.layoutDS.pendingAnnotationId,
+        pendingPayload,
+      );
+    await this.layoutDS.anchorService.add(pendingAnnotation);
+  }
+
+  /** Preview payloads: on the selection when there is one, on the page otherwise. */
+  private requestAiPayloads(
+    annotationPayload: any,
+    prompt: string,
+    annotationType: AiAnnotationType,
+  ): Promise<any[]> {
+    return annotationPayload.subject?.selected
+      ? this.requestSelectionAiPayloads(annotationPayload, prompt, annotationType)
+      : this.requestPageAiPayloads(annotationPayload, prompt, annotationType);
+  }
+
+  private async requestSelectionAiPayloads(
     annotationPayload: any,
     prompt: string,
     annotationType: AiAnnotationType,
@@ -154,6 +173,26 @@ export class MainLayoutEditModalAiHandler {
     );
   }
 
+  /** Page proposals of a request on the whole page: one page annotation each. */
+  private async requestPageAiPayloads(
+    annotationPayload: any,
+    prompt: string,
+    annotationType: AiAnnotationType,
+  ): Promise<any[]> {
+    const request = preparePageAiRequest(prompt, annotationType);
+    if (!request) {
+      return [];
+    }
+    const annotations = await firstValueFrom(
+      this.layoutDS.aiService.annotate(request),
+    );
+    return processPageAiResponse(annotations, annotationPayload, annotationType);
+  }
+
+  /**
+   * Shows the previews: a highlight and a sidebar card each; a page proposal
+   * has no selection, so only its card (in the page annotations list).
+   */
   private async renderAiPreviews(aiPayloads: any[]): Promise<void> {
     this.layoutDS.removePendingAnnotation();
 
