@@ -3,6 +3,7 @@ import {
   Component,
   Input,
   OnDestroy,
+  OnInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   ElementRef,
@@ -26,7 +27,16 @@ export type AiRequestSectionValue = AiRequestSectionObjectValue | null;
 export type AiRequestSectionOptions = {
   label: string;
   placeholder?: string;
+  /**
+   * Annotation types offered, in this order; the first is the default when
+   * there is no initial value. Absent: all four, highlight first by default.
+   */
+  annotationTypes?: string[];
 };
+
+type AiAnnotationTypeOption = { value: string; label: string };
+
+const DEFAULT_ANNOTATION_TYPE = "highlight";
 
 @Component({
   selector: "pnd-ai-request-section",
@@ -35,6 +45,7 @@ export type AiRequestSectionOptions = {
 })
 export class AiRequestSectionComponent
   implements
+    OnInit,
     AfterViewInit,
     OnDestroy,
     FormSection<AiRequestSectionValue, AiRequestSectionOptions>
@@ -54,20 +65,30 @@ export class AiRequestSectionComponent
   @Input() public reset$!: Subject<void>;
 
   public value = "";
-  public annotationType = "highlight";
+  public annotationType = DEFAULT_ANNOTATION_TYPE;
 
   public placeholder = _t("editmodal#ai_placeholder");
 
   public annotationTypeLabel = _t("editmodal#ai_annotation_type");
 
-  public annotationTypes = [
+  private allAnnotationTypes: AiAnnotationTypeOption[] = [
     { value: "comment", label: _t("editmodal#ai_type_comment") },
     { value: "highlight", label: _t("editmodal#ai_type_highlight") },
     { value: "tags", label: _t("editmodal#ai_type_tags") },
     { value: "semantic_annotation", label: _t("editmodal#ai_type_semantic") },
   ];
 
+  /** The annotation types offered, in order. */
+  public annotationTypes: AiAnnotationTypeOption[] = this.allAnnotationTypes;
+
   private destroy$: Subject<void> = new Subject();
+
+  ngOnInit() {
+    // offered types and default ready for the first render
+    if (this.data) {
+      this.extractInitialValue();
+    }
+  }
 
   ngAfterViewInit() {
     this.extractInitialValue();
@@ -110,10 +131,25 @@ export class AiRequestSectionComponent
   }
 
   private extractInitialValue = () => {
-    const { initialValue } = this.data;
+    const { initialValue, options } = this.data;
+    this.annotationTypes = this.getOfferedTypes(options?.annotationTypes);
     this.value = initialValue?.prompt || "";
-    this.annotationType = initialValue?.annotationType || "highlight";
+    this.annotationType =
+      initialValue?.annotationType || this.getDefaultType(options?.annotationTypes);
   };
+
+  /** The types listed in the options, in their order; all of them when none is listed. */
+  private getOfferedTypes(values?: string[]): AiAnnotationTypeOption[] {
+    const offered = (values ?? [])
+      .map((value) => this.allAnnotationTypes.find((type) => type.value === value))
+      .filter((type): type is AiAnnotationTypeOption => !!type);
+    return offered.length ? offered : this.allAnnotationTypes;
+  }
+
+  /** The first offered type when the options list them, highlight otherwise. */
+  private getDefaultType(values?: string[]): string {
+    return values?.length ? this.annotationTypes[0].value : DEFAULT_ANNOTATION_TYPE;
+  }
 
   private onReset = () => {
     this.extractInitialValue();
