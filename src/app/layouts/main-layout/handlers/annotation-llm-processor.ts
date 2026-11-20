@@ -3,7 +3,7 @@ import {
   AiAnnotationTarget,
   AiAnnotationType,
 } from "src/communication";
-import { addPayloadForRange } from "./annotation-llm-helpers.util";
+import { addPayloadForPage, addPayloadForRange } from "./annotation-llm-helpers.util";
 
 type SegmentSpan = {
   id: string;
@@ -159,7 +159,8 @@ function locateTarget(
 
 /**
  * Preview payloads of the AI annotations, in the order received; the
- * annotations that cannot be placed or lack the content of their type are skipped.
+ * annotations that cannot be placed (no target included) or lack the content
+ * of their type are skipped.
  */
 function processLLMResponse(
   annotations: AiAnnotation[],
@@ -195,4 +196,35 @@ function processLLMResponse(
   return payloads;
 }
 
-export { processLLMResponse };
+/**
+ * Preview payloads of the AI annotations of a request on the page, in the
+ * order received: one page annotation per annotation with `target: null`.
+ * Annotations that carry a target, or lack the content of their type, are
+ * skipped.
+ */
+function processPageAiResponse(
+  annotations: AiAnnotation[],
+  annotationPayload: any,
+  requestedType: AiAnnotationType,
+): any[] {
+  const payloads: any[] = [];
+  for (const annotation of annotations ?? []) {
+    if (!annotation || annotation.target !== null) {
+      continue;
+    }
+    try {
+      const payload = addPayloadForPage(annotation, annotationPayload, requestedType);
+      if (payload) {
+        payloads.push(payload);
+      }
+    } catch (error) {
+      console.error("[processPageAiResponse] AI annotation skipped:", {
+        annotation,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+  return payloads;
+}
+
+export { processLLMResponse, processPageAiResponse };

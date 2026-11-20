@@ -56,7 +56,7 @@ type SemanticSubject = Pick<SemanticContentTriple, "subjectType" | "subject">;
 
 /**
  * Subject of an AI triple, saved like a subject picked from the element
- * search; empty (the annotated fragment) when it has no URI.
+ * search; empty (the annotated fragment, or the page) when it has no URI.
  */
 function buildSubject(subject?: AiAnnotationTriple["subject"]): SemanticSubject {
   if (!subject || typeof subject !== "object" || !subject.uri) {
@@ -185,5 +185,26 @@ export function addPayloadForRange(
     ...payload.subject,
     selected: serializeRangeToSelector(range),
   };
+  return payload;
+}
+
+/**
+ * The preview payload of an AI annotation on the page (`target: null`): a copy
+ * of the pending page annotation payload with the content of the annotation,
+ * its `subject` left as it is (no selection).
+ * Null when the annotation lacks the content of its type.
+ */
+export function addPayloadForPage(
+  annotation: AiAnnotation,
+  annotationPayload: any,
+  requestedType: AiAnnotationType,
+): any | null {
+  if (!annotationPayload) {
+    return null;
+  }
+  const payload = cloneDeep(annotationPayload);
+  if (!applyAnnotationType(payload, annotation, requestedType)) {
+    return null;
+  }
   return payload;
 }

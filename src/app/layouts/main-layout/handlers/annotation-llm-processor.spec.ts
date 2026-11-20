@@ -1,5 +1,5 @@
 import { AiAnnotation, AiAnnotationTarget } from 'src/communication';
-import { processLLMResponse } from './annotation-llm-processor';
+import { processLLMResponse, processPageAiResponse } from './annotation-llm-processor';
 import { buildSegmentProjection } from './annotation-range-utils';
 
 const PORTIA =
@@ -419,5 +419,108 @@ describe('processLLMResponse > content', () => {
 
     expect(payloads[0].type).toBe('Commenting');
     expect(payloads[0].content).toEqual({ comment: 'Heiress' });
+  });
+});
+
+describe('processLLMResponse > annotations on the page', () => {
+  it('skips an annotation without a target and keeps the others', () => {
+    const { payloads } = place(PORTIA, [
+      { type: 'comment', target: null, comment: 'About the page.' },
+      { type: 'comment', target: target({ exact: 'Portia', start: 12, end: 18 }), comment: 'Portia.' },
+    ]);
+    expect(payloads).toHaveLength(1);
+    expect(payloads[0].content).toEqual({ comment: 'Portia.' });
+  });
+});
+
+describe('processPageAiResponse', () => {
+  const pagePayload = {
+    type: 'Highlighting',
+    notebookId: 'n1',
+    subject: { pageContext: 'http://localhost/', pageTitle: 'The Merchant of Venice' },
+  };
+
+  const portia = {
+    uri: 'http://example.org/portia',
+    label: 'Portia',
+    elementType: 'entity' as const,
+  };
+  const predicate = { uri: 'http://example.org/about', label: 'about' };
+
+  it('builds one page annotation with the comment and no selection', () => {
+    const payloads = processPageAiResponse(
+      [{ type: 'comment', target: null, comment: 'A comedy about a bond.' }],
+      pagePayload,
+      'comment',
+    );
+    expect(payloads).toEqual([{
+      type: 'Commenting',
+      notebookId: 'n1',
+      content: { comment: 'A comedy about a bond.' },
+      tags: undefined,
+      subject: pagePayload.subject,
+    }]);
+    expect(payloads[0].subject).not.toHaveProperty('selected');
+    expect(payloads[0].subject).not.toBe(pagePayload.subject);
+  });
+
+  it('builds one page annotation per tags group, in order', () => {
+    const payloads = processPageAiResponse(
+      [
+        { type: 'tags', target: null, tags: ['venice', 'belmont'] },
+        { type: 'tags', target: null, tags: ['portia', 'antonio'] },
+      ],
+      pagePayload,
+      'tags',
+    );
+    expect(payloads.map((p) => [p.type, p.tags])).toEqual([
+      ['Highlighting', ['venice', 'belmont']],
+      ['Highlighting', ['portia', 'antonio']],
+    ]);
+    payloads.forEach((p) => expect(p.subject.selected).toBeUndefined());
+  });
+
+  it('builds the triples about the page with no subject type, those about an element as today', () => {
+    const [payload] = processPageAiResponse(
+      [{
+        type: 'semantic_annotation',
+        target: null,
+        triples: [
+          { predicate, object: portia },
+          { subject: portia, predicate, object: { text: '1596' } },
+        ],
+      }],
+      pagePayload,
+      'semantic_annotation',
+    );
+    expect(payload.type).toBe('Linking');
+    expect(payload.content[0]).not.toHaveProperty('subjectType');
+    expect(payload.content[0]).not.toHaveProperty('subject');
+    expect(payload.content[1]).toEqual({
+      subjectType: 'uri',
+      subject: { ...portia, source: 'search' },
+      predicate,
+      objectType: 'literal',
+      object: { text: '1596' },
+    });
+    expect(payload.subject.selected).toBeUndefined();
+  });
+
+  it('skips a proposal without content or with a target', () => {
+    expect(processPageAiResponse(
+      [
+        { type: 'comment', target: null, comment: '' },
+        { type: 'tags', target: null, tags: [] },
+        { type: 'comment', target: target({ exact: 'Portia' }), comment: 'Placed.' },
+        { type: 'comment', target: null, comment: 'Kept.' },
+      ],
+      pagePayload,
+      'comment',
+    ).map((p) => p.content)).toEqual([{ comment: 'Kept.' }]);
+  });
+
+  it('is empty when nothing is usable', () => {
+    expect(processPageAiResponse([{ type: 'comment', target: null }], pagePayload, 'comment')).toEqual([]);
+    expect(processPageAiResponse([], pagePayload, 'comment')).toEqual([]);
   });
 });
