@@ -3,6 +3,9 @@ import { AiAnnotateContext } from "src/communication";
 /** Characters of page text sent on each side of the selection, at most. */
 export const PAGE_CONTEXT_TEXT_LIMIT = 1500;
 
+/** Characters of the beginning of the page text sent in a request on the page, at most. */
+export const PAGE_TEXT_LIMIT = 6000;
+
 /** Text that is not readable page text: code, styles, templates, Pundit's interface. */
 const SKIPPED_ANCESTORS = "script, style, noscript, template, pnd-root";
 
@@ -62,13 +65,21 @@ function createTextWalker(root: Node): TreeWalker {
 /**
  * Text of the nodes next to `from` in one direction (whitespace collapsed,
  * joined as they are), until it is longer than the limit: one character
- * more tells whether the cut falls inside a word.
+ * more tells whether the cut falls inside a word. Without `from`, forward
+ * from the first text node of `root`.
  */
-function collectText(root: Node, from: Text, backwards: boolean): string {
+function collectText(
+  root: Node,
+  from: Text | null,
+  backwards: boolean,
+  limit: number = PAGE_CONTEXT_TEXT_LIMIT,
+): string {
   const walker = createTextWalker(root);
-  walker.currentNode = from;
+  if (from) {
+    walker.currentNode = from;
+  }
   let text = "";
-  while (text.length <= PAGE_CONTEXT_TEXT_LIMIT) {
+  while (text.length <= limit) {
     const node = backwards ? walker.previousNode() : walker.nextNode();
     if (!node) {
       break;
@@ -129,8 +140,25 @@ export function getTextAround(
 }
 
 /**
- * Context of the page for an AI request: metadata, plus the text around the
- * selection when its boundary nodes are given. Undefined when empty.
+ * Beginning of the page's readable text: from the first text node forward,
+ * up to 6,000 characters, in document order, without looking at the page
+ * structure. Same nodes as the text around a selection (script, style,
+ * noscript, template and Pundit's interface skipped; highlights are page
+ * text), whitespace runs collapsed, nodes joined as they are; a cut inside a
+ * word moves back to the nearest space, or cuts at the character when there
+ * is none. Trimmed; empty when the page has no DOM text.
+ */
+export function getPageText(root: Node = document.body): string {
+  if (!root) {
+    return "";
+  }
+  return keepStart(collectText(root, null, false, PAGE_TEXT_LIMIT), PAGE_TEXT_LIMIT).trim();
+}
+
+/**
+ * Context of the page for an AI request on a selection: metadata, plus the
+ * text around the selection when its boundary nodes are given. Undefined when
+ * empty.
  */
 export function buildPageContext(
   first?: Text,
@@ -141,4 +169,19 @@ export function buildPageContext(
     ...(first && last ? getTextAround(first, last) : {}),
   };
   return Object.keys(context).length ? context : undefined;
+}
+
+/**
+ * Context of the page for an AI request on the whole page: metadata and the
+ * beginning of the page text, empty fields left out. Undefined when title,
+ * description and text are all empty: there is nothing to annotate.
+ */
+export function buildWholePageContext(
+  root: Node = document.body,
+): AiAnnotateContext | undefined {
+  const context: AiAnnotateContext = {
+    ...getPageMetadata(),
+    ...withoutEmpty({ text: getPageText(root) }),
+  };
+  return context.title || context.description || context.text ? context : undefined;
 }

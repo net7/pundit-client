@@ -1,5 +1,11 @@
 import {
-  PAGE_CONTEXT_TEXT_LIMIT, buildPageContext, getPageMetadata, getTextAround
+  PAGE_CONTEXT_TEXT_LIMIT,
+  PAGE_TEXT_LIMIT,
+  buildPageContext,
+  buildWholePageContext,
+  getPageMetadata,
+  getPageText,
+  getTextAround,
 } from './ai-page-context.util';
 
 const setHead = (html: string, title = '') => {
@@ -140,5 +146,79 @@ describe('buildPageContext', () => {
   it('sends only the metadata without selection nodes', () => {
     setHead('', 'The Merchant of Venice');
     expect(buildPageContext()).toEqual({ title: 'The Merchant of Venice', site: 'localhost' });
+  });
+});
+
+describe('getPageText', () => {
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
+
+  it('is the whole text of a short page, trimmed, whitespace runs collapsed', () => {
+    const text = words(115); // 804 characters
+    document.body.innerHTML = `\n  <h1>Title</h1>\n  <p>  ${text.replace(/ /g, '   ')}  </p>\n`;
+    expect(getPageText()).toBe(`Title ${text}`);
+  });
+
+  it('stops at the limit without splitting a word', () => {
+    document.body.innerHTML = `<p>first ${words(3000)}</p>`; // ~20,000 characters
+    const text = getPageText();
+    expect(PAGE_TEXT_LIMIT).toBe(6000);
+    expect(text.length).toBeLessThanOrEqual(PAGE_TEXT_LIMIT);
+    expect(text.length).toBeGreaterThan(PAGE_TEXT_LIMIT - 'parola '.length);
+    expect(text.startsWith('first parola')).toBe(true);
+    expect(text.endsWith(' parola')).toBe(true);
+  });
+
+  it('cuts a long word at the character', () => {
+    document.body.innerHTML = `<p>${'a'.repeat(8000)}</p>`;
+    expect(getPageText()).toBe('a'.repeat(PAGE_TEXT_LIMIT));
+  });
+
+  it('skips script, style, noscript, template and Pundit\'s interface', () => {
+    document.body.innerHTML = `<script>var a = 1;</script><style>p { color: red }</style>
+      <noscript>enable js</noscript><template>tpl</template><pnd-root><p>Pundit UI</p></pnd-root>
+      <p>In sooth, I know not why I am so sad</p>`;
+    expect(getPageText()).toBe('In sooth, I know not why I am so sad');
+  });
+
+  it('keeps words split by formatting or highlights whole', () => {
+    document.body.innerHTML = '<p>lake <b>Bol</b>sena, a wa<pnd-mark>nt-wit</pnd-mark> sadness</p>';
+    expect(getPageText()).toBe('lake Bolsena, a want-wit sadness');
+  });
+
+  it('is empty when the page has no DOM text', () => {
+    document.body.innerHTML = '<canvas></canvas>\n  <canvas></canvas>';
+    expect(getPageText()).toBe('');
+  });
+});
+
+describe('buildWholePageContext', () => {
+  afterEach(() => {
+    setHead('');
+    document.body.innerHTML = '';
+  });
+
+  it('joins metadata and the beginning of the page text, no text around', () => {
+    setHead('<meta name="description" content="A comedy">', 'The Merchant of Venice');
+    document.body.innerHTML = '<p>In sooth, I know not why I am so sad</p>';
+    expect(buildWholePageContext()).toEqual({
+      title: 'The Merchant of Venice',
+      site: 'localhost',
+      description: 'A comedy',
+      text: 'In sooth, I know not why I am so sad',
+    });
+  });
+
+  it('sends the metadata alone when the page has no DOM text', () => {
+    setHead('', 'Scan.pdf');
+    document.body.innerHTML = '<canvas></canvas>';
+    expect(buildWholePageContext()).toEqual({ title: 'Scan.pdf', site: 'localhost' });
+  });
+
+  it('is undefined without title, description and text, even with a site', () => {
+    setHead('<meta property="og:site_name" content="Wiki">');
+    document.body.innerHTML = '<canvas></canvas>';
+    expect(buildWholePageContext()).toBeUndefined();
   });
 });
