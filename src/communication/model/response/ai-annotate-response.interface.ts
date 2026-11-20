@@ -42,7 +42,8 @@ export type AiAnnotationLiteralObject = {
 export type AiAnnotationTriple = {
   /**
    * Element of the user's ontologies (class or entity) the triple is about.
-   * Absent: the triple is about the passage of the annotation `target`.
+   * Absent: the triple is about the annotated thing, the passage of the
+   * annotation `target` or, when `target` is null, the page.
    */
   subject?: AiAnnotationElementObject;
   predicate: { uri: string; label: string };
@@ -60,7 +61,8 @@ export type AiAnnotationTriple = {
  */
 export type AiAnnotation = {
   type: AiAnnotationType;
-  target: AiAnnotationTarget;
+  /** Where the annotation sits in the selection; null: an annotation on the page. */
+  target: AiAnnotationTarget | null;
   comment?: string;
   tags?: string[];
   triples?: AiAnnotationTriple[];

@@ -32,7 +32,7 @@ const select = (startText: string, startOffset: number, endText: string, endOffs
 
 const segmentTexts = async (payload: any) => {
   const prepared = await prepareAiRequest(payload, 'task', 'comment');
-  return prepared?.request.segments.map(({ text }) => text);
+  return prepared?.request.segments?.map(({ text }) => text);
 };
 
 describe('prepareAiRequest', () => {
@@ -103,7 +103,7 @@ describe('prepareAiRequest', () => {
     for (const type of ['highlight', 'comment', 'tags', 'semantic_annotation'] as const) {
       document.body.innerHTML = PAGE;
       const prepared = await prepareAiRequest(payload, 'task', type);
-      expect(prepared?.request.segments.map(({ text }) => text)).toEqual(['si trova vicino']);
+      expect(prepared?.request.segments?.map(({ text }) => text)).toEqual(['si trova vicino']);
       expect(prepared?.request.context).toEqual({
         title: 'Laghi del Lazio',
         site: 'localhost',
