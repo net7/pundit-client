@@ -3,10 +3,9 @@
 ## Purpose
 
 Define the page context sent with an AI annotate request to help the model understand the selection: page metadata and their fallbacks, extraction of the text before and after the selection, and the rules for leaving fields out.
-
 ## Requirements
 ### Requirement: The AI request carries the page context
-An AI annotate request SHALL carry, besides `segments`, `prompt` and `annotation_type`, an optional `context` object with the optional string fields `title`, `site`, `description`, `before` and `after`, for every annotation type. A field that would be empty SHALL be left out; `context` SHALL be left out when all its fields are. `segments` SHALL stay exactly the selection.
+An AI annotate request on a selection SHALL carry, besides `segments`, `prompt` and `annotation_type`, an optional `context` object with the optional string fields `title`, `site`, `description`, `before` and `after`, for every annotation type. A field that would be empty SHALL be left out; `context` SHALL be left out when all its fields are. `segments` SHALL stay exactly the selection. It SHALL NOT carry `subject` nor `context.text`: those belong to a request on the whole page (`ai-page-annotation`).
 
 #### Scenario: Request with context
 - **WHEN** the page titled "The Merchant of Venice" has "Act I. Scene 1." before the selected "Her name is Portia" and "nothing undervalued" after it
@@ -15,6 +14,10 @@ An AI annotate request SHALL carry, besides `segments`, `prompt` and `annotation
 #### Scenario: Nothing to send
 - **WHEN** the page has no title, no metadata, no host name and no text outside the selection
 - **THEN** the request has no `context` key
+
+#### Scenario: No page fields on a selection
+- **WHEN** a request is built for a selection on a page with a long text
+- **THEN** the request has no `subject` key and its `context` has no `text` key
 
 ### Requirement: Page metadata and fallbacks
 The client SHALL read `title` from `<meta property="og:title">`, else `document.title`; `site` from `<meta property="og:site_name">`, else the page host name; `description` from `<meta name="description">`, else `<meta property="og:description">`. A source missing or blank SHALL fall back to the next one. Values SHALL be trimmed with whitespace runs collapsed. No other metadata SHALL be read.
