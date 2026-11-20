@@ -1,5 +1,5 @@
 import { describe as describeRange } from '@net7/annotator';
-import { prepareAiRequest } from './annotation-range-selector.util';
+import { preparePageAiRequest, prepareAiRequest } from './annotation-range-selector.util';
 
 const PAGE = `
   <p id="one">Comune di <em>Viterbo</em> si trova vicino al lago</p>
@@ -32,7 +32,7 @@ const select = (startText: string, startOffset: number, endText: string, endOffs
 
 const segmentTexts = async (payload: any) => {
   const prepared = await prepareAiRequest(payload, 'task', 'comment');
-  return prepared?.request.segments.map(({ text }) => text);
+  return prepared?.request.segments?.map(({ text }) => text);
 };
 
 describe('prepareAiRequest', () => {
@@ -103,7 +103,7 @@ describe('prepareAiRequest', () => {
     for (const type of ['highlight', 'comment', 'tags', 'semantic_annotation'] as const) {
       document.body.innerHTML = PAGE;
       const prepared = await prepareAiRequest(payload, 'task', type);
-      expect(prepared?.request.segments.map(({ text }) => text)).toEqual(['si trova vicino']);
+      expect(prepared?.request.segments?.map(({ text }) => text)).toEqual(['si trova vicino']);
       expect(prepared?.request.context).toEqual({
         title: 'Laghi del Lazio',
         site: 'localhost',
@@ -118,5 +118,63 @@ describe('prepareAiRequest', () => {
     const payload = payloadFor(select(' si trova vicino al lago', 1, ' si trova vicino al lago', 16));
     document.body.innerHTML = '<p>Altro testo</p>';
     expect(await prepareAiRequest(payload, 'task', 'comment')).toBeNull();
+  });
+});
+
+describe('prepareAiRequest > no page fields', () => {
+  it('sends no subject and no context text on a page with long text', async () => {
+    document.title = 'Laghi del Lazio';
+    const page = `${PAGE}<p>${'testo '.repeat(2000)}</p>`;
+    document.body.innerHTML = page;
+    const payload = payloadFor(select(' si trova vicino al lago', 1, ' si trova vicino al lago', 16));
+    document.body.innerHTML = page;
+    const prepared = await prepareAiRequest(payload, 'task', 'comment');
+    expect(prepared?.request).not.toHaveProperty('subject');
+    expect(prepared?.request.context).toBeDefined();
+    expect(prepared?.request.context).not.toHaveProperty('text');
+    document.title = '';
+  });
+});
+
+describe('preparePageAiRequest', () => {
+  afterEach(() => {
+    document.title = '';
+    document.head.innerHTML = '';
+    document.body.innerHTML = '';
+  });
+
+  it('sends the page subject and context, with no segments', () => {
+    document.title = 'The Merchant of Venice';
+    document.body.innerHTML = '<p>In sooth, I know not why I am so sad</p>';
+    const request = preparePageAiRequest('task', 'comment');
+    expect(request).toEqual({
+      subject: 'page',
+      prompt: 'task',
+      annotation_type: 'comment',
+      context: {
+        title: 'The Merchant of Venice',
+        site: 'localhost',
+        text: 'In sooth, I know not why I am so sad',
+      },
+    });
+    expect(request).not.toHaveProperty('segments');
+    expect(request?.context).not.toHaveProperty('before');
+    expect(request?.context).not.toHaveProperty('after');
+  });
+
+  it('sends the metadata only when the page has no DOM text', () => {
+    document.title = 'Scan.pdf';
+    document.body.innerHTML = '<canvas></canvas>';
+    expect(preparePageAiRequest('task', 'tags')).toEqual({
+      subject: 'page',
+      prompt: 'task',
+      annotation_type: 'tags',
+      context: { title: 'Scan.pdf', site: 'localhost' },
+    });
+  });
+
+  it('is null when there is nothing to send', () => {
+    document.body.innerHTML = '<canvas></canvas>';
+    expect(preparePageAiRequest('task', 'comment')).toBeNull();
   });
 });

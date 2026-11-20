@@ -2,7 +2,7 @@ import { anchor } from "@net7/annotator";
 import { AiAnnotateRequest, AiAnnotationType } from "src/communication";
 import { getAnnotationSelectors } from "src/app/models/annotation/annotation-selectors";
 import { buildSegmentProjection } from "./annotation-range-utils";
-import { buildPageContext } from "./ai-page-context.util";
+import { buildPageContext, buildWholePageContext } from "./ai-page-context.util";
 
 export type PreparedAiRequest = {
   request: AiAnnotateRequest;
@@ -56,5 +56,27 @@ export async function prepareAiRequest(
       ...(context ? { context } : {}),
     },
     segmentMap,
+  };
+}
+
+/**
+ * Builds the AI annotate request on the whole page: `subject: "page"`, no
+ * `segments`, and a `context` with the page metadata and the beginning of the
+ * page text. Returns null when the page has no title, no description and no
+ * text: nothing to send.
+ */
+export function preparePageAiRequest(
+  prompt: string,
+  annotationType: AiAnnotationType,
+): AiAnnotateRequest | null {
+  const context = buildWholePageContext();
+  if (!context) {
+    return null;
+  }
+  return {
+    subject: "page",
+    prompt,
+    annotation_type: annotationType,
+    context,
   };
 }

@@ -23,3 +23,10 @@ export const getAiSettingsToastParams = (): ToastParams => ({
     }
   },
 });
+
+/** No active AI key: the warning that points to the AI settings instead of opening the AI modal. */
+export const getAiKeyMissingToastParams = (): ToastParams => ({
+  title: _t("toast#ai_unavailable_title"),
+  text: _t("toast#ai_error_no_active_api_key"),
+  ...getAiSettingsToastParams(),
+});

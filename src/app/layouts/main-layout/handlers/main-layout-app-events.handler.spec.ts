@@ -1,4 +1,7 @@
-import { Subject, BehaviorSubject } from 'rxjs';
+import { Subject, BehaviorSubject, of } from 'rxjs';
+import { translate } from '@net7/core';
+import en_US from 'src/app/config/i18n/en_US';
+import { AppEvent } from 'src/app/event-types';
 import { MainLayoutAppEventsHandler } from './main-layout-app-events.handler';
 import { buildSemanticContent } from './annotation-llm-helpers.util';
 import { EditModalPayloadBuilder } from './edit-modal-payload.builder';
@@ -125,5 +128,78 @@ describe('MainLayoutAppEventsHandler', () => {
       predicate, objectType: 'literal', object: { text: 'Vita nova' },
     }]);
     expect(row.subject).toEqual({ uri: 'urn:isbn:9788817', label: 'urn:isbn:9788817', source: 'free-text' });
+  });
+
+  describe('AI annotation of the page', () => {
+    const pageAnnotation = {
+      id: 'pending-id',
+      subject: { pageContext: 'http://localhost/page', pageTitle: 'The Merchant of Venice' },
+    };
+
+    beforeAll(() => {
+      translate.setDefaultLang('en');
+      translate.setCurrentLang('en');
+      ['editmodal#ai_label', 'toast#ai_unavailable_title', 'toast#ai_error_no_active_api_key', 'toast#ai_error_open_settings']
+        .forEach((key) => translate.setLangTranslation('en', key, key));
+    });
+
+    const createForPage = (hasActiveAiKey: boolean | null, annotation: any = pageAnnotation) => {
+      const { handler, layoutDS } = create();
+      layoutDS.state = { hasActiveAiKey };
+      layoutDS.addPendingAnnotation$ = jest.fn(() => of(annotation));
+      layoutDS.removePendingAnnotation = jest.fn();
+      layoutDS.anchorService = { add: jest.fn() };
+      layoutDS.openEditModal = jest.fn();
+      layoutDS.toastService = { warn: jest.fn() };
+      return { handler, layoutDS };
+    };
+
+    it('opens the AI modal with the page title and the page annotation types', () => {
+      const { handler, layoutDS } = createForPage(true);
+      handler.handleAppEvent(AppEvent.AnnotationNewFullPage, 'ai');
+
+      expect(layoutDS.openEditModal).toHaveBeenCalledWith({
+        textQuote: 'The Merchant of Venice',
+        sections: [{
+          id: 'aiRequest',
+          required: true,
+          focus: true,
+          options: {
+            label: 'editmodal#ai_label',
+            annotationTypes: ['comment', 'tags', 'semantic_annotation'],
+          },
+        }],
+      });
+      expect(en_US).toHaveProperty(['tooltip#aiRequest']);
+    });
+
+    it('titles the modal with the page URL when there is no title', () => {
+      const { handler, layoutDS } = createForPage(null, {
+        id: 'pending-id', subject: { pageContext: 'http://localhost/page' },
+      });
+      handler.handleAppEvent(AppEvent.AnnotationNewFullPage, 'ai');
+      expect(layoutDS.openEditModal.mock.calls[0][0].textQuote).toBe('http://localhost/page');
+    });
+
+    it('warns and opens nothing without an active AI key', () => {
+      const { handler, layoutDS } = createForPage(false);
+      handler.handleAppEvent(AppEvent.AnnotationNewFullPage, 'ai');
+
+      expect(layoutDS.openEditModal).not.toHaveBeenCalled();
+      expect(layoutDS.addPendingAnnotation$).not.toHaveBeenCalled();
+      expect(layoutDS.toastService.warn).toHaveBeenCalledWith(expect.objectContaining({
+        title: 'toast#ai_unavailable_title',
+        text: 'toast#ai_error_no_active_api_key',
+        actions: [{ text: 'toast#ai_error_open_settings', payload: expect.any(String) }],
+      }));
+    });
+
+    it('keeps the manual page modals', () => {
+      const { handler, layoutDS } = createForPage(false);
+      handler.handleAppEvent(AppEvent.AnnotationNewFullPage, 'commenting');
+      const { sections } = layoutDS.openEditModal.mock.calls[0][0];
+      expect(sections.map(({ id }: any) => id)).toEqual(['tags', 'notebook', 'comment']);
+      expect(layoutDS.toastService.warn).not.toHaveBeenCalled();
+    });
   });
 });
