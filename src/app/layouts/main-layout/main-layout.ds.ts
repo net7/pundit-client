@@ -1,6 +1,10 @@
 import { LayoutDataSource } from "@net7/core";
-import { from, of, BehaviorSubject, Observable } from "rxjs";
-import { switchMap, tap } from "rxjs/operators";
+import {
+  from, of, race, BehaviorSubject, Observable,
+} from "rxjs";
+import {
+  first, map, switchMap, tap,
+} from "rxjs/operators";
 import { difference } from "lodash";
 import {
   Annotation,
@@ -124,8 +128,16 @@ export class MainLayoutDS extends LayoutDataSource {
   }
 
   private getAnnotations(includePrivate: boolean) {
-    return this.documentInfoService.get().pipe(
+    // a PDF that cannot be loaded has no document info: the search is
+    // skipped and the sidebar shows no annotations instead of loading forever
+    const documentFailed$ = this.pdfService.failed$.pipe(first(), map(() => null));
+    return race(this.documentInfoService.get(), documentFailed$).pipe(
       switchMap((info) => {
+        if (!info) {
+          this.annotationService.totalChanged$.next(0);
+          this.hasLoaded$.next(true);
+          return of(null);
+        }
         const { pageContext, pageMetadata } = info;
         return from(
           AnnotationModel.search(

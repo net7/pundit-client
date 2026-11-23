@@ -44,6 +44,9 @@ export class PdfService {
 
   public loaded$: ReplaySubject<void> = new ReplaySubject();
 
+  /** Emits once when the document cannot be loaded; late subscribers get it too. */
+  public failed$: ReplaySubject<void> = new ReplaySubject(1);
+
   public error$: Subject<{
     type: string;
     payload: PDFViewerApp;
@@ -119,6 +122,7 @@ export class PdfService {
         originalUrl: this.originalUrl,
       });
     } catch (err: any) {
+      this.failed$.next();
       this.error$.next({
         type: err.name,
         payload: this.pdfApp
