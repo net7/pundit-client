@@ -6,8 +6,12 @@ const STAGE_TS = 'src/environments/local.stage.ts';
 const STAGE_URLS = 'src/environments/chrome-ext-urls.stage.js';
 const PROD_TS = 'src/environments/local.prod.ts';
 
-const stageTs = (api) => `
+const STAGE_APP = 'app.thepund.netseven.work';
+const PROD_APP = 'app.thepund.it';
+
+const envTs = (app, api = `${app}/api`) => `
 const apiBaseUrl = 'https://${api}';
+const authBaseUrl = 'https://${app}/';
 const googleAuth = 'https://accounts.google.com/o/oauth2/auth';
 const egi = "https://aai.egi.eu/auth";
 const staticUrl = \`https://static.thepund.it/assets\`;
@@ -18,43 +22,67 @@ test('extractHosts finds unique lowercase hosts, without port, path or query', (
   assert.deepEqual(hosts, ['api.example.com', 'localhost']);
 });
 
-test('stage config with the netseven API host and third-party hosts passes', () => {
-  assert.deepEqual(checkHosts('stage', { [STAGE_TS]: stageTs('api.thepund.netseven.work'), [STAGE_URLS]: null }), []);
+test('stage config with the stage application host and third-party hosts passes', () => {
+  assert.deepEqual(checkHosts('stage', { [STAGE_TS]: envTs(STAGE_APP), [STAGE_URLS]: null }), []);
 });
 
 test('optional stage URL override is checked when present', () => {
-  const urls = "module.exports = { API_BASE_URL: 'https://api.thepund.netseven.work', FEED_WEB_BASE_URL: 'https://feed.thepund.netseven.work/?url=' };";
-  assert.deepEqual(checkHosts('stage', { [STAGE_TS]: stageTs('api.thepund.netseven.work'), [STAGE_URLS]: urls }), []);
+  const urls = `module.exports = { API_BASE_URL: 'https://${STAGE_APP}/api', FEED_WEB_BASE_URL: 'https://feed.thepund.netseven.work/?url=' };`;
+  assert.deepEqual(checkHosts('stage', { [STAGE_TS]: envTs(STAGE_APP), [STAGE_URLS]: urls }), []);
+});
+
+test('a stage file still on the annotation server is rejected, naming file and host', () => {
+  const errors = checkHosts('stage', {
+    [STAGE_TS]: envTs(STAGE_APP, 'api.thepund.netseven.work'), [STAGE_URLS]: null,
+  });
+  assert.ok(
+    errors.some((e) => e.includes(STAGE_TS) && e.includes('api.thepund.netseven.work')),
+    errors.join('\n'),
+  );
+});
+
+test('a stage URL override still on the annotation server is rejected, naming file and host', () => {
+  const urls = "module.exports = { API_BASE_URL: 'https://api.thepund.netseven.work' };";
+  const errors = checkHosts('stage', { [STAGE_TS]: envTs(STAGE_APP), [STAGE_URLS]: urls });
+  assert.ok(
+    errors.some((e) => e.includes(STAGE_URLS) && e.includes('api.thepund.netseven.work')),
+    errors.join('\n'),
+  );
+});
+
+test('a prod file still on the annotation server is rejected, naming file and host', () => {
+  const errors = checkHosts('prod', { [PROD_TS]: envTs(PROD_APP, 'api.thepund.it') });
+  assert.ok(errors.some((e) => e.includes(PROD_TS) && e.includes('api.thepund.it')), errors.join('\n'));
 });
 
 test('local domains are rejected, naming file and host', () => {
-  const errors = checkHosts('stage', { [STAGE_TS]: stageTs('api.thepund.test'), [STAGE_URLS]: null });
-  assert.ok(errors.some((e) => e.includes(STAGE_TS) && e.includes('api.thepund.test')), errors.join('\n'));
+  const errors = checkHosts('stage', { [STAGE_TS]: envTs('app.thepund.test'), [STAGE_URLS]: null });
+  assert.ok(errors.some((e) => e.includes(STAGE_TS) && e.includes('app.thepund.test')), errors.join('\n'));
 });
 
 test('every local-host pattern is rejected', () => {
-  ['localhost', '127.0.0.1', '0.0.0.0', 'pundit.local', 'app.localhost', 'api.thepund.test'].forEach((host) => {
-    const text = `${stageTs('api.thepund.netseven.work')}\nconst x = 'http://${host}:8000';`;
+  ['localhost', '127.0.0.1', '0.0.0.0', 'pundit.local', 'app.localhost', 'app.thepund.test'].forEach((host) => {
+    const text = `${envTs(STAGE_APP)}\nconst x = 'http://${host}:8000';`;
     const errors = checkHosts('stage', { [STAGE_TS]: text, [STAGE_URLS]: null });
     assert.ok(errors.some((e) => e.includes(host)), `${host}: ${errors.join('\n')}`);
   });
 });
 
-test('missing expected API host is rejected', () => {
+test('missing expected application host is rejected', () => {
   const errors = checkHosts('stage', { [STAGE_TS]: "const a = 'https://accounts.google.com';", [STAGE_URLS]: null });
-  assert.ok(errors.some((e) => e.includes('api.thepund.netseven.work')), errors.join('\n'));
+  assert.ok(errors.some((e) => e.includes(STAGE_APP)), errors.join('\n'));
 });
 
-test("the other environment's API host is rejected", () => {
-  const text = `${stageTs('api.thepund.netseven.work')}\nconst b = 'https://api.thepund.it';`;
+test("the other environment's host is rejected", () => {
+  const text = `${envTs(STAGE_APP)}\nconst b = 'https://${PROD_APP}/api';`;
   const errors = checkHosts('stage', { [STAGE_TS]: text, [STAGE_URLS]: null });
-  assert.ok(errors.some((e) => e.includes('api.thepund.it')), errors.join('\n'));
+  assert.ok(errors.some((e) => e.includes(PROD_APP)), errors.join('\n'));
 });
 
-test('prod requires api.thepund.it and rejects the stage API host', () => {
-  assert.deepEqual(checkHosts('prod', { [PROD_TS]: stageTs('api.thepund.it') }), []);
-  const errors = checkHosts('prod', { [PROD_TS]: stageTs('api.thepund.netseven.work') });
-  assert.ok(errors.some((e) => e.includes('api.thepund.netseven.work')), errors.join('\n'));
+test('prod requires the prod application host and rejects the stage one', () => {
+  assert.deepEqual(checkHosts('prod', { [PROD_TS]: envTs(PROD_APP) }), []);
+  const errors = checkHosts('prod', { [PROD_TS]: envTs(STAGE_APP) });
+  assert.ok(errors.some((e) => e.includes(STAGE_APP)), errors.join('\n'));
 });
 
 test('missing required file is rejected', () => {

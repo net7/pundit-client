@@ -15,7 +15,8 @@ const TERMS_URL = '';
 
 const config: LocalConfig = {
   serializer: 'pundit-client',
-  apiBaseUrl: 'https://api.pundit.work/',
+  // one host: the BE API lives under the application's /api
+  apiBaseUrl: 'https://pundit.work/api',
   authBaseUrl: 'https://pundit.work/',
   userLink: 'https://pundit.work/',
   notebookLink: 'https://pundit.work/notebook',

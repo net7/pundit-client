@@ -24,7 +24,7 @@ const common = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify('https://api.thepund.it'),
+      API_BASE_URL: JSON.stringify('https://app.thepund.it/api'),
       FEED_PDF_BASE_URL: JSON.stringify('https://feed.thepund.it/pdf.php?source='), // https://feed.thepund.it/pdf.php?source=<pdf>
       FEED_WEB_BASE_URL: JSON.stringify('https://feed.thepund.it/?url='), // https://feed.thepund.it/?url=<url>
     })

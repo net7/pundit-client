@@ -7,8 +7,10 @@ const ENVIRONMENTS = {
   stage: {
     s3Prefix: 's3://static-pundit/releases/stage',
     invalidationPath: '/releases/stage/*',
-    apiHost: 'api.thepund.netseven.work',
-    forbiddenApiHost: 'api.thepund.it',
+    // the BE API lives on the application's host, under /api
+    apiHost: 'app.thepund.netseven.work',
+    // the other environment and the retired annotation server
+    forbiddenApiHosts: ['app.thepund.it', 'api.thepund.it', 'api.thepund.netseven.work'],
     // path -> required? (chrome-ext-urls.stage.js is optional: webpack falls back to the netseven defaults)
     envFiles: {
       'src/environments/local.stage.ts': true,
@@ -25,8 +27,8 @@ const ENVIRONMENTS = {
   prod: {
     s3Prefix: 's3://static-pundit/releases',
     invalidationPath: '/releases/*',
-    apiHost: 'api.thepund.it',
-    forbiddenApiHost: 'api.thepund.netseven.work',
+    apiHost: 'app.thepund.it',
+    forbiddenApiHosts: ['app.thepund.netseven.work', 'api.thepund.netseven.work', 'api.thepund.it'],
     envFiles: {
       'src/environments/local.prod.ts': true,
     },

@@ -19,7 +19,7 @@ const isLocalHost = (host) => host === 'localhost'
 
 // files: { path: content | null } (null = file not found). Returns error messages.
 const checkHosts = (env, files) => {
-  const { apiHost, forbiddenApiHost, envFiles } = ENVIRONMENTS[env];
+  const { apiHost, forbiddenApiHosts, envFiles } = ENVIRONMENTS[env];
   const errors = [];
   Object.entries(envFiles).forEach(([file, required]) => {
     const content = files[file];
@@ -31,9 +31,9 @@ const checkHosts = (env, files) => {
     hosts.filter(isLocalHost).forEach((host) => {
       errors.push(`${file} points at the local host ${host}`);
     });
-    if (hosts.includes(forbiddenApiHost)) {
-      errors.push(`${file} contains ${forbiddenApiHost}, the API host of the other environment`);
-    }
+    forbiddenApiHosts.filter((host) => hosts.includes(host)).forEach((host) => {
+      errors.push(`${file} contains ${host}, which is not the ${env} API host ${apiHost}`);
+    });
     if (!hosts.includes(apiHost)) {
       errors.push(`${file} does not contain the ${env} API host ${apiHost}`);
     }

@@ -6,7 +6,7 @@ const prodConfig = require("./webpack.chrome-ext.prod");
 // pundit-deployment/scripts/render-env.sh, gitignored) sovrascrive gli URL
 // con i domini locali, in coerenza con local.stage.ts.
 let urls = {
-  API_BASE_URL: "https://api.thepund.netseven.work",
+  API_BASE_URL: "https://app.thepund.netseven.work/api",
   FEED_PDF_BASE_URL: "https://feed.thepund.netseven.work/pdf.php?source=",
   FEED_WEB_BASE_URL: "https://feed.thepund.netseven.work/?url=",
 };
