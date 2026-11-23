@@ -1058,22 +1058,19 @@ const PDFViewerApplication = {
       }
 
       let key = "loading_error";
-      let custom = false;
 
       if (exception instanceof _pdfjsLib.InvalidPDFException) {
         key = "invalid_file_error";
-        custom = true;
       } else if (exception instanceof _pdfjsLib.MissingPDFException) {
         key = "missing_file_error";
       } else if (exception instanceof _pdfjsLib.UnexpectedResponseException) {
         key = "unexpected_response_error";
-        custom = true;
       }
 
       return this.l10n.get(key).then(msg => {
         this._documentError(msg, {
           message: exception?.message
-        }, custom);
+        });
 
         throw exception;
       });
@@ -1171,13 +1168,60 @@ const PDFViewerApplication = {
     });
   },
 
-  _documentError(message, moreInfo = null, custom = false) {
+  _documentError(message, moreInfo = null) {
     this._unblockDocumentLoadEvent();
 
-    this._otherError(message, moreInfo, custom);
+    // Pundit error customization: a document that cannot be loaded gets a
+    // page of its own in place of the viewer, with a link to the original.
+    console.warn("PDF.js: " + message, moreInfo?.message || "");
+    this.loadingBar.hide();
+    this._punditDocumentError();
   },
 
-  _otherError(message, moreInfo = null, custom = false) {
+  _punditDocumentError() {
+    if (document.getElementById("punditDocumentError")) {
+      return;
+    }
+
+    const source = new URLSearchParams(window.location.search).get("source");
+    let sourceUrl = null;
+
+    try {
+      sourceUrl = new URL(source);
+    } catch (e) {}
+
+    const create = (tag, className, text) => {
+      const el = document.createElement(tag);
+      el.className = className;
+      if (text) {
+        el.textContent = text;
+      }
+      return el;
+    };
+
+    const page = create("div", "punditDocumentError");
+    page.id = "punditDocumentError";
+    page.setAttribute("role", "alert");
+    const card = create("div", "punditDocumentError__card");
+    card.append(
+      create("h1", "punditDocumentError__title", "This PDF could not be opened"),
+      create("p", "punditDocumentError__text", "Pundit could not load this document. It may not be a PDF file, or its site may not let Pundit open it.")
+    );
+
+    if (sourceUrl && ["http:", "https:", "file:"].includes(sourceUrl.protocol)) {
+      const link = create("a", "punditDocumentError__button", "Open the original document");
+      link.href = sourceUrl.href;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      card.append(link, create("p", "punditDocumentError__url", sourceUrl.href));
+    }
+
+    page.append(card);
+    // below the toolbar, over the (empty) viewer
+    (document.getElementById("mainContainer") || document.body).append(page);
+  },
+
+  _otherError(message, moreInfo = null) {
     const moreInfoText = [this.l10n.get("error_version_info", {
       version: _pdfjsLib.version || "?",
       build: _pdfjsLib.build || "?"
@@ -1240,27 +1284,6 @@ const PDFViewerApplication = {
     closeButton.oncontextmenu = _ui_utils.noContextMenuHandler;
     moreInfoButton.hidden = false;
     lessInfoButton.hidden = true;
-
-    // Pundit error customization
-    if (custom) {
-      const customMessage = `The resource is not a PDF file, or cannot be annotated with Pundit. You can try to directly access the document by clicking the button below.`;
-      errorMessage.textContent = customMessage;
-      
-      const splitString = '?source=';
-      const urlObject = new URL(window.location.href);
-      const search = urlObject.search;
-      const searchDecoded = decodeURIComponent(search); 
-      const redirectUrl = searchDecoded.split(splitString)[1];
-
-      const redirectButton = document.getElementById("errorRedirect");
-      moreInfoButton.hidden = true;
-
-      redirectButton.onclick = function () {
-        window.open(redirectUrl);
-      };
-    } else {
-      redirectButton.hidden = true;
-    }
 
     Promise.all(moreInfoText).then(parts => {
       errorMoreInfo.value = parts.join("\n");

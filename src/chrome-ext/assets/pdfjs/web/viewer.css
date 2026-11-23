@@ -2322,13 +2322,6 @@ html[dir="rtl"] .treeItemToggler::before {
   align-items: center;
 }
 
-#errorRedirect {
-  float: left;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  padding: 5px;
-}
-
 #errorMessageRight {
   float: right;
 }
@@ -2759,4 +2752,59 @@ html[dir="rtl"] #documentPropertiesOverlay .row > * {
   #scaleSelectContainer {
     display: none;
   }
+}
+
+/* Pundit error customization: page shown when a document cannot be loaded */
+.punditDocumentError {
+  position: absolute;
+  inset: 32px 0 0 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: var(--body-bg-color);
+  color: var(--main-color);
+  font-family: sans-serif;
+}
+
+.punditDocumentError__card {
+  max-width: 480px;
+  text-align: center;
+}
+
+.punditDocumentError__title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.punditDocumentError__text {
+  margin: 0 0 24px;
+  font-size: 15px;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.punditDocumentError__button {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 4px;
+  background-color: #2e5bff;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.punditDocumentError__button:hover,
+.punditDocumentError__button:focus-visible {
+  background-color: #1f45d6;
+}
+
+.punditDocumentError__url {
+  margin: 16px 0 0;
+  font-size: 12px;
+  opacity: 0.6;
+  overflow-wrap: anywhere;
 }
