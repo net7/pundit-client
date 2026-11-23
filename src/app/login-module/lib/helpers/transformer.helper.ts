@@ -42,6 +42,11 @@ export const transformFromHttpSuccess = (response: any, source: SourceType) => {
 
 export const transformFromHttpError = (error: AxiosError, source: SourceType) => {
   const errorData = error?.response?.data as { error?: string } | undefined;
+  // the BE API answers a guest's 401 with `{message: 'Unauthenticated.'}`:
+  // the app reads a signed-out session as the `Unauthorized` error
+  if (error?.response?.status === 401 && !errorData?.error) {
+    return { error: 'Unauthorized', source };
+  }
   if (errorData) {
     return { error: errorData?.error as string, source };
   }
