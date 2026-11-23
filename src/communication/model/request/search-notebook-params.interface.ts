@@ -3,6 +3,7 @@ export interface SearchNotebookParams {
     fulltext?: string,
     sharingMode?: 'public'|'private'| 'shared',
     facets?: NotebookFacetType[],
-    size?: number,
-    from?: number
+    /** Page to load, counting from 1. */
+    page?: number,
+    size?: number
 }

@@ -64,7 +64,9 @@ export class AnnotationModel {
     }[]
   ): SearchAnnotationParams => {
     const searchRequestBuilder = new SearchAnnotationParamsBuilder();
-    searchRequestBuilder.size(200)
+    searchRequestBuilder
+      .page(1)
+      .size(200)
       .uri(uri);
     if (pageMetadata) {
       searchRequestBuilder.pageMetadata(pageMetadata);

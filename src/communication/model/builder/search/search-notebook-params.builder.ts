@@ -7,6 +7,8 @@ export class SearchNotebookParamsBuilder {
 
     private _facets?: NotebookFacetType[];
 
+    private _page?: number;
+
     private _size?: number;
 
     fulltext = (value: string): SearchNotebookParamsBuilder => {
@@ -24,6 +26,12 @@ export class SearchNotebookParamsBuilder {
       return this;
     }
 
+    /** Page to load, counting from 1. */
+    page = (value: number): SearchNotebookParamsBuilder => {
+      this._page = value;
+      return this;
+    }
+
     size = (value: number): SearchNotebookParamsBuilder => {
       this._size = value;
       return this;
@@ -33,6 +41,7 @@ export class SearchNotebookParamsBuilder {
       fulltext: this._fulltext,
       sharingMode: this._sharingMode,
       facets: this._facets,
+      page: this._page,
       size: this._size
     })
 }

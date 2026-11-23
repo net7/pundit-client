@@ -11,8 +11,9 @@ export interface SearchAnnotationParams {
     dateTo?: string,
     fulltext?: string,
     facets?: AnnotationFacetType[],
+    /** Page to load, counting from 1. */
+    page?: number;
     size?: number;
-    from?: number;
     tags?: string | string[]
     userNotebooksOnly?: boolean;
 }

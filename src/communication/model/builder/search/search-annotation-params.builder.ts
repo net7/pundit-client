@@ -20,7 +20,7 @@ export class SearchAnnotationParamsBuilder {
 
     private _size!: number;
 
-    private _from!: number;
+    private _page!: number;
 
     private _userNotebooksOnly!: boolean;
 
@@ -78,8 +78,9 @@ export class SearchAnnotationParamsBuilder {
       return this;
     }
 
-    from = (value: number): SearchAnnotationParamsBuilder => {
-      this._from = value;
+    /** Page to load, counting from 1. */
+    page = (value: number): SearchAnnotationParamsBuilder => {
+      this._page = value;
       return this;
     }
 
@@ -103,8 +104,8 @@ export class SearchAnnotationParamsBuilder {
       dateTo: this._dateTo,
       fulltext: this._fulltext,
       facets: this._facets,
+      page: this._page,
       size: this._size,
-      from: this._from,
       userNotebooksOnly: this._userNotebooksOnly,
       tags: this._tags
     })

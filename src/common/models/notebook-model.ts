@@ -23,7 +23,7 @@ export class NotebookModel {
 
   @CrossMessage(CrossMsgRequestId.NotebookSearch)
   static search() {
-    return notebook.search({ size: 50 });
+    return notebook.search({ page: 1, size: 50 });
   }
 
   @CrossMessage(CrossMsgRequestId.NotebookUpdate)
