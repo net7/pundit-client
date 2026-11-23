@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy, inject } from '@angular/core';
 import { fromEvent, Observable, Subject } from 'rxjs';
 import { filter, take, takeUntil } from 'rxjs/operators';
+import { POPUP_MESSAGE_SOURCE } from '../helpers/transformer.helper';
 import { PopupParameters } from '../interfaces/popup.interface';
 import { ModalService } from './modal.service';
 
@@ -31,14 +32,20 @@ export class PopupService implements OnDestroy {
     this.destroy$ = new Subject<boolean>();
     return fromEvent<MessageEvent>(window, 'message')
       .pipe(
-        filter((message: MessageEvent) => this.filterOriginIfExists(message, origin)),
+        filter((message: MessageEvent) => this.isPopupMessage(message, origin)),
         take(1),
         takeUntil(this.destroy$)
       );
   }
 
-  private filterOriginIfExists = (
+  /**
+   * Only the outcome message posted by the application's own popup is read:
+   * in the extension the page can receive messages from any origin.
+   */
+  private isPopupMessage = (
     message: MessageEvent,
     origin?: string
-  ) => !origin || message.origin === origin;
+  ) => !!origin
+    && message.origin === origin
+    && message.data?.source === POPUP_MESSAGE_SOURCE;
 }

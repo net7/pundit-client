@@ -5,12 +5,14 @@ import {
   EMPTY, from, Observable, of, Subject
 } from 'rxjs';
 import {
-  catchError, map, take, takeUntil, tap
+  catchError, map, switchMap, take, takeUntil, tap
 } from 'rxjs/operators';
 import { AnalyticsAction } from 'src/common/types';
 import { AnalyticsModel, AuthModel } from '../../../../common/models';
 import { mustVerifyEmail, toResendOutcome } from '../helpers/auth-error.helper';
-import { fromEvent, transformFromHttpError, transformFromHttpSuccess } from '../helpers/transformer.helper';
+import {
+  fromPopupOutcome, loginErrorText, transformFromHttpError, transformFromHttpSuccess
+} from '../helpers/transformer.helper';
 import { TermsParameters } from '../interfaces/terms.interface';
 import { ResendOutcome } from '../interfaces/verify-email.interface';
 import { AuthEventService } from './auth-event.service';
@@ -167,9 +169,9 @@ export class EmailProviderService implements OnDestroy {
   private listenEvent(event$: Observable<MessageEvent>) {
     event$.pipe(
       takeUntil(this.destroy$),
-      map(fromEvent),
-      catchError((err) => of({ error: JSON.stringify(err), source: 'login' }))
-    ).subscribe((authResp: any) => {
+      switchMap(fromPopupOutcome),
+      catchError(() => of({ error: loginErrorText(), source: 'login' as const }))
+    ).subscribe((authResp: LoginResponse) => {
       if (authResp) {
         this.authEventService.set(authResp);
       }

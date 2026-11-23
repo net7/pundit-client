@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, Subject } from 'rxjs';
-import { catchError, map, takeUntil } from 'rxjs/operators';
+import { catchError, switchMap, takeUntil } from 'rxjs/operators';
 import { AnalyticsModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
-import { fromEvent } from '../helpers/transformer.helper';
+import { fromPopupOutcome, loginErrorText } from '../helpers/transformer.helper';
 import { OAuthProvider } from '../interfaces';
 import { AuthEventService } from './auth-event.service';
 import { PopupService } from './popup.service';
@@ -31,12 +31,12 @@ export class OauthProviderService {
   private listenEvent(event$: Observable<MessageEvent>) {
     event$.pipe(
       takeUntil(this.destroy$),
-      map(fromEvent),
-      catchError((err) => of({ error: JSON.stringify(err) }))
-    ).subscribe((authResp: any) => {
+      switchMap(fromPopupOutcome),
+      catchError(() => of({ error: loginErrorText(), source: 'login' as const }))
+    ).subscribe((authResp) => {
+      // success and failure alike: the failure shows the "sign-in failed" toast
+      this.authEventService.set(authResp);
       if ('user' in authResp) {
-        this.authEventService.set(authResp);
-
         // analytics
         let action;
         if (this.selectedProvider!.id === 'google') {
