@@ -72,7 +72,8 @@ const defaultOptions = {
     kind: OptionKind.VIEWER + OptionKind.PREFERENCE
   },
   defaultUrl: {
-    value: "compressed.tracemonkey-pldi-09.pdf",
+    // Pundit customization: no demo PDF, the document always comes from ?source=
+    value: "",
     kind: OptionKind.VIEWER
   },
   defaultZoomValue: {
@@ -225,7 +226,9 @@ const defaultOptions = {
     kind: OptionKind.WORKER
   },
   workerSrc: {
-    value: "/assets/pdfjs/build/pdf.worker.js",
+    // Pundit customization: relative to the page, so it also resolves when the
+    // viewer is served from a sub-path (the web viewer under /pdf-viewer/)
+    value: "./assets/pdfjs/build/pdf.worker.js",
     kind: OptionKind.WORKER
   }
 };
