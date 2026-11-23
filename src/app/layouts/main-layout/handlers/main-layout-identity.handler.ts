@@ -53,6 +53,15 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           this.loginAlert();
           // emit signal
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
+        } else {
+          // the session lookup failed (network, CORS, server error): go on as a
+          // guest, so the sidebar does not wait forever
+          console.warn('Identity init response error', resp);
+          this.layoutDS.toastService.error({
+            title: _t('toast#genericerror_title'),
+            text: _t('toast#genericerror_text'),
+          });
+          this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
         }
       });
   }

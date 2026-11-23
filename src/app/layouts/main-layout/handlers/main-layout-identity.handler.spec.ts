@@ -1,4 +1,6 @@
+import { translate } from '@net7/core';
 import { BehaviorSubject, of, Subject } from 'rxjs';
+import en_US from 'src/app/config/i18n/en_US';
 import { getEventType, MainLayoutEvent } from 'src/app/event-types';
 import { MainLayoutIdentityHandler } from './main-layout-identity.handler';
 
@@ -11,6 +13,12 @@ describe('MainLayoutIdentityHandler > active AI key flag', () => {
     user: {
       id: '1', username: 'user', thumb: '', is_verified: true, current_notebook: 'nb', ...extra,
     },
+  });
+
+  beforeAll(() => {
+    translate.setDefaultLang('en');
+    translate.setCurrentLang('en');
+    translate.setLangTranslations('en', en_US);
   });
 
   const listen = (initResponse: any) => {
@@ -63,6 +71,16 @@ describe('MainLayoutIdentityHandler > active AI key flag', () => {
 
     expect(layoutDS.punditLoginService.sso).toHaveBeenCalledTimes(1);
     expect(layoutDS.userService.iam).not.toHaveBeenCalled();
+    expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
+  });
+
+  it('goes on as a guest when the session lookup fails for another reason', () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    listen({ error: 'Internal server error' });
+
+    expect(layoutDS.userService.iam).not.toHaveBeenCalled();
+    expect(layoutDS.toastService.error).toHaveBeenCalledTimes(1);
+    expect(layoutDS.toastService.warn).not.toHaveBeenCalled();
     expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
   });
 
