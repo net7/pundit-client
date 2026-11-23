@@ -1,4 +1,6 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject
+} from '@angular/core';
 import { _t } from '@net7/core';
 import {
   SocialType, Reply
@@ -15,6 +17,7 @@ import { AnnotationEvent, getEventType } from 'src/app/event-types';
 import { NgClass, AsyncPipe } from '@angular/common';
 import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
 import { SocialActionBarComponent } from '../social-action-bar/social-action-bar';
+import { getReplyTextarea } from '../reply-textarea.helper';
 
 export type ReplyFormState = {
   value?: string;
@@ -41,6 +44,7 @@ export class ReplyComponent implements OnInit {
   private replyService = inject(ReplyService);
   private socialService = inject(SocialService);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
   imageDataService = inject(ImageDataService);
 
   @Input() public data!: Reply;
@@ -158,6 +162,8 @@ export class ReplyComponent implements OnInit {
           return EMPTY;
         }),
         finalize(() => {
+          // async save: OnPush needs a check to show the new state
+          this.cdr.markForCheck();
           // send signal
           this.emit(getEventType(AnnotationEvent.ReplyChanged));
         })
@@ -208,6 +214,8 @@ export class ReplyComponent implements OnInit {
           return EMPTY;
         }),
         finalize(() => {
+          // async save: OnPush needs a check to close the form
+          this.cdr.markForCheck();
           // send signal
           this.emit(getEventType(AnnotationEvent.ReplyChanged));
         })
@@ -228,16 +236,14 @@ export class ReplyComponent implements OnInit {
 
   private checkFocus = () => {
     setTimeout(() => {
-      const el = this.getTextAreaEl();
+      const el = getReplyTextarea(this.data.id);
+      if (!el) {
+        return;
+      }
       el.focus();
       el.setSelectionRange(el.value.length, el.value.length);
     });
   };
-
-  private getTextAreaEl() {
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot!.querySelector(`textarea#${this.data.id}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
-  }
 
   private getUserData(userId: string) {
     const user = this.userService.getUserById(userId)!;

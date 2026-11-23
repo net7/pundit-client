@@ -1,4 +1,6 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, inject
+} from '@angular/core';
 import { _t } from '@net7/core';
 import { Reply, ReplyAttributes, SocialType } from 'src/communication';
 import { EMPTY, Observable } from 'rxjs';
@@ -11,6 +13,7 @@ import { ToastService } from 'src/app/services/toast.service';
 import { UserService } from 'src/app/services/user.service';
 import { ReplyType } from '../reply/reply';
 import { SocialBarState, createInitialState, resetFormState } from './social-action-bar.helpers';
+import { getReplyTextarea } from '../reply-textarea.helper';
 import { NgClass } from '@angular/common';
 import { SvgIconComponent } from '../../../../svg-icon/svg-icon';
 
@@ -26,6 +29,7 @@ export class SocialActionBarComponent implements OnInit {
   private socialService = inject(SocialService);
   private replyService = inject(ReplyService);
   private toastService = inject(ToastService);
+  private cdr = inject(ChangeDetectorRef);
 
   @Input() socials$!: Observable<SocialStats>;
 
@@ -56,10 +60,13 @@ export class SocialActionBarComponent implements OnInit {
     this.initState();
     this.socials$.subscribe((socials) => {
       this.setSocialState(socials);
+      this.cdr.markForCheck();
     });
     if (this.replies$) {
       this.replies$.subscribe((replies) => {
         this.setReplyState(replies);
+        // the reply count moves after an async save
+        this.cdr.markForCheck();
       });
     }
     this.userService.logged$.subscribe((logged) => {
@@ -294,6 +301,8 @@ export class SocialActionBarComponent implements OnInit {
         return EMPTY;
       }),
       finalize(() => {
+        // async save: OnPush needs a check to close the form
+        this.cdr.markForCheck();
         // send signal
         this.emit(getEventType(AnnotationEvent.ReplyChanged));
       })
@@ -321,14 +330,8 @@ export class SocialActionBarComponent implements OnInit {
   private checkFocus = () => {
     if (this.state.reply!.toggleForm) {
       setTimeout(() => {
-        const el = this.getTextAreaEl();
-        el.focus();
+        getReplyTextarea(this.annotationId)?.focus();
       });
     }
   };
-
-  private getTextAreaEl() {
-    const { shadowRoot } = document.getElementsByTagName('pnd-root')[0];
-    return shadowRoot!.querySelector(`textarea#${this.annotationId}.pnd-annotation__reply-textarea`) as HTMLTextAreaElement;
-  }
 }
