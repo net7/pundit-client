@@ -72,9 +72,9 @@ export const doPageAnnotationsRequest = (
       return Promise.resolve({ tabId, total: value });
     }
 
-    // get total value API
+    // get total value API (public count: anonymous, the user's session is not involved)
     const { pageContext, pageMetadata } = payload;
-    return AnnotationModel.search(pageContext, pageMetadata).then((response) => {
+    return AnnotationModel.publicSearch(pageContext, pageMetadata).then((response) => {
       const { stats } = response.data;
       const { total } = stats;
       cache.push({

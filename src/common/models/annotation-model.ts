@@ -29,14 +29,26 @@ export class AnnotationModel {
     pageMetadata: {
       key: string;
       value: string;
-    }[],
-    publicSearch?: boolean
+    }[]
   ) {
     const payload = AnnotationModel.searchAnnotationPayload(uri, pageMetadata);
-    if (publicSearch) {
-      return annotation.publicSearch(payload);
-    }
     return annotation.search(payload);
+  }
+
+  /**
+   * Searches a page's annotations as an anonymous guest (no cookies, no CSRF
+   * token): what anyone can read, whatever the user's session.
+   * Used by the extension's badge, in the service worker.
+   */
+  static publicSearch(
+    uri: string,
+    pageMetadata: {
+      key: string;
+      value: string;
+    }[]
+  ) {
+    const payload = AnnotationModel.searchAnnotationPayload(uri, pageMetadata);
+    return annotation.publicSearch(payload);
   }
 
   @CrossMessage(CrossMsgRequestId.AnnotationUpdate)

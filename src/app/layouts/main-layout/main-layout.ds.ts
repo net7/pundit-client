@@ -131,7 +131,6 @@ export class MainLayoutDS extends LayoutDataSource {
           AnnotationModel.search(
             pageContext,
             pageMetadata as { key: string; value: string }[],
-            includePrivate,
           ),
         ).pipe(
           tap((response) => {
