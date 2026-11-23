@@ -1,63 +1,75 @@
 import { ChromeExtStorage } from '../storage';
 import { ChromeExtStorageKey } from '../../types';
 import {
+  getTabKind,
   isPdfDocument,
-  isPdfViewer,
-  isFeedPdfUrl,
   redirectToOriginalPdfUrl,
   redirectToPdfViewer,
+  setExtensionUnavailable,
   updateExtensionIcon,
   getFeedPdfSource,
   getFeedWebSource,
-  isFeedWebUrl,
+  TabKind,
 } from '.';
 import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '../handlers/onBrowserActionClicked';
 
-const handlePdfState = (
+const handleFeedWeb = (tab: chrome.tabs.Tab, tabUrl: string, active: boolean) => {
+  // redirect (getFeedWebSource already returns the decoded URL)
+  chrome.tabs.update({
+    url: getFeedWebSource(tabUrl),
+  });
+  // trigger click
+  if (!active) {
+    setTimeout(() => {
+      onBrowserActionClicked(tab);
+    });
+  }
+};
+
+/** Tells the content script whether Pundit is active on the page. */
+const sendState = (tabId: number, active: boolean) => {
+  // a page still loading, or one where the browser runs no content script,
+  // has no receiver
+  chrome.tabs.sendMessage(tabId, {
+    payload: { active },
+    type: CommonEventType.StateChanged,
+  }).catch(() => undefined);
+};
+
+/**
+ * Redirects and state message for the viewer, a feed PDF URL or a web page.
+ * Returns true when the icon is updated later (feed PDF activated on redirect).
+ */
+const handleDocument = async (
   tab: chrome.tabs.Tab,
   tabId: number,
   tabUrl: string,
+  kind: TabKind,
   active: boolean,
-  isPdf: boolean,
-  isViewer: boolean,
-  isFeedPdf: boolean,
-): boolean => {
-  let skipIconUpdate = false;
-  if (isPdf && isFeedPdf) {
-    const pdfSource = getFeedPdfSource(tabUrl);
-    // redirect
-    redirectToPdfViewer(pdfSource);
+): Promise<boolean> => {
+  if (kind === 'viewer') {
     if (!active) {
-      skipIconUpdate = true;
+      redirectToOriginalPdfUrl(tabUrl);
+    }
+    return false;
+  }
+  const isPdf = await isPdfDocument(tabUrl);
+  if (kind === 'feed-pdf' && isPdf) {
+    redirectToPdfViewer(getFeedPdfSource(tabUrl));
+    if (!active) {
       setTimeout(() => {
         onBrowserActionClicked(tab, true);
         updateExtensionIcon(tab.id!, true);
       });
+      return true;
     }
   } else if (active && isPdf) {
     redirectToPdfViewer(tabUrl);
-  } else if (!active && isViewer) {
-    redirectToOriginalPdfUrl(tabUrl);
-  } else if (!isViewer) {
-    // if inactive get document/page url
-    // total annotations number
-    const payload = { active };
-    // if (tabStatus === 'complete') {
-    //   chrome.tabs.sendMessage(tabId, {
-    //     payload,
-    //     type: CommonEventType.DocumentInfoRequest,
-    //   });
-    // }
-    // only the content script listens: it is not in the extension's own pages
-    // (the PDF viewer), nor in a page still loading or a browser page, and
-    // there the message has no receiver
-    chrome.tabs.sendMessage(tabId, {
-      payload,
-      type: CommonEventType.StateChanged,
-    }).catch(() => undefined);
+  } else {
+    sendState(tabId, active);
   }
-  return skipIconUpdate;
+  return false;
 };
 
 export const checkActiveState = (tabId: number) => {
@@ -71,38 +83,20 @@ export const checkActiveState = (tabId: number) => {
         if (window.type === 'popup') {
           return;
         }
+        const tabUrl = tab.url!;
+        const kind = getTabKind(tabUrl);
+        // a page where Pundit cannot run: no request, no message, no redirect
+        if (kind === 'unsupported') {
+          setExtensionUnavailable(tabId);
+          return;
+        }
         const activeKey = `${ChromeExtStorageKey.Active}.${tabId}`;
         (ChromeExtStorage.get(activeKey) as Promise<boolean>).then(async (active: boolean) => {
-          const tabUrl = tab.url!;
-
-          const isViewer = isPdfViewer(tabUrl);
-          const isFeedWeb = isFeedWebUrl(tabUrl);
-          const isFeedPdf = isFeedPdfUrl(tabUrl);
-          if (isFeedWeb) {
-            const webDocumentSource = getFeedWebSource(tabUrl);
-            // redirect (getFeedWebSource already returns the decoded URL)
-            chrome.tabs.update({
-              url: webDocumentSource,
-            });
-            // trigger click
-            if (!active) {
-              setTimeout(() => {
-                onBrowserActionClicked(tab);
-              });
-            }
+          if (kind === 'feed-web') {
+            handleFeedWeb(tab, tabUrl, active);
             return;
           }
-
-          const isPdf = await isPdfDocument(tabUrl);
-          const skipIconUpdate = handlePdfState(
-            tab,
-            tabId,
-            tabUrl,
-            active,
-            isPdf,
-            isViewer,
-            isFeedPdf,
-          );
+          const skipIconUpdate = await handleDocument(tab, tabId, tabUrl, kind, active);
           if (!skipIconUpdate) {
             updateExtensionIcon(tabId, active);
           }

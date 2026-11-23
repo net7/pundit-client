@@ -12,5 +12,6 @@ export * from './getPdfViewerPath';
 export * from './doPageAnnotationsRequest';
 export * from './isFeedPdfUrl';
 export * from './isFeedWebUrl';
+export * from './getTabKind';
 export * from './getFeedPdfSource';
 export * from './getFeedWebSource';
