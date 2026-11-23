@@ -39,7 +39,7 @@ const handlePdfState = (
     redirectToPdfViewer(tabUrl);
   } else if (!active && isViewer) {
     redirectToOriginalPdfUrl(tabUrl);
-  } else {
+  } else if (!isViewer) {
     // if inactive get document/page url
     // total annotations number
     const payload = { active };
@@ -49,10 +49,13 @@ const handlePdfState = (
     //     type: CommonEventType.DocumentInfoRequest,
     //   });
     // }
+    // only the content script listens: it is not in the extension's own pages
+    // (the PDF viewer), nor in a page still loading or a browser page, and
+    // there the message has no receiver
     chrome.tabs.sendMessage(tabId, {
       payload,
       type: CommonEventType.StateChanged,
-    });
+    }).catch(() => undefined);
   }
   return skipIconUpdate;
 };
