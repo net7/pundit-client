@@ -1,21 +1,40 @@
 import { getPdfViewerPath } from '.';
 
-export const isPdfDocument = async (url: string) => {
-  if (typeof url !== 'string') {
+const PDF_CONTENT_TYPE = 'application/pdf';
+
+/** Only web pages can be fetched to read their type; other schemes (chrome:, about:, …) cannot. */
+const isWebUrl = (url: string) => {
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol);
+  } catch {
     return false;
   }
-  const includePdf = url.includes('.pdf');
-  const isNotViewerPath = !url.startsWith(getPdfViewerPath());
-  if (isNotViewerPath && includePdf) {
+};
+
+/**
+ * Whether the tab's URL is a PDF document: by its `.pdf` extension, otherwise
+ * by the `Content-Type` of a web URL. The request is aborted as soon as the
+ * headers arrive, so the document itself is not downloaded.
+ */
+export const isPdfDocument = async (url: string) => {
+  if (typeof url !== 'string' || url.startsWith(getPdfViewerPath())) {
+    return false;
+  }
+  if (url.includes('.pdf')) {
     return true;
   }
-  if (isNotViewerPath && !includePdf) {
-    try {
-      const response = await fetch(url);
-      return response.headers.get('Content-Type') === 'application/pdf';
-    } catch (error) {
-      console.error(error);
-    }
+  if (!isWebUrl(url)) {
+    return false;
   }
-  return false;
+  const controller = new AbortController();
+  try {
+    const response = await fetch(url, { signal: controller.signal });
+    const contentType = response.headers.get('Content-Type') || '';
+    return contentType.split(';')[0].trim().toLowerCase() === PDF_CONTENT_TYPE;
+  } catch {
+    // unreachable host, blocked request: not a PDF we can open
+    return false;
+  } finally {
+    controller.abort();
+  }
 };
