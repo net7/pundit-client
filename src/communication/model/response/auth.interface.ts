@@ -1,10 +1,17 @@
-import { AuthToken } from './auth-token.interface';
 import { LoginUser } from './auth-user.interface';
 
-export type SourceType = 'login' | 'refresh' | 'storage' | 'sso';
+export type SourceType = 'login' | 'storage' | 'sso';
+
+/**
+ * Answer of `GET api/user` and of the email login: the signed-in user and the
+ * CSRF token bound to the session.
+ */
+export interface AuthSessionResponse {
+  userinfo: LoginUser | string;
+  csrf_token: string;
+}
 
 export interface SuccessLoginResponse {
-  token: AuthToken;
   user: LoginUser;
 }
 

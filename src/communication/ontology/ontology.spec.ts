@@ -2,7 +2,6 @@ import request$ from '../providers/rest.provider';
 import list from './list';
 import saveSelection from './save-selection';
 import searchElements from './search-elements';
-import { refreshHook } from '../auth/refresh';
 import { CommunicationSettings } from '../services';
 
 jest.mock('../providers/rest.provider', () => ({ __esModule: true, default: jest.fn(), retry$: jest.fn() }));
@@ -21,7 +20,6 @@ describe('ontology communication', () => {
     expect(requestMock).toHaveBeenCalledWith('/ontologies', {
       baseURL: 'http://api',
       method: 'get',
-      hooks: { after: refreshHook },
     });
   });
 
@@ -31,7 +29,6 @@ describe('ontology communication', () => {
       baseURL: 'http://api',
       method: 'put',
       data: { ontologies: [{ id: '1', categories: ['predicate'] }] },
-      hooks: { after: refreshHook },
     });
   });
 
@@ -41,7 +38,6 @@ describe('ontology communication', () => {
       baseURL: 'http://api',
       method: 'get',
       params: { q: 'pers', categories: 'class,entity', limit: 20 },
-      hooks: { after: refreshHook },
     });
   });
 

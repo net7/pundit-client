@@ -45,7 +45,7 @@ const registerForm = {
   firstname: 'Ada', lastname: 'Lovelace', ...credentials, termsconditions: true, tracking: false,
 };
 const loginSuccess = {
-  data: { access_token: 't', expires_in: 60, userinfo: { id: '1' } },
+  data: { userinfo: { id: '1' }, csrf_token: 't' },
 };
 
 describe('EmailProviderService', () => {

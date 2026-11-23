@@ -1,6 +1,5 @@
 import request$ from '../providers/rest.provider';
 import annotate from './annotate';
-import { refreshHook } from '../auth/refresh';
 import { AiAnnotateRequest } from '../model';
 import { CommunicationSettings } from '../services';
 
@@ -14,7 +13,7 @@ describe('ai annotate', () => {
     CommunicationSettings.apiBaseUrl = 'http://api';
   });
 
-  it('posts the request to /ai/annotate on the api base url with the refresh hook', () => {
+  it('posts the request to /ai/annotate on the api base url', () => {
     const response = Promise.resolve({ data: { annotations: [] } });
     requestMock.mockReturnValue(response);
     const data: AiAnnotateRequest = {
@@ -29,7 +28,6 @@ describe('ai annotate', () => {
       baseURL: 'http://api',
       method: 'post',
       data,
-      hooks: { after: refreshHook },
     });
     expect(result).toBe(response);
   });

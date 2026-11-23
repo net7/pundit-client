@@ -1,6 +1,5 @@
 import axios from 'axios';
-import sso from './sso';
-import { AuthToken } from '../model';
+import sso from './session';
 import { CommunicationSettings } from '../services';
 import { ConnectionManager } from '../services/connection-manager.service';
 
@@ -9,7 +8,7 @@ jest.mock('@vespaiach/axios-fetch-adapter', () => ({ __esModule: true, default: 
 
 const axiosMock = axios as unknown as jest.Mock;
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
-const staleToken: AuthToken = { access_token: 'stale', expires_in: 3600, token_type: 'bearer' };
+const userinfo = { id: '01HX', username: 'Ada', current_notebook: 'nb' };
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
@@ -24,51 +23,43 @@ const trackRelease = (gate: Promise<unknown>) => {
   return state;
 };
 
-describe('auth sso', () => {
+describe('auth sso (session lookup)', () => {
   beforeEach(() => {
     axiosMock.mockReset();
-    CommunicationSettings.authBaseUrl = 'http://auth';
-    CommunicationSettings.token = null;
+    CommunicationSettings.authBaseUrl = 'http://app/';
+    CommunicationSettings.csrfToken = null;
     ConnectionManager.ssoLoading$ = Promise.resolve();
   });
 
-  it('calls /api/auth/me and stores the returned token', async () => {
-    const response = { data: { access_token: 'sso', expires_in: 60, token_type: 'bearer', userinfo: {} } };
+  it('asks GET api/user with the session cookie and stores the csrf_token', async () => {
+    const response = { data: { userinfo, csrf_token: 'session-token' } };
     axiosMock.mockResolvedValue(response);
 
     const result = await sso();
 
+    expect(axiosMock).toHaveBeenCalledTimes(1);
     expect(axiosMock).toHaveBeenCalledWith(expect.objectContaining({
-      url: '/api/auth/me',
-      baseURL: 'http://auth',
-      method: 'post',
-      data: null,
+      url: 'api/user',
+      baseURL: 'http://app/',
+      method: 'get',
       withCredentials: true,
     }));
-    expect(CommunicationSettings.token).toEqual({ access_token: 'sso', expires_in: 60, token_type: 'bearer' });
+    expect(axiosMock.mock.calls[0][0].headers).toEqual({});
+    expect(CommunicationSettings.csrfToken).toBe('session-token');
     expect(result).toBe(response);
+    expect(result.data.userinfo).toEqual(userinfo);
   });
 
-  it('clears the token and rethrows on failure', async () => {
-    CommunicationSettings.token = staleToken;
-    const error = new Error('sso failed');
-    axiosMock.mockRejectedValue(error);
-
-    await expect(sso()).rejects.toBe(error);
-
-    expect(CommunicationSettings.token).toBeNull();
-  });
-
-  it('treats a 401 Unauthorized as logged out, with a single request', async () => {
-    CommunicationSettings.token = staleToken;
+  it('rethrows a 401 for a guest, with a single request and the token untouched', async () => {
+    CommunicationSettings.csrfToken = 'guest-token';
     const error = { response: { status: 401, data: { error: 'Unauthorized' } } };
     axiosMock.mockRejectedValue(error);
 
     await expect(sso()).rejects.toBe(error);
     await flush();
 
-    expect(CommunicationSettings.token).toBeNull();
     expect(axiosMock).toHaveBeenCalledTimes(1);
+    expect(CommunicationSettings.csrfToken).toBe('guest-token');
   });
 
   it('holds the ssoLoading$ gate until the request succeeds', async () => {
@@ -81,7 +72,7 @@ describe('auth sso', () => {
     expect(axiosMock).toHaveBeenCalledTimes(1);
     expect(gate.released).toBe(false);
 
-    http.resolve({ data: { access_token: 'sso', expires_in: 60, token_type: 'bearer' } });
+    http.resolve({ data: { userinfo, csrf_token: 't' } });
     await pending;
     await flush();
     expect(gate.released).toBe(true);

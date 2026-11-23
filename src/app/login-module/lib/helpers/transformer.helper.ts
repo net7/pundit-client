@@ -1,6 +1,6 @@
 import { from, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { AuthToken, LoginResponse, SourceType } from 'src/communication';
+import { LoginResponse, SourceType } from 'src/communication';
 import { AxiosError } from 'axios';
 
 export const fromEvent = (message: MessageEvent): LoginResponse => {
@@ -8,11 +8,6 @@ export const fromEvent = (message: MessageEvent): LoginResponse => {
     return { error: message.data.error, source: 'login' };
   }
   return {
-    token: {
-      access_token: message.data.access_token as string,
-      token_type: 'bearer',
-      expires_in: message.data.expires_in
-    },
     user: typeof message.data.userinfo === 'string'
       ? JSON.parse(message.data.userinfo) : message.data.userinfo,
     source: 'login'
@@ -24,11 +19,6 @@ export const transformFromHttpSuccess = (response: any, source: SourceType) => {
     return { error: response.error as string, source };
   }
   return {
-    token: {
-      access_token: response.access_token,
-      token_type: 'bearer',
-      expires_in: response.expires_in
-    } as AuthToken,
     user: typeof response.userinfo === 'string'
       ? JSON.parse(response.userinfo) : response.userinfo,
     source

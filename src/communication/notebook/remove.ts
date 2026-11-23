@@ -1,6 +1,5 @@
 import { AxiosPromise } from 'axios';
 import request$ from '../providers/rest.provider';
-import { refreshHook } from '../auth/refresh';
 import { CommunicationSettings } from '../services';
 /**
  * Removes an annotation
@@ -8,9 +7,6 @@ import { CommunicationSettings } from '../services';
 */
 const remove = (id: string): AxiosPromise<null> => request$(`/notebook/${id}`, {
   baseURL: CommunicationSettings.apiBaseUrl,
-  method: 'delete',
-  hooks: {
-    after: refreshHook
-  }
+  method: 'delete'
 });
 export default remove;

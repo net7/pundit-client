@@ -1,10 +1,10 @@
-import { AuthToken } from '../model';
 import { RequestHooks } from '../types';
 
 class ConfigurationSingleton {
   private static instance: ConfigurationSingleton;
 
-  private _token!: AuthToken | null;
+  /** Latest CSRF token received for the current session, sent as `X-CSRF-TOKEN`. */
+  private _csrfToken: string | null = null;
 
   private _authBaseUrl!: string;
 
@@ -22,12 +22,12 @@ class ConfigurationSingleton {
     return ConfigurationSingleton.instance;
   }
 
-  public get token(): AuthToken | null {
-    return this._token;
+  public get csrfToken(): string | null {
+    return this._csrfToken;
   }
 
-  public set token(value: AuthToken | null) {
-    this._token = value;
+  public set csrfToken(value: string | null) {
+    this._csrfToken = value;
   }
 
   public get hooks(): RequestHooks {

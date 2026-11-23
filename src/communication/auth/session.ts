@@ -1,28 +1,27 @@
 import { AxiosPromise, AxiosResponse } from 'axios';
-import { SuccessLoginResponse } from '../model';
+import { AuthSessionResponse } from '../model';
 import request$ from '../providers/rest.provider';
 import { CommunicationSettings } from '../services';
 import { ConnectionManager } from '../services/connection-manager.service';
 
-const sso = (): AxiosPromise<SuccessLoginResponse> => {
+/**
+ * Asks the BE API who is signed in with the session cookie (`GET api/user`).
+ * Other requests wait for it through `ConnectionManager.ssoLoading$`.
+ */
+const sso = (): AxiosPromise<AuthSessionResponse> => {
   let promiseResolve: (value?: unknown) => void;
   const p = new Promise((resolve) => {
     promiseResolve = resolve;
   });
   ConnectionManager.ssoLoading$ = p;
-  return request$('/api/auth/me', {
-    method: 'post',
+  return request$('api/user', {
+    method: 'get',
     baseURL: CommunicationSettings.authBaseUrl,
-    data: null,
-    withCredentials: true
-  }, p).then((resp: AxiosResponse<any>) => {
-    const { data } = resp;
-    const { access_token, expires_in, token_type } = data;
-    CommunicationSettings.token = { access_token, expires_in, token_type };
+  }, p).then((resp: AxiosResponse<AuthSessionResponse>) => {
+    if (resp.data?.csrf_token) {
+      CommunicationSettings.csrfToken = resp.data.csrf_token;
+    }
     return resp;
-  }).catch((err) => {
-    CommunicationSettings.token = null;
-    throw err;
   }).finally(() => {
     promiseResolve();
   });

@@ -1,21 +1,23 @@
 import { AxiosPromise, AxiosResponse } from 'axios';
 import { UserSignupRequestParams } from '../types';
 import request$ from '../providers/rest.provider';
-import { SuccessLoginResponse } from '../model';
+import { AuthSessionResponse } from '../model';
 import { CommunicationSettings } from '../services';
 
+/**
+ * Registers a new account. The BE API answers 422 `must_verify_email` when the
+ * registration is accepted: the account is confirmed from the emailed link.
+ */
 const signup = (data: UserSignupRequestParams):
-  AxiosPromise<SuccessLoginResponse> => request$('api/user/register', {
+  AxiosPromise<AuthSessionResponse> => request$('api/user/register', {
   baseURL: CommunicationSettings.authBaseUrl,
   method: 'post',
   data,
-  withCredentials: true
-}).then((r: AxiosResponse<SuccessLoginResponse>) => {
-  CommunicationSettings.token = r.data.token;
+}).then((r: AxiosResponse<AuthSessionResponse>) => {
+  if (r.data?.csrf_token) {
+    CommunicationSettings.csrfToken = r.data.csrf_token;
+  }
   return r;
-}).catch((e) => {
-  CommunicationSettings.token = null;
-  throw e;
 });
 
 export default signup;

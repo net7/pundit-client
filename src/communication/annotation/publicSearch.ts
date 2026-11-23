@@ -8,6 +8,6 @@ const publicSearch = (data: SearchAnnotationParams): AxiosPromise<SearchAnnotati
     baseURL: CommunicationSettings.apiBaseUrl,
     method: 'post',
     data,
-    skipAuth: true
+    anonymous: true
   });
 export default publicSearch;

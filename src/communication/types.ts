@@ -10,8 +10,8 @@ export interface RequestOptions {
   baseURL?: string;
   headers?: { [key: string]: any };
   hooks?: RequestHooks;
-  withCredentials?: boolean;
-  skipAuth?: boolean
+  /** No cookies and no CSRF header: the request is made as an anonymous guest. */
+  anonymous?: boolean;
 }
 
 export type RequestHooks = {

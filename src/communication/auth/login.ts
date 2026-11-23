@@ -1,21 +1,20 @@
 import { AxiosPromise, AxiosResponse } from 'axios';
 import { UserLoginRequestParams } from '../types';
 import request$ from '../providers/rest.provider';
-import { SuccessLoginResponse } from '../model';
+import { AuthSessionResponse } from '../model';
 import { CommunicationSettings } from '../services';
 
 const login = (data: UserLoginRequestParams):
-  AxiosPromise<SuccessLoginResponse> => request$('api/auth/login', {
+  AxiosPromise<AuthSessionResponse> => request$('api/auth/login', {
   baseURL: CommunicationSettings.authBaseUrl,
   method: 'post',
   data,
-  withCredentials: true
-}).then((r: AxiosResponse<SuccessLoginResponse>) => {
-  CommunicationSettings.token = r.data.token;
+}).then((r: AxiosResponse<AuthSessionResponse>) => {
+  // the sign-in starts a new session, bound to a new token
+  if (r.data?.csrf_token) {
+    CommunicationSettings.csrfToken = r.data.csrf_token;
+  }
   return r;
-}).catch((e) => {
-  CommunicationSettings.token = null;
-  throw e;
 });
 
 export default login;
