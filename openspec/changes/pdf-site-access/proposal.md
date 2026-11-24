@@ -11,8 +11,8 @@ The same restriction can exclude the application's own site, where the BE API li
 - Once access is granted, the viewer reloads and opens the document. If the user refuses, the page stays as it is.
 - The page keeps the link to the original document in both cases.
 - The web viewer (feed) is unchanged: it downloads through its proxy and has no extension permissions.
-- When the session lookup fails in the extension and Pundit has no access to the application's site, the client shows an error toast that names the site, with an "Allow access" action instead of the generic error.
-- In the PDF viewer the action asks the browser directly and reloads the viewer once access is granted. On a web page the page itself cannot ask the browser, so the action opens a small extension window with the allow button; once access is granted, the window closes and the web page reloads.
+- When the session lookup fails in the extension and Pundit has no access to the application's site, the client shows an error toast asking for the user's permission, with an "Allow" action, instead of the generic error.
+- In the PDF viewer the action asks the browser directly and reloads the viewer once access is granted. On a web page the page itself cannot ask the browser, so the action opens an extension page in a new tab next to it, with the allow button; once access is granted, that tab closes and the web page reloads.
 - The embed bundle and the web viewer are unchanged: they run on the application's own site.
 
 ## Capabilities

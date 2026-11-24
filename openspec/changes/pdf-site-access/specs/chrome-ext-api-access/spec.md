@@ -17,27 +17,27 @@ When the session lookup (`GET api/user`) fails with anything other than 401 in t
 - **THEN** no access check is made and the generic error toast is shown
 
 ### Requirement: Site access toast
-Without access, the client SHALL show an error toast that names the application's host and offers an "Allow access" action, instead of the generic error toast. The client SHALL still go on as a guest behind it.
+Without access, the client SHALL show an error toast asking for the user's permission, without naming hosts or permissions, and offering an "Allow" action, instead of the generic error toast. The client SHALL still go on as a guest behind it.
 
 #### Scenario: Toast content
-- **WHEN** the client finds no access to `app.thepund.it` after a failed session lookup
-- **THEN** an error toast says that Pundit cannot reach `app.thepund.it`
-- **AND** it offers an "Allow access" action
+- **WHEN** the client finds no access to the application's site after a failed session lookup
+- **THEN** an error toast titled "Pundit needs your permission" says "Pundit can't connect to your annotations. Allow it to continue."
+- **AND** it offers an "Allow" action
 
 ### Requirement: Granting access from the PDF viewer
-In the extension's PDF viewer, the "Allow access" action SHALL ask the browser for access to the application's origin only, in the click and never on its own, and SHALL reload the viewer when access is granted. When it is refused, nothing SHALL change.
+In the extension's PDF viewer, the "Allow" action SHALL ask the browser for access to the application's origin only, in the click and never on its own, and SHALL reload the viewer when access is granted. When it is refused, nothing SHALL change.
 
 #### Scenario: User allows in the viewer
-- **WHEN** the user clicks "Allow access" in the viewer and accepts the browser's prompt
+- **WHEN** the user clicks "Allow" in the viewer and accepts the browser's prompt
 - **THEN** the viewer reloads and the session lookup succeeds
 
 ### Requirement: Granting access from a web page
-On a web page, where the page cannot ask the browser for permissions, the "Allow access" action SHALL open a small extension window that names the application's host and offers an "Allow access" button. The button SHALL ask the browser for access to the application's origin only. When access is granted, the window SHALL close and the web page SHALL reload. When it is refused, the window SHALL stay open and can be closed by the user.
+On a web page, where the page cannot ask the browser for permissions, the "Allow" action SHALL open an extension page in a new tab right after the web page's tab, asking for the same permission ("Allow Pundit to connect") with an "Allow" button. The button SHALL ask the browser for access to the application's origin only. When access is granted, the extension tab SHALL close and the web page SHALL reload and come to the front. When it is refused, the extension tab SHALL stay open and can be closed by the user.
 
 #### Scenario: User allows from a web page
-- **WHEN** the user clicks "Allow access" in the toast on `https://example.com/`, then the button in the extension window, and accepts the browser's prompt
-- **THEN** the extension window closes and `https://example.com/` reloads with Pundit active
+- **WHEN** the user clicks "Allow" in the toast on `https://example.com/`, then the button in the extension tab, and accepts the browser's prompt
+- **THEN** the extension tab closes and `https://example.com/` reloads in front, with Pundit active
 
 #### Scenario: User refuses from a web page
-- **WHEN** the user refuses the browser's prompt in the extension window
-- **THEN** the window stays open and the web page is unchanged
+- **WHEN** the user refuses the browser's prompt in the extension tab
+- **THEN** the extension tab stays open and the web page is unchanged

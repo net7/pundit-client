@@ -63,27 +63,34 @@ The client checks for it at one point only: when the session lookup at start fai
 
 ### D5. Site access toast
 
-An error toast replaces the generic one, without auto-close: title "Pundit cannot reach `<host>`", text "To load and save annotations, Pundit needs access to `<host>`.", action "Allow access". The strings are new i18n keys in `en_US.ts` (`toast#site_access_*`).
+An error toast replaces the generic one, without auto-close: title "Pundit needs your permission", text "Pundit can't connect to your annotations. Allow it to continue.", action "Allow". The text names no host and no permission: the application's host means little to the user, and the browser's prompt that follows names the site anyway. The strings are new i18n keys in `en_US.ts` (`toast#site_access_*`). The extension page opened from web pages uses the same tone: "Allow Pundit to connect", "Pundit needs your permission to load and save your annotations.", "Allow".
 
-### D6. Granting access: in the viewer directly, from a web page through an extension window
+### D6. Granting access: in the viewer directly, from a web page through an extension tab
 
 The action calls `ExtensionAccessModel.requestApiAccess()`, also a cross-message request:
 
 - **In the viewer** it runs in the page, inside the toast's click, so the browser sees the user gesture: `chrome.permissions.request` for the application's origin, `location.reload()` when granted.
-- **On a web page** the page script cannot use `chrome.permissions`, and the service worker has no user gesture. The service worker opens a small popup window with a new extension page, `site-access.html?tab=<tabId>`, which names the host and shows an "Allow access" button. The button asks the browser; when access is granted the page reloads tab `<tabId>` and closes its window. When refused, the window stays.
+- **On a web page** the page script cannot use `chrome.permissions`, and the service worker has no user gesture. The service worker opens a new extension page, `site-access.html?tab=<tabId>`, in a new tab right after the web page's tab (`chrome.tabs.create` with `openerTabId`). The page shows an "Allow" button. The button asks the browser; when access is granted the page reloads tab `<tabId>`, brings it to the front and closes its own tab. When refused, the tab stays and can be closed by the user.
+
+An extension page in a tab is the usual way extensions ask for a permission after install (the "grant permissions" or onboarding page): it works the same in every Chromium browser and users know it.
 
 The handler map of `doCrossMessageRequest` passes the sender tab to the handlers, so the service worker knows which tab to reload.
 
 `site-access.html` loads its own bundle (`site-access.bundle.js`, a third entry of the extension's webpack configuration): the extension's CSP refuses inline scripts.
 
-*Alternative considered:* asking from the action click in the service worker. Whether `chrome.permissions.request` accepts the action click as a user gesture is not documented, and the click toggles Pundit today; the window works the same in every Chromium browser.
+*Alternatives considered:*
+
+- Asking from the toast's click: on a web page the toast runs in the page, where `chrome.permissions` does not exist, and the click is not a user gesture for the service worker once it travels as a message.
+- A popup window (`chrome.windows.create`, type `popup`): it works, but a small detached window is less usual and can look suspicious.
+- The action's popup opened by code (`chrome.action.openPopup`, available to every extension since Chrome 127): anchored to the toolbar icon and less intrusive, but recent, not checked in the other Chromium browsers, and Pundit uses the action click to toggle itself, so the popup would have to be set per tab and reset. Kept as a later option.
+- An extension iframe inside the toast: one click only, but the page would have to be listed in `web_accessible_resources`, so any site could load it.
 
 ## Risks / Trade-offs
 
 - [The browser refuses to grant back a withheld required permission] → fallback (a) or (b) of D2, chosen after task 1.1, before implementing.
 - [Granting one origin while the user chose "On click"] → Chrome adds the site to the allowed list, which is what the user asked for by clicking; other sites keep the user's choice.
 - [Non-Chromium-identical behaviour in Edge, Brave, Opera] → the permissions API is the same Chromium API; the prompt's look differs. Checked in Chrome only, others noted in the verification task.
-- [The popup window is blocked or sized differently in some browsers] → it is a regular extension window (`chrome.windows.create`, type `popup`); worst case it opens as a normal window.
+- [The user does not notice the new tab or leaves it open] → it opens next to the web page and takes the focus; refusing leaves it with a message to close it.
 - [The session lookup fails for a reason other than access while access is also missing] → the site access toast is shown; once access is granted, the reload shows the real error with the generic toast.
 - [A document that fails for another reason on a site without access] → the user grants access, the viewer reloads and shows the generic page for the real error. Acceptable: access was missing anyway.
 
