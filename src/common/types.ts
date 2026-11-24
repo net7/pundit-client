@@ -49,6 +49,9 @@ export enum CrossMsgRequestId {
   OntologyList = 'ontology.list',
   OntologySaveSelection = 'ontology.saveSelection',
   OntologySearchElements = 'ontology.searchElements',
+  // extension access
+  ExtensionHasApiAccess = 'extension.hasApiAccess',
+  ExtensionRequestApiAccess = 'extension.requestApiAccess',
 }
 
 export enum CommonEventType {

@@ -45,4 +45,11 @@ module.exports = [{
     path: path.resolve(__dirname, 'dist/chrome-ext-tmp/'),
   },
   ...common
+}, {
+  entry: `${path.resolve(__dirname, 'src')}/chrome-ext/src/site-access/main.ts`,
+  output: {
+    filename: 'site-access.bundle.js',
+    path: path.resolve(__dirname, 'dist/chrome-ext-tmp/'),
+  },
+  ...common
 }];

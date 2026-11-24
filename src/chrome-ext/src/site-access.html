@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pundit: allow connection</title>
+    <style>
+      :root {
+        --bg: #ededf0;
+        --text: #0c0c0d;
+        --cta: #2e5bff;
+        --cta-hover: #1f45d6;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #2a2a2e;
+          --text: #f9f9fa;
+        }
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+        box-sizing: border-box;
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: sans-serif;
+        text-align: center;
+      }
+      h1 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+      p {
+        margin: 0 0 20px;
+        font-size: 15px;
+        line-height: 1.5;
+        opacity: 0.85;
+      }
+      button {
+        padding: 10px 20px;
+        border: 0;
+        border-radius: 4px;
+        background-color: var(--cta);
+        color: #fff;
+        font: 600 15px sans-serif;
+        cursor: pointer;
+      }
+      button:hover,
+      button:focus-visible {
+        background-color: var(--cta-hover);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: default;
+      }
+      #status {
+        margin: 16px 0 0;
+        min-height: 1.5em;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Allow Pundit to connect</h1>
+      <p>Pundit needs your permission to load and save your annotations.</p>
+      <button id="allow" type="button" disabled>Allow</button>
+      <p id="status" role="status"></p>
+    </main>
+    <script src="./site-access.bundle.js"></script>
+  </body>
+</html>

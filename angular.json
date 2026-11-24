@@ -145,6 +145,11 @@
                   "glob": "pdf-viewer.html",
                   "input": "src/chrome-ext/src",
                   "output": "."
+                },
+                {
+                  "glob": "site-access.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
                 }
               ]
             },
@@ -176,6 +181,11 @@
                 },
                 {
                   "glob": "pdf-viewer.html",
+                  "input": "src/chrome-ext/src",
+                  "output": "."
+                },
+                {
+                  "glob": "site-access.html",
                   "input": "src/chrome-ext/src",
                   "output": "."
                 }

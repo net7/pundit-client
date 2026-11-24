@@ -13,13 +13,15 @@ import {
   OntologyModel
 } from '../../../../common/models';
 import { ChromeExtStorage } from '../storage';
+import { hasApiAccess, openSiteAccessTab } from './apiAccess';
 import { ChromeExtStorageKey } from '../../types';
 
 // Maps each CrossMsgRequestId to the model invocation it performed in the
-// original switch. Each handler receives the request `args` and returns the
-// resulting request, mirroring the previous `Model.method.apply(null, args)`.
+// original switch. Each handler receives the request `args` and the sender tab
+// and returns the resulting request, mirroring the previous
+// `Model.method.apply(null, args)`.
 const requestHandlers: {
-  [key in CrossMsgRequestId]?: (args: any) => unknown
+  [key in CrossMsgRequestId]?: (args: any, tab: chrome.tabs.Tab) => unknown
 } = {
   // NOTEBOOK REQUEST
   // --------------------------------------------------->
@@ -80,12 +82,16 @@ const requestHandlers: {
     (args) => OntologyModel.saveSelection.apply(null, args),
   [CrossMsgRequestId.OntologySearchElements]:
     (args) => OntologyModel.searchElements.apply(null, args),
+  // EXTENSION ACCESS REQUEST
+  // --------------------------------------------------->
+  [CrossMsgRequestId.ExtensionHasApiAccess]: () => hasApiAccess(),
+  [CrossMsgRequestId.ExtensionRequestApiAccess]: (_args, tab) => openSiteAccessTab(tab?.id),
 };
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {
   const { messageId, requestId, args } = payload;
   const handler = requestHandlers[requestId as CrossMsgRequestId];
-  const request$ = handler ? handler(args) : undefined;
+  const request$ = handler ? handler(args, tab) : undefined;
   if (request$) {
     ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
       .then((value) => {

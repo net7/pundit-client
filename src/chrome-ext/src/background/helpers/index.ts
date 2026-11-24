@@ -13,5 +13,6 @@ export * from './doPageAnnotationsRequest';
 export * from './isFeedPdfUrl';
 export * from './isFeedWebUrl';
 export * from './getTabKind';
+export * from './apiAccess';
 export * from './getFeedPdfSource';
 export * from './getFeedWebSource';
