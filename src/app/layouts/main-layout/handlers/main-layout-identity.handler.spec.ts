@@ -2,6 +2,7 @@ import { translate } from '@net7/core';
 import { BehaviorSubject, of, Subject } from 'rxjs';
 import en_US from 'src/app/config/i18n/en_US';
 import { getEventType, MainLayoutEvent } from 'src/app/event-types';
+import { ExtensionAccessModel } from 'src/common/models';
 import { MainLayoutIdentityHandler } from './main-layout-identity.handler';
 
 describe('MainLayoutIdentityHandler > active AI key flag', () => {
@@ -74,14 +75,65 @@ describe('MainLayoutIdentityHandler > active AI key flag', () => {
     expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
   });
 
-  it('goes on as a guest when the session lookup fails for another reason', () => {
+  it('goes on as a guest when the session lookup fails for another reason', async () => {
     jest.spyOn(console, 'warn').mockImplementation(() => undefined);
     listen({ error: 'Internal server error' });
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     expect(layoutDS.userService.iam).not.toHaveBeenCalled();
     expect(layoutDS.toastService.error).toHaveBeenCalledTimes(1);
     expect(layoutDS.toastService.warn).not.toHaveBeenCalled();
     expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
+  });
+
+  describe('site access', () => {
+    const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    beforeEach(() => {
+      jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+    });
+
+    afterEach(() => jest.restoreAllMocks());
+
+    it('offers to allow access when the extension cannot reach the application', async () => {
+      jest.spyOn(ExtensionAccessModel, 'hasApiAccess').mockResolvedValue(false);
+      const request = jest.spyOn(ExtensionAccessModel, 'requestApiAccess').mockResolvedValue(true);
+
+      listen({ error: 'Internal server error' });
+      await flush();
+
+      expect(layoutEH.emitInner).toHaveBeenCalledWith(getEventType(MainLayoutEvent.GetPublicData));
+      expect(layoutDS.toastService.error).toHaveBeenCalledTimes(1);
+      const [toast] = layoutDS.toastService.error.mock.calls[0];
+      expect(toast.title).toBe('Pundit needs your permission');
+      expect(toast.text).toBe("Pundit can't connect to your annotations. Allow it to continue.");
+      expect(toast.autoClose).toBe(false);
+      expect(toast.actions).toEqual([{ text: 'Allow', payload: 'allow-access' }]);
+      expect(request).not.toHaveBeenCalled();
+
+      toast.onAction('allow-access');
+      expect(request).toHaveBeenCalledTimes(1);
+    });
+
+    it('shows the generic error when the extension can reach the application', async () => {
+      jest.spyOn(ExtensionAccessModel, 'hasApiAccess').mockResolvedValue(true);
+
+      listen({ error: 'Internal server error' });
+      await flush();
+
+      const [toast] = layoutDS.toastService.error.mock.calls[0];
+      expect(toast.title).toBe('Sorry there was a problem');
+      expect(toast.actions).toBeUndefined();
+    });
+
+    it('does not check access for a signed-out user', async () => {
+      const check = jest.spyOn(ExtensionAccessModel, 'hasApiAccess');
+
+      listen({ error: 'Unauthorized' });
+      await flush();
+
+      expect(check).not.toHaveBeenCalled();
+    });
   });
 
   it('opens no email verification toast, whatever is_verified says', () => {

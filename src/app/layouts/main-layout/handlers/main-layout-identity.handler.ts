@@ -1,7 +1,8 @@
 import { _t } from '@net7/core';
 import { LoginResponse, SuccessLoginResponse } from 'src/communication';
+import { from, of } from 'rxjs';
 import {
-  delay, filter, first, tap
+  catchError, delay, filter, first, tap
 } from 'rxjs/operators';
 import {
   AppEvent, getEventType, MainLayoutEvent
@@ -10,7 +11,7 @@ import { _c } from 'src/app/models/config';
 import { selectionModel } from 'src/app/models/selection/selection-model';
 import { tooltipModel } from 'src/app/models/tooltip-model';
 import { LayoutHandler } from 'src/app/types';
-import { AnalyticsModel } from 'src/common/models';
+import { AnalyticsModel, ExtensionAccessModel } from 'src/common/models';
 import { AnalyticsAction } from 'src/common/types';
 import { MainLayoutDS } from '../main-layout.ds';
 import { MainLayoutEH } from '../main-layout.eh';
@@ -57,10 +58,7 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
           // the session lookup failed (network, CORS, server error): go on as a
           // guest, so the sidebar does not wait forever
           console.warn('Identity init response error', resp);
-          this.layoutDS.toastService.error({
-            title: _t('toast#genericerror_title'),
-            text: _t('toast#genericerror_text'),
-          });
+          this.sessionErrorToast();
           this.layoutEH.emitInner(getEventType(MainLayoutEvent.GetPublicData));
         }
       });
@@ -179,6 +177,41 @@ export class MainLayoutIdentityHandler implements LayoutHandler {
         this.layoutDS.state.hasActiveAiKey = typeof hasKey === 'boolean' ? hasKey : null;
       })
     );
+  }
+
+  /**
+   * A failed session lookup: in the extension, a withheld access to the
+   * application's site is the likely cause and can be fixed by the user;
+   * otherwise the generic error.
+   */
+  private sessionErrorToast() {
+    from(ExtensionAccessModel.hasApiAccess()).pipe(
+      catchError(() => of(true))
+    ).subscribe((hasAccess) => {
+      if (hasAccess) {
+        this.layoutDS.toastService.error({
+          title: _t('toast#genericerror_title'),
+          text: _t('toast#genericerror_text'),
+        });
+        return;
+      }
+      this.layoutDS.toastService.error({
+        title: _t('toast#site_access_title'),
+        text: _t('toast#site_access_text'),
+        autoClose: false,
+        actions: [{
+          text: _t('toast#site_access_action'),
+          payload: 'allow-access',
+        }],
+        onAction: (payload) => {
+          if (payload === 'allow-access') {
+            // in the viewer the browser is asked in this click; on a web page
+            // the background opens an extension tab that asks it
+            ExtensionAccessModel.requestApiAccess();
+          }
+        },
+      });
+    });
   }
 
   private loginAlert() {

@@ -121,6 +121,10 @@ export default {
   "toast#genericerror_title": "Sorry there was a problem",
   "toast#genericerror_text":
     "The system might be too busy, please try again later.",
+  "toast#site_access_title": "Pundit needs your permission",
+  "toast#site_access_text":
+    "Pundit can't connect to your annotations. Allow it to continue.",
+  "toast#site_access_action": "Allow",
   "toast#rootelementexists_title": "Pundit loaded!",
   "toast#rootelementexists_text":
     "There is a version of pundit already loaded on this website.",
