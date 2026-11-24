@@ -1182,9 +1182,10 @@ const PDFViewerApplication = {
   },
 
   _punditDocumentError() {
-    if (document.getElementById("punditDocumentError")) {
+    if (this._punditErrorShown) {
       return;
     }
+    this._punditErrorShown = true;
 
     const source = new URLSearchParams(window.location.search).get("source");
     let sourceUrl = null;
@@ -1193,6 +1194,27 @@ const PDFViewerApplication = {
       sourceUrl = new URL(source);
     } catch (e) {}
 
+    // Pundit customization: in the extension, a site the user withheld access
+    // to cannot be downloaded (CORS); the page then says so and offers to
+    // allow it. The web viewer has no extension permissions.
+    const permissions = globalThis.chrome?.permissions;
+    const isWeb = !!sourceUrl && ["http:", "https:"].includes(sourceUrl.protocol);
+
+    if (!isWeb || typeof permissions?.contains !== "function") {
+      this._punditRenderDocumentError(sourceUrl, false);
+      return;
+    }
+
+    permissions.contains({
+      origins: [sourceUrl.origin + "/*"]
+    }).then(hasAccess => {
+      this._punditRenderDocumentError(sourceUrl, !hasAccess);
+    }, () => {
+      this._punditRenderDocumentError(sourceUrl, false);
+    });
+  },
+
+  _punditRenderDocumentError(sourceUrl, accessMissing) {
     const create = (tag, className, text) => {
       const el = document.createElement(tag);
       el.className = className;
@@ -1206,17 +1228,47 @@ const PDFViewerApplication = {
     page.id = "punditDocumentError";
     page.setAttribute("role", "alert");
     const card = create("div", "punditDocumentError__card");
-    card.append(
-      create("h1", "punditDocumentError__title", "This PDF could not be opened"),
-      create("p", "punditDocumentError__text", "Pundit could not load this document. It may not be a PDF file, or its site may not let Pundit open it.")
-    );
+
+    if (accessMissing) {
+      card.append(
+        create("h1", "punditDocumentError__title", "Pundit cannot access this site"),
+        create("p", "punditDocumentError__text", `To open this PDF, Pundit needs access to ${sourceUrl.host}. You can allow it, or open the document on its site.`)
+      );
+    } else {
+      card.append(
+        create("h1", "punditDocumentError__title", "This PDF could not be opened"),
+        create("p", "punditDocumentError__text", "Pundit could not load this document. It may not be a PDF file, or its site may not let Pundit open it.")
+      );
+    }
 
     if (sourceUrl && ["http:", "https:", "file:"].includes(sourceUrl.protocol)) {
-      const link = create("a", "punditDocumentError__button", "Open the original document");
+      const actions = create("div", "punditDocumentError__actions");
+
+      if (accessMissing) {
+        const allow = create("button", "punditDocumentError__button", `Allow access to ${sourceUrl.host}`);
+        allow.type = "button";
+
+        allow.onclick = () => {
+          // called in the click handler: the browser needs the user's gesture
+          globalThis.chrome.permissions.request({
+            origins: [sourceUrl.origin + "/*"]
+          }).then(granted => {
+            if (granted) {
+              window.location.reload();
+            }
+          }, () => {});
+        };
+
+        actions.append(allow);
+      }
+
+      const linkClass = accessMissing ? "punditDocumentError__button punditDocumentError__button--secondary" : "punditDocumentError__button";
+      const link = create("a", linkClass, "Open the original document");
       link.href = sourceUrl.href;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
-      card.append(link, create("p", "punditDocumentError__url", sourceUrl.href));
+      actions.append(link);
+      card.append(actions, create("p", "punditDocumentError__url", sourceUrl.href));
     }
 
     page.append(card);
