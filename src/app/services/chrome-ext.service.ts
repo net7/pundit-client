@@ -21,8 +21,10 @@ export class ChromeExtService {
     return new Promise((res) => {
       window.addEventListener(CommonEventType.PunditLoaded, ((ev: CustomEvent) => {
         this.ngZone.run(() => {
-          const { id } = ev.detail;
+          const { id, version } = ev.detail;
           config.set('chromeExtId', id);
+          // installed extension version, for the maintenance notice
+          config.set('clientVersion', version);
           config.set('chromeExtUrl', `chrome-extension://${id}`);
           this.listenExtensionEvents();
           this.listenAnnotationUpdates();

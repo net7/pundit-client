@@ -1,3 +1,5 @@
+import maintenance from './en_US.maintenance';
+
 export default {
   // tooltip
   "tooltip#highlight": "Highlight",
@@ -308,4 +310,5 @@ export default {
   "toast#ontologies_no_predicates_action": "Select ontologies",
   "toast#ontologies_save_error_title": "Oops! Something went wrong",
   "toast#ontologies_save_error_text": "Pundit couldn't save your ontologies, please try again later.",
+  ...maintenance,
 };
