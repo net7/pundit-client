@@ -52,6 +52,8 @@ export enum CrossMsgRequestId {
   // extension access
   ExtensionHasApiAccess = 'extension.hasApiAccess',
   ExtensionRequestApiAccess = 'extension.requestApiAccess',
+  // client status (maintenance notice)
+  ClientStatusGet = 'clientStatus.get',
 }
 
 export enum CommonEventType {

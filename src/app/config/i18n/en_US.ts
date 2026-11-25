@@ -1,3 +1,6 @@
+import maintenance from './en_US.maintenance';
+import siteAccess from './en_US.site-access';
+
 export default {
   // tooltip
   "tooltip#highlight": "Highlight",
@@ -121,10 +124,7 @@ export default {
   "toast#genericerror_title": "Sorry there was a problem",
   "toast#genericerror_text":
     "The system might be too busy, please try again later.",
-  "toast#site_access_title": "Pundit needs your permission",
-  "toast#site_access_text":
-    "Pundit can't connect to your annotations. Allow it to continue.",
-  "toast#site_access_action": "Allow",
+  ...siteAccess,
   "toast#rootelementexists_title": "Pundit loaded!",
   "toast#rootelementexists_text":
     "There is a version of pundit already loaded on this website.",
@@ -312,4 +312,5 @@ export default {
   "toast#ontologies_no_predicates_action": "Select ontologies",
   "toast#ontologies_save_error_title": "Oops! Something went wrong",
   "toast#ontologies_save_error_text": "Pundit couldn't save your ontologies, please try again later.",
+  ...maintenance,
 };

@@ -9,3 +9,4 @@ export * from './reply-model';
 export * from './ai-model';
 export * from './ontology-model';
 export * from './extension-access-model';
+export * from './client-status-model';

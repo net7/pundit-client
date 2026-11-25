@@ -10,11 +10,15 @@ import {
   SocialModel,
   ReplyModel,
   AiModel,
-  OntologyModel
+  OntologyModel,
+  ClientStatusModel
 } from '../../../../common/models';
 import { ChromeExtStorage } from '../storage';
 import { hasApiAccess, openSiteAccessTab } from './apiAccess';
 import { ChromeExtStorageKey } from '../../types';
+
+// webpack build env variables
+declare const STATUS_URL: string;
 
 // Maps each CrossMsgRequestId to the model invocation it performed in the
 // original switch. Each handler receives the request `args` and the sender tab
@@ -86,6 +90,10 @@ const requestHandlers: {
   // --------------------------------------------------->
   [CrossMsgRequestId.ExtensionHasApiAccess]: () => hasApiAccess(),
   [CrossMsgRequestId.ExtensionRequestApiAccess]: (_args, tab) => openSiteAccessTab(tab?.id),
+  // CLIENT STATUS REQUEST
+  // --------------------------------------------------->
+  // The URL is the background's own: any page can send this request, so its args are ignored.
+  [CrossMsgRequestId.ClientStatusGet]: () => ClientStatusModel.get(STATUS_URL),
 };
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {

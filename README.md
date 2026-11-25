@@ -71,6 +71,28 @@ Prod builds need `src/environments/local.prod.ts`, generated like `local.stage.t
 
 `scripts/build.sh <target>[,<target>...] stage|prod [<outdir>]` runs the builds in a `node` container (version from `.node-version`), so Node and npm are not needed on the host, only Docker. Targets: `ext` (`build:chrome-ext-<env>`), `embed` (`build:embed-<env>`), `pdf` (`build:pdf-standalone-<env>`). The builds land in `dist/<configuration>/` as usual; when `<outdir>` is given (default: the repo `dist/`), the matching folders are copied there too, e.g. `scripts/build.sh ext,pdf stage ../out` produces `../out/chrome-ext-stage/` and `../out/pdf-standalone-stage/`. `node_modules` and the npm cache live in Docker volumes (`pundit-client-node-modules`, `pundit-client-npm-cache`), so the host `node_modules` is left untouched.
 
+### Maintenance notice
+
+The client shows a maintenance notice that the server switches on and off, without publishing a new client. It reads `GET <APP_URL>/api/client-status` (pundithomex, `CLIENT_NOTICE_ACTIVE` and `CLIENT_NOTICE_MAX_CLIENT_VERSION`). It reads the status at startup, every 5 minutes and when the tab becomes visible again. While a notice applies, Pundit is not started: a sidebar in Pundit's style, with the notice in it and Pundit's actions disabled, and a toast take its place, so there is no API call and no action. When the notice is switched off, Pundit starts again without a page reload.
+
+- The URL is `statusUrl` in `local.*.ts`. In the extension's background it is `STATUS_URL` in `webpack.chrome-ext.*.js`, and on stage it can be overridden in `chrome-ext-urls.stage.js`. Without a URL, nothing is read and the client behaves as before.
+- With `maxClientVersion`, the notice applies only to clients up to that version, compared on its segments: `1.18.0` covers the stage builds `1.18.0.N`. The extension then asks for an update and the embed asks for a reload. Without `maxClientVersion`, the text is "Pundit is under maintenance".
+- If the status cannot be read, the client keeps the last valid status of the page; without one, it shows no notice.
+
+To try it by hand, serve a static file and point `statusUrl` (and `STATUS_URL` for the extension) at it:
+
+```bash
+mkdir -p /tmp/pundit-status && cd /tmp/pundit-status
+echo '{"version":1,"notices":[{"id":"maintenance","active":true,"level":"maintenance"}]}' > client-status
+npx http-server -p 8089 --cors -c-1   # statusUrl: 'http://localhost:8089/client-status'
+```
+
+Then edit the file and wait for the next read, or switch to another tab and back after 60 seconds:
+- add `"appliesTo":{"maxClientVersion":"1.18.0"}` to get the update text;
+- empty `notices` to switch the notice off: Pundit starts and loads the data without a page reload.
+
+The design and the release steps are in `openspec/changes/client-maintenance-notice/design.md`.
+
 ## Releasing (stage / prod)
 
 Releases run **from a developer machine only** (never in CI) with:
