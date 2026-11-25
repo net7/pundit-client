@@ -67,6 +67,14 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         takeUntil(this.layoutEH.destroy$),
       )
       .subscribe(({ payload }) => this.aiHandler.discardAiPreview(payload));
+
+    // a preview card asks to discard one triple of its AI preview
+    this.layoutEH.appEvent$
+      .pipe(
+        filter(({ type }) => type === AppEvent.AiPreviewTripleDiscard),
+        takeUntil(this.layoutEH.destroy$),
+      )
+      .subscribe(({ payload }) => this.aiHandler.discardAiPreviewTriple(payload.id, payload.index));
   }
 
   private onEditModalSaveEvent(payload: any) {

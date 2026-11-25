@@ -38,6 +38,13 @@ export class SidebarLayoutAnnotationHandler implements LayoutHandler {
         });
       },
 
+      [AnnotationEvent.DiscardPreviewTriple]: () => { // discard one triple of an AI preview
+        this.layoutEH.appEvent$.next({
+          type: AppEvent.AiPreviewTripleDiscard,
+          payload,
+        });
+      },
+
       [AnnotationEvent.UpdateNotebook]: () => { // move an annotation to another notebook
         this.updateAnnotationNotebook(payload.annotation, payload.notebook);
         this.layoutEH.appEvent$.next({

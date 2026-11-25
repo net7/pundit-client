@@ -89,4 +89,27 @@ describe('AnnotationEH', () => {
     ))).toBe(true);
     expect(annotationService.updateAnnotationState).not.toHaveBeenCalled();
   });
+
+  it('emits discard-triple with the triple index when a triple of an AI preview is discarded', () => {
+    const emitted: any[] = [];
+    annotationService.getAnnotationById.mockReturnValue({
+      id: 'ai-preview-0',
+      state$: new BehaviorSubject({})
+    });
+    handler.out$.subscribe((event) => emitted.push(event));
+
+    handler.listen();
+    handler.emitInner(getEventType(AnnotationEvent.Click), {
+      id: 'ai-preview-0',
+      source: 'discard-triple',
+      index: 2
+    });
+
+    expect(emitted.some((event) => (
+      event.type.endsWith(`.${getEventType(AnnotationEvent.DiscardPreviewTriple)}`)
+      && event.payload?.id === 'ai-preview-0'
+      && event.payload?.index === 2
+    ))).toBe(true);
+    expect(annotationService.updateAnnotationState).not.toHaveBeenCalled();
+  });
 });

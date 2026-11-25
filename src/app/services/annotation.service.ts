@@ -103,7 +103,7 @@ export class AnnotationService {
       const { data$ } = currentAnnotation;
       // reset state classes
       this.updateAnnotationState(rawAnnotation.id, {
-        classes: AnnotationCssClass.Empty
+        classes: isAiPreviewId(rawAnnotation.id) ? AnnotationCssClass.Preview : AnnotationCssClass.Empty
       });
       // update annotation data
       data$.next(rawAnnotation);

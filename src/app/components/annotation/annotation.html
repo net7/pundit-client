@@ -26,7 +26,7 @@
   <!-- END // Header -->
   <pnd-highlight-annotation-section [data$]="data$" [serializedBy]="serializedBy"></pnd-highlight-annotation-section>
   <pnd-comment-annotation-section [data$]="data$"></pnd-comment-annotation-section>
-  <pnd-semantic-annotation-section [data$]="data$"></pnd-semantic-annotation-section>
+  <pnd-semantic-annotation-section [data$]="data$" [emit]="emit" [annotationId]="annotationId"></pnd-semantic-annotation-section>
   <pnd-tag-annotation-section [data$]="data$"></pnd-tag-annotation-section>
   @if (serializedBy !== 'hypothesis' && !isPreview((data$ | async)?.id)) {
     <pnd-social-annotation-section
