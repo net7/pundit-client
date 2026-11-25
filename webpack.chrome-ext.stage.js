@@ -9,6 +9,7 @@ let urls = {
   API_BASE_URL: "https://api.thepund.netseven.work",
   FEED_PDF_BASE_URL: "https://feed.thepund.netseven.work/pdf.php?source=",
   FEED_WEB_BASE_URL: "https://feed.thepund.netseven.work/?url=",
+  STATUS_URL: "https://app.thepund.netseven.work/api/client-status",
 };
 try {
   urls = { ...urls, ...require("./src/environments/chrome-ext-urls.stage.js") };
@@ -23,6 +24,7 @@ module.exports = prodConfig.map((config) => ({
       API_BASE_URL: JSON.stringify(urls.API_BASE_URL),
       FEED_PDF_BASE_URL: JSON.stringify(urls.FEED_PDF_BASE_URL),
       FEED_WEB_BASE_URL: JSON.stringify(urls.FEED_WEB_BASE_URL),
+      STATUS_URL: JSON.stringify(urls.STATUS_URL),
     }),
   ],
 }));

@@ -35,7 +35,7 @@ export const loadExtension = () => {
   main.onload = () => {
     // emit signal
     const signal = new CustomEvent(CommonEventType.PunditLoaded, {
-      detail: { id: chrome.runtime.id }
+      detail: { id: chrome.runtime.id, version: chrome.runtime.getManifest().version }
     });
     window.dispatchEvent(signal);
 
