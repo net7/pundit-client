@@ -403,6 +403,51 @@ annotation {
         }
     }
 
+    // AI preview: a discreet button to drop the triple, inside the object box,
+    // on the row of the object label; the object text leaves room for it
+    .pnd-annotation__semantic-item.is-discardable {
+        position: relative;
+
+        .pnd-annotation__semantic-item-object {
+            padding-right: variables.$space * 3.5;
+        }
+    }
+
+    .pnd-annotation__semantic-item-discard {
+        position: absolute;
+        z-index: 1;
+        // just below the top line of the object box (predicate height 20px - its
+        // negative margin + border), in the top-right corner
+        top: 20px - variables.$space + variables.$annotation-border-size + 2px;
+        right: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 18px;
+        height: 18px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        color: variables.$color-text-light;
+        opacity: 0.7;
+        transition-property: color, opacity, background-color;
+        transition-duration: variables.$transition-durations;
+
+        .pnd-svg-icon, .pnd-svg-icon svg {
+            width: 10px;
+            height: 10px;
+        }
+
+        &:hover,
+        &:focus-visible {
+            opacity: 1;
+            color: variables.$color-text-link;
+            background-color: variables.$color-background-light;
+        }
+    }
+
     .pnd-annotation__semantic-item-predicate {
         display: inline-block;
         position: relative;

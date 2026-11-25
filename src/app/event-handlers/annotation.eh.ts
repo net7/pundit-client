@@ -70,6 +70,9 @@ export class AnnotationEH extends EventHandler {
       'discard-preview': () => { // click on the "discard" button of an AI preview
         this.emitOuter(getEventType(AnnotationEvent.DiscardPreview), id);
       },
+      'discard-triple': () => { // click on the "discard" button of a triple of an AI preview
+        this.emitOuter(getEventType(AnnotationEvent.DiscardPreviewTriple), { id, index: payload.index });
+      },
       'action-delete': () => { // click on the "delete" button
         this.closeAnnotationMenu(id);
         this.emitOuter(getEventType(AnnotationEvent.Delete), id);

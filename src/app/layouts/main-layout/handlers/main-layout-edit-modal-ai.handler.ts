@@ -23,7 +23,7 @@ import { EditModalPayloadBuilder } from "./edit-modal-payload.builder";
 import { isValidAnnotationPayload } from "./edit-modal-validation";
 import { getAnnotationCreatedAnalytics } from "./edit-modal-analytics";
 import { aiPreviewState$ } from "src/app/components/edit-modal/edit-modal";
-import { AI_PREVIEW_ID_PREFIX } from "src/app/models/ai-preview";
+import { AI_PREVIEW_ID_PREFIX, withoutPreviewTriple } from "src/app/models/ai-preview";
 
 const AI_ANNOTATION_TYPES: AiAnnotationType[] = [
   "highlight",
@@ -284,6 +284,19 @@ export class MainLayoutEditModalAiHandler {
     this.layoutEH.appEvent$.next({
       type: AppEvent.AiPreviewClear,
     });
+  }
+
+  /**
+   * Discard one triple of a semantic preview: its card and the payload saved by
+   * "Save all" keep only the other triples. The last triple is never removed
+   * alone: the whole preview is discarded instead (card discard button).
+   */
+  discardAiPreviewTriple(previewId: string, index: number) {
+    const nextPayload = withoutPreviewTriple(this.aiPreviews.get(previewId), index);
+    if (!nextPayload) return;
+    this.aiPreviews.set(previewId, nextPayload);
+    const { annotationService } = this.layoutDS;
+    annotationService.add(annotationService.getAnnotationFromPayload(previewId, nextPayload));
   }
 
   private onAnnotationCreated(data: any, workingToast: ToastInstance) {

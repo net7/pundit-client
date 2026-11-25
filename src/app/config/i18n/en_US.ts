@@ -194,6 +194,7 @@ export default {
   "annotation#edittags": "Edit tags",
   "annotation#delete": "Delete",
   "annotation#discard_preview_title": "Discard this suggestion: it will not be saved",
+  "annotation#discard_triple_title": "Remove this triple from the suggestion",
   // share
   "share#twitter": "Twitter",
   "share#facebook": "Facebook",
