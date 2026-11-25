@@ -52,6 +52,27 @@ function buildLiteralTriple(
 }
 
 type SemanticContentTriple = SemanticTripleWithUri | SemanticTripleWithLiteral;
+type SemanticSubject = Pick<SemanticContentTriple, "subjectType" | "subject">;
+
+/**
+ * Subject of an AI triple, saved like a subject picked from the element
+ * search; empty (the annotated fragment, or the page) when it has no URI.
+ */
+function buildSubject(subject?: AiAnnotationTriple["subject"]): SemanticSubject {
+  if (!subject || typeof subject !== "object" || !subject.uri) {
+    return {};
+  }
+  return {
+    subjectType: "uri",
+    subject: {
+      uri: subject.uri,
+      label: subject.label,
+      ...(subject.description ? { description: subject.description } : {}),
+      source: "search",
+      elementType: subject.elementType,
+    },
+  };
+}
 
 /**
  * Semantic triple of an AI triple, undefined when the predicate has no URI,
@@ -60,22 +81,25 @@ type SemanticContentTriple = SemanticTripleWithUri | SemanticTripleWithLiteral;
 function buildSemanticTriple(
   triple?: AiAnnotationTriple,
 ): SemanticContentTriple | undefined {
-  const { predicate, object } = triple ?? {};
+  const { subject, predicate, object } = triple ?? {};
   if (!predicate?.uri || !object) {
     return undefined;
   }
   const semanticPredicate = { label: predicate.label, uri: predicate.uri };
-  return (
+  const semanticTriple =
     buildElementTriple(semanticPredicate, object) ??
-    buildLiteralTriple(semanticPredicate, object)
-  );
+    buildLiteralTriple(semanticPredicate, object);
+  return semanticTriple && { ...buildSubject(subject), ...semanticTriple };
 }
 
 /**
  * Semantic content of the AI triples of one place of the text, in their
- * order. An element object is saved like an object picked from the element
+ * order: the triples about the passage first, then those about an ontology
+ * element, grouped by subject as received (never sorted here).
+ * An element subject or object is saved like one picked from the element
  * search; a literal object (a date, a number, a measure) is saved as a
- * literal, with its text trimmed.
+ * literal, with its text trimmed. A subject without URI leaves the triple
+ * about the annotated fragment.
  * A triple whose predicate has no URI, or whose object has neither a URI nor
  * a non-empty text, is left out; undefined when no triple is left.
  */
@@ -161,5 +185,26 @@ export function addPayloadForRange(
     ...payload.subject,
     selected: serializeRangeToSelector(range),
   };
+  return payload;
+}
+
+/**
+ * The preview payload of an AI annotation on the page (`target: null`): a copy
+ * of the pending page annotation payload with the content of the annotation,
+ * its `subject` left as it is (no selection).
+ * Null when the annotation lacks the content of its type.
+ */
+export function addPayloadForPage(
+  annotation: AiAnnotation,
+  annotationPayload: any,
+  requestedType: AiAnnotationType,
+): any | null {
+  if (!annotationPayload) {
+    return null;
+  }
+  const payload = cloneDeep(annotationPayload);
+  if (!applyAnnotationType(payload, annotation, requestedType)) {
+    return null;
+  }
   return payload;
 }

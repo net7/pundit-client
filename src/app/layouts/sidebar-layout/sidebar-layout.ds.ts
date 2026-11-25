@@ -81,7 +81,8 @@ export class SidebarLayoutDS extends LayoutDataSource {
       options: {
         tagging: _t('tooltip#tag'),
         commenting: _t('tooltip#comment'),
-        linking: _t('tooltip#semantic')
+        linking: _t('tooltip#semantic'),
+        ai: _t('tooltip#aiRequest')
       }
     },
     notebookpanel: {

@@ -5,14 +5,22 @@ import { aiPreviewState$ } from 'src/app/components/edit-modal/edit-modal';
 import en_US from 'src/app/config/i18n/en_US';
 import { _c } from 'src/app/models/config';
 import { MainLayoutEditModalAiHandler } from './main-layout-edit-modal-ai.handler';
-import { prepareAiRequest } from './annotation-range-selector.util';
-import { processLLMResponse } from './annotation-llm-processor';
+import { preparePageAiRequest, prepareAiRequest } from './annotation-range-selector.util';
+import { processLLMResponse, processPageAiResponse } from './annotation-llm-processor';
 
-jest.mock('./annotation-range-selector.util', () => ({ prepareAiRequest: jest.fn() }));
-jest.mock('./annotation-llm-processor', () => ({ processLLMResponse: jest.fn() }));
+jest.mock('./annotation-range-selector.util', () => ({
+  prepareAiRequest: jest.fn(),
+  preparePageAiRequest: jest.fn(),
+}));
+jest.mock('./annotation-llm-processor', () => ({
+  processLLMResponse: jest.fn(),
+  processPageAiResponse: jest.fn(),
+}));
 
 const prepareMock = prepareAiRequest as jest.Mock;
 const processMock = processLLMResponse as jest.Mock;
+const preparePageMock = preparePageAiRequest as jest.Mock;
+const processPageMock = processPageAiResponse as jest.Mock;
 
 describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   let appEvents: { type: string; payload?: any }[];
@@ -60,6 +68,8 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
   beforeEach(() => {
     prepareMock.mockReset();
     processMock.mockReset();
+    preparePageMock.mockReset();
+    processPageMock.mockReset();
     appEvents = [];
     workingToast = { close: jest.fn() };
 
@@ -68,13 +78,15 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     layoutEH = { appEvent$, handleError: jest.fn() };
 
     layoutDS = {
-      state: { annotation: { pendingPayload: { subject: {} } } },
+      // a pending annotation on a selection
+      state: { annotation: { pendingPayload: { subject: { selected: { text: 'some text' } } } } },
       pendingAnnotationId: 'pending-id',
       toastService: {
         working: jest.fn(() => workingToast),
         // as the real service: onLoad runs when the toast shows
         info: jest.fn(showToast),
         error: jest.fn(showToast),
+        success: jest.fn(),
       },
       annotationService: {
         getAnnotationFromPayload: jest.fn((id: string) => ({ id })),
@@ -347,8 +359,46 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     expect(layoutDS.toastService.info).toHaveBeenCalled();
   });
 
+  it('previews and saves a semantic annotation with element subjects as built', async () => {
+    const SH = 'http://example.org/shakespeare#';
+    const portia = { uri: `${SH}Portia`, label: 'Portia', source: 'search', elementType: 'entity' };
+    const content = [
+      {
+        predicate: { label: 'identifies', uri: `${SH}identifies` },
+        objectType: 'uri', object: { ...portia },
+      },
+      {
+        subjectType: 'uri', subject: portia,
+        predicate: { label: 'lives in', uri: `${SH}livesIn` },
+        objectType: 'uri', object: { uri: `${SH}Belmont`, label: 'Belmont', source: 'search', elementType: 'entity' },
+      },
+    ];
+    const selected = {
+      rangeSelector: { startContainer: '/p[1]', endContainer: '/p[1]', startOffset: 12, endOffset: 18 },
+      textQuoteSelector: { exact: 'Portia' },
+    };
+    const aiPayload = { type: 'Linking', content, subject: { selected } };
+    prepareMock.mockReturnValue({ request, segmentMap });
+    layoutDS.aiService.annotate.mockReturnValue(of([]));
+    processMock.mockReturnValue([aiPayload]);
+    layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: 'saved', ...p }));
+    layoutDS.tagService = { addMany: jest.fn() };
+    layoutEH.emitOuter = jest.fn();
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'semantic_annotation' });
+    expect(layoutDS.annotationService.getAnnotationFromPayload)
+      .toHaveBeenCalledWith('ai-preview-0', expect.objectContaining({ type: 'Linking', content }));
+
+    handler.onAiAccept();
+    await new Promise(jest.requireActual('timers').setImmediate);
+    expect(layoutDS.saveAnnotation).toHaveBeenCalledTimes(1);
+    expect(layoutDS.saveAnnotation.mock.calls[0][0].content).toEqual(content);
+  });
+
   describe('discarding a preview', () => {
     const preview = (quote: string) => ({
+      type: 'Commenting',
+      content: { comment: quote },
       subject: {
         selected: {
           rangeSelector: { startContainer: '/p[1]', endContainer: '/p[1]', startOffset: 0, endOffset: 1 },
@@ -365,7 +415,7 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
       prepareMock.mockReturnValue({ request, segmentMap });
       layoutDS.aiService.annotate.mockReturnValue(of([]));
       processMock.mockReturnValue([preview('one'), preview('two'), preview('three')]);
-      layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: `saved-${p.subject.selected.textQuoteSelector.exact}` }));
+      layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: `saved-${p.subject.selected.textQuoteSelector.exact}`, ...p }));
       layoutDS.tagService = { addMany: jest.fn() };
       layoutDS.state.annotation.updatePayload = null;
       layoutEH.emitOuter = jest.fn();
@@ -468,5 +518,91 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     await handler.onAiGenerate({ prompt: 'find names', annotationType: 'bogus' });
 
     expect(prepareMock).toHaveBeenCalledWith(expect.anything(), 'find names', 'highlight');
+  });
+
+  describe('on the page', () => {
+    const pageSubject = { pageContext: 'http://localhost/', pageTitle: 'The Merchant of Venice' };
+    const pageRequest = { subject: 'page', prompt: 'summarize', annotation_type: 'comment', context: { title: 'x' } };
+    const pagePreview = (comment: string) => ({
+      type: 'Commenting', content: { comment }, subject: { ...pageSubject },
+    });
+
+    beforeEach(() => {
+      layoutDS.state.annotation.pendingPayload = { type: 'Highlighting', subject: { ...pageSubject } };
+      layoutDS.state.annotation.updatePayload = null;
+      layoutDS.tagService = { addMany: jest.fn() };
+      layoutEH.emitOuter = jest.fn();
+    });
+
+    it('sends the page request and renders the previews without drawing the pending highlight', async () => {
+      preparePageMock.mockReturnValue(pageRequest);
+      const annotations = [{ type: 'comment', target: null, comment: 'A comedy.' }];
+      layoutDS.aiService.annotate.mockReturnValue(of(annotations));
+      processPageMock.mockReturnValue([pagePreview('one'), pagePreview('two')]);
+
+      await handler.onAiGenerate({ prompt: 'summarize', annotationType: 'comment' });
+
+      expect(preparePageMock).toHaveBeenCalledWith('summarize', 'comment');
+      expect(prepareMock).not.toHaveBeenCalled();
+      expect(layoutDS.aiService.annotate).toHaveBeenCalledWith(pageRequest);
+      expect(processPageMock).toHaveBeenCalledWith(
+        annotations,
+        expect.objectContaining({ notebookId: 'nb', subject: pageSubject }),
+        'comment',
+      );
+      expect(processMock).not.toHaveBeenCalled();
+      // only the previews go through the anchor service, which draws nothing without a selection
+      expect(layoutDS.anchorService.add.mock.calls.map(([a]: any) => a.id)).toEqual(['ai-preview-0', 'ai-preview-1']);
+      expect(layoutDS.annotationService.add).toHaveBeenCalledTimes(2);
+      expect(appEvents.some((e) => e.type === AppEvent.AiPreviewReady)).toBe(true);
+    });
+
+    it('shows "no results" when there is nothing to send', async () => {
+      preparePageMock.mockReturnValue(null);
+
+      await handler.onAiGenerate({ prompt: 'summarize', annotationType: 'comment' });
+
+      expect(layoutDS.aiService.annotate).not.toHaveBeenCalled();
+      expect(layoutDS.toastService.info).toHaveBeenCalled();
+      expect(layoutDS.annotationService.add).not.toHaveBeenCalled();
+    });
+
+    it('shows "no results" when no proposal is usable', async () => {
+      preparePageMock.mockReturnValue(pageRequest);
+      layoutDS.aiService.annotate.mockReturnValue(of([{ type: 'comment', target: null, comment: '' }]));
+      processPageMock.mockReturnValue([]);
+
+      await handler.onAiGenerate({ prompt: 'summarize', annotationType: 'comment' });
+
+      expect(layoutDS.toastService.info).toHaveBeenCalled();
+      expect(layoutDS.annotationService.add).not.toHaveBeenCalled();
+    });
+
+    it('saves the page previews left after discarding one, without a selection', async () => {
+      preparePageMock.mockReturnValue(pageRequest);
+      layoutDS.aiService.annotate.mockReturnValue(of([]));
+      processPageMock.mockReturnValue([pagePreview('one'), pagePreview('two')]);
+      layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: `saved-${p.content.comment}`, ...p }));
+
+      await handler.onAiGenerate({ prompt: 'summarize', annotationType: 'comment' });
+      handler.discardAiPreview('ai-preview-0');
+      handler.onAiAccept();
+      await new Promise(jest.requireActual('timers').setImmediate);
+
+      expect(layoutDS.saveAnnotation).toHaveBeenCalledTimes(1);
+      const saved = layoutDS.saveAnnotation.mock.calls[0][0];
+      expect(saved.content).toEqual({ comment: 'two' });
+      expect(saved.subject).not.toHaveProperty('selected');
+    });
+  });
+
+  it('keeps the selection flow: pending highlight, segments request', async () => {
+    prepareMock.mockReturnValue(null);
+
+    await handler.onAiGenerate({ prompt: 'find names', annotationType: 'comment' });
+
+    expect(layoutDS.anchorService.add).toHaveBeenCalledWith({ id: 'pending-id' });
+    expect(prepareMock).toHaveBeenCalled();
+    expect(preparePageMock).not.toHaveBeenCalled();
   });
 });

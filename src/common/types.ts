@@ -49,6 +49,8 @@ export enum CrossMsgRequestId {
   OntologyList = 'ontology.list',
   OntologySaveSelection = 'ontology.saveSelection',
   OntologySearchElements = 'ontology.searchElements',
+  // client status (maintenance notice)
+  ClientStatusGet = 'clientStatus.get',
 }
 
 export enum CommonEventType {

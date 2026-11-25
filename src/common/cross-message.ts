@@ -2,7 +2,8 @@ import { uniqueId } from 'lodash';
 import { environment as env } from '../environments/environment';
 import { CrossMsgData, CommonEventType } from './types';
 
-const crossMessageEnabled = () => !!(
+/** True in the extension on a web page: model calls go to the background service worker. */
+export const crossMessageEnabled = () => !!(
   env.chromeExt && document?.location?.protocol !== 'chrome-extension:'
 );
 

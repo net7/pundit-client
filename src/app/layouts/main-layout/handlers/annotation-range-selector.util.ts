@@ -2,6 +2,7 @@ import { anchor } from "@net7/annotator";
 import { AiAnnotateRequest, AiAnnotationType } from "src/communication";
 import { getAnnotationSelectors } from "src/app/models/annotation/annotation-selectors";
 import { buildSegmentProjection } from "./annotation-range-utils";
+import { buildPageContext, buildWholePageContext } from "./ai-page-context.util";
 
 export type PreparedAiRequest = {
   request: AiAnnotateRequest;
@@ -24,7 +25,8 @@ async function anchorSelection(annotationPayload: any): Promise<Range | null> {
 
 /**
  * Builds the AI annotate request from the selection of the pending annotation:
- * the segments, joined, are exactly the selected text.
+ * the segments, joined, are exactly the selected text; `context` adds the page
+ * metadata and the text around the selection (left out when empty).
  * Returns null when the selection cannot be anchored or contains no text.
  */
 export async function prepareAiRequest(
@@ -42,12 +44,39 @@ export async function prepareAiRequest(
     return null;
   }
 
+  // the segment nodes start and end exactly at the selection
+  const nodes = Array.from(segmentMap.values());
+  const context = buildPageContext(nodes[0], nodes[nodes.length - 1]);
+
   return {
     request: {
       segments,
       prompt,
       annotation_type: annotationType,
+      ...(context ? { context } : {}),
     },
     segmentMap,
+  };
+}
+
+/**
+ * Builds the AI annotate request on the whole page: `subject: "page"`, no
+ * `segments`, and a `context` with the page metadata and the beginning of the
+ * page text. Returns null when the page has no title, no description and no
+ * text: nothing to send.
+ */
+export function preparePageAiRequest(
+  prompt: string,
+  annotationType: AiAnnotationType,
+): AiAnnotateRequest | null {
+  const context = buildWholePageContext();
+  if (!context) {
+    return null;
+  }
+  return {
+    subject: "page",
+    prompt,
+    annotation_type: annotationType,
+    context,
   };
 }

@@ -7,6 +7,9 @@ import { translate } from '@net7/core';
 import en from 'src/app/config/i18n/en_US';
 import { OntologyService } from 'src/app/services/ontology.service';
 import { SemanticSectionComponent } from './semantic-section';
+import { buildSemanticContent } from 'src/app/layouts/main-layout/handlers/annotation-llm-helpers.util';
+import { EditModalPayloadBuilder } from 'src/app/layouts/main-layout/handlers/edit-modal-payload.builder';
+import { MainLayoutAppEventsHandler } from 'src/app/layouts/main-layout/handlers/main-layout-app-events.handler';
 
 // the real models load the analytics and cross-message layers, which keep timers alive
 jest.mock('src/common/models', () => ({ OntologyModel: {} }));
@@ -468,6 +471,35 @@ describe('SemanticSectionComponent > object autocomplete', () => {
       component.onRemoveClick(0);
       expect(component.rows).toHaveLength(1);
       expect(component.rows[0].object.value).toBeNull();
+    });
+
+    it('opens an AI annotation with element subjects like one saved by hand, and saves it unchanged', () => {
+      const SH = 'http://example.org/shakespeare#';
+      const portia = { uri: `${SH}Portia`, label: 'Portia', description: 'Heiress of Belmont', elementType: 'entity' as const };
+      const bassanio = { uri: `${SH}Bassanio`, label: 'Bassanio', elementType: 'entity' as const };
+      const aiElement = (name: string) => ({ uri: `${SH}${name}`, label: name, elementType: 'entity' as const });
+      const predicateOf = (name: string) => ({ uri: `${SH}${name}`, label: name });
+      const content = buildSemanticContent([
+        { predicate: predicateOf('identifies'), object: aiElement('Portia') },
+        { subject: portia, predicate: predicateOf('livesIn'), object: aiElement('Belmont') },
+        { subject: portia, predicate: predicateOf('bornIn'), object: { text: '1580' } },
+        { subject: bassanio, predicate: predicateOf('friendOf'), object: aiElement('Antonio') },
+      ])!;
+      const appEvents = new MainLayoutAppEventsHandler({} as any, {} as any) as any;
+      create(appEvents.getSemanticData(content));
+
+      // relations about the selection first, then one "About" block per subject
+      expect(component.getGroupRows(component.fragmentGroup!).map(({ row }) => row.predicate.picked?.label))
+        .toEqual(['identifies']);
+      expect(component.subjectGroups.map(({ subject }) => subject.picked?.label)).toEqual(['Portia', 'Bassanio']);
+      expect(component.subjectGroups.map((group) => component.getGroupRows(group).length)).toEqual([2, 1]);
+
+      const values: any[] = [];
+      changed$.subscribe(({ value }) => values.push(value));
+      (component as any).triggerChange();
+      const payload: any = {};
+      EditModalPayloadBuilder.applyFormValuesToPayload(payload, { semantic: { value: lastValue(values) } } as any);
+      expect(payload.content).toEqual(content);
     });
   });
 });

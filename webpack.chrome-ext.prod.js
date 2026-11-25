@@ -25,6 +25,8 @@ const common = {
   plugins: [
     new webpack.DefinePlugin({
       API_BASE_URL: JSON.stringify('https://api.thepund.it'),
+      // maintenance status of the client, read by the background (empty: no status read)
+      STATUS_URL: JSON.stringify('https://app.thepund.it/api/client-status'),
       FEED_PDF_BASE_URL: JSON.stringify('https://feed.thepund.it/pdf.php?source='), // https://feed.thepund.it/pdf.php?source=<pdf>
       FEED_WEB_BASE_URL: JSON.stringify('https://feed.thepund.it/?url='), // https://feed.thepund.it/?url=<url>
     })
