@@ -1,6 +1,13 @@
-<main-layout
-(input)="$event.stopPropagation()"
-(keyup)="$event.stopPropagation()"
-(keydown)="$event.stopPropagation()"
-(keypress)="$event.stopPropagation()"
-></main-layout>
+@if (ready$ | async) {
+  @if (maintenance$ | async; as maintenance) {
+    <!-- maintenance: Pundit is not started, the notice takes its place -->
+    <pnd-maintenance-notice [data]="maintenance"></pnd-maintenance-notice>
+  } @else {
+    <main-layout
+    (input)="$event.stopPropagation()"
+    (keyup)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+    (keypress)="$event.stopPropagation()"
+    ></main-layout>
+  }
+}

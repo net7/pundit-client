@@ -1,0 +1,44 @@
+@if (data) {
+  <div class="pnd-main">
+    <div class="pnd-sidebar"
+      [ngClass]="{ 'is-collapsed': collapsed, 'is-expanded': !collapsed }">
+      <!-- Pundit logo: opens and closes the sidebar -->
+      <div class="pnd-sidebar__logo" (click)="toggle()">
+        <pnd-svg-icon [data]="{ id: 'pundit' }"></pnd-svg-icon>
+        @if (collapsed) {
+          <span class="pnd-sidebar__logo-dot" role="img"
+            [attr.aria-label]="data.title" [title]="data.title"></span>
+        }
+      </div>
+      @if (!collapsed) {
+        <!-- Header: the status, and Pundit's actions, not available -->
+        <div class="pnd-sidebar__header">
+          <div class="pnd-maintenance-status">
+            <span class="pnd-maintenance-status__dot"></span>
+            {{ data.label }}
+          </div>
+          <div class="pnd-sidebar__actions">
+            @for (icon of unavailableActions; track icon) {
+              <span class="pnd-sidebar__action is-disabled" aria-disabled="true"
+                [title]="labels.unavailable">
+                <pnd-svg-icon [data]="{ id: icon }"></pnd-svg-icon>
+              </span>
+            }
+            <a class="pnd-sidebar__action pnd-sidebar__close-button"
+              [title]="labels.collapse" (click)="toggle()">
+              <pnd-svg-icon [data]="{ id: 'angle-right' }"></pnd-svg-icon>
+            </a>
+          </div>
+        </div>
+        <!-- Content: the notice -->
+        <div class="pnd-sidebar__content">
+          <div class="pnd-maintenance-notice" role="alert">
+            <p class="pnd-maintenance-notice__title">{{ data.title }}</p>
+            <p class="pnd-maintenance-notice__text">{{ data.text }}</p>
+          </div>
+        </div>
+      }
+    </div>
+    <pnd-toast [data]="toastService.data$ | async" [emit]="onToastEmit"></pnd-toast>
+  </div>
+}

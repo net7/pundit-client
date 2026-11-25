@@ -1,0 +1,71 @@
+@use "../generic/color-scheme";
+@use "../generic/variables";
+
+/**
+ * MAINTENANCE NOTICE
+ *
+ * Shown in place of Pundit while the server reports a maintenance (see MaintenanceService):
+ * a Pundit sidebar with the status in the header, Pundit's actions disabled, and the notice
+ * as the sidebar content; a dot on the logo while the sidebar is collapsed.
+ */
+
+// header: the status, where the user name would be
+.pnd-maintenance-status {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+    font-size: variables.$font-size-xs;
+    font-weight: 500;
+    color: variables.$color-text;
+
+    &__dot {
+        width: 8px;
+        height: 8px;
+        margin-right: variables.$space;
+        border-radius: 50%;
+        background-color: color-scheme.$color-warning;
+    }
+}
+
+// header: Pundit's actions, not available
+.pnd-sidebar__action.is-disabled {
+    cursor: not-allowed;
+    opacity: .4;
+
+    &:hover {
+        color: variables.$color-text-light;
+    }
+}
+
+// content: the notice, part of the sidebar
+.pnd-maintenance-notice {
+    margin-top: variables.$sidebar-header-height + variables.$space * 2;
+    padding: variables.$space * 2 variables.$space * 2 variables.$space * 2 variables.$space * 2.5;
+    border-bottom: 1px solid variables.$color-border-normal;
+    border-left: 4px solid color-scheme.$color-warning;
+    color: variables.$color-text;
+
+    &__title {
+        margin: 0 0 variables.$space;
+        font-size: variables.$font-size-m;
+        font-weight: 500;
+    }
+
+    &__text {
+        margin: 0;
+        font-size: variables.$font-size-s;
+        line-height: 1.4;
+        color: variables.$color-text-light;
+    }
+}
+
+.pnd-sidebar__logo-dot {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 12px;
+    height: 12px;
+    border: 2px solid color-scheme.$color-gray-00;
+    border-radius: 50%;
+    background-color: color-scheme.$color-warning;
+}
