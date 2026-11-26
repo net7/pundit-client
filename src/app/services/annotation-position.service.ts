@@ -9,7 +9,8 @@ import { AnnotationService } from './annotation.service';
 import { PdfService } from './pdf.service';
 
 const TOP_MARGIN = 60;
-const TOP_MARGIN_FULLPAGE = 110;
+// below the "Add Page Annotation" bar (top 70px + height 50px, see _sidebar.scss)
+const TOP_MARGIN_FULLPAGE = 132;
 
 @Injectable({
   providedIn: 'root'
