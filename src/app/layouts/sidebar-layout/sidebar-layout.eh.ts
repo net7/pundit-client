@@ -16,6 +16,7 @@ import { AnalyticsAction } from 'src/common/types';
 import { TagService } from 'src/app/services/tag.service';
 import { PdfService } from 'src/app/services/pdf.service';
 import { SidebarLayoutDS } from './sidebar-layout.ds';
+import { SidebarLayoutTabs } from './sidebar-layout-tabs';
 
 export class SidebarLayoutEH extends EventHandler {
   public destroy$: Subject<void> = new Subject();
@@ -43,6 +44,8 @@ export class SidebarLayoutEH extends EventHandler {
   public dataSource!: SidebarLayoutDS;
 
   private callHypoDone = false;
+
+  private tabs = new SidebarLayoutTabs(this);
 
   public listen() {
     this.innerEvents$.subscribe((event) => {
@@ -101,24 +104,10 @@ export class SidebarLayoutEH extends EventHandler {
         const state = this.dataSource.isCollapsed.value;
         this.dataSource.isCollapsed.next(!state);
       },
-      [SidebarLayoutEvent.ClickNotebookPanel]: () => {
-        const state = this.dataSource.notebookEditor.getValue();
-        this.dataSource.notebookEditor.next(!state);
-        // the two panels are never open together
-        this.dataSource.ontologiesPanel.next(false);
-      },
-      [SidebarLayoutEvent.ClickOntologiesPanel]: () => {
-        const state = this.dataSource.ontologiesPanel.getValue();
-        this.dataSource.ontologiesPanel.next(!state);
-        this.dataSource.notebookEditor.next(false);
-      },
-      [SidebarLayoutEvent.ClickPageAnnotationPanel]: () => {
-        const state = this.annotationService.showPageAnnotations$.getValue();
-        this.annotationService.showPageAnnotations$.next(!state);
-        this.appEvent$.next({
-          type: state ? AppEvent.HidePageAnnotations : AppEvent.ShowPageAnnotations
-        });
-      },
+      // the header tabs are exclusive
+      [SidebarLayoutEvent.ClickNotebookPanel]: () => this.tabs.toggle('notebook'),
+      [SidebarLayoutEvent.ClickOntologiesPanel]: () => this.tabs.toggle('ontologies'),
+      [SidebarLayoutEvent.ClickPageAnnotationPanel]: () => this.tabs.toggle('page'),
       [SidebarLayoutEvent.ClickNewFullPageAnnotation]: (payload) => {
         this.dataSource.onFullpageDropdownToggle();
         this.appEvent$.next({
