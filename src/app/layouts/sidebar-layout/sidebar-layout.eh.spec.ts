@@ -77,3 +77,14 @@ describe('SidebarLayoutEH > tabs', () => {
     expect(events).toEqual([]);
   });
 });
+
+describe('SidebarLayoutEH > add page annotation', () => {
+  it('asks for a new page annotation of the clicked type', () => {
+    const eh = new SidebarLayoutEH();
+    const events: AppEventData[] = [];
+    eh.appEvent$ = new ReplaySubject<AppEventData>();
+    eh.appEvent$.subscribe((event) => events.push(event));
+    (eh as any).innerEventHandlers[SidebarLayoutEvent.ClickNewFullPageAnnotation]('linking');
+    expect(events).toEqual([{ type: AppEvent.AnnotationNewFullPage, payload: 'linking' }]);
+  });
+});

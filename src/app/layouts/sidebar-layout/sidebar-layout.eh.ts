@@ -109,7 +109,6 @@ export class SidebarLayoutEH extends EventHandler {
       [SidebarLayoutEvent.ClickOntologiesPanel]: () => this.tabs.toggle('ontologies'),
       [SidebarLayoutEvent.ClickPageAnnotationPanel]: () => this.tabs.toggle('page'),
       [SidebarLayoutEvent.ClickNewFullPageAnnotation]: (payload) => {
-        this.dataSource.onFullpageDropdownToggle();
         this.appEvent$.next({
           type: AppEvent.AnnotationNewFullPage,
           payload

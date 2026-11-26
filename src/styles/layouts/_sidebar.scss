@@ -358,12 +358,36 @@
     }
 }
 
-// FULLPAGE DROPDOWN SELECT
-.pnd-sidebar__content {
-    .pnd-dropdown {
-        position: absolute;
-        margin: 70px variables.$space;
-        width: calc(100% - 16px);
+// FULLPAGE "ADD PAGE ANNOTATION" BAR
+// fixed height: the first page annotation starts right below it (TOP_MARGIN_FULLPAGE)
+.pnd-sidebar__fullpage-add {
+    position: absolute;
+    box-sizing: border-box;
+    height: 50px;
+    margin: 70px variables.$space;
+    width: calc(100% - 16px);
+
+    &-label {
+        height: 18px;
+        margin-bottom: variables.$space*0.75;
+        font-size: variables.$font-size-xs;
+        font-weight: variables.$font-weight-bold;
+        line-height: 18px;
+        color: variables.$color-text-light;
+    }
+
+    &-buttons {
+        display: flex;
+        gap: variables.$space*0.5;
+    }
+
+    &-button {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 0 variables.$space*0.5;
+        font-size: variables.$font-size-xs;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 }
 

@@ -69,21 +69,18 @@ export class SidebarLayoutDS extends LayoutDataSource {
     ]
   };
 
-  public fullpage = {
-    isExpanded: false
-  };
-
   public labels = {
     fullpage: {
       show: _t('sidebaractions#fullpage_show'),
       hide: _t('sidebaractions#fullpage_hide'),
       add: _t('fullpage#add'),
-      options: {
-        tagging: _t('tooltip#tag'),
-        commenting: _t('tooltip#comment'),
-        linking: _t('tooltip#semantic'),
-        ai: _t('tooltip#aiRequest')
-      }
+      // buttons of the "Add Page Annotation" bar: short label, full name as title
+      options: [
+        { type: 'tagging', label: _t('tooltip#tag'), title: _t('tooltip#tag') },
+        { type: 'commenting', label: _t('tooltip#comment'), title: _t('tooltip#comment') },
+        { type: 'linking', label: _t('fullpage#semantic'), title: _t('tooltip#semantic') },
+        { type: 'ai', label: _t('fullpage#ai'), title: _t('tooltip#aiRequest') },
+      ]
     },
     notebookpanel: {
       show: _t('sidebaractions#notebookpanel_show'),
@@ -149,9 +146,5 @@ export class SidebarLayoutDS extends LayoutDataSource {
   onUsernameClick(ev: MouseEvent) {
     ev.stopImmediatePropagation();
     this.userPopover.isOpen.next(!this.userPopover.isOpen.getValue());
-  }
-
-  onFullpageDropdownToggle() {
-    this.fullpage.isExpanded = !this.fullpage.isExpanded;
   }
 }
