@@ -97,9 +97,11 @@ module.exports = defineConfig([
     }
   },
   {
+    // data files: mocks and the i18n dictionaries
     files: [
       'src/app/mocks/**/*.ts',
-      'src/**/*.mock.ts'
+      'src/**/*.mock.ts',
+      'src/app/config/i18n/**/*.ts'
     ],
     rules: {
       'max-lines': 'off',

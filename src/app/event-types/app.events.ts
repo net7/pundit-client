@@ -33,4 +33,5 @@ export enum AppEvent {
   AiPreviewReady = "app.aipreviewready",
   AiPreviewClear = "app.aipreviewclear",
   AiPreviewDiscard = "app.aipreviewdiscard",
+  AiPreviewTripleDiscard = "app.aipreviewtriplediscard",
 }

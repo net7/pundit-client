@@ -3,6 +3,7 @@ export enum AnnotationEvent {
   CreateNotebook = 'annotation.createnotebook',
   Delete = 'annotation.delete',
   DiscardPreview = 'annotation.discardpreview',
+  DiscardPreviewTriple = 'annotation.discardpreviewtriple',
   EditComment = 'annotation.editcomment',
   EditTags = 'annotation.edittags',
   EditSemantic = 'annotation.editsemantic',

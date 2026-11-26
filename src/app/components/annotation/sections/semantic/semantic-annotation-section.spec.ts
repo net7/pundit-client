@@ -17,15 +17,21 @@ const triple = (text: string, subject?: any) => ({
 });
 
 describe('SemanticAnnotationSectionComponent', () => {
-  const render = (content: any[]) => {
+  const create = (id = 'saved-1') => {
     const injector = Injector.create({ providers: [{ provide: ImageDataService, useValue: {} }] });
     const component = runInInjectionContext(injector, () => new SemanticAnnotationSectionComponent());
+    component.annotationId = id;
+    return component;
+  };
+
+  const render = (content: any[], id?: string) => {
+    const component = create(id);
     const data$ = new Subject<any>();
     component.data$ = data$;
     component.ngOnInit();
     let result: any;
     component.semantic$.subscribe((value) => { result = value; });
-    data$.next({ type: 'Linking', content });
+    data$.next({ id: component.annotationId, type: 'Linking', content });
     return result;
   };
 
@@ -74,5 +80,36 @@ describe('SemanticAnnotationSectionComponent', () => {
   it('keeps the predicate URI, to link the predicate label', () => {
     const { groups } = render([triple('a')]);
     expect(groups[0].triples[0].predicate).toEqual({ label: 'knows', uri: 'http://foaf/knows' });
+  });
+
+  describe('discarding a triple of an AI preview', () => {
+    it('allows it on a preview with more than one triple', () => {
+      expect(render([triple('a'), triple('b')], 'ai-preview-0').canDiscardTriple).toBe(true);
+    });
+
+    it('never allows it on the last triple', () => {
+      expect(render([triple('a')], 'ai-preview-0').canDiscardTriple).toBe(false);
+    });
+
+    it('never allows it on a saved annotation', () => {
+      expect(render([triple('a'), triple('b')], 'saved-1').canDiscardTriple).toBe(false);
+    });
+
+    it('keeps the index of each triple in the content across subject groups', () => {
+      const { groups } = render([
+        triple('a'), triple('b', dante), triple('c', dante), triple('d'),
+      ], 'ai-preview-0');
+      expect(groups.map(({ triples }: any) => triples.map((t: any) => t.index)))
+        .toEqual([[0], [1, 2], [3]]);
+    });
+
+    it('emits the triple index without toggling the card', () => {
+      const component = create('ai-preview-0');
+      component.emit = jest.fn();
+      const ev = { stopImmediatePropagation: jest.fn() } as any;
+      component.onDiscardTriple(ev, 2);
+      expect(ev.stopImmediatePropagation).toHaveBeenCalled();
+      expect(component.emit).toHaveBeenCalledWith('click', { id: 'ai-preview-0', source: 'discard-triple', index: 2 });
+    });
   });
 });

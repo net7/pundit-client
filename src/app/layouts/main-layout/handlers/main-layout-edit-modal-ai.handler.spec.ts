@@ -473,6 +473,75 @@ describe('MainLayoutEditModalAiHandler > onAiGenerate', () => {
     });
   });
 
+  describe('discarding a triple of a semantic preview', () => {
+    const triple = (text: string) => ({
+      predicate: { label: 'knows', uri: 'http://foaf/knows' },
+      objectType: 'literal', object: { text },
+    });
+    const semanticPreview = (texts: string[]) => ({
+      type: 'Linking',
+      content: texts.map(triple),
+      subject: {
+        selected: {
+          rangeSelector: { startContainer: '/p[1]', endContainer: '/p[1]', startOffset: 0, endOffset: 1 },
+          textQuoteSelector: { exact: texts.join() },
+        },
+      },
+    });
+    const savedTexts = () => layoutDS.saveAnnotation.mock.calls
+      .map(([p]: any) => p.content.map((t: any) => t.object.text));
+
+    beforeEach(async () => {
+      prepareMock.mockReturnValue({ request, segmentMap });
+      layoutDS.aiService.annotate.mockReturnValue(of([]));
+      processMock.mockReturnValue([semanticPreview(['a', 'b', 'c']), semanticPreview(['d'])]);
+      layoutDS.saveAnnotation = jest.fn((p: any) => of({ id: 'saved', ...p }));
+      layoutDS.tagService = { addMany: jest.fn() };
+      layoutDS.state.annotation.updatePayload = null;
+      layoutEH.emitOuter = jest.fn();
+      await handler.onAiGenerate({ prompt: 'find names', annotationType: 'semantic_annotation' });
+      layoutDS.annotationService.add.mockClear();
+      layoutDS.annotationService.getAnnotationFromPayload.mockClear();
+    });
+
+    it('updates the card with the other triples, in order', () => {
+      handler.discardAiPreviewTriple('ai-preview-0', 1);
+
+      const [id, payload] = layoutDS.annotationService.getAnnotationFromPayload.mock.calls[0];
+      expect(id).toBe('ai-preview-0');
+      expect(payload.content.map((t: any) => t.object.text)).toEqual(['a', 'c']);
+      expect(layoutDS.annotationService.add).toHaveBeenCalledWith({ id: 'ai-preview-0' });
+      expect(layoutDS.anchorService.remove).not.toHaveBeenCalled();
+    });
+
+    it('saves the previews with the remaining triples only', async () => {
+      handler.discardAiPreviewTriple('ai-preview-0', 0);
+      handler.discardAiPreviewTriple('ai-preview-0', 1);
+      handler.onAiAccept();
+      await new Promise(jest.requireActual('timers').setImmediate);
+
+      expect(savedTexts()).toEqual([['b'], ['d']]);
+    });
+
+    it('never removes the last triple of a preview', async () => {
+      handler.discardAiPreviewTriple('ai-preview-1', 0);
+      handler.discardAiPreviewTriple('ai-preview-0', 0);
+      handler.discardAiPreviewTriple('ai-preview-0', 0);
+      handler.discardAiPreviewTriple('ai-preview-0', 0);
+      handler.onAiAccept();
+      await new Promise(jest.requireActual('timers').setImmediate);
+
+      expect(savedTexts()).toEqual([['c'], ['d']]);
+    });
+
+    it('ignores an unknown preview or an index out of range', () => {
+      handler.discardAiPreviewTriple('ai-preview-9', 0);
+      handler.discardAiPreviewTriple('ai-preview-0', 3);
+      handler.discardAiPreviewTriple('ai-preview-0', -1);
+      expect(layoutDS.annotationService.add).not.toHaveBeenCalled();
+    });
+  });
+
   describe('preview state signal (re-enables Generate when no previews are shown)', () => {
     let states: boolean[];
     let subscription: { unsubscribe: () => void };

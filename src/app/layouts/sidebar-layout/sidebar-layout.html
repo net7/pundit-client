@@ -67,14 +67,6 @@
           }
         </a>
       }
-      <a class="pnd-sidebar__action"
-        [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
-            [ngClass]="{
-                'is-active': ds.annotationService.showPageAnnotations$ | async
-            }" 
-        (click)="lb.eventHandler.emitInner('pageannotationpanel')">
-        <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
-      </a>
       @if (ds.userService.logged$ | async) {
         <a class="pnd-sidebar__action pnd-sidebar__notebook-panel"
           [title]="(ds.notebookEditor | async) ? ds.labels.notebookpanel.hide : ds.labels.notebookpanel.show"
@@ -92,6 +84,16 @@
           (click)="lb.eventHandler.emitInner('ontologiespanel')">
           <pnd-svg-icon [data]="{ id: 'ontologies' }"></pnd-svg-icon>
         </a>
+      }
+      <a class="pnd-sidebar__action"
+        [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
+            [ngClass]="{
+                'is-active': ds.annotationService.showPageAnnotations$ | async
+            }"
+        (click)="lb.eventHandler.emitInner('pageannotationpanel')">
+        <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
+      </a>
+      @if (ds.userService.logged$ | async) {
         <a class="pnd-sidebar__action pnd-sidebar__close-button"
           [title]="ds.labels.collapse"
           (click)="lb.eventHandler.emitInner('sidebarclose')">
@@ -126,36 +128,17 @@
       && (ds.annotationService.showPageAnnotations$ | async)
       && (ds.isCollapsed | async) === false
       ) {
-      <div class="pnd-dropdown {{ ds.fullpage.isExpanded ? 'is-expanded' : '' }}">
-        <!-- Selected element -->
-        <button class="pnd-dropdown__selected"
-          (click)="ds.onFullpageDropdownToggle()">
-          <div class="pnd-dropdown__selected-label" title="{{ ds.labels.fullpage.add }}">
-            {{ ds.labels.fullpage.add }}
-          </div>
-          <div class="pnd-dropdown__selected-right-icon">
-            @if (!ds.fullpage.isExpanded) {
-              <pnd-svg-icon [data]="{ id: 'angle-down' }"></pnd-svg-icon>
-            }
-            @if (ds.fullpage.isExpanded) {
-              <pnd-svg-icon [data]="{ id: 'angle-up' }"></pnd-svg-icon>
-            }
-          </div>
-        </button>
-        <!-- END // Selected element -->
-        <!-- Dropdown items -->
-        <div class="pnd-dropdown__list-wrapper">
-          <!-- list of predicate options -->
-          <div class="pnd-dropdown__list-items">
-            @for (type of ['tagging', 'commenting', 'linking', 'ai']; track type) {
-              <div class="pnd-dropdown__item"
-                (click)="lb.eventHandler.emitInner('newfullpage', type)">
-                {{ ds.labels.fullpage.options[type] }}
-              </div>
-            }
-          </div>
+      <div class="pnd-sidebar__fullpage-add">
+        <div class="pnd-sidebar__fullpage-add-label">{{ ds.labels.fullpage.add }}</div>
+        <div class="pnd-sidebar__fullpage-add-buttons">
+          @for (option of ds.labels.fullpage.options; track option.type) {
+            <button type="button" class="pnd-btn pnd-btn-light pnd-sidebar__fullpage-add-button"
+              [title]="option.title"
+              (click)="lb.eventHandler.emitInner('newfullpage', option.type)">
+              {{ option.label }}
+            </button>
+          }
         </div>
-        <!-- END // Dropdown items -->
       </div>
     }
     @if (lb.dataSource.annotations) {

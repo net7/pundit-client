@@ -11,8 +11,15 @@
     </div>
   }
   <div class="pnd-annotation__semantic">
-    @for (triple of group.triples; track triple) {
-      <div class="pnd-annotation__semantic-item">
+    @for (triple of group.triples; track triple.index) {
+      <div class="pnd-annotation__semantic-item" [class.is-discardable]="semantic.canDiscardTriple">
+        @if (semantic.canDiscardTriple) {
+          <!-- AI preview: drop this triple before saving -->
+          <button type="button" class="pnd-annotation__semantic-item-discard" [title]="labels.discardTriple"
+            (click)="onDiscardTriple($event, triple.index)">
+            <pnd-svg-icon [data]="{ id: 'times' }"></pnd-svg-icon>
+          </button>
+        }
         <div class="pnd-annotation__semantic-item-predicate">
           @if (triple?.predicate?.uri) {
             <a class="pnd-annotation__semantic-item-predicate-link pnd-annotation__semantic-item-predicate-text"

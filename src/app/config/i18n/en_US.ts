@@ -196,6 +196,7 @@ export default {
   "annotation#edittags": "Edit tags",
   "annotation#delete": "Delete",
   "annotation#discard_preview_title": "Discard this suggestion: it will not be saved",
+  "annotation#discard_triple_title": "Remove this triple from the suggestion",
   // share
   "share#twitter": "Twitter",
   "share#facebook": "Facebook",
@@ -251,6 +252,8 @@ export default {
   // fullpage annotations
   "fullpage#add": "Add Page Annotation",
   "fullpage#label": "Page Annotation",
+  "fullpage#semantic": "Semantic",
+  "fullpage#ai": "AI",
   "sidebaractions#fullpage_show": "Show full page annotations",
   "sidebaractions#fullpage_hide": "Hide full page annotations",
   "sidebaractions#notebookpanel_show": "Open notebook settings",

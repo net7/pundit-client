@@ -88,3 +88,24 @@ describe('MainLayoutEditModalHandler > discard AI preview', () => {
     expect(discard).toHaveBeenCalledTimes(1);
   });
 });
+
+describe('MainLayoutEditModalHandler > discard a triple of an AI preview', () => {
+  it('discards the triple a card asks for, until the layout is destroyed', () => {
+    const appEvent$ = new Subject<{ type: string; payload?: any }>();
+    const destroy$ = new Subject<void>();
+    const layoutEH: any = {
+      outerEvents$: new Subject(), appEvent$, destroy$, emitOuter: jest.fn(), handleError: jest.fn(),
+    };
+    const handler = new MainLayoutEditModalHandler({} as any, layoutEH);
+    const discard = jest.spyOn((handler as any).aiHandler, 'discardAiPreviewTriple').mockImplementation(() => undefined);
+    handler.listen();
+
+    appEvent$.next({ type: AppEvent.AiPreviewDiscard, payload: 'ai-preview-1' });
+    appEvent$.next({ type: AppEvent.AiPreviewTripleDiscard, payload: { id: 'ai-preview-2', index: 1 } });
+    expect(discard.mock.calls).toEqual([['ai-preview-2', 1]]);
+
+    destroy$.next();
+    appEvent$.next({ type: AppEvent.AiPreviewTripleDiscard, payload: { id: 'ai-preview-0', index: 0 } });
+    expect(discard).toHaveBeenCalledTimes(1);
+  });
+});
