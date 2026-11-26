@@ -67,14 +67,6 @@
           }
         </a>
       }
-      <a class="pnd-sidebar__action"
-        [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
-            [ngClass]="{
-                'is-active': ds.annotationService.showPageAnnotations$ | async
-            }" 
-        (click)="lb.eventHandler.emitInner('pageannotationpanel')">
-        <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
-      </a>
       @if (ds.userService.logged$ | async) {
         <a class="pnd-sidebar__action pnd-sidebar__notebook-panel"
           [title]="(ds.notebookEditor | async) ? ds.labels.notebookpanel.hide : ds.labels.notebookpanel.show"
@@ -92,6 +84,16 @@
           (click)="lb.eventHandler.emitInner('ontologiespanel')">
           <pnd-svg-icon [data]="{ id: 'ontologies' }"></pnd-svg-icon>
         </a>
+      }
+      <a class="pnd-sidebar__action"
+        [title]="(ds.annotationService.showPageAnnotations$ | async) ? ds.labels.fullpage.hide : ds.labels.fullpage.show"
+            [ngClass]="{
+                'is-active': ds.annotationService.showPageAnnotations$ | async
+            }"
+        (click)="lb.eventHandler.emitInner('pageannotationpanel')">
+        <pnd-svg-icon [data]="{ id: 'full-page' }"></pnd-svg-icon>
+      </a>
+      @if (ds.userService.logged$ | async) {
         <a class="pnd-sidebar__action pnd-sidebar__close-button"
           [title]="ds.labels.collapse"
           (click)="lb.eventHandler.emitInner('sidebarclose')">
