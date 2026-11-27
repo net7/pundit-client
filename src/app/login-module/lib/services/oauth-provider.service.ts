@@ -20,8 +20,7 @@ export class OauthProviderService {
   private selectedProvider: OAuthProvider | null = null;
 
   login(provider: OAuthProvider) {
-    const url = this.createOAuthURL(provider);
-    const event$ = this.popupService.open(url, provider?.popup);
+    const event$ = this.popupService.open(provider.params.url, provider?.popup);
 
     // save selected provider (for analytics)
     this.selectedProvider = provider;
@@ -50,9 +49,5 @@ export class OauthProviderService {
         AnalyticsModel.track({ action: action! });
       }
     });
-  }
-
-  private createOAuthURL(provider: OAuthProvider) {
-    return `${provider.params.url}?client_id=${provider.params.clientId}&redirect_uri=${provider.params.redirect}&scope=${provider.params.scope}&response_type=code`;
   }
 }

@@ -16,14 +16,13 @@ jest.mock('../../../../common/models', () => ({
 const ssoMock = AuthModel.sso as jest.Mock;
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-const provider = {
-  id: 'google',
+const providerFor = (id: string) => ({
+  id,
   type: 'OAuth',
-  params: {
-    url: 'https://provider/auth', clientId: 'c', redirect: 'https://app/cb', scope: 'email',
-  },
+  params: { url: `https://app/login/${id}/pundit` },
   popup: { origin: 'https://app' },
-} as OAuthProvider;
+} as OAuthProvider);
+const provider = providerFor('google');
 
 const outcome = (data: object) => ({ data, origin: 'https://app' } as MessageEvent);
 
@@ -38,18 +37,43 @@ describe('OauthProviderService', () => {
     translate.setLangTranslations('en', en_US);
   });
 
+  let popupService: { open: jest.Mock };
+
   beforeEach(() => {
     jest.clearAllMocks();
     popupEvents = new Subject<MessageEvent>();
     authEventService = { set: jest.fn() };
+    popupService = { open: jest.fn(() => popupEvents) };
     TestBed.configureTestingModule({
       providers: [
         { provide: AuthEventService, useValue: authEventService },
-        { provide: PopupService, useValue: { open: jest.fn(() => popupEvents) } },
+        { provide: PopupService, useValue: popupService },
       ],
     });
     service = TestBed.inject(OauthProviderService);
     service.login(provider);
+  });
+
+  it.each(['google', 'facebook', 'egi'])('opens the configured address of %s unchanged (design D5)', (id) => {
+    popupService.open.mockClear();
+    const chosen = providerFor(id);
+
+    service.login(chosen);
+
+    expect(popupService.open).toHaveBeenCalledWith(`https://app/login/${id}/pundit`, chosen.popup);
+  });
+
+  it('shows its own text for already_signed_in and makes no session lookup (design D5)', async () => {
+    popupEvents.next(outcome({ source: 'pundit-login', status: 'error', error: 'already_signed_in' }));
+    await flush();
+
+    expect(ssoMock).not.toHaveBeenCalled();
+    expect(_t('toast#login_already_signed_in_text'))
+      .toBe('You are already signed in with another account. Sign out first.');
+    expect(authEventService.set).toHaveBeenCalledWith({
+      error: _t('toast#login_already_signed_in_text'),
+      source: 'login',
+    });
   });
 
   it('asks the session who signed in on status ok, then signs the user in', async () => {

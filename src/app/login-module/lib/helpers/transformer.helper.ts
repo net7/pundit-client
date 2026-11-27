@@ -18,13 +18,22 @@ export interface PopupOutcomeMessage {
 /** Error codes shown with the generic "sign-in failed" text. */
 const GENERIC_LOGIN_ERRORS = ['provider_failed', 'Unauthorized', 'General error'];
 
+/** Error codes with a text of their own. */
+const LOGIN_ERROR_TEXTS: { [code: string]: string } = {
+  // another account is signed in: the BE API refuses to swap it
+  already_signed_in: 'toast#login_already_signed_in_text',
+};
+
 /**
- * Text of the "sign-in failed" toast: known codes and missing values get the
- * generic text, anything else is a sentence chosen by the backend.
+ * Text of the "sign-in failed" toast: known codes and missing values get their
+ * text or the generic one, anything else is a sentence chosen by the backend.
  */
-export const loginErrorText = (error?: string): string => (
-  !error || GENERIC_LOGIN_ERRORS.includes(error) ? _t('toast#login_error_text') : error
-);
+export const loginErrorText = (error?: string): string => {
+  if (!error || GENERIC_LOGIN_ERRORS.includes(error)) {
+    return _t('toast#login_error_text');
+  }
+  return LOGIN_ERROR_TEXTS[error] ? _t(LOGIN_ERROR_TEXTS[error]) : error;
+};
 
 const readUser = (userinfo: unknown) => (
   typeof userinfo === 'string' ? JSON.parse(userinfo) : userinfo

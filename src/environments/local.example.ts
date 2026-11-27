@@ -1,15 +1,8 @@
 import { AuthConfig } from 'src/app/login-module/public-api';
 import { LocalConfig } from './configuration-types';
 
-const FACEBOOK_CLIENT_ID = '';
-const GOOGLE_CLIENT_ID = '';
-const EGI_CLIENT_ID = '';
-const REDIRECT_URI_EGI = '';
-const REDIRECT_URI_GOOGLE = '';
-const REDIRECT_URI_FACEBOOK = '';
-const GOOGLE_URL = '';
-const FACEBOOK_URL = '';
-const EGI_URL = '';
+// the application: the BE API lives under its /api, social sign-in starts at its login/<provider>/pundit
+const AUTH_BASE_URL = 'https://pundit.work/';
 const POPUP_ORIGIN = '';
 const TERMS_URL = '';
 
@@ -17,7 +10,7 @@ const config: LocalConfig = {
   serializer: 'pundit-client',
   // one host: the BE API lives under the application's /api
   apiBaseUrl: 'https://pundit.work/api',
-  authBaseUrl: 'https://pundit.work/',
+  authBaseUrl: AUTH_BASE_URL,
   userLink: 'https://pundit.work/',
   notebookLink: 'https://pundit.work/notebook',
   notificationsLink: 'https://pundit.work/notifications',
@@ -39,10 +32,7 @@ const config: LocalConfig = {
         id: 'google',
         type: 'OAuth',
         params: {
-          clientId: GOOGLE_CLIENT_ID,
-          redirect: REDIRECT_URI_GOOGLE,
-          url: GOOGLE_URL,
-          scope: 'openid profile email'
+          url: `${AUTH_BASE_URL}login/google/pundit`,
         },
         popup: {
           origin: POPUP_ORIGIN,
@@ -52,10 +42,7 @@ const config: LocalConfig = {
         id: 'facebook',
         type: 'OAuth',
         params: {
-          clientId: FACEBOOK_CLIENT_ID,
-          redirect: REDIRECT_URI_FACEBOOK,
-          url: FACEBOOK_URL,
-          scope: 'email'
+          url: `${AUTH_BASE_URL}login/facebook/pundit`,
         },
         popup: {
           origin: POPUP_ORIGIN,
@@ -66,10 +53,7 @@ const config: LocalConfig = {
         id: 'egi',
         type: 'OAuth',
         params: {
-          clientId: EGI_CLIENT_ID,
-          redirect: REDIRECT_URI_EGI,
-          url: EGI_URL,
-          scope: 'openid profile email'
+          url: `${AUTH_BASE_URL}login/egi/pundit`,
         },
         popup: {
           origin: POPUP_ORIGIN,

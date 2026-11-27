@@ -89,3 +89,14 @@ test('missing required file is rejected', () => {
   const errors = checkHosts('prod', { [PROD_TS]: null });
   assert.ok(errors.some((e) => e.includes(PROD_TS) && /missing/.test(e)), errors.join('\n'));
 });
+
+test('a provider still configured with a client id is rejected: social sign-in starts at the BE API', () => {
+  const text = `${envTs(PROD_APP)}\nconst providers = [{ id: 'google', params: { clientId: GOOGLE_CLIENT_ID, url: GOOGLE_URL } }];`;
+  const errors = checkHosts('prod', { [PROD_TS]: text });
+  assert.ok(errors.some((e) => e.includes(PROD_TS) && e.includes('clientId')), errors.join('\n'));
+});
+
+test('a provider configured with the start route of the BE API passes', () => {
+  const text = `${envTs(PROD_APP)}\nconst providers = [{ id: 'google', params: { url: \`\${authBaseUrl}login/google/pundit\` } }];`;
+  assert.deepEqual(checkHosts('prod', { [PROD_TS]: text }), []);
+});

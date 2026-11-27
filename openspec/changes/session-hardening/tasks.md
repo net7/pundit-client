@@ -27,10 +27,10 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 5. Social sign-in
 
-- [ ] 5.1 Specs: `login(provider)` opens exactly `provider.params.url`; `already_signed_in` yields `toast#login_already_signed_in_text` and no session lookup (design D5)
-- [ ] 5.2 `oauth-provider.interface.ts`: `OAuthParameters` is `{ url: string }`; `oauth-provider.service.ts`: `createOAuthURL` returns the address unchanged
-- [ ] 5.3 `transformer.helper.ts`: the new outcome; `en_US.ts`: the new string
-- [ ] 5.4 `local.example.ts`: each provider's `url` is `` `${authBaseUrl}login/<provider>/pundit` ``; remove the client id, redirect and scope constants; `scripts/deploy/env-check.js` and its test: refuse a provider configuration that still has `clientId`
+- [x] 5.1 Specs: `login(provider)` opens exactly `provider.params.url`; `already_signed_in` yields `toast#login_already_signed_in_text` and no session lookup (design D5)
+- [x] 5.2 `oauth-provider.interface.ts`: `OAuthParameters` is `{ url: string }`; `oauth-provider.service.ts`: `createOAuthURL` returns the address unchanged (removed: `login` opens `provider.params.url`); `configuration.service.ts`: the fallback providers have `url` only
+- [x] 5.3 `transformer.helper.ts`: the new outcome; `en_US.ts`: the new string
+- [x] 5.4 `local.example.ts`: each provider's `url` is `` `${authBaseUrl}login/<provider>/pundit` ``; remove the client id, redirect and scope constants; `scripts/deploy/env-check.js` and its test: refuse a provider configuration that still has `clientId`
 
 ## 6. Reported defects, confirm first
 

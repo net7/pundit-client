@@ -12,6 +12,9 @@ const extractHosts = (text) => [
   ...new Set([...text.matchAll(HOST_RE)].map((m) => m[1].toLowerCase())),
 ];
 
+// a social sign-in starts at the BE API: the client holds no provider client id
+const CLIENT_ID_RE = /\bclientId\s*:/;
+
 const isLocalHost = (host) => host === 'localhost'
   || host === '0.0.0.0'
   || /^127\./.test(host)
@@ -34,6 +37,9 @@ const checkHosts = (env, files) => {
     forbiddenApiHosts.filter((host) => hosts.includes(host)).forEach((host) => {
       errors.push(`${file} contains ${host}, which is not the ${env} API host ${apiHost}`);
     });
+    if (CLIENT_ID_RE.test(content)) {
+      errors.push(`${file} still configures a provider clientId: each provider's url must be the BE API start route <authBaseUrl>login/<provider>/pundit`);
+    }
     if (!hosts.includes(apiHost)) {
       errors.push(`${file} does not contain the ${env} API host ${apiHost}`);
     }

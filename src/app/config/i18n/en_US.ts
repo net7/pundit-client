@@ -86,6 +86,8 @@ export default {
   "toast#login_error_title": "Oops! Something went wrong",
   "toast#login_error_text":
     "There was a problem during login / registration, please try again later.",
+  "toast#login_already_signed_in_text":
+    "You are already signed in with another account. Sign out first.",
   "toast#working": "Working...",
   "toast#annotationsave_success_title": "Annotation saved",
   "toast#annotationsave_success_text":

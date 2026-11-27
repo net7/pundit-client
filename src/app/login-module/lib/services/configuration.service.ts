@@ -15,25 +15,19 @@ export class LoginConfigurationService {
           {
             id: 'google',
             type: 'OAuth',
-            params: {
-              clientId: '', redirect: '', url: '', scope: ''
-            },
+            params: { url: '' },
             popup: { origin: '' }
           },
           {
             id: 'facebook',
             type: 'OAuth',
-            params: {
-              clientId: '', redirect: '', url: '', scope: ''
-            },
+            params: { url: '' },
             popup: { origin: '' }
           },
           {
             id: 'egi',
             type: 'OAuth',
-            params: {
-              clientId: '', redirect: '', url: '', scope: ''
-            },
+            params: { url: '' },
             popup: { origin: '' }
           }
         ],

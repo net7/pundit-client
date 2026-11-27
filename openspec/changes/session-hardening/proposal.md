@@ -30,7 +30,7 @@ None. The session flow of `be-api-session` is unchanged: cookie on every request
 - Extension site access page: `site-access/main.ts` asks for the build's origin.
 - Extension content script: the handler that forwarded the communication settings goes.
 - Shared code, behaviour unchanged for the embed build: `src/common/helpers/initCommunicationSettings.ts`.
-- Login module: `oauth-provider.service.ts`, `oauth-provider.interface.ts`, `transformer.helper.ts`; `src/environments/local.example.ts`; one i18n string.
+- Login module: `oauth-provider.service.ts`, `oauth-provider.interface.ts`, `transformer.helper.ts`, `configuration.service.ts` (its fallback providers); `src/environments/local.example.ts`; one i18n string.
 - App: `notebook.service.ts`, `main-layout-edit-modal.handler.ts`.
 - New BE API: needs the sign-in start route and the `already_signed_in` outcome. A build from this change cannot sign in with a provider against a BE API that lacks them.
 - Whoever generates `local.stage.ts` for a deployment has to emit the new provider settings.
