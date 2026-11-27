@@ -20,12 +20,23 @@ import { ChromeExtStorageKey } from '../../types';
 // webpack build env variables
 declare const STATUS_URL: string;
 
+type Handler = (args: any, tab: chrome.tabs.Tab) => unknown;
+
+/**
+ * A local operation of the worker: it does not call the BE API and resolves to a plain value
+ * (a boolean, null, the public status JSON), which is answered unchanged.
+ */
+type LocalHandler = { local: Handler };
+
+const local = (run: Handler): LocalHandler => ({ local: run });
+
 // Maps each CrossMsgRequestId to the model invocation it performed in the
 // original switch. Each handler receives the request `args` and the sender tab
 // and returns the resulting request, mirroring the previous
-// `Model.method.apply(null, args)`.
+// `Model.method.apply(null, args)`. A model handler resolves to an axios
+// response; a local one is wrapped in `local()`.
 const requestHandlers: {
-  [key in CrossMsgRequestId]?: (args: any, tab: chrome.tabs.Tab) => unknown
+  [key in CrossMsgRequestId]?: Handler | LocalHandler
 } = {
   // NOTEBOOK REQUEST
   // --------------------------------------------------->
@@ -69,7 +80,7 @@ const requestHandlers: {
   [CrossMsgRequestId.AuthSso]: (args) => AuthModel.sso.apply(null, args),
   // ANALYTICS REQUEST
   // --------------------------------------------------->
-  [CrossMsgRequestId.AnalyticsTrigger]: (args) => AnalyticsModel.trigger.apply(null, args),
+  [CrossMsgRequestId.AnalyticsTrigger]: local((args) => AnalyticsModel.trigger.apply(null, args)),
   // TAG REQUEST
   // --------------------------------------------------->
   [CrossMsgRequestId.TagGet]: (args) => TagModel.get.apply(null, args),
@@ -88,17 +99,35 @@ const requestHandlers: {
     (args) => OntologyModel.searchElements.apply(null, args),
   // EXTENSION ACCESS REQUEST
   // --------------------------------------------------->
-  [CrossMsgRequestId.ExtensionHasApiAccess]: () => hasApiAccess(),
-  [CrossMsgRequestId.ExtensionRequestApiAccess]: (_args, tab) => openSiteAccessTab(tab?.id),
+  [CrossMsgRequestId.ExtensionHasApiAccess]: local(() => hasApiAccess()),
+  [CrossMsgRequestId.ExtensionRequestApiAccess]: local((_args, tab) => openSiteAccessTab(tab?.id)),
   // CLIENT STATUS REQUEST
   // --------------------------------------------------->
   // The URL is the background's own: any page can send this request, so its args are ignored.
-  [CrossMsgRequestId.ClientStatusGet]: () => ClientStatusModel.get(STATUS_URL),
+  [CrossMsgRequestId.ClientStatusGet]: local(() => ClientStatusModel.get(STATUS_URL)),
 };
+
+/** The body without its `csrf_token`: the token stays in the worker. */
+const withoutCsrfToken = (data: unknown) => {
+  if (!data || typeof data !== 'object' || Array.isArray(data) || !('csrf_token' in data)) {
+    return data;
+  }
+  const rest = { ...(data as Record<string, unknown>) };
+  delete rest.csrf_token;
+  return rest;
+};
+
+/** What the page may see of a BE API response: its status and body, nothing else. */
+const toPageResponse = (response: any) => ({
+  status: response?.status,
+  data: withoutCsrfToken(response?.data),
+});
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {
   const { messageId, requestId, args } = payload;
-  const handler = requestHandlers[requestId as CrossMsgRequestId];
+  const entry = requestHandlers[requestId as CrossMsgRequestId];
+  const isLocal = !!entry && typeof entry !== 'function';
+  const handler = entry && (typeof entry === 'function' ? entry : entry.local);
   const request$ = handler ? handler(args, tab) : undefined;
   if (request$) {
     ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
@@ -114,7 +143,7 @@ export const doCrossMessageRequest = (tab: any, payload: any) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
           payload: {
-            response,
+            response: isLocal ? response : toPageResponse(response),
             messageId,
           }
         });
@@ -123,9 +152,7 @@ export const doCrossMessageRequest = (tab: any, payload: any) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,
           payload: {
-            error: {
-              response: error.response
-            },
+            error: error?.response ? { response: toPageResponse(error.response) } : {},
             messageId,
           }
         });

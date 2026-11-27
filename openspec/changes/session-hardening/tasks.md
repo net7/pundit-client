@@ -2,9 +2,9 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 1. Relay answers
 
-- [ ] 1.1 `doCrossMessageRequest.spec.ts`: a success is answered `{ status, data }` only; a body with `csrf_token` loses it; a failure is answered `{ response: { status, data } }` only; a failure without an answer has no `response`; a local operation of the worker is answered with its value unchanged (design D1)
-- [ ] 1.2 `doCrossMessageRequest.ts`: build both answers from `status` and `data`; leave `csrf_token` out of an object body; mark the local operations in the handler map and pass their value through
-- [ ] 1.3 Run `npx jest src/chrome-ext src/common` and the specs of `src/app` that read relayed answers; fix any caller that read another key
+- [x] 1.1 `doCrossMessageRequest.spec.ts`: a success is answered `{ status, data }` only; a body with `csrf_token` loses it; a failure is answered `{ response: { status, data } }` only; a failure without an answer has no `response`; a local operation of the worker is answered with its value unchanged (design D1)
+- [x] 1.2 `doCrossMessageRequest.ts`: build both answers from `status` and `data`; leave `csrf_token` out of an object body; mark the local operations in the handler map and pass their value through
+- [x] 1.3 Run `npx jest src/chrome-ext src/common` and the specs of `src/app` that read relayed answers; fix any caller that read another key
 
 ## 2. Worker addresses
 
