@@ -82,7 +82,7 @@ describe('checkActiveState', () => {
     it('redirect an active PDF to the viewer', async () => {
       await run('https://arxiv.org/pdf/1706.03762', { active: true, isPdf: true });
 
-      expect(helpers.redirectToPdfViewer).toHaveBeenCalledWith('https://arxiv.org/pdf/1706.03762');
+      expect(helpers.redirectToPdfViewer).toHaveBeenCalledWith(7, 'https://arxiv.org/pdf/1706.03762');
       expect(sendMessage).not.toHaveBeenCalled();
       expect(helpers.updateExtensionIcon).toHaveBeenCalledWith(7, true);
     });
@@ -119,7 +119,7 @@ describe('checkActiveState', () => {
     it('sends an inactive viewer back to the original PDF', async () => {
       await run(VIEWER, { active: false });
 
-      expect(helpers.redirectToOriginalPdfUrl).toHaveBeenCalledWith(VIEWER);
+      expect(helpers.redirectToOriginalPdfUrl).toHaveBeenCalledWith(7, VIEWER);
       expect(sendMessage).not.toHaveBeenCalled();
     });
   });
@@ -130,15 +130,16 @@ describe('checkActiveState', () => {
       // the click is triggered on the next tick
       await flush();
 
-      expect(tabsUpdate).toHaveBeenCalledWith({ url: 'https://example.com' });
-      expect(onBrowserActionClicked).toHaveBeenCalled();
+      // the tab the check ran for, not the focused one (design D7)
+      expect(tabsUpdate).toHaveBeenCalledWith(7, { url: 'https://example.com' });
+      expect(onBrowserActionClicked).toHaveBeenCalledWith(expect.objectContaining({ id: 7 }));
       expect(helpers.updateExtensionIcon).not.toHaveBeenCalled();
     });
 
     it('redirect a feed PDF URL to the viewer', async () => {
       await run(FEED_PDF, { active: true, isPdf: true });
 
-      expect(helpers.redirectToPdfViewer).toHaveBeenCalledWith('https://x/a.pdf');
+      expect(helpers.redirectToPdfViewer).toHaveBeenCalledWith(7, 'https://x/a.pdf');
       expect(helpers.updateExtensionIcon).toHaveBeenCalledWith(7, true);
     });
   });

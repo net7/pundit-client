@@ -10,7 +10,7 @@ A review of the session flow also reported four smaller defects that this change
 - **BREAKING (configuration)** Social sign-in opens a route of the new BE API (`<authBaseUrl>login/{provider}/pundit`). The provider's client id, redirect URI and scope leave the client's configuration.
 - The popup's new outcome `already_signed_in` shows its own message.
 - Changing the current notebook reports a failure and restores the previous selection.
-- The feed redirect of the extension navigates the tab it was decided for.
+- The feed redirect and the PDF viewer redirects of the extension navigate the tab they were decided for.
 - An annotation edit that the server refuses stays open in the editor.
 
 ## Capabilities
@@ -26,7 +26,7 @@ None. The session flow of `be-api-session` is unchanged: cookie on every request
 
 ## Impact
 
-- Extension background: `doCrossMessageRequest.ts`, `onContentScriptMessage.ts`, `checkActiveState.ts`, `apiAccess.ts`, `main.ts`; `webpack.chrome-ext.{stage,prod}.js` (a new build constant).
+- Extension background: `doCrossMessageRequest.ts`, `onContentScriptMessage.ts`, `checkActiveState.ts`, `redirectToPdfViewer.ts`, `redirectToOriginalPdfUrl.ts`, `apiAccess.ts`, `main.ts`; `webpack.chrome-ext.{stage,prod}.js` (a new build constant).
 - Extension site access page: `site-access/main.ts` asks for the build's origin.
 - Extension content script: the handler that forwarded the communication settings goes.
 - Shared code, behaviour unchanged for the embed build: `src/common/helpers/initCommunicationSettings.ts`.

@@ -15,8 +15,9 @@ import { CommonEventType } from '../../../../common/types';
 import { onBrowserActionClicked } from '../handlers/onBrowserActionClicked';
 
 const handleFeedWeb = (tab: chrome.tabs.Tab, tabUrl: string, active: boolean) => {
-  // redirect (getFeedWebSource already returns the decoded URL)
-  chrome.tabs.update({
+  // redirect the tab the check ran for, not the focused one
+  // (getFeedWebSource already returns the decoded URL)
+  chrome.tabs.update(tab.id!, {
     url: getFeedWebSource(tabUrl),
   });
   // trigger click
@@ -50,13 +51,13 @@ const handleDocument = async (
 ): Promise<boolean> => {
   if (kind === 'viewer') {
     if (!active) {
-      redirectToOriginalPdfUrl(tabUrl);
+      redirectToOriginalPdfUrl(tabId, tabUrl);
     }
     return false;
   }
   const isPdf = await isPdfDocument(tabUrl);
   if (kind === 'feed-pdf' && isPdf) {
-    redirectToPdfViewer(getFeedPdfSource(tabUrl));
+    redirectToPdfViewer(tabId, getFeedPdfSource(tabUrl));
     if (!active) {
       setTimeout(() => {
         onBrowserActionClicked(tab, true);
@@ -65,7 +66,7 @@ const handleDocument = async (
       return true;
     }
   } else if (active && isPdf) {
-    redirectToPdfViewer(tabUrl);
+    redirectToPdfViewer(tabId, tabUrl);
   } else {
     sendState(tabId, active);
   }
