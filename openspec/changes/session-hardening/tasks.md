@@ -22,8 +22,8 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 4. Sender
 
-- [ ] 4.1 Specs: a message with a foreign `sender.id` or without `sender.tab` is ignored; a relay or image request from an inactive tab is neither sent nor answered; from an active tab it is served; on activation the state is stored before the content script is told to load (design D4)
-- [ ] 4.2 `onContentScriptMessage.ts`: the two checks; read the tab's state the way `checkActiveState.ts` does
+- [x] 4.1 Specs: a message with a foreign `sender.id` or without `sender.tab` is ignored; a relay or image request from an inactive tab is neither sent nor answered; from an active tab it is served; on activation the state is stored before the content script is told to load (design D4)
+- [x] 4.2 `onContentScriptMessage.ts`: the two checks; read the tab's state the way `checkActiveState.ts` does
 
 ## 5. Social sign-in
 

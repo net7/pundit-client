@@ -25,6 +25,16 @@ describe('onBrowserActionClicked', () => {
     expect(helpers.checkActiveState).toHaveBeenCalledWith(7);
   });
 
+  it('stores the active state before the content script is told to load (design D4)', async () => {
+    onBrowserActionClicked({ id: 7, url: 'https://example.com/' } as chrome.tabs.Tab);
+    await flush();
+
+    // checkActiveState sends the state message to the content script
+    const stored = (ChromeExtStorage.set as jest.Mock).mock.invocationCallOrder[0];
+    const told = (helpers.checkActiveState as jest.Mock).mock.invocationCallOrder[0];
+    expect(stored).toBeLessThan(told);
+  });
+
   it.each(['chrome://extensions/', undefined])('stores nothing on %s', async (url) => {
     onBrowserActionClicked({ id: 7, url } as chrome.tabs.Tab);
     await flush();

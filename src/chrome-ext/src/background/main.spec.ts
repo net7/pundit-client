@@ -9,8 +9,8 @@ jest.mock('./listener', () => ({ listen: jest.fn() }));
 jest.mock('./handlers', () => ({ onBrowserActionClicked: jest.fn() }));
 jest.mock('./storage', () => ({
   ChromeExtStorage: {
-    // what a page stored before this change
-    get: jest.fn(() => Promise.resolve('https://stale.example.org/api')),
+    // the tab is active; an address a page stored before this change is not read
+    get: jest.fn((key: string) => Promise.resolve(key === 'active.4' ? true : 'https://stale.example.org/api')),
     set: jest.fn(() => Promise.resolve(null)),
   },
 }));
@@ -29,7 +29,7 @@ jest.mock('../../../common/models', () => ({
 jest.mock('../../../common/models/analytics-model', () => ({ AnalyticsModel: {} }));
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
-const sender = { tab: { id: 4 } } as chrome.runtime.MessageSender;
+const sender = { id: 'pundit-extension-id', tab: { id: 4 } } as chrome.runtime.MessageSender;
 
 describe('background worker addresses (design D2)', () => {
   let listenCalls = 0;
@@ -39,7 +39,7 @@ describe('background worker addresses (design D2)', () => {
       API_BASE_URL: 'https://app.build.org/api',
       AUTH_BASE_URL: 'https://app.build.org/',
       STATUS_URL: 'https://app.build.org/api/client-status',
-      chrome: { tabs: { sendMessage: jest.fn() } },
+      chrome: { runtime: { id: 'pundit-extension-id' }, tabs: { sendMessage: jest.fn() } },
     });
     Object.assign(CommunicationSettings, { apiBaseUrl: undefined, authBaseUrl: undefined });
     // the worker starts
@@ -71,7 +71,7 @@ describe('background worker addresses (design D2)', () => {
     expect(baseUrlAtRequest).toBe('https://app.build.org/api');
     expect(CommunicationSettings.apiBaseUrl).toBe('https://app.build.org/api');
     expect(CommunicationSettings.authBaseUrl).toBe('https://app.build.org/');
-    expect(ChromeExtStorage.get).not.toHaveBeenCalled();
+    expect((ChromeExtStorage.get as jest.Mock).mock.calls).toEqual([['active.4']]);
   });
 
   it('ignores the communication settings a page sends', async () => {
