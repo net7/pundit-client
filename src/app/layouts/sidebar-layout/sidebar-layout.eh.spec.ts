@@ -1,4 +1,4 @@
-import { BehaviorSubject, ReplaySubject } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, Subject } from 'rxjs';
 import { AppEvent, SidebarLayoutEvent } from 'src/app/event-types';
 import { AppEventData } from 'src/app/types';
 import { SidebarLayoutEH } from './sidebar-layout.eh';
@@ -86,5 +86,22 @@ describe('SidebarLayoutEH > add page annotation', () => {
     eh.appEvent$.subscribe((event) => events.push(event));
     (eh as any).innerEventHandlers[SidebarLayoutEvent.ClickNewFullPageAnnotation]('linking');
     expect(events).toEqual([{ type: AppEvent.AnnotationNewFullPage, payload: 'linking' }]);
+  });
+});
+
+describe('SidebarLayoutEH > current notebook restored (design D7)', () => {
+  it('redraws the notebook panel when the selection changes, until destroyed', () => {
+    const eh = new SidebarLayoutEH();
+    const selectedChanged$ = new Subject<void>();
+    eh.notebookService = { selectedChanged$ } as any;
+    eh.dataSource = { updateNotebookPanel: jest.fn() } as any;
+
+    (eh as any).listenSelectedNotebookChanges();
+    selectedChanged$.next();
+    expect(eh.dataSource.updateNotebookPanel).toHaveBeenCalledTimes(1);
+
+    eh.destroy$.next();
+    selectedChanged$.next();
+    expect(eh.dataSource.updateNotebookPanel).toHaveBeenCalledTimes(1);
   });
 });

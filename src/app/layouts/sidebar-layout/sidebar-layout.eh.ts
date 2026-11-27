@@ -95,6 +95,7 @@ export class SidebarLayoutEH extends EventHandler {
         this.listenSidebarCollapse();
         this.listenHypothesisAnnotation();
         this.listenSharedUsersChanges();
+        this.listenSelectedNotebookChanges();
       },
       [SidebarLayoutEvent.Destroy]: () => {
         this.destroy$.next();
@@ -188,6 +189,15 @@ export class SidebarLayoutEH extends EventHandler {
       this.dataSource.usersList = usersTrasformed;
       this.dataSource.updateNotebookPanel();
     });
+  }
+
+  /** Redraws the panel when the current notebook is restored after a refused change. */
+  private listenSelectedNotebookChanges() {
+    this.notebookService.selectedChanged$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.dataSource.updateNotebookPanel();
+      });
   }
 
   private listenSidebarCollapse() {

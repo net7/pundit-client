@@ -34,7 +34,7 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 6. Reported defects, confirm first
 
-- [ ] 6.1 Current notebook: spec that a rejected `NotebookModel.setDefault` restores the previous selection and shows the error toast; then subscribe in `notebook.service.ts` (design D7)
+- [x] 6.1 Current notebook: spec that a rejected `NotebookModel.setDefault` restores the previous selection and shows the error toast; then subscribe in `notebook.service.ts`; `sidebar-layout.eh.ts` redraws the notebook panel on `selectedChanged$` (design D7)
 - [ ] 6.2 Feed redirect: spec that `handleFeedWeb` calls `chrome.tabs.update` with the id of the tab it was given; then pass `tab.id` in `checkActiveState.ts`
 - [ ] 6.3 Refused edit: spec that when the update of an annotation is rejected the editor is open and holds the submitted text; then close it after the answer in `main-layout-edit-modal.handler.ts`
 

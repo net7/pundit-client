@@ -31,7 +31,7 @@ None. The session flow of `be-api-session` is unchanged: cookie on every request
 - Extension content script: the handler that forwarded the communication settings goes.
 - Shared code, behaviour unchanged for the embed build: `src/common/helpers/initCommunicationSettings.ts`.
 - Login module: `oauth-provider.service.ts`, `oauth-provider.interface.ts`, `transformer.helper.ts`, `configuration.service.ts` (its fallback providers); `src/environments/local.example.ts`; one i18n string.
-- App: `notebook.service.ts`, `main-layout-edit-modal.handler.ts`.
+- App: `notebook.service.ts`, `sidebar-layout.eh.ts` (redraws the notebook panel on a restored selection), `main-layout-edit-modal.handler.ts`.
 - New BE API: needs the sign-in start route and the `already_signed_in` outcome. A build from this change cannot sign in with a provider against a BE API that lacks them.
 - Whoever generates `local.stage.ts` for a deployment has to emit the new provider settings.
 - Out of scope: moving the app out of the page's JavaScript world; moving notebook sharing, notebook deletion or the password sign-in out of the relay; coordinating requests around a sign-in; telling other tabs that the account changed; retrying after 429; a time limit on relayed calls (deferred by the owner).

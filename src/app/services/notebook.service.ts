@@ -1,9 +1,11 @@
 import { Injectable, inject } from '@angular/core';
+import { _t } from '@net7/core';
 import { from, Subject, EMPTY } from 'rxjs';
 import { Notebook, NotebookPermissions, SharingModeType } from 'src/communication';
 import { catchError, tap } from 'rxjs/operators';
 import { NotebookModel } from '../../common/models';
 import { UserService } from './user.service';
+import { ToastService } from './toast.service';
 import { _c } from '../models/config';
 
 export enum NotebookUserRole {
@@ -54,6 +56,8 @@ export type SharedWithChanged = {
 export class NotebookService {
   private userService = inject(UserService);
 
+  private toastService = inject(ToastService);
+
   private notebooks: NotebookData[] = [];
 
   private selectedId!: string | null;
@@ -72,11 +76,18 @@ export class NotebookService {
       from(NotebookModel.setDefault(id)).pipe(
         catchError((err) => {
           console.warn('NotebookService setDefault error:', err);
-          // restore previous
-          this.setSelected(previousId);
+          // restore the previous one, unless another notebook was chosen meanwhile
+          if (this.selectedId === id) {
+            this.selectedId = previousId;
+            this.selectedChanged$.next();
+          }
+          this.toastService.error({
+            title: _t('toast#notebookchangecurrent_error_title'),
+            text: _t('toast#notebookchangecurrent_error_text'),
+          });
           return EMPTY;
         })
-      );
+      ).subscribe();
     }
   }
 
