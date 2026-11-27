@@ -90,8 +90,8 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
         this.layoutEH.annotationService.add(payload);
         this.layoutDS.updateAnnotations(true);
       },
-      [AppEvent.CommentUpdate]: (payload) => {
-        this.updateAnnotationComment(payload);
+      [AppEvent.CommentUpdate]: ({ annotation, done }) => {
+        this.updateAnnotationComment(annotation, done);
       },
       [AppEvent.AnchorMouseOver]: (payload) => {
         this.layoutEH.emitOuter(getEventType(SidebarLayoutEvent.AnchorMouseOver), payload);
@@ -137,67 +137,78 @@ export class SidebarLayoutAppEventsHandler implements LayoutHandler {
    * or changes it from a 'highlight' type to a 'comment' type.
    *
    * @param rawAnnotation Data for the annotation that must be updated
+   * @param done Told whether the update was saved: the edit modal closes only then
    */
-  private updateAnnotationComment(rawAnnotation: Annotation) {
-    if (['Commenting', 'Highlighting', 'Linking'].includes(rawAnnotation.type)) {
-      // toast "working..."
-      const workingToast = this.layoutEH.toastService.working();
-      // update loading state
-      this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
-        classes: AnnotationCssClass.Edit
-      });
-      // fix typescript explicit
-      // annotation types
-      let content: any;
-      if (rawAnnotation.type === 'Commenting') {
-        content = rawAnnotation.content;
-      } else if (rawAnnotation.type === 'Linking') {
-        content = rawAnnotation.content;
-      }
-      const data: CommentAnnotation | HighlightAnnotation | LinkAnnotation = {
-        content,
-        type: rawAnnotation.type,
-        notebookId: rawAnnotation.notebookId,
-        serializedBy: rawAnnotation.serializedBy,
-        subject: rawAnnotation.subject,
-        userId: rawAnnotation.userId,
-        tags: rawAnnotation.tags
-      };
-      this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
-        catchError((err) => {
-          this.layoutEH.toastService.error({
-            title: _t('toast#annotationedit_error_title'),
-            text: _t('toast#annotationedit_error_text'),
-            timer: _c('toastTimer'),
-            onLoad: () => {
-              workingToast.close();
-            }
-          });
-          console.error('Updated annotation error:', err);
-          return EMPTY;
-        })
-      ).subscribe(() => {
-        // update loading state
+  private updateAnnotationComment(rawAnnotation: Annotation, done: (saved: boolean) => void) {
+    if (!['Commenting', 'Highlighting', 'Linking'].includes(rawAnnotation.type)) {
+      // nothing to send: the modal closes as it always did
+      done(true);
+      return;
+    }
+    // toast "working..."
+    const workingToast = this.layoutEH.toastService.working();
+    // update loading state
+    this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+      classes: AnnotationCssClass.Edit
+    });
+    // fix typescript explicit
+    // annotation types
+    let content: any;
+    if (rawAnnotation.type === 'Commenting') {
+      content = rawAnnotation.content;
+    } else if (rawAnnotation.type === 'Linking') {
+      content = rawAnnotation.content;
+    }
+    const data: CommentAnnotation | HighlightAnnotation | LinkAnnotation = {
+      content,
+      type: rawAnnotation.type,
+      notebookId: rawAnnotation.notebookId,
+      serializedBy: rawAnnotation.serializedBy,
+      subject: rawAnnotation.subject,
+      userId: rawAnnotation.userId,
+      tags: rawAnnotation.tags
+    };
+    this.layoutEH.annotationService.update(rawAnnotation.id, data).pipe(
+      catchError((err) => {
+        // the annotation is no longer being edited
         this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
           classes: AnnotationCssClass.Empty
         });
-
-        // refresh sidedar annotations
-        this.layoutDS.updateAnnotations();
-
-        // update tags;
-        this.layoutEH.tagService.addMany(rawAnnotation?.tags || []);
-
-        // annotation changed successfully
-        this.layoutEH.toastService.success({
-          title: _t('toast#annotationedit_success_title'),
-          text: _t('toast#annotationedit_success_text'),
+        this.layoutEH.toastService.error({
+          title: _t('toast#annotationedit_error_title'),
+          text: _t('toast#annotationedit_error_text'),
           timer: _c('toastTimer'),
           onLoad: () => {
             workingToast.close();
           }
         });
+        console.error('Updated annotation error:', err);
+        done(false);
+        return EMPTY;
+      })
+    ).subscribe(() => {
+      // update loading state
+      this.layoutEH.annotationService.updateAnnotationState(rawAnnotation.id, {
+        classes: AnnotationCssClass.Empty
       });
-    }
+
+      // refresh sidedar annotations
+      this.layoutDS.updateAnnotations();
+
+      // update tags;
+      this.layoutEH.tagService.addMany(rawAnnotation?.tags || []);
+
+      done(true);
+
+      // annotation changed successfully
+      this.layoutEH.toastService.success({
+        title: _t('toast#annotationedit_success_title'),
+        text: _t('toast#annotationedit_success_text'),
+        timer: _c('toastTimer'),
+        onLoad: () => {
+          workingToast.close();
+        }
+      });
+    });
   }
 }

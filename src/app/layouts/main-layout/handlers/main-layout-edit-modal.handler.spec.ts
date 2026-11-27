@@ -44,19 +44,42 @@ describe('MainLayoutEditModalHandler > save', () => {
     new MainLayoutEditModalHandler(layoutDS, layoutEH).listen();
   });
 
-  it('closes the edit modal after saving an update (add a comment to a tag annotation)', () => {
+  const closeSignals = () => emitOuter.mock.calls
+    .filter(([type]) => type === getEventType(MainLayoutEvent.AnnotationCreated));
+
+  /** The sidebar performs the update and reports its outcome. */
+  const answerUpdate = (saved: boolean) => {
+    const update = appEvents.find((e) => e.type === AppEvent.CommentUpdate);
+    update?.payload?.done?.(saved);
+  };
+
+  it('closes the edit modal once the update is saved (add a comment to a tag annotation)', () => {
     // User adds a comment to an existing (tag) annotation and clicks Save.
     clickSave({ comment: { value: 'a new comment' } });
 
-    // The annotation is updated...
-    expect(appEvents.some((e) => e.type === AppEvent.CommentUpdate)).toBe(true);
+    // The annotation is sent for update, with the annotation and a completion callback...
+    const update = appEvents.find((e) => e.type === AppEvent.CommentUpdate);
+    expect(update?.payload).toEqual({ annotation: expect.any(Object), done: expect.any(Function) });
+    // ...and the modal stays open until the answer (design D7)
+    expect(closeSignals()).toHaveLength(0);
 
-    // ...and the modal-close signal must fire (the same event the create flow
-    // emits to make EditModalEH.closeModal() run). This is the regression:
-    // the update branch previously never emitted it, so the modal stayed open.
-    const emittedCloseSignal = emitOuter.mock.calls
-      .some(([type]) => type === getEventType(MainLayoutEvent.AnnotationCreated));
-    expect(emittedCloseSignal).toBe(true);
+    answerUpdate(true);
+
+    // the modal-close signal fires (the same event the create flow emits
+    // to make EditModalEH.closeModal() run)
+    expect(closeSignals()).toHaveLength(1);
+    expect(layoutDS.state.annotation.updatePayload).toBeNull();
+  });
+
+  it('keeps the edit modal open with the user\'s edit when the update is refused (design D7)', () => {
+    const updatePayload = layoutDS.state.annotation.updatePayload;
+
+    clickSave({ comment: { value: 'a new comment' } });
+    answerUpdate(false);
+
+    expect(closeSignals()).toHaveLength(0);
+    // the modal still edits the same annotation: a second Save retries
+    expect(layoutDS.state.annotation.updatePayload).toBe(updatePayload);
   });
 
   it('does not throw when save is clicked without an annotation payload', () => {

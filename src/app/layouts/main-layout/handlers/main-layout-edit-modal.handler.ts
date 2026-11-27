@@ -100,20 +100,30 @@ export class MainLayoutEditModalHandler implements LayoutHandler {
         filter((data) => data),
       )
       .subscribe((data) => {
-        this.layoutDS.state.annotation.pendingPayload = null;
-        this.layoutDS.state.annotation.updatePayload = null;
-
         if (isUpdate) {
+          // the sidebar sends the update; the modal closes only once it is saved,
+          // so a refused edit stays open with the user's text and can be retried
           this.layoutEH.appEvent$.next({
             type: AppEvent.CommentUpdate,
-            payload: data.requestPayload,
+            payload: {
+              annotation: data.requestPayload,
+              done: (saved: boolean) => {
+                if (!saved) {
+                  return;
+                }
+                this.layoutDS.state.annotation.pendingPayload = null;
+                this.layoutDS.state.annotation.updatePayload = null;
+                this.layoutEH.emitOuter(
+                  getEventType(MainLayoutEvent.AnnotationCreated),
+                );
+              },
+            },
           });
-          this.layoutEH.emitOuter(
-            getEventType(MainLayoutEvent.AnnotationCreated),
-          );
           return;
         }
 
+        this.layoutDS.state.annotation.pendingPayload = null;
+        this.layoutDS.state.annotation.updatePayload = null;
         this.onAnnotationCreated(data, workingToast);
       });
   }
