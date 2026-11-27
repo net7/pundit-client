@@ -43,6 +43,8 @@ This applies to the operations that call the BE API through a model of `src/comm
 
 `background/main.ts` sets `CommunicationSettings.apiBaseUrl` and `authBaseUrl` once, from the webpack constants `API_BASE_URL` and `AUTH_BASE_URL`. `AUTH_BASE_URL` is new and is derived in both webpack files from `API_BASE_URL` with its trailing `api` removed, so the file that feeds the stage build needs no new key. The `InitCommunicationSettings` message is no longer forwarded by the content script nor handled by the worker, and the two storage keys are neither written nor read. This also removes the storage read that today runs after the request was already built, which made the first request after the worker restarts go out without a base URL.
 
+The stored auth address was also read by `getApiOrigins()` in `background/helpers/apiAccess.ts`, the origin for which the worker checks and the site access page (`site-access.html`) requests the extension's host permission. It takes the origin from `AUTH_BASE_URL` too, so a page can no longer choose the origin the user is asked to allow.
+
 ### D3. Identifiers are checked where they enter
 
 For every relay operation whose model method puts an argument into a URL path, the worker requires that argument to match `^[A-Za-z0-9_-]{1,64}$` before calling the model. A value that does not match is answered `{ response: { status: 400, data: { message: 'Invalid identifier' } } }` and nothing is sent. The check lives in the relay, not in `src/communication`: the embed build is not exposed to another party's arguments.

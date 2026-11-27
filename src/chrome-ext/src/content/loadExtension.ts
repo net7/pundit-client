@@ -6,7 +6,6 @@ import { CommonEventType } from '../../../common/types';
 export const listenersMap = {
   [CommonEventType.AnnotationsUpdate]: handlers.onAnnotationsUpdate,
   [CommonEventType.CrossMsgRequest]: handlers.onCrossMessageRequest,
-  [CommonEventType.InitCommunicationSettings]: handlers.onInitCommunicationSettings,
   [CommonEventType.ImageDataRequest]: handlers.onImageDataRequest
 };
 

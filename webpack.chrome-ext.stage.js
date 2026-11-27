@@ -22,6 +22,7 @@ module.exports = prodConfig.map((config) => ({
   plugins: [
     new webpack.DefinePlugin({
       API_BASE_URL: JSON.stringify(urls.API_BASE_URL),
+      AUTH_BASE_URL: JSON.stringify(prodConfig.authBaseUrlOf(urls.API_BASE_URL)),
       FEED_PDF_BASE_URL: JSON.stringify(urls.FEED_PDF_BASE_URL),
       FEED_WEB_BASE_URL: JSON.stringify(urls.FEED_WEB_BASE_URL),
       STATUS_URL: JSON.stringify(urls.STATUS_URL),

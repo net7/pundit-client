@@ -1,4 +1,3 @@
-import { CommunicationSettings } from 'src/communication';
 import { AnalyticsModel } from '../../../../common/models/analytics-model';
 import { CommonEventType, CrossMsgRequestId } from '../../../../common/types';
 import {
@@ -13,9 +12,7 @@ import {
   OntologyModel,
   ClientStatusModel
 } from '../../../../common/models';
-import { ChromeExtStorage } from '../storage';
 import { hasApiAccess, openSiteAccessTab } from './apiAccess';
-import { ChromeExtStorageKey } from '../../types';
 
 // webpack build env variables
 declare const STATUS_URL: string;
@@ -130,15 +127,7 @@ export const doCrossMessageRequest = (tab: any, payload: any) => {
   const handler = entry && (typeof entry === 'function' ? entry : entry.local);
   const request$ = handler ? handler(args, tab) : undefined;
   if (request$) {
-    ChromeExtStorage.get(ChromeExtStorageKey.ApiBaseUrl)
-      .then((value) => {
-        CommunicationSettings.apiBaseUrl = value as string;
-        return ChromeExtStorage.get(ChromeExtStorageKey.AuthBaseUrl);
-      })
-      .then((value) => {
-        CommunicationSettings.authBaseUrl = value as string;
-        return request$;
-      })
+    Promise.resolve(request$)
       .then((response) => {
         chrome.tabs.sendMessage(tab.id, {
           type: CommonEventType.CrossMsgResponse,

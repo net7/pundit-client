@@ -26,7 +26,8 @@ None. The session flow of `be-api-session` is unchanged: cookie on every request
 
 ## Impact
 
-- Extension background: `doCrossMessageRequest.ts`, `onContentScriptMessage.ts`, `checkActiveState.ts`, `main.ts`; `webpack.chrome-ext.{stage,prod}.js` (a new build constant).
+- Extension background: `doCrossMessageRequest.ts`, `onContentScriptMessage.ts`, `checkActiveState.ts`, `apiAccess.ts`, `main.ts`; `webpack.chrome-ext.{stage,prod}.js` (a new build constant).
+- Extension site access page: `site-access/main.ts` asks for the build's origin.
 - Extension content script: the handler that forwarded the communication settings goes.
 - Shared code, behaviour unchanged for the embed build: `src/common/helpers/initCommunicationSettings.ts`.
 - Login module: `oauth-provider.service.ts`, `oauth-provider.interface.ts`, `transformer.helper.ts`; `src/environments/local.example.ts`; one i18n string.

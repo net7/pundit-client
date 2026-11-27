@@ -37,7 +37,6 @@ describe('onContentScriptMessage: badge request', () => {
     await flush();
 
     expect(CommunicationSettings.csrfToken).toBe('session-token');
-    expect(CommunicationSettings.apiBaseUrl).toBe('https://app.example.org/api');
     expect(helpers.updateBadgeText).toHaveBeenCalledWith(4, 5);
   });
 

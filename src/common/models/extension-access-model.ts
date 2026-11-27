@@ -5,7 +5,7 @@ import { CrossMessage } from '../cross-message';
 /**
  * The application's site, where the BE API lives. Read from the build
  * environment: on web pages the extension's page script does not set
- * `CommunicationSettings`, it hands the URLs to the background.
+ * `CommunicationSettings`; the background has its own build addresses.
  */
 const apiUrl = (): URL | null => {
   try {

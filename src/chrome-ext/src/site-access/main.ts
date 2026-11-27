@@ -14,7 +14,8 @@ const status = document.getElementById('status') as HTMLElement;
 
 getApiOrigins().then((origins) => {
   if (!origins) {
-    status.textContent = 'The address of Pundit is not known yet: open a page with Pundit active and try again.';
+    // only with an invalid AUTH_BASE_URL in the build
+    status.textContent = 'The address of Pundit in this build of the extension is not valid.';
     return;
   }
   button.disabled = false;

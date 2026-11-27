@@ -1,22 +1,17 @@
-import { ChromeExtStorage } from '../storage';
-import { ChromeExtStorageKey } from '../../types';
-
-// webpack build env variables
-declare const API_BASE_URL: string;
+// webpack build env variable: the application's address
+declare const AUTH_BASE_URL: string;
 
 /**
- * Origin pattern of the application's site, from the URLs the content script
- * stored, or the build's API URL (same host) before any page sent them.
+ * Origin pattern of the application's site, from the build: a page cannot
+ * choose the origin the extension checks or asks the user to allow.
  */
-export const getApiOrigins = (): Promise<string[] | null> => (
-  ChromeExtStorage.get(ChromeExtStorageKey.AuthBaseUrl) as Promise<string | undefined>
-).then((authBaseUrl) => {
+export const getApiOrigins = (): Promise<string[] | null> => {
   try {
-    return [`${new URL(authBaseUrl || API_BASE_URL).origin}/*`];
+    return Promise.resolve([`${new URL(AUTH_BASE_URL).origin}/*`]);
   } catch {
-    return null;
+    return Promise.resolve(null);
   }
-});
+};
 
 /** Whether the extension can reach the application's site. */
 export const hasApiAccess = (): Promise<boolean> => getApiOrigins().then((origins) => (

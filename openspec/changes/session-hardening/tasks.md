@@ -8,11 +8,11 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 2. Worker addresses
 
-- [ ] 2.1 `webpack.chrome-ext.prod.js`, `webpack.chrome-ext.stage.js`: constant `AUTH_BASE_URL`, the value of `API_BASE_URL` without its trailing `api` (`https://host/api` gives `https://host/`, the shape of `authBaseUrl` in `local.example.ts`) (design D2)
-- [ ] 2.2 Specs: on start the worker's settings hold the two build addresses; a relayed request right after start goes to `API_BASE_URL`; an `InitCommunicationSettings` message changes nothing
-- [ ] 2.3 `background/main.ts`: set `CommunicationSettings.apiBaseUrl` and `authBaseUrl` from the constants
-- [ ] 2.4 `doCrossMessageRequest.ts`: no storage read before the request; `onContentScriptMessage.ts`: drop the `InitCommunicationSettings` case and the `apiBaseUrl || API_BASE_URL` fallback
-- [ ] 2.5 Content script: remove `onInitCommunicationSettings` and its entry in `listenersMap`; `initCommunicationSettings.ts`: the extension branch dispatches nothing; remove the two unused keys from `ChromeExtStorageKey`
+- [x] 2.1 `webpack.chrome-ext.prod.js`, `webpack.chrome-ext.stage.js`: constant `AUTH_BASE_URL`, the value of `API_BASE_URL` without its trailing `api` (`https://host/api` gives `https://host/`, the shape of `authBaseUrl` in `local.example.ts`) (design D2)
+- [x] 2.2 Specs: on start the worker's settings hold the two build addresses; a relayed request right after start goes to `API_BASE_URL`; an `InitCommunicationSettings` message changes nothing; `getApiOrigins()` gives the origin of `AUTH_BASE_URL` whatever the storage holds
+- [x] 2.3 `background/main.ts`: set `CommunicationSettings.apiBaseUrl` and `authBaseUrl` from the constants
+- [x] 2.4 `doCrossMessageRequest.ts`: no storage read before the request; `onContentScriptMessage.ts`: drop the `InitCommunicationSettings` case and the `apiBaseUrl || API_BASE_URL` fallback; `apiAccess.ts`: `getApiOrigins()` reads `AUTH_BASE_URL`, not the storage
+- [x] 2.5 Content script: remove `onInitCommunicationSettings` and its entry in `listenersMap`; `initCommunicationSettings.ts`: the extension branch dispatches nothing; remove the two unused keys from `ChromeExtStorageKey`
 
 ## 3. Identifiers
 

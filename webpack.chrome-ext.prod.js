@@ -1,6 +1,20 @@
 const path = require('path');
 const webpack = require('webpack');
 
+/**
+ * The application's address, the shape of `authBaseUrl` in local.example.ts:
+ * the API address without its trailing `api` (`https://host/api` gives `https://host/`).
+ */
+const authBaseUrlOf = (apiBaseUrl) => {
+  const authBaseUrl = apiBaseUrl.replace(/api\/?$/, '');
+  if (authBaseUrl === apiBaseUrl) {
+    throw new Error(`API_BASE_URL must end with "api": ${apiBaseUrl}`);
+  }
+  return authBaseUrl;
+};
+
+const API_BASE_URL = 'https://app.thepund.it/api';
+
 const common = {
   mode: 'production',
   module: {
@@ -24,7 +38,8 @@ const common = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      API_BASE_URL: JSON.stringify('https://app.thepund.it/api'),
+      API_BASE_URL: JSON.stringify(API_BASE_URL),
+      AUTH_BASE_URL: JSON.stringify(authBaseUrlOf(API_BASE_URL)),
       // maintenance status of the client, read by the background (empty: no status read)
       STATUS_URL: JSON.stringify('https://app.thepund.it/api/client-status'),
       FEED_PDF_BASE_URL: JSON.stringify('https://feed.thepund.it/pdf.php?source='), // https://feed.thepund.it/pdf.php?source=<pdf>
@@ -33,7 +48,7 @@ const common = {
   ]
 };
 
-module.exports = [{
+const configs = [{
   entry: `${path.resolve(__dirname, 'src')}/chrome-ext/src/content/main.ts`,
   output: {
     filename: 'content.bundle.js',
@@ -55,3 +70,7 @@ module.exports = [{
   },
   ...common
 }];
+
+// The stage build reuses the configurations and the derivation of the auth address.
+configs.authBaseUrlOf = authBaseUrlOf;
+module.exports = configs;
