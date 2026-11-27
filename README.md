@@ -46,7 +46,7 @@ The Angular CLI (Angular 22) is a dev dependency: use it through the npm scripts
 2. Create `src/environments/local.stage.ts`. Generate it with `pundit-deployment/scripts/render-env.sh`, or copy `src/environments/local.example.ts` and fill it in. The file is git-ignored, and every build that is not prod (including `npm run start`) imports it.
 3. Run `npm run start` to serve the application on http://localhost:4200/.
 
-The dev server proxies `/api`, `/ai` and `/sanctum` to `https://app.thepund.test`, a local Pundit back-end (see `proxy.conf.json`).
+The dev server calls the BE API directly at the addresses of `local.stage.ts`, so the BE API must list `http://localhost:4200` among its CORS origins (`API_CORS_ORIGINS`).
 
 ### Tests and linting
 
