@@ -47,7 +47,7 @@ The stored auth address was also read by `getApiOrigins()` in `background/helper
 
 ### D3. Identifiers are checked where they enter
 
-For every relay operation whose model method puts an argument into a URL path, the worker requires that argument to match `^[A-Za-z0-9_-]{1,64}$` before calling the model. A value that does not match is answered `{ response: { status: 400, data: { message: 'Invalid identifier' } } }` and nothing is sent. The check lives in the relay, not in `src/communication`: the embed build is not exposed to another party's arguments.
+For every relay operation whose model method puts an argument into a URL path, the worker requires that argument to match `^[A-Za-z0-9_-]{1,64}$` before calling the model. A number is checked as its decimal string; any other type, or arguments that are not a list, do not match. A value that does not match is answered `{ response: { status: 400, data: { message: 'Invalid identifier' } } }` and nothing is sent. The check lives in the relay, not in `src/communication`: the embed build is not exposed to another party's arguments.
 
 ### D4. Only an active tab of this extension is served
 

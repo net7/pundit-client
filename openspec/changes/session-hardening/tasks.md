@@ -16,9 +16,9 @@ Tests: `npx jest <path>` on Node 20. A task marked "confirm first" starts from a
 
 ## 3. Identifiers
 
-- [ ] 3.1 List, in the spec file, the relay operations whose model method puts an argument into a URL path (read `src/communication/**` for template paths: annotation get/update/remove, notebook get/update/remove/share/removeShare/shareNotification/setDefault, reply get/update/remove, social get, and any other found)
-- [ ] 3.2 Specs: a ULID, an identifier kept from the annotation server and a numeric id are sent; `../../user`, `abc?x=1`, an empty string and a 65-character value are answered 400 `Invalid identifier` with nothing sent (design D3)
-- [ ] 3.3 `doCrossMessageRequest.ts`: check the identifier argument of those operations before calling the model
+- [x] 3.1 List, in the spec file, the relay operations whose model method puts an argument into a URL path (read `src/communication/**` for template paths). Found, always the first argument: annotation get/update/remove, notebook update/remove/setDefault/userInviteWithEmail (share)/userRemoveWithEmail (removeShare)/resendEmail (shareNotification), reply update/remove. Notebook get, reply get and social get have template paths but are not relayed
+- [x] 3.2 Specs: a ULID, an identifier kept from the annotation server and a numeric id are sent; `../../user`, `abc?x=1`, an empty string and a 65-character value are answered 400 `Invalid identifier` with nothing sent (design D3)
+- [x] 3.3 `doCrossMessageRequest.ts`: check the identifier argument of those operations before calling the model
 
 ## 4. Sender
 

@@ -1,5 +1,7 @@
 import { CrossMsgRequestId } from '../../../../common/types';
-import { AnnotationModel, AuthModel, ClientStatusModel } from '../../../../common/models';
+import {
+  AnnotationModel, AuthModel, ClientStatusModel, NotebookModel, ReplyModel
+} from '../../../../common/models';
 import { doCrossMessageRequest } from './doCrossMessageRequest';
 import { hasApiAccess, openSiteAccessTab } from './apiAccess';
 
@@ -9,10 +11,17 @@ jest.mock('./apiAccess', () => ({
 }));
 jest.mock('../storage', () => ({ ChromeExtStorage: { get: jest.fn(() => Promise.resolve('https://app.example.org/')) } }));
 jest.mock('../../../../common/models', () => ({
-  NotebookModel: {},
-  AnnotationModel: { create: jest.fn() },
+  NotebookModel: {
+    remove: jest.fn(),
+    update: jest.fn(),
+    setDefault: jest.fn(),
+    userInviteWithEmail: jest.fn(),
+    userRemoveWithEmail: jest.fn(),
+    resendEmail: jest.fn(),
+  },
+  AnnotationModel: { create: jest.fn(), get: jest.fn(), remove: jest.fn(), update: jest.fn() },
   SocialModel: {},
-  ReplyModel: {},
+  ReplyModel: { remove: jest.fn(), update: jest.fn() },
   AuthModel: { sso: jest.fn() },
   TagModel: {},
   SemanticPredicateModel: {},
@@ -144,5 +153,85 @@ describe('doCrossMessageRequest answers (design D1)', () => {
 
     expect(ClientStatusModel.get).toHaveBeenCalledWith('https://app.example.org/api/client-status');
     expect(answer(sendMessage)).toEqual({ messageId: 'm6', response: statusJson });
+  });
+});
+
+/**
+ * The relay operations whose model method puts its first argument into a URL path
+ * (template paths of src/communication), with the model method that runs them.
+ * Not relayed, so not listed: notebook get (`NotebookGetData` has no handler), reply get,
+ * social get; social create and remove send their data in the body.
+ */
+const pathOperations: [CrossMsgRequestId, () => jest.Mock][] = [
+  [CrossMsgRequestId.NotebookRemove, () => NotebookModel.remove as jest.Mock],
+  [CrossMsgRequestId.NotebookUpdate, () => NotebookModel.update as jest.Mock],
+  [CrossMsgRequestId.NotebookSetDefault, () => NotebookModel.setDefault as jest.Mock],
+  [CrossMsgRequestId.NotebookUserInviteWithEmail, () => NotebookModel.userInviteWithEmail as jest.Mock],
+  [CrossMsgRequestId.NotebookUserRemoveWithEmail, () => NotebookModel.userRemoveWithEmail as jest.Mock],
+  [CrossMsgRequestId.NotebookResendEmail, () => NotebookModel.resendEmail as jest.Mock],
+  [CrossMsgRequestId.AnnotationGet, () => AnnotationModel.get as jest.Mock],
+  [CrossMsgRequestId.AnnotationRemove, () => AnnotationModel.remove as jest.Mock],
+  [CrossMsgRequestId.AnnotationUpdate, () => AnnotationModel.update as jest.Mock],
+  [CrossMsgRequestId.ReplyRemove, () => ReplyModel.remove as jest.Mock],
+  [CrossMsgRequestId.ReplyUpdate, () => ReplyModel.update as jest.Mock],
+];
+
+describe('doCrossMessageRequest identifiers (design D3)', () => {
+  const sendMessage = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (globalThis as any).chrome = { tabs: { sendMessage } };
+    pathOperations.forEach(([, method]) => method().mockResolvedValue({ status: 200, data: {} }));
+  });
+
+  const accepted: [string, string | number][] = [
+    ['a ULID', '01J9ZK7Q3W8X2Y4V6T5R1N0M9P'],
+    ['an identifier kept from the annotation server', '9f86d081884c7d659a2feaa0c55ad015'],
+    ['a numeric id', '42'],
+    ['a numeric id as a number', 42],
+  ];
+
+  describe.each(pathOperations)('%s', (requestId, method) => {
+    it.each(accepted)('sends %s', async (_label, id) => {
+      doCrossMessageRequest({ id: 7 }, { messageId: 'm', requestId, args: [id, { data: {} }] });
+      await flush();
+
+      expect(method()).toHaveBeenCalledWith(id, { data: {} });
+      expect(answer(sendMessage)).toEqual({ messageId: 'm', response: { status: 200, data: {} } });
+    });
+
+    it.each([
+      ['a path traversal', '../../user'],
+      ['a query', 'abc?x=1'],
+      ['an empty string', ''],
+      ['a 65-character value', 'a'.repeat(65)],
+      ['a missing identifier', undefined],
+      ['an object', { id: 'abc' }],
+    ])('answers 400 to %s and sends nothing', async (_label, id) => {
+      doCrossMessageRequest({ id: 7 }, { messageId: 'm', requestId, args: [id, { data: {} }] });
+      await flush();
+
+      expect(method()).not.toHaveBeenCalled();
+      expect(answer(sendMessage)).toEqual({
+        messageId: 'm',
+        error: { response: { status: 400, data: { message: 'Invalid identifier' } } },
+      });
+    });
+  });
+
+  it('answers 400 when the arguments are not a list', async () => {
+    doCrossMessageRequest({ id: 7 }, { messageId: 'm', requestId: CrossMsgRequestId.AnnotationGet, args: '../../user' });
+    await flush();
+
+    expect(AnnotationModel.get).not.toHaveBeenCalled();
+    expect(answer(sendMessage).error.response.status).toBe(400);
+  });
+
+  it('accepts a 64-character identifier', async () => {
+    doCrossMessageRequest({ id: 7 }, { messageId: 'm', requestId: CrossMsgRequestId.AnnotationGet, args: ['a'.repeat(64)] });
+    await flush();
+
+    expect(AnnotationModel.get).toHaveBeenCalledWith('a'.repeat(64));
   });
 });

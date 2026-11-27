@@ -44,7 +44,7 @@ The background worker SHALL send relayed requests to the addresses compiled into
 For every relay operation whose argument becomes part of a URL path, the worker SHALL send the request only when that argument matches `^[A-Za-z0-9_-]{1,64}$`. Otherwise it SHALL answer `{ response: { status: 400, data: { message: 'Invalid identifier' } } }` and send nothing.
 
 #### Scenario: Accepted identifiers
-- **WHEN** an annotation is requested with a ULID, with an identifier kept from the annotation server, or a profile with a numeric id
+- **WHEN** an annotation is requested with a ULID, with an identifier kept from the annotation server, or with a numeric id
 - **THEN** the request is sent
 
 #### Scenario: Path traversal

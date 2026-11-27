@@ -104,6 +104,36 @@ const requestHandlers: {
   [CrossMsgRequestId.ClientStatusGet]: local(() => ClientStatusModel.get(STATUS_URL)),
 };
 
+/**
+ * The relay operations whose model method puts its first argument into a URL path. That
+ * argument comes from the page, which may be any script of it: it is checked here, before
+ * the request is built. The embed build calls the models directly and is not exposed.
+ */
+const pathIdentifierOperations = new Set<CrossMsgRequestId>([
+  CrossMsgRequestId.NotebookRemove,
+  CrossMsgRequestId.NotebookUpdate,
+  CrossMsgRequestId.NotebookSetDefault,
+  CrossMsgRequestId.NotebookUserInviteWithEmail,
+  CrossMsgRequestId.NotebookUserRemoveWithEmail,
+  CrossMsgRequestId.NotebookResendEmail,
+  CrossMsgRequestId.AnnotationGet,
+  CrossMsgRequestId.AnnotationRemove,
+  CrossMsgRequestId.AnnotationUpdate,
+  CrossMsgRequestId.ReplyRemove,
+  CrossMsgRequestId.ReplyUpdate,
+]);
+
+/** ULIDs of the BE API, identifiers kept from the annotation server, numeric ids. */
+const IDENTIFIER_PATTERN = /^[A-Za-z0-9_-]{1,64}$/;
+
+const isValidIdentifier = (value: unknown) => (
+  (typeof value === 'string' || typeof value === 'number') && IDENTIFIER_PATTERN.test(String(value))
+);
+
+const hasValidPathIdentifier = (requestId: CrossMsgRequestId, args: unknown) => (
+  !pathIdentifierOperations.has(requestId) || (Array.isArray(args) && isValidIdentifier(args[0]))
+);
+
 /** The body without its `csrf_token`: the token stays in the worker. */
 const withoutCsrfToken = (data: unknown) => {
   if (!data || typeof data !== 'object' || Array.isArray(data) || !('csrf_token' in data)) {
@@ -122,6 +152,16 @@ const toPageResponse = (response: any) => ({
 
 export const doCrossMessageRequest = (tab: any, payload: any) => {
   const { messageId, requestId, args } = payload;
+  if (!hasValidPathIdentifier(requestId, args)) {
+    chrome.tabs.sendMessage(tab.id, {
+      type: CommonEventType.CrossMsgResponse,
+      payload: {
+        error: { response: { status: 400, data: { message: 'Invalid identifier' } } },
+        messageId,
+      }
+    });
+    return;
+  }
   const entry = requestHandlers[requestId as CrossMsgRequestId];
   const isLocal = !!entry && typeof entry !== 'function';
   const handler = entry && (typeof entry === 'function' ? entry : entry.local);
